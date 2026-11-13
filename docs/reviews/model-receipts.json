@@ -1,0 +1,33 @@
+{
+  "minimax": {
+    "modelRequested": "MiniMax-M2.5",
+    "exit": 0,
+    "error": false,
+    "usedModels": [
+      "MiniMax-M2.5"
+    ],
+    "seconds": 41,
+    "resultPreview": "# 代码审查报告：HKU 上海校园三维探索游戏 (v5.0)\n\n**审查目标**: snapshot v5 HEAD eb5fc24  \n**审查范围**: 资源生命周期、渲染管线、UI 状态、WebSocket 可靠性、导入导出、可维护性、任务状态机架构  \n**字数限制**: 1800 字\n\n---\n\n## 一、P1 严重缺陷（必须修复）\n\n### 1.1 资源泄漏：disposeAsset 不完整清理\n\n**文件**: `src/model/buildCampus.ts`  \n**函数**: `disposeAsset()` (第 308 行)  \n**触发条件**: 多次执行 `rebuild()` 或加载大型 GLB 后切换场景\n\n**根因**: `disposeAsset` 仅遍"
+  },
+  "qwen": {
+    "modelRequested": "qwen3.8-flash",
+    "modelReturned": "qwen3.8-flash",
+    "usage": {
+      "input_tokens": 2696,
+      "output_tokens": 720,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "seconds": 16,
+    "success": true
+  },
+  "failedAttempts": [
+    "qwen3.8-flash full review: CLI 240s timeout",
+    "qwen3-coder-plus: model not exist",
+    "qwen3.8-flash focused CLI: 240s timeout",
+    "qwen3.8-flash direct compact source: returned unusable text; repeated with TypeScript-formatted source"
+  ]
+}

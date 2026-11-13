@@ -1,0 +1,47 @@
+{
+  "downloaded": "2026-11-13",
+  "assets": [
+    {
+      "file": "survival-kit/bottle.glb",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/survival-kit",
+      "license": "CC0-1.0",
+      "sha256": "23f847b8812838830df686fb8b472fa225693a3b85c526f2796f7b0790831a9a"
+    },
+    {
+      "file": "survival-kit/tool-hammer.glb",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/survival-kit",
+      "license": "CC0-1.0",
+      "sha256": "9b27f03c26dabd49a7ea358615e63fe65e1c3d0157887d4ee1ecdfa1f0e688f3"
+    },
+    {
+      "file": "survival-kit/resource-planks.glb",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/survival-kit",
+      "license": "CC0-1.0",
+      "sha256": "d3804257474a3baab7ac067be91de5c3d6d18d5803775dc876cb6d9442c30873"
+    },
+    {
+      "file": "factory-kit/screen-small.glb",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/factory-kit",
+      "license": "CC0-1.0",
+      "sha256": "8521b13d7e7a9327ce4afe15a89d4c80abbf373209f8fc9b4192d59127e758e6"
+    },
+    {
+      "file": "survival-kit/Textures/colormap.png",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/survival-kit",
+      "license": "CC0-1.0",
+      "sha256": "6ca023be9f12e8c2358fcf94320c8a894b4c05a3dd0bad1f5c268312053caca1"
+    },
+    {
+      "file": "factory-kit/Textures/colormap.png",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/factory-kit",
+      "license": "CC0-1.0",
+      "sha256": "35d7bd6900dde0208429eeaec87fa17fbf024ed59f3f4eab54bc92802eba9dd7"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-13T06:10:17.347Z",
+  "results": [
+    {
+      "name": "No collection before start; range, visibility, duplicate and early submission guards",
+      "passed": true
+    },
+    {
+      "name": "Out of order collections, reload, submit once, reset and replay",
+      "passed": true
+    },
+    {
+      "name": "Reject incompatible, corrupt and inconsistent save data",
+      "passed": true
+    },
+    {
+      "name": "Default practice markers sit on reachable CDS-1 exterior ground",
+      "passed": true
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "verified": [
+    "real WASD movement",
+    "sprint and jump",
+    "V view switch",
+    "E collection of three items",
+    "E terminal submission",
+    "4 models with 512px palettes"
+  ],
+  "state": {
+    "task": {
+      "version": 1,
+      "started": true,
+      "collected": [
+        "water",
+        "hammer",
+        "planks"
+      ],
+      "completed": true,
+      "loaded": 4,
+      "loadFailures": 0,
+      "target": null,
+      "positions": [
+        {
+          "id": "water",
+          "position": [
+            47,
+            0.045,
+            32.5
+          ]
+        },
+        {
+          "id": "hammer",
+          "position": [
+            57,
+            0.045,
+            35.5
+          ]
+        },
+        {
+          "id": "planks",
+          "position": [
+            52,
+            0,
+            39.5
+          ]
+        },
+        {
+          "id": "station",
+          "position": [
+            56,
+            0.045,
+            30.5
+          ]
+        }
+      ]
+    },
+    "player": {
+      "position": [
+        55.98666666666696,
+        0.045,
+        31.50666666666656
+      ],
+      "velocity": [
+        0,
+        0,
+        0
+      ],
+      "yawDeg": 0,
+      "pitchDeg": 0,
+      "grounded": true
+    }
+  }
+}

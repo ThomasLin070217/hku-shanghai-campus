@@ -1,0 +1,229 @@
+{
+  "before": {
+    "protocolVersion": "hku-campus/1.0",
+    "frame": 10653,
+    "timeMs": 88774.9999999941,
+    "wallTimeMs": 1794551074318,
+    "mode": "ai",
+    "controlEpoch": 1794550983187,
+    "aiEnabled": true,
+    "owner": "v6-takeover-check",
+    "paused": false,
+    "player": {
+      "position": [
+        52.52000000000004,
+        0.12,
+        23.143333333333292
+      ],
+      "velocity": [
+        0,
+        0,
+        0
+      ],
+      "yawDeg": 0,
+      "pitchDeg": 0,
+      "grounded": true
+    },
+    "view": "third",
+    "landmarks": [
+      {
+        "id": "B04",
+        "name": "CDS-1 · 4号楼",
+        "relativePosition": [
+          -0.5200000000000387,
+          -0.12,
+          -25.143333333333292
+        ],
+        "distance": 25.14899622472255
+      },
+      {
+        "id": "B03",
+        "name": "3号楼 · 东侧南塔",
+        "relativePosition": [
+          -0.5200000000000387,
+          -0.12,
+          46.85666666666671
+        ],
+        "distance": 46.8597056233937
+      },
+      {
+        "id": "B05",
+        "name": "5号楼 · 学生活动",
+        "relativePosition": [
+          -0.5200000000000387,
+          -0.12,
+          -93.14333333333329
+        ],
+        "distance": 93.14486214732638
+      },
+      {
+        "id": "B06",
+        "name": "礼堂 · 中央公共建筑",
+        "relativePosition": [
+          -52.52000000000004,
+          -0.12,
+          -93.14333333333329
+        ],
+        "distance": 106.93009559728468
+      },
+      {
+        "id": "B01",
+        "name": "1号楼 · 西侧北塔",
+        "relativePosition": [
+          -104.52000000000004,
+          -0.12,
+          -25.143333333333292
+        ],
+        "distance": 107.50177678118217
+      },
+      {
+        "id": "B02",
+        "name": "2号楼 · 西侧南塔",
+        "relativePosition": [
+          -104.52000000000004,
+          -0.12,
+          46.85666666666671
+        ],
+        "distance": 114.54253363319289
+      },
+      {
+        "id": "B07",
+        "name": "7号楼 · 西北配套楼",
+        "relativePosition": [
+          -104.52000000000004,
+          -0.12,
+          -93.14333333333329
+        ],
+        "distance": 140.00044765801445
+      }
+    ],
+    "lastCommand": {
+      "commandId": "live-1794551013126-6",
+      "status": "blocked",
+      "acceptedAt": 1794551013128,
+      "expiresAt": 1794551014028,
+      "collisionIds": [
+        "B04/closed-doors"
+      ],
+      "startedFrame": 3338,
+      "reason": "duration_elapsed",
+      "finishedFrame": 3447
+    },
+    "collisions": []
+  },
+  "stopped": {
+    "protocolVersion": "hku-campus/1.0",
+    "frame": 10676,
+    "timeMs": 88966.66666666066,
+    "wallTimeMs": 1794551075392,
+    "mode": "human",
+    "controlEpoch": 1794550983189,
+    "aiEnabled": false,
+    "owner": null,
+    "paused": true,
+    "player": {
+      "position": [
+        52.84500000000006,
+        0.12,
+        23.143333333333292
+      ],
+      "velocity": [
+        0,
+        0,
+        0
+      ],
+      "yawDeg": 0,
+      "pitchDeg": 0,
+      "grounded": true
+    },
+    "view": "third",
+    "landmarks": [
+      {
+        "id": "B04",
+        "name": "CDS-1 · 4号楼",
+        "relativePosition": [
+          -0.8450000000000628,
+          -0.12,
+          -25.143333333333292
+        ],
+        "distance": 25.15781461317952
+      },
+      {
+        "id": "B03",
+        "name": "3号楼 · 东侧南塔",
+        "relativePosition": [
+          -0.8450000000000628,
+          -0.12,
+          46.85666666666671
+        ],
+        "distance": 46.86443892879883
+      },
+      {
+        "id": "B05",
+        "name": "5号楼 · 学生活动",
+        "relativePosition": [
+          -0.8450000000000628,
+          -0.12,
+          -93.14333333333329
+        ],
+        "distance": 93.14724348817003
+      },
+      {
+        "id": "B06",
+        "name": "礼堂 · 中央公共建筑",
+        "relativePosition": [
+          -52.84500000000006,
+          -0.12,
+          -93.14333333333329
+        ],
+        "distance": 107.09009743876621
+      },
+      {
+        "id": "B01",
+        "name": "1号楼 · 西侧北塔",
+        "relativePosition": [
+          -104.84500000000006,
+          -0.12,
+          -25.143333333333292
+        ],
+        "distance": 107.81778905222978
+      },
+      {
+        "id": "B02",
+        "name": "2号楼 · 西侧南塔",
+        "relativePosition": [
+          -104.84500000000006,
+          -0.12,
+          46.85666666666671
+        ],
+        "distance": 114.8391729163491
+      },
+      {
+        "id": "B07",
+        "name": "7号楼 · 西北配套楼",
+        "relativePosition": [
+          -104.84500000000006,
+          -0.12,
+          -93.14333333333329
+        ],
+        "distance": 140.2432492829671
+      }
+    ],
+    "lastCommand": {
+      "commandId": "v6-takeover-1794551074319",
+      "status": "completed",
+      "acceptedAt": 1794551074319,
+      "expiresAt": 1794551075319,
+      "collisionIds": [],
+      "startedFrame": 10654,
+      "reason": "duration_elapsed",
+      "finishedFrame": 10668
+    },
+    "collisions": []
+  },
+  "stale": {
+    "ok": false,
+    "error": "stale_epoch",
+    "controlEpoch": 1794550983189
+  }
+}

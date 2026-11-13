@@ -1,5 +1,5 @@
 /** One metre world units; keys shared by first and third person. */
-export const KEYS={forward:'KeyW',back:'KeyS',left:'KeyA',right:'KeyD',sprint:'ShiftLeft',jump:'Space',view:'KeyV',pause:'Escape'} as const;
+export const KEYS={forward:'KeyW',back:'KeyS',left:'KeyA',right:'KeyD',sprint:'ShiftLeft',jump:'Space',view:'KeyV',interact:'KeyE',pause:'Escape'} as const;
 export const EXPLORATION={
  speed:2.6, sprintSpeed:5.2, radius:.28, height:1.80, eyeHeight:1.64,
  maxStep:.24,maxDrop:.30,gravity:22,jumpSpeed:7.2,fixedStep:1/120,

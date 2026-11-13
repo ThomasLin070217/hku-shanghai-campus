@@ -1,6 +1,6 @@
 {
   "name": "hku-shanghai-whole-campus",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,11 +15,14 @@
     "agent:server": "node scripts/agent-server.mjs",
     "agent:demo": "node scripts/agent-demo.mjs",
     "check:v4": "tsx scripts/check-v4.ts",
-    "check:video": "tsx scripts/check-video-details.ts"
+    "check:video": "tsx scripts/check-video-details.ts",
+    "check:gameplay": "tsx scripts/check-gameplay.ts",
+    "check:transport": "node scripts/check-agent-transport.mjs"
   },
   "dependencies": {
     "three": "0.181.2",
-    "ws": "^8.23.0"
+    "ws": "^8.23.0",
+    "xstate": "5.33.4"
   },
   "devDependencies": {
     "@napi-rs/canvas": "^1.1.1",

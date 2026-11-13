@@ -22,11 +22,17 @@ const server=http.createServer(async(req,res)=>{
 });
 const wss=new WebSocketServer({noServer:true,maxPayload:12*1024*1024});
 server.on('upgrade',(req,socket,head)=>{
- if(req.url!=='/game'||!allowed.has(req.headers.origin)||!['127.0.0.1','localhost'].includes(req.headers.host?.split(':')[0])){socket.destroy();return;}
- if(game?.readyState===WebSocket.OPEN){socket.write('HTTP/1.1 409 Conflict\r\n\r\n');socket.destroy();return;}
+ let url;try{url=new URL(req.url,'http://localhost');}catch{socket.destroy();return;}
+ if(url.pathname!=='/game'||!allowed.has(req.headers.origin)||!['127.0.0.1','localhost'].includes(req.headers.host?.split(':')[0])){socket.destroy();return;}
+ if(game?.readyState===WebSocket.OPEN){
+  if(url.searchParams.get('claim')!=='1'){socket.write('HTTP/1.1 409 Conflict\r\n\r\n');socket.destroy();return;}
+  const previous=game;game=null;lastSeen=0;
+  for(const [id,p] of pending){clearTimeout(p.timer);p.resolve({ok:false,error:'game_replaced'});pending.delete(id);}
+  previous.close(4001,'user_selected_another_game');
+ }
  wss.handleUpgrade(req,socket,head,ws=>wss.emit('connection',ws));
 });
-wss.on('connection',ws=>{game=ws;lastSeen=0;ws.on('message',raw=>{let message;try{message=JSON.parse(raw.toString());}catch{return;}if(message.type==='ready'||message.type==='heartbeat')lastSeen=Date.now();if(message.type==='result'){const p=pending.get(message.id);if(p){clearTimeout(p.timer);pending.delete(message.id);p.resolve(message.result);}}});ws.on('close',()=>{if(game===ws){game=null;lastSeen=0;}for(const [id,p]of pending){clearTimeout(p.timer);p.resolve({ok:false,error:'not_ready'});pending.delete(id);}});});
+wss.on('connection',ws=>{game=ws;lastSeen=0;ws.on('message',raw=>{if(game!==ws)return;let message;try{message=JSON.parse(raw.toString());}catch{return;}if(message.type==='ready'||message.type==='heartbeat')lastSeen=Date.now();if(message.type==='result'){const p=pending.get(message.id);if(p){clearTimeout(p.timer);pending.delete(message.id);p.resolve(message.result);}}});ws.on('close',()=>{if(game!==ws)return;game=null;lastSeen=0;for(const [id,p]of pending){clearTimeout(p.timer);p.resolve({ok:false,error:'not_ready'});pending.delete(id);}});});
 const pulse=setInterval(()=>{if(game?.readyState===WebSocket.OPEN){game.send(JSON.stringify({type:'heartbeat'}));if(lastSeen&&Date.now()-lastSeen>2500)game.terminate();}},400);
 server.listen(port,'127.0.0.1',()=>console.log(`HKU Agent API http://127.0.0.1:${port} (waiting for game)`));
 function close(){clearInterval(pulse);game?.close();wss.close();server.close(()=>process.exit());setTimeout(()=>process.exit(),500).unref();}process.on('SIGTERM',close);process.on('SIGINT',close);

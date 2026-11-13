@@ -1,3 +1,18 @@
+# 开源整合与物资练习 v6
+
+沿用 Vite + TypeScript + Three.js。新增 **XState 任务状态机、Kenney CC0 道具、E 拾取/提交、版本化练习存档**，修复控制器销毁后的事件与显存资源泄漏。建筑布局、玩家物理和本机 Agent 协议沿用现有版本。
+
+```sh
+npm ci
+npm run play
+```
+
+打开 http://127.0.0.1:5174 ，暂停菜单选择「开始物资检查练习」，然后「进入探索」。用 WASD/Shift/Space 移动跑跳，靠近绿色地标按 **E** 收集三件物品，再到金色终端按 E 提交。Esc 暂停；「重置练习进度」只重置练习。当前练习是可替换示例，不是正式剧情。
+
+实现、开源选型、许可证、模型审阅裁定及验证见 [OPEN-SOURCE-V6.md](OPEN-SOURCE-V6.md)。代码入口：`src/gameplay/supplyQuest.ts`、`supplyScene.ts`；按键与物理参数：`src/exploration/config.ts`。回归：`npm run check:gameplay && npm run check:v4 && npm run check:video && npm run build`。
+
+---
+
 # 实录细节更新 v5
 
 新增视频参考的室外细节、日夜切换，以及用户确认位于 **5号楼4楼** 的独立阶梯休闲区。完整说明见 [VIDEO-DETAILS-V5.md](VIDEO-DETAILS-V5.md)，逐帧依据见 [参考档案](references/night-video/index.html)。

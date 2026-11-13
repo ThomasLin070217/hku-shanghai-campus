@@ -1,12 +1,15 @@
 import type {CampusGame} from '../exploration/game';
-/** Real transport; actions are queued in CampusGame and consumed by its fixed-step loop. */
+/** Real transport; actions are consumed only by the game's fixed-step loop. */
 export function connectAgent(getGame:()=>CampusGame,screenshot:()=>string,status:(s:string)=>void){
- let socket:WebSocket|null=null,lastHeartbeat=0,disposed=false;
+ let socket:WebSocket|null=null,lastHeartbeat=0,disposed=false,retry:ReturnType<typeof setTimeout>|undefined;
  const revoke=(reason:string)=>{const g=getGame();if(g.owner||g.armed)g.pause(reason);};
- function connect(){if(disposed)return;socket=new WebSocket('ws://127.0.0.1:8787/game');
-  socket.onopen=()=>{lastHeartbeat=Date.now();socket!.send(JSON.stringify({type:'ready'}));status('本机 AI 服务：已连接 · 127.0.0.1:8787');};
-  socket.onmessage=e=>{let msg;try{msg=JSON.parse(e.data);}catch{return;}
-   if(msg.type==='heartbeat'){lastHeartbeat=Date.now();socket!.send(JSON.stringify({type:'heartbeat'}));return;}
+ function connect(claim=false){
+  if(disposed)return;clearTimeout(retry);lastHeartbeat=0;
+  const previous=socket,ws=new WebSocket('ws://127.0.0.1:8787/game'+(claim?'?claim=1':''));socket=ws;previous?.close();
+  // A closing old socket must never revoke a newer connection or its authority.
+  ws.onopen=()=>{if(socket!==ws)return;lastHeartbeat=Date.now();ws.send(JSON.stringify({type:'ready'}));status('本机 AI 服务：此窗口已连接 · 127.0.0.1:8787');};
+  ws.onmessage=e=>{if(socket!==ws)return;let msg;try{msg=JSON.parse(e.data);}catch{return;}
+   if(msg.type==='heartbeat'){lastHeartbeat=Date.now();ws.send(JSON.stringify({type:'heartbeat'}));return;}
    if(msg.type!=='rpc')return;const g=getGame(),args=msg.args;let result:unknown;
    try{
     if(Date.now()>msg.expiresAt)result={ok:false,error:'request_expired'};
@@ -19,11 +22,18 @@ export function connectAgent(getGame:()=>CampusGame,screenshot:()=>string,status
     else if(msg.method==='screenshot')result={ok:true,mimeType:'image/png',dataUrl:screenshot()};
     else result={ok:false,error:'unknown_method'};
    }catch{result={ok:false,error:'invalid_request'};}
-   socket!.send(JSON.stringify({type:'result',id:msg.id,result}));
+   if(ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify({type:'result',id:msg.id,result}));
   };
-  socket.onerror=()=>status('本机 AI 服务：未连接（npm run agent:server）');
-  socket.onclose=()=>{revoke('bridge_disconnected');status('本机 AI 服务：未连接（npm run agent:server）');if(!disposed)setTimeout(connect,2000);};
+  ws.onerror=()=>{if(socket===ws)status('本机 AI 未连接：运行 npm run agent:server；若其他窗口占用，点击开启 AI 切换。');};
+  ws.onclose=e=>{if(socket!==ws)return;socket=null;lastHeartbeat=0;revoke('bridge_disconnected');
+   if(e.code===4001){status('另一个校园窗口已接管服务；本窗口已停控。点击开启 AI 可切回。');return;}
+   status('本机 AI 未连接：运行 npm run agent:server；若其他窗口占用，点击开启 AI 切换。');if(!disposed)retry=setTimeout(()=>connect(),2000);
+  };
  }
  const watchdog=setInterval(()=>{if(lastHeartbeat&&Date.now()-lastHeartbeat>1800){revoke('bridge_timeout');socket?.close();lastHeartbeat=0;}},250);
- connect();return()=>{disposed=true;clearInterval(watchdog);socket?.close();};
+ connect();return{
+  // Only the explicit user enable-AI action calls claim. Background retries never steal control.
+  claim(){if(socket?.readyState!==WebSocket.OPEN)connect(true);},
+  dispose(){disposed=true;clearTimeout(retry);clearInterval(watchdog);revoke('bridge_disposed');socket?.close();},
+ };
 }

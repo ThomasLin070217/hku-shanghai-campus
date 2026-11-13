@@ -1,0 +1,9 @@
+{
+  "date": "2026-11-13T06:26:48.479Z",
+  "results": [
+    "not_ready without a browser",
+    "background connection cannot steal the active game",
+    "explicit claim closes old game and rejects its in-flight RPC",
+    "old close event cannot clear replacement readiness or pending requests"
+  ]
+}
