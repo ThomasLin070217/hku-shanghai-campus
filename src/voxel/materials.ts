@@ -20,8 +20,8 @@ export function pixelUV(geo:T.BufferGeometry,tileMeters=4){
 export function voxelizeMaterials(root:T.Object3D){
  const maps=new Map<string,T.DataTexture>(),done=new Set<T.Material>();
  root.traverse(o=>{if(!(o instanceof T.Mesh))return;const mats=Array.isArray(o.material)?o.material:[o.material];let textured=false;
-  for(const m of mats){if(!(m instanceof T.MeshStandardMaterial))continue;const name=m.name.toLowerCase();if(/sign|letter|marking|ivory/.test(name))continue;
-   const kind=/glass|glaz/.test(name)?'glass':/grass|lawn|turf/.test(name)?'grass':/leaf|foliage/.test(name)?'leaf':/bark/.test(name)?'bark':/pav|concrete|limestone/.test(name)?'paving':/road|asphalt/.test(name)?'road':'wall';
+  for(const m of mats){if(!(m instanceof T.MeshStandardMaterial))continue;const name=m.name.toLowerCase();if(/^night_|sign|letter|marking|ivory/.test(name))continue;
+   const kind=/glass|glaz/.test(name)?'glass':/grass|lawn|turf/.test(name)?'grass':/leaf|foliage/.test(name)?'leaf':/bark/.test(name)?'bark':/pav|concrete|limestone/.test(name)?'paving':/road|asphalt|track|jogging/.test(name)?'road':'wall';
    if(!done.has(m)){if(!maps.has(kind))maps.set(kind,pixelTile(kind));m.map=maps.get(kind)!;m.roughness=kind==='glass'?.38:.90;m.metalness=kind==='glass'?.22:.05;if(kind==='grass')m.color.setHex(0x638448);if(kind==='leaf')m.color.setHex(0x42764a);m.needsUpdate=true;done.add(m);}textured=true;
   }if(textured)pixelUV(o.geometry);
  });

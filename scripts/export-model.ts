@@ -1,6 +1,7 @@
 import {createCanvas, ImageData, loadImage} from '@napi-rs/canvas';
 import {writeFileSync,mkdirSync} from 'node:fs';
 import {resolve} from 'node:path';
+import {buildLounge} from '../src/model/buildLounge';
 import {createStudent} from '../src/exploration/student';
 import {buildSite} from '../src/model/buildSite';
 import {modelStats,disposeAsset} from '../src/model/buildCampus';
@@ -19,8 +20,8 @@ const asset=buildSite(),out=resolve('assets');mkdirSync(resolve(out,'buildings')
 const entries:[string,typeof asset.root][]=[['HKU-Shanghai-Campus',asset.root]];
 const bare=asset.root.clone(true);bare.getObjectByName('Environment')!.removeFromParent();entries.push(['HKU-Shanghai-Campus-no-ground',bare]);
 for(const [id,b]of asset.byId){const copy=b.clone(true);copy.userData={...copy.userData,campusPlacement:b.position.toArray(),campusRotation:b.rotation.toArray()};copy.position.set(0,0,0);copy.rotation.set(0,0,0);entries.push([`buildings/${id}`,copy]);}
-entries.push(['Student-Green-Gown',createStudent().root]);
-const metadata:Record<string,unknown>={version:4,date:'2026-11-13',parameters:asset.parameters,site:asset.site,assets:{}};
+entries.push(['Student-Green-Gown',createStudent().root],['B05-4F-Stepped-Lounge',buildLounge()]);
+const metadata:Record<string,unknown>={version:5,date:'2026-11-13',parameters:asset.parameters,site:asset.site,assets:{}};
 for(const [name,root]of entries){const before=modelStats(root),binary=await exportGLB(root);writeFileSync(resolve(out,name+'.glb'),Buffer.from(binary));const loaded=await reloadGLB(binary),after=modelStats(loaded.scene);
  if(before.triangles!==after.triangles||before.size.some((v,i)=>Math.abs(v-after.size[i])>.001))throw new Error(`${name}: round-trip geometry mismatch`);
  if(name==='HKU-Shanghai-Campus'){for(const id of [...asset.byId.keys(),'Environment','Circulation','Sports'])if(!loaded.scene.getObjectByName(id))throw new Error(`Missing ${id}`);}

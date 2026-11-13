@@ -1,0 +1,99 @@
+{
+  "sources": [
+    {
+      "id": "U02",
+      "filename": "0ef72252add965fb96138168236d6e06.mp4",
+      "durationSeconds": 7.62,
+      "resolution": "960x720",
+      "author": "user",
+      "date": "recording date not independently verified; received 2026-11-13",
+      "location": "Building 5, floor 4, confirmed by user",
+      "url": null
+    },
+    {
+      "id": "U03",
+      "filename": "IMG_4333.MOV",
+      "durationSeconds": 220.18,
+      "resolution": "3840x2160 HEVC Main10 HDR HLG",
+      "author": "user",
+      "date": "recording date not independently verified; received 2026-11-13",
+      "location": "CDS-1 entrance to courtyard/hall-side passage and sports-side route",
+      "url": null
+    }
+  ],
+  "frames": [
+    {
+      "id": "U02-00.71",
+      "file": "U02-00.71.jpg",
+      "timestamp": "00:00.71",
+      "source": "U02",
+      "type": "user-recorded real-video frame",
+      "observation": "5号楼4楼：中央木阶座席、两侧窄楼梯、靠垫、白桌、玻璃护栏。楼栋楼层由用户确认；尺寸、行数及室内朝向估算。"
+    },
+    {
+      "id": "U02-03.57",
+      "file": "U02-03.57.jpg",
+      "timestamp": "00:03.57",
+      "source": "U02",
+      "type": "user-recorded real-video frame",
+      "observation": "上部走廊、玻璃房间、木格栅吊顶；未推断完整室内平面。"
+    },
+    {
+      "id": "U03-0009",
+      "file": "U03-0009.jpg",
+      "timestamp": "00:09",
+      "source": "U03",
+      "type": "user-recorded real-video frame",
+      "observation": "CDS-1 门厅、雨棚、地灯；门厅身份由连续镜头与可读校名核对。"
+    },
+    {
+      "id": "U03-0017",
+      "file": "U03-0017.jpg",
+      "timestamp": "00:17",
+      "source": "U03",
+      "type": "user-recorded real-video frame",
+      "observation": "学院石质景观牌、低绿篱、树木支撑架、上照灯。标牌位于入口附近，模型坐标估算。"
+    },
+    {
+      "id": "U03-0026",
+      "file": "U03-0026.jpg",
+      "timestamp": "00:26",
+      "source": "U03",
+      "type": "user-recorded real-video frame",
+      "observation": "高层立面竖向淡紫灯带；只补可见类型，精确覆盖范围与亮度暂定。"
+    },
+    {
+      "id": "U03-0052",
+      "file": "U03-0052.jpg",
+      "timestamp": "00:52",
+      "source": "U03",
+      "type": "user-recorded real-video frame",
+      "observation": "条带铺装与门厅侧步道、苗木绿篱，远处礼堂；路径宽度、间距估算。"
+    },
+    {
+      "id": "U03-0117",
+      "file": "U03-0117.jpg",
+      "timestamp": "01:57",
+      "source": "U03",
+      "type": "user-recorded real-video frame",
+      "observation": "清晰6号楼导视牌，前方球场围网；有助于核对礼堂附近路线，但不是测绘总图。"
+    },
+    {
+      "id": "U03-0149",
+      "file": "U03-0149.jpg",
+      "timestamp": "02:29",
+      "source": "U03",
+      "type": "user-recorded real-video frame",
+      "observation": "蓝色双向跑道、边线、虚线、围网；长宽和精确位置暂定。"
+    },
+    {
+      "id": "U03-0158",
+      "file": "U03-0158.jpg",
+      "timestamp": "02:38",
+      "source": "U03",
+      "type": "user-recorded real-video frame",
+      "observation": "门前三级台阶、踏步灯、抬高绿篱与跑道排水沟；此门楼栋未确认，暂挂B07北侧，可调整。"
+    }
+  ],
+  "method": "ffmpeg frame sampling: 24 frames per clip overview, 24 selected U03 frames. U03 before 01:49 rotated 90 degrees to correct handheld orientation. No AI enhancement; HDR conversion is not calibrated. Same-video frames are not independent sources. Raw videos not copied into the repo."
+}

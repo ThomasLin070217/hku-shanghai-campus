@@ -1,0 +1,46 @@
+[
+  {
+    "name": "Banded promenade continuous",
+    "end": [
+      18,
+      0.035,
+      -49.80000000000379
+    ],
+    "distance": 85.80000000000379
+  },
+  {
+    "name": "Hall-side passage to track",
+    "end": [
+      19,
+      0.06,
+      -98.39999999999239
+    ],
+    "distance": 49.39999999999239
+  },
+  {
+    "name": "Two-way track length eastbound",
+    "end": [
+      83.99999999999653,
+      0.06,
+      -98
+    ],
+    "distance": 168.99999999999653
+  },
+  {
+    "name": "Two-way track length westbound",
+    "end": [
+      -84.99999999999653,
+      0.06,
+      -98
+    ],
+    "distance": 168.99999999999653
+  },
+  {
+    "name": "Northern steps climb and closed facade",
+    "position": [
+      -52,
+      0.51,
+      -85.5983333333342
+    ]
+  }
+]

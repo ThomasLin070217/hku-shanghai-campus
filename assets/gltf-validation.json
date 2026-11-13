@@ -4,50 +4,116 @@
     "issues": {
       "numErrors": 0,
       "numWarnings": 0,
-      "numInfos": 7,
+      "numInfos": 18,
       "numHints": 0,
       "messages": [
         {
           "code": "UNUSED_OBJECT",
           "message": "This object may be unused.",
           "severity": 2,
-          "pointer": "/meshes/80/primitives/0/attributes/TEXCOORD_0"
+          "pointer": "/meshes/21/primitives/0/attributes/TEXCOORD_0"
         },
         {
           "code": "UNUSED_OBJECT",
           "message": "This object may be unused.",
           "severity": 2,
-          "pointer": "/meshes/112/primitives/0/attributes/TEXCOORD_0"
+          "pointer": "/meshes/43/primitives/0/attributes/TEXCOORD_0"
         },
         {
           "code": "UNUSED_OBJECT",
           "message": "This object may be unused.",
           "severity": 2,
-          "pointer": "/meshes/139/primitives/0/attributes/TEXCOORD_0"
+          "pointer": "/meshes/82/primitives/0/attributes/TEXCOORD_0"
         },
         {
           "code": "UNUSED_OBJECT",
           "message": "This object may be unused.",
           "severity": 2,
-          "pointer": "/meshes/141/primitives/0/attributes/TEXCOORD_0"
+          "pointer": "/meshes/84/primitives/0/attributes/TEXCOORD_0"
         },
         {
           "code": "UNUSED_OBJECT",
           "message": "This object may be unused.",
           "severity": 2,
-          "pointer": "/meshes/147/primitives/0/attributes/TEXCOORD_0"
+          "pointer": "/meshes/85/primitives/0/attributes/TEXCOORD_0"
         },
         {
           "code": "UNUSED_OBJECT",
           "message": "This object may be unused.",
           "severity": 2,
-          "pointer": "/meshes/165/primitives/0/attributes/TEXCOORD_0"
+          "pointer": "/meshes/105/primitives/0/attributes/TEXCOORD_0"
         },
         {
           "code": "UNUSED_OBJECT",
           "message": "This object may be unused.",
           "severity": 2,
-          "pointer": "/meshes/169/primitives/0/attributes/TEXCOORD_0"
+          "pointer": "/meshes/117/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/123/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/143/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/146/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/148/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/154/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/163/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/164/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/170/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/181/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/186/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/188/primitives/0/attributes/TEXCOORD_0"
         }
       ],
       "truncated": false
@@ -55,12 +121,15 @@
     "info": {
       "version": "2.0",
       "generator": "THREE.GLTFExporter r181",
+      "extensionsUsed": [
+        "KHR_materials_emissive_strength"
+      ],
       "resources": [
         {
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 11252632
+          "byteLength": 12085288
         },
         {
           "pointer": "/images/0",
@@ -155,14 +224,14 @@
         }
       ],
       "animationCount": 0,
-      "materialCount": 37,
+      "materialCount": 47,
       "hasMorphTargets": false,
       "hasSkins": false,
       "hasTextures": true,
       "hasDefaultScene": true,
-      "drawCallCount": 171,
-      "totalVertexCount": 351280,
-      "totalTriangleCount": 117776,
+      "drawCallCount": 190,
+      "totalVertexCount": 377296,
+      "totalTriangleCount": 126456,
       "maxUVs": 1,
       "maxInfluences": 0,
       "maxAttributes": 3
@@ -173,32 +242,80 @@
     "issues": {
       "numErrors": 0,
       "numWarnings": 0,
-      "numInfos": 4,
+      "numInfos": 12,
       "numHints": 0,
       "messages": [
         {
           "code": "UNUSED_OBJECT",
           "message": "This object may be unused.",
           "severity": 2,
-          "pointer": "/meshes/80/primitives/0/attributes/TEXCOORD_0"
+          "pointer": "/meshes/21/primitives/0/attributes/TEXCOORD_0"
         },
         {
           "code": "UNUSED_OBJECT",
           "message": "This object may be unused.",
           "severity": 2,
-          "pointer": "/meshes/112/primitives/0/attributes/TEXCOORD_0"
+          "pointer": "/meshes/43/primitives/0/attributes/TEXCOORD_0"
         },
         {
           "code": "UNUSED_OBJECT",
           "message": "This object may be unused.",
           "severity": 2,
-          "pointer": "/meshes/147/primitives/0/attributes/TEXCOORD_0"
+          "pointer": "/meshes/82/primitives/0/attributes/TEXCOORD_0"
         },
         {
           "code": "UNUSED_OBJECT",
           "message": "This object may be unused.",
           "severity": 2,
-          "pointer": "/meshes/151/primitives/0/attributes/TEXCOORD_0"
+          "pointer": "/meshes/84/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/85/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/105/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/117/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/123/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/143/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/154/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/159/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/161/primitives/0/attributes/TEXCOORD_0"
         }
       ],
       "truncated": false
@@ -206,12 +323,15 @@
     "info": {
       "version": "2.0",
       "generator": "THREE.GLTFExporter r181",
+      "extensionsUsed": [
+        "KHR_materials_emissive_strength"
+      ],
       "resources": [
         {
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 10570284
+          "byteLength": 10927756
         },
         {
           "pointer": "/images/0",
@@ -264,17 +384,30 @@
             "transfer": "srgb",
             "bits": 8
           }
+        },
+        {
+          "pointer": "/images/4",
+          "mimeType": "image/png",
+          "storage": "buffer-view",
+          "image": {
+            "width": 16,
+            "height": 16,
+            "format": "rgba",
+            "primaries": "srgb",
+            "transfer": "srgb",
+            "bits": 8
+          }
         }
       ],
       "animationCount": 0,
-      "materialCount": 33,
+      "materialCount": 38,
       "hasMorphTargets": false,
       "hasSkins": false,
       "hasTextures": true,
       "hasDefaultScene": true,
-      "drawCallCount": 153,
-      "totalVertexCount": 330028,
-      "totalTriangleCount": 110684,
+      "drawCallCount": 163,
+      "totalVertexCount": 341176,
+      "totalTriangleCount": 114404,
       "maxUVs": 1,
       "maxInfluences": 0,
       "maxAttributes": 3
@@ -475,24 +608,154 @@
     }
   },
   {
-    "file": "assets/buildings/B01.glb",
+    "file": "assets/B05-4F-Stepped-Lounge.glb",
     "issues": {
       "numErrors": 0,
       "numWarnings": 0,
-      "numInfos": 0,
+      "numInfos": 7,
       "numHints": 0,
-      "messages": [],
+      "messages": [
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/4/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/5/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/9/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/12/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/14/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/15/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/19/primitives/0/attributes/TEXCOORD_0"
+        }
+      ],
       "truncated": false
     },
     "info": {
       "version": "2.0",
       "generator": "THREE.GLTFExporter r181",
+      "extensionsUsed": [
+        "KHR_materials_emissive_strength"
+      ],
       "resources": [
         {
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 348868
+          "byteLength": 393064
+        },
+        {
+          "pointer": "/images/0",
+          "mimeType": "image/png",
+          "storage": "buffer-view",
+          "image": {
+            "width": 16,
+            "height": 16,
+            "format": "rgba",
+            "primaries": "srgb",
+            "transfer": "srgb",
+            "bits": 8
+          }
+        },
+        {
+          "pointer": "/images/1",
+          "mimeType": "image/png",
+          "storage": "buffer-view",
+          "image": {
+            "width": 16,
+            "height": 16,
+            "format": "rgba",
+            "primaries": "srgb",
+            "transfer": "srgb",
+            "bits": 8
+          }
+        },
+        {
+          "pointer": "/images/2",
+          "mimeType": "image/png",
+          "storage": "buffer-view",
+          "image": {
+            "width": 16,
+            "height": 16,
+            "format": "rgba",
+            "primaries": "srgb",
+            "transfer": "srgb",
+            "bits": 8
+          }
+        }
+      ],
+      "animationCount": 0,
+      "materialCount": 11,
+      "hasMorphTargets": false,
+      "hasSkins": false,
+      "hasTextures": true,
+      "hasDefaultScene": true,
+      "drawCallCount": 20,
+      "totalVertexCount": 12216,
+      "totalTriangleCount": 4080,
+      "maxUVs": 1,
+      "maxInfluences": 0,
+      "maxAttributes": 3
+    }
+  },
+  {
+    "file": "assets/buildings/B01.glb",
+    "issues": {
+      "numErrors": 0,
+      "numWarnings": 0,
+      "numInfos": 1,
+      "numHints": 0,
+      "messages": [
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/21/primitives/0/attributes/TEXCOORD_0"
+        }
+      ],
+      "truncated": false
+    },
+    "info": {
+      "version": "2.0",
+      "generator": "THREE.GLTFExporter r181",
+      "extensionsUsed": [
+        "KHR_materials_emissive_strength"
+      ],
+      "resources": [
+        {
+          "pointer": "/buffers/0",
+          "mimeType": "application/gltf-buffer",
+          "storage": "glb",
+          "byteLength": 381124
         },
         {
           "pointer": "/images/0",
@@ -522,14 +785,14 @@
         }
       ],
       "animationCount": 0,
-      "materialCount": 6,
+      "materialCount": 7,
       "hasMorphTargets": false,
       "hasSkins": false,
       "hasTextures": true,
       "hasDefaultScene": true,
-      "drawCallCount": 21,
-      "totalVertexCount": 10848,
-      "totalTriangleCount": 3648,
+      "drawCallCount": 22,
+      "totalVertexCount": 11856,
+      "totalTriangleCount": 3984,
       "maxUVs": 1,
       "maxInfluences": 0,
       "maxAttributes": 3
@@ -540,20 +803,30 @@
     "issues": {
       "numErrors": 0,
       "numWarnings": 0,
-      "numInfos": 0,
+      "numInfos": 1,
       "numHints": 0,
-      "messages": [],
+      "messages": [
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/21/primitives/0/attributes/TEXCOORD_0"
+        }
+      ],
       "truncated": false
     },
     "info": {
       "version": "2.0",
       "generator": "THREE.GLTFExporter r181",
+      "extensionsUsed": [
+        "KHR_materials_emissive_strength"
+      ],
       "resources": [
         {
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 330436
+          "byteLength": 355780
         },
         {
           "pointer": "/images/0",
@@ -583,14 +856,14 @@
         }
       ],
       "animationCount": 0,
-      "materialCount": 6,
+      "materialCount": 7,
       "hasMorphTargets": false,
       "hasSkins": false,
       "hasTextures": true,
       "hasDefaultScene": true,
-      "drawCallCount": 21,
-      "totalVertexCount": 10272,
-      "totalTriangleCount": 3456,
+      "drawCallCount": 22,
+      "totalVertexCount": 11064,
+      "totalTriangleCount": 3720,
       "maxUVs": 1,
       "maxInfluences": 0,
       "maxAttributes": 3
@@ -675,7 +948,7 @@
     "issues": {
       "numErrors": 0,
       "numWarnings": 0,
-      "numInfos": 1,
+      "numInfos": 3,
       "numHints": 0,
       "messages": [
         {
@@ -683,6 +956,18 @@
           "message": "This object may be unused.",
           "severity": 2,
           "pointer": "/meshes/23/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/25/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/26/primitives/0/attributes/TEXCOORD_0"
         }
       ],
       "truncated": false
@@ -690,12 +975,15 @@
     "info": {
       "version": "2.0",
       "generator": "THREE.GLTFExporter r181",
+      "extensionsUsed": [
+        "KHR_materials_emissive_strength"
+      ],
       "resources": [
         {
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 4666212
+          "byteLength": 4695012
         },
         {
           "pointer": "/images/0",
@@ -738,14 +1026,14 @@
         }
       ],
       "animationCount": 0,
-      "materialCount": 12,
+      "materialCount": 13,
       "hasMorphTargets": false,
       "hasSkins": false,
       "hasTextures": true,
       "hasDefaultScene": true,
-      "drawCallCount": 25,
-      "totalVertexCount": 145752,
-      "totalTriangleCount": 48604,
+      "drawCallCount": 27,
+      "totalVertexCount": 146652,
+      "totalTriangleCount": 48904,
       "maxUVs": 1,
       "maxInfluences": 0,
       "maxAttributes": 3
@@ -756,20 +1044,30 @@
     "issues": {
       "numErrors": 0,
       "numWarnings": 0,
-      "numInfos": 0,
+      "numInfos": 1,
       "numHints": 0,
-      "messages": [],
+      "messages": [
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/19/primitives/0/attributes/TEXCOORD_0"
+        }
+      ],
       "truncated": false
     },
     "info": {
       "version": "2.0",
       "generator": "THREE.GLTFExporter r181",
+      "extensionsUsed": [
+        "KHR_materials_emissive_strength"
+      ],
       "resources": [
         {
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 250460
+          "byteLength": 275804
         },
         {
           "pointer": "/images/0",
@@ -812,14 +1110,14 @@
         }
       ],
       "animationCount": 0,
-      "materialCount": 7,
+      "materialCount": 8,
       "hasMorphTargets": false,
       "hasSkins": false,
       "hasTextures": true,
       "hasDefaultScene": true,
-      "drawCallCount": 19,
-      "totalVertexCount": 7752,
-      "totalTriangleCount": 2616,
+      "drawCallCount": 20,
+      "totalVertexCount": 8544,
+      "totalTriangleCount": 2880,
       "maxUVs": 1,
       "maxInfluences": 0,
       "maxAttributes": 3
@@ -830,7 +1128,7 @@
     "issues": {
       "numErrors": 0,
       "numWarnings": 0,
-      "numInfos": 1,
+      "numInfos": 2,
       "numHints": 0,
       "messages": [
         {
@@ -838,6 +1136,12 @@
           "message": "This object may be unused.",
           "severity": 2,
           "pointer": "/meshes/11/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/17/primitives/0/attributes/TEXCOORD_0"
         }
       ],
       "truncated": false
@@ -845,12 +1149,15 @@
     "info": {
       "version": "2.0",
       "generator": "THREE.GLTFExporter r181",
+      "extensionsUsed": [
+        "KHR_materials_emissive_strength"
+      ],
       "resources": [
         {
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 190132
+          "byteLength": 203956
         },
         {
           "pointer": "/images/0",
@@ -880,14 +1187,14 @@
         }
       ],
       "animationCount": 0,
-      "materialCount": 7,
+      "materialCount": 8,
       "hasMorphTargets": false,
       "hasSkins": false,
       "hasTextures": true,
       "hasDefaultScene": true,
-      "drawCallCount": 17,
-      "totalVertexCount": 5892,
-      "totalTriangleCount": 1988,
+      "drawCallCount": 18,
+      "totalVertexCount": 6324,
+      "totalTriangleCount": 2132,
       "maxUVs": 1,
       "maxInfluences": 0,
       "maxAttributes": 3
@@ -898,20 +1205,30 @@
     "issues": {
       "numErrors": 0,
       "numWarnings": 0,
-      "numInfos": 0,
+      "numInfos": 1,
       "numHints": 0,
-      "messages": [],
+      "messages": [
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/19/primitives/0/attributes/TEXCOORD_0"
+        }
+      ],
       "truncated": false
     },
     "info": {
       "version": "2.0",
       "generator": "THREE.GLTFExporter r181",
+      "extensionsUsed": [
+        "KHR_materials_emissive_strength"
+      ],
       "resources": [
         {
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 250460
+          "byteLength": 275804
         },
         {
           "pointer": "/images/0",
@@ -954,14 +1271,14 @@
         }
       ],
       "animationCount": 0,
-      "materialCount": 7,
+      "materialCount": 8,
       "hasMorphTargets": false,
       "hasSkins": false,
       "hasTextures": true,
       "hasDefaultScene": true,
-      "drawCallCount": 19,
-      "totalVertexCount": 7752,
-      "totalTriangleCount": 2616,
+      "drawCallCount": 20,
+      "totalVertexCount": 8544,
+      "totalTriangleCount": 2880,
       "maxUVs": 1,
       "maxInfluences": 0,
       "maxAttributes": 3

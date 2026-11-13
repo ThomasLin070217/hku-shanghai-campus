@@ -1,3 +1,13 @@
+# 实录细节更新 v5
+
+新增视频参考的室外细节、日夜切换，以及用户确认位于 **5号楼4楼** 的独立阶梯休闲区。完整说明见 [VIDEO-DETAILS-V5.md](VIDEO-DETAILS-V5.md)，逐帧依据见 [参考档案](references/night-video/index.html)。
+
+`npm ci && npm run play` 后打开 http://127.0.0.1:5174 。顶部「5号楼 · 4F」查看及导出室内参考资产；「切换夜景」查看室外灯光。
+
+以下保留此前版本的控制、接口和校园建模说明。
+
+---
+
 # HKU Shanghai · Voxel Campus Explorer v4
 
 现有张江校园模型上的方块风室外探索版本。Vite + TypeScript + Three.js；原创方块学生穿 HKU 绿色长袍，第一／第三人称共用跑跳物理与碰撞。

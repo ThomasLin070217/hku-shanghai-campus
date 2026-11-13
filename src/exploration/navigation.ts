@@ -1,4 +1,5 @@
 import * as T from 'three';
+import {VIDEO_DETAILS as V} from '../model/videoDetailsParameters';
 import type {BuildingSpec,SiteParameters} from '../model/campusParameters';
 import {EXPLORATION as C,LANDSCAPE as L} from './config';
 export interface Obstacle {name:string;x:number;z:number;w:number;d:number;bottom:number;top:number;angle:number;radius?:number}
@@ -29,8 +30,8 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters){
  for(const x of [-25,-15])for(const z of [30,40])box('oculus-column',x,z,.6,.6,s.bridgeHeight);
  for(let z=-94;z<=94;z+=13)for(const x of [-101,101])circle('tree',x,z,.23,3.8);
  for(let z=53;z<=89;z+=12)for(const x of [-20,20])circle('tree',x,z,.23,3.8);
- for(let x=-82;x<=84;x+=14){circle('tree',x,-96,.23,3.8);circle('tree',x,108,.23,3.8);}
- for(const x of [-18,18])for(const z of [-25,-12])circle('tree',x,z,.23,3.8);
+ for(let x=-82;x<=84;x+=14){circle('tree',x,-92.5,.23,3.8);circle('tree',x,108,.23,3.8);}
+ for(const x of [-18])for(const z of [-25,-12])circle('tree',x,z,.23,3.8);
  for(const z of [-94,-27,92])for(const x of [-52,52])box('planting-bed',x,z,55,3.5,.5);
  box('HKU-lawn-letters',0,91,9,.8,3.6);
  box('sports-hall-closed',-68,s.sportsZ,39,26,10.5);
@@ -47,6 +48,12 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters){
  // Conservative visible site boundary; no exploration beyond the referenced rectangle.
  for(const x of [-1,1])box('site-boundary',x*(s.width/2-.5),s.centerZ,.3,s.depth,1.1);
  for(const z of [-1,1])box('site-boundary',0,s.centerZ+z*(s.depth/2-.5),s.width,.3,1.1);
+ for(const p of V.hedgeCenters){box('video-hedge',p.x,p.z,1.35,7,.65);circle('video-sapling',p.x,p.z+2.3,.16,3.7);}
+ for(const p of V.northernBeds)box('northern-hedge',p.x,-90.5,p.width,2.6,.76);
+ const mon=V.monument;box('CDS-landscape-monument',mon.x,mon.z,mon.width,mon.depth,mon.height,0,mon.rotation);
+ const hs=V.hallSign;box('building-6-sign',hs.x,hs.z,hs.width,hs.depth,hs.height);
+ for(const z of [-42,-19,48])circle('walk-lamp',15.3,z,.10,4.8);
+ for(const x of [-78,-40,0,40,78])circle('court-light',x,-102.5,.10,6.1);
  const meshes=obstacles.map(o=>{const mesh=new T.Mesh(new T.BoxGeometry(o.w,o.top-o.bottom,o.d));mesh.name=o.name;mesh.position.set(o.x,(o.top+o.bottom)/2,o.z);mesh.rotation.y=o.angle;mesh.updateMatrixWorld();return mesh;});
  function support(x:number,z:number,y:number):number|null{
   if(Math.abs(x)>s.width/2-.75||Math.abs(z-s.centerZ)>s.depth/2-.75)return null;
@@ -73,6 +80,10 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters){
   if(Math.abs(x)<14&&z>53&&z<93)h=Math.max(h,.13);
   if(Math.abs(x)<s.sportsWidth/2&&Math.abs(z-s.sportsZ)<s.sportsDepth/2)h=.14;
   if(((x>27.5&&x<78.5)||(x> -27&&x<17))&&Math.abs(z-s.sportsZ)<12.5)h=.19;
+  for(const p of V.promenade)if(Math.abs(x-p.x)<p.width/2&&Math.abs(z-p.z)<p.depth/2)h=Math.max(h,V.pathHeight);
+  if(Math.abs(x-V.track.x)<V.track.width/2&&Math.abs(z-V.track.z)<V.track.depth/2)h=Math.max(h,V.track.height);
+  const ns=V.northernSteps,nb=specs.find(b=>b.id===ns.building)!;
+  if(Math.abs(x-nb.x)<ns.width/2){const distance=nb.z-nb.depth/2-z;if(distance>0&&distance<ns.run*ns.count)h=Math.max(h,(ns.count-Math.floor(distance/ns.run))*ns.rise);}
   // The entrance threshold is a small climb, not the auditorium's grand stair.
   const b=specs.find(b=>b.id==='B04')!,a=b.rotation*Math.PI/180;
   const bx=Math.cos(a)*(x-b.x)-Math.sin(a)*(z-b.z),bz=Math.sin(a)*(x-b.x)+Math.cos(a)*(z-b.z);

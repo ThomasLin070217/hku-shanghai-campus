@@ -7,7 +7,7 @@ export const BUILDINGS:BuildingSpec[]=[
  {id:'B02',label:'2号楼 · 西侧南塔',kind:'frameTower',x:-52,z:70,width:59.5,depth:35.5,height:79.6,floors:17,bays:25,rotation:0,source:'P01,A02,A04,A05',confidence:'外形可靠；楼号定位与尺寸推断',usage:'三期范围，具体功能待核实'},
  {id:'B03',label:'3号楼 · 东侧南塔',kind:'bandTower',x:52,z:70,width:59.7,depth:37.3,height:66.15,floors:14,bays:25,rotation:0,source:'P01,A01,A04,C02',confidence:'外形可靠；楼号定位与尺寸推断',usage:'校方确认3号楼承担AI与合作科研；定位依候选总图'},
  {id:'B04',label:'CDS-1 · 4号楼',kind:'bandTower',x:52,z:-2,width:59.7,depth:45,height:66.15,floors:14,bays:25,rotation:0,source:'R01,R02,R04,P01,T02',confidence:'入口身份可靠；尺寸暂定',usage:'计算与数据科学学院教学科研'},
- {id:'B05',label:'5号楼 · 学生活动',kind:'amenities',x:52,z:-70,width:59.7,depth:30,height:23.95,floors:5,bays:25,rotation:0,source:'R02,A06,P01,C02,C03',confidence:'外观可靠；楼号与具体尺寸推断',usage:'校方确认5号楼学生活动及大学雅堂'},
+ {id:'B05',label:'5号楼 · 学生活动',kind:'amenities',x:52,z:-70,width:59.7,depth:30,height:23.95,floors:5,bays:25,rotation:0,source:'R02,A06,P01,C02,C03,U02（用户实录）',confidence:'外观可靠；楼号与具体尺寸推断',usage:'校方确认5号楼学生活动及大学雅堂；用户确认4楼阶梯休闲区（独立参考资产）'},
  {id:'B06',label:'礼堂 · 中央公共建筑',kind:'auditorium',x:0,z:-70,width:34.15,depth:34.15,height:23.95,floors:6,bays:14,rotation:0,source:'R02,R06,A06,P01',confidence:'礼堂身份可靠；6号楼对应及尺寸推断',usage:'Auditorium；层数仅作为外形参数'},
  {id:'B07',label:'7号楼 · 西北配套楼',kind:'amenities',x:-52,z:-70,width:59.5,depth:30,height:23.95,floors:5,bays:25,rotation:0,source:'A06,P01,M01',confidence:'外形可靠；用途与隐藏立面待核实',usage:'三期范围，具体功能待核实'},
 ];

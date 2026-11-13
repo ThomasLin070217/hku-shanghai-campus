@@ -1,6 +1,6 @@
 {
   "name": "hku-shanghai-whole-campus",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,7 +14,8 @@
     "play": "node scripts/start.mjs",
     "agent:server": "node scripts/agent-server.mjs",
     "agent:demo": "node scripts/agent-demo.mjs",
-    "check:v4": "tsx scripts/check-v4.ts"
+    "check:v4": "tsx scripts/check-v4.ts",
+    "check:video": "tsx scripts/check-video-details.ts"
   },
   "dependencies": {
     "three": "0.181.2",

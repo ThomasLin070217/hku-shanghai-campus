@@ -1,3 +1,4 @@
+import {addVideoDetails} from './videoDetails';
 import {voxelizeMaterials} from '../voxel/materials';
 import * as T from 'three';
 import {LANDSCAPE as L} from '../exploration/config';
@@ -80,8 +81,8 @@ function landscape(root:T.Group,circulation:T.Group,s:SiteParameters,m:M){
  function tree(x:number,z:number,h=s.treeHeight){box(green,'Block_tree_trunk',.44,h*.70,.44,x,h*.35,z,m.bark);for(const [dx,dy,dz,w,ht] of [[0,.77,0,.65,.35],[-.18,.66,.10,.42,.28],[.19,.69,-.09,.38,.28],[0,1.00,0,.42,.22]])box(green,'Block_leaf_cluster',h*w,h*ht,h*w,x+dx*h,h*dy,z+dz*h,m.leaf);}
  for(let z=-94;z<=94;z+=13)for(const x of [-101,101])tree(x,z);
  for(let z=53;z<=89;z+=12)for(const x of [-20,20])tree(x,z,5.3);
- for(let x=-82;x<=84;x+=14){tree(x,-96,5);tree(x,108,5);}
- for(const x of [-18,18])for(const z of [-25,-12])tree(x,z,5);
+ for(let x=-82;x<=84;x+=14){tree(x,-92.5,5);tree(x,108,5);}
+ for(const x of [-18])for(const z of [-25,-12])tree(x,z,5);
  const plaza=group(circulation,'Sunken_Plaza_and_Ramp','R02,R06,A03,M01','confirmed-feature_estimated-curve');
  const floor=mesh(plaza,'Lower_plaza_floor',new T.CylinderGeometry(1,1,.3,64),m.concrete);floor.scale.set(s.plazaRadiusX,1,s.plazaRadiusZ);floor.position.set(s.plazaX,-s.plazaDepth-.15,s.plazaZ);
  ribbon(plaza,'Retaining_wall',s.plazaRadiusX,s.plazaRadiusZ,.35,s.plazaX,s.plazaZ,.13,Math.PI*2-.13,.05,.05,m.silver,s.plazaDepth+.1);
@@ -96,7 +97,7 @@ function landscape(root:T.Group,circulation:T.Group,s:SiteParameters,m:M){
 }
 export interface SiteAsset {root:T.Group;buildings:T.Group;environment:T.Group;circulation:T.Group;sports:T.Group;byId:Map<string,T.Group>;parameters:BuildingSpec[];site:SiteParameters;}
 export function buildSite(specs:BuildingSpec[]=BUILDINGS.map(b=>({...b})),site:SiteParameters={...SITE}):SiteAsset{
- validateCampus(specs,site);const m=materials();const root=new T.Group();root.name='HKU_Shanghai_Zhangjiang_Campus';root.userData={version:'3.0.0',units:'metres',up:'Y',coordinates:'local +X approx east, -Z approx north; not georeferenced',buildingParameters:specs,siteParameters:site,evidence:'references/CAMPUS_BASIS.md',status:'Visual reconstruction, not survey/as-built'};
+ validateCampus(specs,site);const m=materials();const root=new T.Group();root.name='HKU_Shanghai_Zhangjiang_Campus';root.userData={version:'5.0.0',units:'metres',up:'Y',coordinates:'local +X approx east, -Z approx north; not georeferenced',buildingParameters:specs,siteParameters:site,evidence:'references/CAMPUS_BASIS.md',status:'Visual reconstruction, not survey/as-built'};
  const buildings=group(root,'Buildings','C01,P01,M01','mixed-per-building');const environment=group(root,'Environment','M01,C02','inferred-layout');const circulation=group(root,'Circulation','A02,A03,A08,R06','visible-features_inferred-connections');const sports=group(root,'Sports','C03,R02','confirmed-types_provisional-layout');const byId=new Map<string,T.Group>();
  for(const s of specs){let b:T.Group;
  if(s.kind==='bandTower'){
@@ -119,7 +120,7 @@ export function buildSite(specs:BuildingSpec[]=BUILDINGS.map(b=>({...b})),site:S
  for(const [x,z]of [[-5,-5],[5,-5],[-5,5],[5,5]])box(oculus,'Oculus_column',.6,site.bridgeHeight,.6,x,site.bridgeHeight/2,z,m.silver);
  buildEntranceExterior(environment,specs.find(b=>b.id==='B04')!,m);
  const edge=group(environment,'Exploration_boundary','prototype','provisional-limit_not-campus-fence-survey');for(const k of [-1,1]){box(edge,'Boundary_kerb',.3,.3,site.depth,k*(site.width/2-.5),.15,site.centerZ,m.silver);box(edge,'Boundary_kerb',site.width,.3,.3,0,.15,site.centerZ+k*(site.depth/2-.5),m.silver);}for(let x=-site.width/2+2;x<site.width/2;x+=8)for(const k of [-1,1])box(edge,'Boundary_post',.14,1.1,.14,x,.55,site.centerZ+k*(site.depth/2-.5),m.frame);
- buildSports(sports,site,m);compact(root);voxelizeMaterials(root);return{root,buildings,environment,circulation,sports,byId,parameters:specs.map(b=>({...b})),site:{...site}};
+ buildSports(sports,site,m);addVideoDetails(environment,circulation,sports,byId,specs);compact(root);voxelizeMaterials(root);return{root,buildings,environment,circulation,sports,byId,parameters:specs.map(b=>({...b})),site:{...site}};
 }
 function buildSports(g:T.Group,s:SiteParameters,m:M){const z=s.sportsZ;g.userData={...g.userData,warning:'Court sequence, dimensions and hall location provisional; current facilities C03, planning R02'};
  box(g,'Sports_strip',s.sportsWidth,.12,s.sportsDepth,0,.08,z,m.blue);
