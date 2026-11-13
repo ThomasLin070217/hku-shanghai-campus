@@ -4,6 +4,8 @@
 
 `npm ci && npm run play` 后打开 http://127.0.0.1:5174 。顶部「5号楼 · 4F」查看及导出室内参考资产；「切换夜景」查看室外灯光。
 
+团队协作见 [四人分工与 Agent 交接](docs/team/TEAM-HANDOFF.md)，包含 Frost、Harry、Thomas、WHL 各自的任务书。
+
 以下保留此前版本的控制、接口和校园建模说明。
 
 ---
