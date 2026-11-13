@@ -1,0 +1,104 @@
+{
+  "ok": true,
+  "state": {
+    "protocolVersion": "hku-campus/1.0",
+    "frame": 4617,
+    "timeMs": 38474.99999999975,
+    "wallTimeMs": 1794545631340,
+    "mode": "human",
+    "controlEpoch": 1794545559918,
+    "aiEnabled": false,
+    "owner": null,
+    "paused": false,
+    "player": {
+      "position": [
+        52,
+        0.045,
+        30.899999999999807
+      ],
+      "velocity": [
+        0,
+        0,
+        0
+      ],
+      "yawDeg": 0,
+      "pitchDeg": 0,
+      "grounded": true
+    },
+    "view": "first",
+    "landmarks": [
+      {
+        "id": "B04",
+        "name": "CDS-1 · 4号楼",
+        "relativePosition": [
+          0,
+          -0.045,
+          -32.89999999999981
+        ],
+        "distance": 32.9000307750614
+      },
+      {
+        "id": "B03",
+        "name": "3号楼 · 东侧南塔",
+        "relativePosition": [
+          0,
+          -0.045,
+          39.10000000000019
+        ],
+        "distance": 39.10002589513228
+      },
+      {
+        "id": "B05",
+        "name": "5号楼 · 学生活动",
+        "relativePosition": [
+          0,
+          -0.045,
+          -100.8999999999998
+        ],
+        "distance": 100.90001003468711
+      },
+      {
+        "id": "B01",
+        "name": "1号楼 · 西侧北塔",
+        "relativePosition": [
+          -104,
+          -0.045,
+          -32.89999999999981
+        ],
+        "distance": 109.07984243204602
+      },
+      {
+        "id": "B02",
+        "name": "2号楼 · 西侧南塔",
+        "relativePosition": [
+          -104,
+          -0.045,
+          39.10000000000019
+        ],
+        "distance": 111.10720959955756
+      },
+      {
+        "id": "B06",
+        "name": "礼堂 · 中央公共建筑",
+        "relativePosition": [
+          -52,
+          -0.045,
+          -100.8999999999998
+        ],
+        "distance": 113.51128589263695
+      },
+      {
+        "id": "B07",
+        "name": "7号楼 · 西北配套楼",
+        "relativePosition": [
+          -104,
+          -0.045,
+          -100.8999999999998
+        ],
+        "distance": 144.90276748564867
+      }
+    ],
+    "lastCommand": null,
+    "collisions": []
+  }
+}

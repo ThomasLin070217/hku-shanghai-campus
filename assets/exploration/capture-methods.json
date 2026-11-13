@@ -1,0 +1,118 @@
+{
+  "date": "2026-11-12",
+  "before": "before-* captured on original running application before source edits in this update",
+  "baseline": "baseline-v2-* rendered later from source tree copied to work/v3-before/src before any edit; supplementary matched views, not mislabelled as earlier capture times",
+  "viewport": [
+    1440,
+    960
+  ],
+  "orthographicBaseFrameSpan": 310,
+  "views": {
+    "isometric": {
+      "position": [
+        250,
+        420,
+        288
+      ],
+      "target": [
+        0,
+        20,
+        -12
+      ],
+      "zoom": 1
+    },
+    "entrance": {
+      "position": [
+        52,
+        9,
+        48
+      ],
+      "target": [
+        52,
+        7.5,
+        20
+      ],
+      "zoom": 10
+    },
+    "auditorium": {
+      "position": [
+        0,
+        16,
+        -7
+      ],
+      "target": [
+        0,
+        10,
+        -65
+      ],
+      "zoom": 4.7
+    }
+  },
+  "images": {
+    "baseline-v2-isometric.png": {
+      "width": 2000,
+      "height": 1564,
+      "sha256": "f5dff132eb8160181ea97335def6ec07b95e5426a8fc2e6021700d2d7b7e7dde"
+    },
+    "after-entrance.png": {
+      "width": 2000,
+      "height": 1564,
+      "sha256": "1aad461096134f78a28c5d3a707da74b1e9b1b6d77384f577b9781853c875f1c"
+    },
+    "student-front.png": {
+      "width": 2000,
+      "height": 1239,
+      "sha256": "05fe9167eea415073d9e51873c7253089a1b99f65966b68480032e770e2f891a"
+    },
+    "after-isometric.png": {
+      "width": 2000,
+      "height": 1564,
+      "sha256": "a228c84a2737fd50b4cd3366d6a3a0e06b068f2ac867b577fbe0050edad59f13"
+    },
+    "baseline-v2-entrance.png": {
+      "width": 2000,
+      "height": 1564,
+      "sha256": "b0f5c073082710e1563cb6fecb6223dabe77ee9f7e088f151e48ba95e25ebde1"
+    },
+    "before-isometric.png": {
+      "width": 2000,
+      "height": 1564,
+      "sha256": "f5dff132eb8160181ea97335def6ec07b95e5426a8fc2e6021700d2d7b7e7dde"
+    },
+    "recording-playback-check.png": {
+      "width": 1698,
+      "height": 980,
+      "sha256": "5512d751188d110449f5c6cd0d8d6b040023f193ed2547b1725db9ecbd6978e6"
+    },
+    "camera-wall-test.png": {
+      "width": 1698,
+      "height": 980,
+      "sha256": "f33a619046fc682d8569ab5a07e9c3a3fac57090abbafceaaba23fd6d0d62a44"
+    },
+    "exploration-default-render.png": {
+      "width": 2000,
+      "height": 1239,
+      "sha256": "d9d97bad5cd75bb48092ee75bc03e7f1dd0f2af8dcd62707c843a274b1b0dcac"
+    },
+    "exploration-default.png": {
+      "width": 1440,
+      "height": 960,
+      "sha256": "27727cc4f1468d8e4cba3b6d9c6895e88e064c07943190ad3e87d3f94376b701"
+    },
+    "baseline-v2-auditorium.png": {
+      "width": 2000,
+      "height": 1564,
+      "sha256": "823edd0a04f37ef3efe58430dd423bab095c1df3de7b01cefc3adba51c82eb32"
+    },
+    "after-auditorium.png": {
+      "width": 2000,
+      "height": 1564,
+      "sha256": "83d29c2c05415651f67318683071cf450503f4e25666028883299634f445869f"
+    },
+    "courtyard-walk.png": {
+      "width": 1280,
+      "height": 800,
+      "sha256": "af4addd2887b4d0ca3c78a4f3dc0a06d17f2511b53ab91bafea82562570f4a22"
+    }
+  }
+}

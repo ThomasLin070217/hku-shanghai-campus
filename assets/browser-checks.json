@@ -1,0 +1,133 @@
+{
+  "initial": {
+    "position": [
+      250,
+      420,
+      288
+    ],
+    "target": [
+      0,
+      20,
+      -12
+    ],
+    "zoom": 1
+  },
+  "rotate": {
+    "position": [
+      -14.33708777355492,
+      510.22107955815596,
+      256.28667702852846
+    ],
+    "target": [
+      0,
+      20,
+      -12
+    ],
+    "zoom": 1
+  },
+  "zoom": {
+    "position": [
+      -20.201171719618603,
+      512.4553585726733,
+      251.77951488736733
+    ],
+    "target": [
+      0,
+      20,
+      -12
+    ],
+    "zoom": 1.1426642137527103
+  },
+  "pan": {
+    "position": [
+      -34.29733915038615,
+      516.6432740566913,
+      242.88112223157717
+    ],
+    "target": [
+      -14.047402555053822,
+      24.16915698907051,
+      -20.859629428746775
+    ],
+    "zoom": 1.1426642137527103
+  },
+  "reset": {
+    "position": [
+      250,
+      420,
+      288
+    ],
+    "target": [
+      0,
+      20,
+      -12
+    ],
+    "zoom": 1
+  },
+  "isolated": [
+    {
+      "id": "B01",
+      "visible": true
+    },
+    {
+      "id": "B02",
+      "visible": false
+    },
+    {
+      "id": "B03",
+      "visible": false
+    },
+    {
+      "id": "B04",
+      "visible": false
+    },
+    {
+      "id": "B05",
+      "visible": false
+    },
+    {
+      "id": "B06",
+      "visible": false
+    },
+    {
+      "id": "B07",
+      "visible": false
+    }
+  ],
+  "modified": 83,
+  "configReload": true,
+  "environmentHidden": true,
+  "sportsHidden": true,
+  "circulationHidden": true,
+  "dialog": true,
+  "reloaded": {
+    "stats": {
+      "triangles": 119252,
+      "meshes": 158,
+      "size": [
+        208,
+        85.5999984741211,
+        256
+      ],
+      "min": [
+        -104,
+        -4.5,
+        -142
+      ],
+      "max": [
+        104,
+        81.0999984741211,
+        114
+      ]
+    },
+    "ids": [
+      "B01",
+      "B02",
+      "B03",
+      "B04",
+      "B05",
+      "B06",
+      "B07"
+    ]
+  }
+}

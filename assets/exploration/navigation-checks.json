@@ -1,0 +1,122 @@
+{
+  "date": "2026-11-12T09:19:07.287Z",
+  "results": [
+    {
+      "name": "30/60/144 FPS movement is equal",
+      "detail": [
+        [
+          85,
+          0,
+          32.19999999999942
+        ],
+        [
+          85,
+          0,
+          32.19999999999942
+        ],
+        [
+          85,
+          0,
+          32.19999999999993
+        ]
+      ]
+    },
+    {
+      "name": "normalized diagonal matches straight distance",
+      "detail": [
+        81.32304473782995,
+        0.045,
+        36.323044737829946
+      ]
+    },
+    {
+      "name": "CDS-1 doors stop motion; no tunnelling in one large update",
+      "detail": [
+        [
+          52,
+          0.12,
+          23.143333333333292
+        ],
+        [
+          52,
+          0.12,
+          23.141294838145484
+        ]
+      ]
+    },
+    {
+      "name": "walls block and permit sliding at a corner",
+      "detail": [
+        82.30999999999987,
+        0,
+        17.79999999999994
+      ]
+    },
+    {
+      "name": "map boundary blocks travel",
+      "detail": [
+        103.03333333333356,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "tree trunk and entrance bed collision",
+      "detail": true
+    },
+    {
+      "name": "30 small steps ascend and descend without falling",
+      "detail": [
+        [
+          4,
+          5.1000000000000005,
+          -51.00000000000136
+        ],
+        [
+          4,
+          0,
+          -22.40000000000002
+        ]
+      ]
+    },
+    {
+      "name": "high seating risers block direct climb",
+      "detail": [
+        11,
+        0,
+        -27.383333333333315
+      ]
+    },
+    {
+      "name": "ramp is continuously traversable down and up",
+      "detail": {
+        "lowest": -4.165478612043571,
+        "bottom": [
+          13.564773903949025,
+          -4.165478612043571,
+          29.948079185090457
+        ],
+        "top": [
+          14,
+          0,
+          25
+        ]
+      }
+    },
+    {
+      "name": "sunken edge cannot be walked off",
+      "detail": [
+        0,
+        0,
+        2.513333333333337
+      ]
+    },
+    {
+      "name": "camera rays hit the below-ground retaining wall",
+      "detail": {
+        "obstacle": "plaza-retaining-wall",
+        "distance": 15.40074207119712
+      }
+    }
+  ]
+}

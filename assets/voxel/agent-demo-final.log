@@ -1,0 +1,18 @@
+
+> hku-shanghai-whole-campus@4.0.0 agent:demo
+> node scripts/agent-demo.mjs
+
+In the game pause menu, click 开启 AI 控制. Waiting up to 90 seconds…
+observe {"position":[52,0.045,33.5],"velocity":[0,0,0],"yawDeg":0,"pitchDeg":0,"grounded":true}
+acquired 1794546618949
+turn {"ok":true,"command":{"commandId":"demo-1794546640376-0","status":"accepted","acceptedAt":1794546640377,"expiresAt":1794546640727,"collisionIds":[]}}
+result {"ok":true,"command":{"commandId":"demo-1794546640376-0","status":"completed","acceptedAt":1794546640377,"expiresAt":1794546640727,"collisionIds":[],"startedFrame":2260,"reason":"duration_elapsed","finishedFrame":2301}}
+walk {"ok":true,"command":{"commandId":"demo-1794546640813-1","status":"accepted","acceptedAt":1794546640815,"expiresAt":1794546641415,"collisionIds":[]}}
+result {"ok":true,"command":{"commandId":"demo-1794546640813-1","status":"completed","acceptedAt":1794546640815,"expiresAt":1794546641415,"collisionIds":[],"startedFrame":2310,"reason":"duration_elapsed","finishedFrame":2382}}
+sprint {"ok":true,"command":{"commandId":"demo-1794546641498-2","status":"accepted","acceptedAt":1794546641499,"expiresAt":1794546642099,"collisionIds":[]}}
+result {"ok":true,"command":{"commandId":"demo-1794546641498-2","status":"completed","acceptedAt":1794546641499,"expiresAt":1794546642099,"collisionIds":[],"startedFrame":2394,"reason":"duration_elapsed","finishedFrame":2463}}
+jump + change view {"ok":true,"command":{"commandId":"demo-1794546642186-3","status":"accepted","acceptedAt":1794546642190,"expiresAt":1794546643040,"collisionIds":[]}}
+result {"ok":true,"command":{"commandId":"demo-1794546642186-3","status":"completed","acceptedAt":1794546642190,"expiresAt":1794546643040,"collisionIds":[],"startedFrame":2476,"jumpResult":"jumped","reason":"duration_elapsed","finishedFrame":2577}}
+stop { ok: true }
+final {"ok":true,"state":{"protocolVersion":"hku-campus/1.0","frame":2621,"timeMs":21841.66666666635,"wallTimeMs":1794546643392,"mode":"ai","controlEpoch":1794546618949,"aiEnabled":true,"owner":"local-demo","paused":false,"player":{"position":[42.96499999999933,0.045,33.5],"velocity":[0,0,0],"yawDeg":90,"pitchDeg":0,"grounded":true},"view":"third","landmarks":[{"id":"B04","name":"CDS-1 · 4号楼","relativePosition":[9.035000000000672,-0.045,-35.5],"distance":36.63172463862454},{"id":"B03","name":"3号楼 · 东侧南塔","relativePosition":[9.035000000000672,-0.045,36.5],"distance":37.60163892704694},{"id":"B01","name":"1号楼 · 西侧北塔","relativePosition":[-94.96499999999932,-0.045,-35.5],"distance":101.38344662714852},{"id":"B02","name":"2号楼 · 西侧南塔","relativePosition":[-94.96499999999932,-0.045,36.5],"distance":101.73791451568029},{"id":"B05","name":"5号楼 · 学生活动","relativePosition":[9.035000000000672,-0.045,-103.5],"distance":103.89361505886689},{"id":"B06","name":"礼堂 · 中央公共建筑","relativePosition":[-42.96499999999933,-0.045,-103.5],"distance":112.06356789786742},{"id":"B07","name":"7号楼 · 西北配套楼","relativePosition":[-94.96499999999932,-0.045,-103.5],"distance":140.46566573365845}],"lastCommand":{"commandId":"demo-1794546642186-3","status":"completed","acceptedAt":1794546642190,"expiresAt":1794546643040,"collisionIds":[],"startedFrame":2476,"jumpResult":"jumped","reason":"duration_elapsed","finishedFrame":2577},"collisions":[]}}
+release { ok: true, controlEpoch: 1794546618950 }

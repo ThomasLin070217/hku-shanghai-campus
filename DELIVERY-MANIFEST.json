@@ -1,0 +1,574 @@
+{
+  "README.md": {
+    "bytes": 5502,
+    "sha256": "e8f680ce11c14e34c8d437b5674e096a983d62f2909584535f558aa6c2b4925b"
+  },
+  "VALIDATION.md": {
+    "bytes": 3490,
+    "sha256": "2932b4199cc235d9dafb0837993c0f34b0553597ceaa0809ef8d421135977163"
+  },
+  "assets/B06-browser.glb": {
+    "bytes": 200672,
+    "sha256": "e3a9610f0fc66f0658e8e852c6da8cb72fb54ddc210201ba20f5772480054017"
+  },
+  "assets/HKU-Shanghai-Campus-browser.glb": {
+    "bytes": 11547772,
+    "sha256": "08b4dae5b5354af32468fc194776f801989189d9820f6f8a3b4d46b2556ac47c"
+  },
+  "assets/HKU-Shanghai-Campus-no-ground.glb": {
+    "bytes": 10749960,
+    "sha256": "3d53aa4bf275500c955ea861c371d8315571fd73cf641d54bb92c667706bfc95"
+  },
+  "assets/HKU-Shanghai-Campus.glb": {
+    "bytes": 11547772,
+    "sha256": "08b4dae5b5354af32468fc194776f801989189d9820f6f8a3b4d46b2556ac47c"
+  },
+  "assets/HKU-campus-parameters.json": {
+    "bytes": 3283,
+    "sha256": "1598431f8dccfbebdfc4e91a8a751ab9a6ec76484c5199e0d0ac1dedcf95d48d"
+  },
+  "assets/NotoSansSC-OFL.txt": {
+    "bytes": 4388,
+    "sha256": "1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9"
+  },
+  "assets/browser-checks.json": {
+    "bytes": 1885,
+    "sha256": "fe6320d624e5dc632f21c9d487806db1911649806b1b4f2740ae48ce3d5723dd"
+  },
+  "assets/building-B01.png": {
+    "bytes": 519101,
+    "sha256": "aa00c50ac3e448e2aadb83bc8327136018e916064b78c097aea49c2aa182b501"
+  },
+  "assets/building-B06.png": {
+    "bytes": 383238,
+    "sha256": "fd2bc7062612b2ba1cedb94facfc975219cab8db186f08e91d5d3ec1300f4a78"
+  },
+  "assets/buildings/B01.glb": {
+    "bytes": 352412,
+    "sha256": "5be203bf5378810174462ee72cd694fddfecf39a50a05eb06982caa15aaac4b6"
+  },
+  "assets/buildings/B02.glb": {
+    "bytes": 333980,
+    "sha256": "02e9805b1ce676747f8ed7fcd5517d9881e28d719932811bd81d35b5ce856b87"
+  },
+  "assets/buildings/B03.glb": {
+    "bytes": 4076076,
+    "sha256": "605f2e4c6c0506812e1fd8db9d2c5c049bff889d724e360dabd4acff1b6d3265"
+  },
+  "assets/buildings/B04.glb": {
+    "bytes": 4689588,
+    "sha256": "1de6aef68aeb9d31295e546ba0f2aaffae5719fc091dbffa20a709f69967f9aa"
+  },
+  "assets/buildings/B05.glb": {
+    "bytes": 268140,
+    "sha256": "64a5267704d38db685bf04c889b29ea56acf0fcae60b9f5b1ce2d7884d540521"
+  },
+  "assets/buildings/B06.glb": {
+    "bytes": 200672,
+    "sha256": "e3a9610f0fc66f0658e8e852c6da8cb72fb54ddc210201ba20f5772480054017"
+  },
+  "assets/buildings/B07.glb": {
+    "bytes": 267936,
+    "sha256": "a4bcaa7b2ce5485861cadd20f6820259672ce4de24f9f44914c842d6ac0534af"
+  },
+  "assets/campus-app.png": {
+    "bytes": 403243,
+    "sha256": "29a9ae0e816139cb5b5428282b1ea5597ac819490a9bfab453f8ffa53ccd0f4d"
+  },
+  "assets/campus-comparison.jpg": {
+    "bytes": 1348746,
+    "sha256": "f9401a31f16f1c318a308df166e8e1867ef726dc9cb253a2782326912f7c38c1"
+  },
+  "assets/campus-isometric.png": {
+    "bytes": 640500,
+    "sha256": "6b95079cf618f8a65d6fd9701789fffeb16ee59d7d3faec1af5607d18fd32d39"
+  },
+  "assets/campus-mobile.png": {
+    "bytes": 133052,
+    "sha256": "92351b3948cfd884ce0e4682b06fb197945f1fe823d55ce6cb40dfe3bc609acc"
+  },
+  "assets/campus-north.png": {
+    "bytes": 455000,
+    "sha256": "0762129d1aa9726094937720aff90b209e76a775c589a4f5afbb6a6a4cb4872d"
+  },
+  "assets/campus-plaza.png": {
+    "bytes": 1257848,
+    "sha256": "4f3a76ad09f6d1ebb49849a1b29027f4e247ada9539b494a3a8fa63d075ef498"
+  },
+  "assets/campus-south.png": {
+    "bytes": 358489,
+    "sha256": "4274415717e454465f052992dac52dc8c587c37f8bbead91859b2f5091e622d1"
+  },
+  "assets/campus-top.png": {
+    "bytes": 370513,
+    "sha256": "cbeef22c9870e9cafec3c8ec495522d44ef885424263061497ec60b33dde9098"
+  },
+  "assets/campus-transparent.png": {
+    "bytes": 542276,
+    "sha256": "fb6f3de73ad37753d60367c72e24bba5fb1333cb70c09ceabeb36b89f7990481"
+  },
+  "assets/geometry-checks.json": {
+    "bytes": 1973,
+    "sha256": "9556d053703b772422aa370b2e919553f7d43e265a52f81222bc4ee4050f5f2a"
+  },
+  "assets/gltf-validation.json": {
+    "bytes": 73308,
+    "sha256": "befd1ed6b147d9bd9f108b1d46bd96d6ab63127df73047cb5073a479d1681ac8"
+  },
+  "assets/mobile-check.json": {
+    "bytes": 199,
+    "sha256": "ed329544448b34b702722b9dbeba1fa27d74839fcbf298a433ecb46358b07e69"
+  },
+  "assets/model-metadata.json": {
+    "bytes": 11081,
+    "sha256": "a31ddcabf87dd8db320cfa70439d1fce874dc1e2cd3d08a8aa954c34b4e70385"
+  },
+  "assets/parameters-browser-test.json": {
+    "bytes": 3281,
+    "sha256": "916d1379ddac09b37c2b94bd96514696cc10fcadb23d0661f9f369461a618f1a"
+  },
+  "assets/png-checks.json": {
+    "bytes": 240,
+    "sha256": "150578af1142f2bf2a15526717ea8cf6002283bd19857edd801e2919880e7be4"
+  },
+  "assets/production-checks.json": {
+    "bytes": 140,
+    "sha256": "c185408aabcbe24653afbd8099631100b248cacd8720d898eba459e62b96ed39"
+  },
+  "assets/selected-export-check.json": {
+    "bytes": 398,
+    "sha256": "2f6dabcbb250914fde477e4f2ad92f476bc19c82ab75a46e56c22e46beee6d8b"
+  },
+  "index.html": {
+    "bytes": 347,
+    "sha256": "63265921d27ffb6924032bd5af67b9f1170ffdeefa91741c584e252b68f22824"
+  },
+  "package-lock.json": {
+    "bytes": 40162,
+    "sha256": "fce4d39e36ed584d395ec1002e0e0e0796438e262d91105c30167a250411906f"
+  },
+  "package.json": {
+    "bytes": 653,
+    "sha256": "07bafc05c43b94af5e8430bc14957920920e53109fe9fbf67ed6eebfb09fe2dc"
+  },
+  "references/CAMPUS_BASIS.md": {
+    "bytes": 7020,
+    "sha256": "fc42508ee908afb03f015a80d90ae7a2003b8fdaff63d8defb3b5223af59b2c8"
+  },
+  "references/CAMPUS_SEARCH_LOG.md": {
+    "bytes": 3199,
+    "sha256": "ecec5fe4081cd1510916f8dc9c29f2bf811755c282daddbe0603d1ead93effe6"
+  },
+  "references/CAMPUS_SOURCES.md": {
+    "bytes": 14413,
+    "sha256": "a6526e5711a23f43a366a3ae47e62c5f371f6f81d045e4a3bdaf34556cdfdcbf"
+  },
+  "references/MODELING_BASIS.md": {
+    "bytes": 5717,
+    "sha256": "5bf893601039350dd2439c9304f488bbec9b579574a34c013629e32d139454c0"
+  },
+  "references/SEARCH_LOG.md": {
+    "bytes": 3947,
+    "sha256": "239e094f0345e60430a2836915a48bc5cf421d08c5a49437c323233c70112e91"
+  },
+  "references/SOURCES.md": {
+    "bytes": 10238,
+    "sha256": "cf317a438da50dfb93b46688bf3a5ae47e4c4741503e24cc9530eb004dd3c0e3"
+  },
+  "references/amap-satellite.png": {
+    "bytes": 1882048,
+    "sha256": "3aa651c675a7a15a212831153ed1e18fb9ceb05110a4c004907bb280a4961042"
+  },
+  "references/architect/A01.jpg": {
+    "bytes": 467975,
+    "sha256": "10b53ccae8fd29ce6b1d08102c20e7add6cff197ab7e85f26a3608d6e471cf19"
+  },
+  "references/architect/A02.jpg": {
+    "bytes": 571948,
+    "sha256": "8a3905fc13c5a98e67be592056287b54a576379a9646019ee4bbebdafbbb01c1"
+  },
+  "references/architect/A03.jpg": {
+    "bytes": 559197,
+    "sha256": "af87db4749caba0085900470435cce5b834d17aafe61a8339d1e799c752fa7dc"
+  },
+  "references/architect/A04.jpg": {
+    "bytes": 667538,
+    "sha256": "e76077ae40beb0017377a89c41b158c071966413588f353c9cf474f4ae54032a"
+  },
+  "references/architect/A05.jpg": {
+    "bytes": 654035,
+    "sha256": "f988085e0a815894deab384127f02dc154ac0d037cf35c836f03f2603c4bd715"
+  },
+  "references/architect/A06.jpg": {
+    "bytes": 492540,
+    "sha256": "a6ac18797cb21e38b785a2a0f5400b202144abe7241e2959c390887349f87d56"
+  },
+  "references/architect/A07.jpg": {
+    "bytes": 502380,
+    "sha256": "297064a920c3419701386b07b51ec6f4231110dda7be33d01040d1afa2559984"
+  },
+  "references/architect/A08.jpg": {
+    "bytes": 400529,
+    "sha256": "9e63fd8db55c48a297b683305a1258b569c57bffda5b26b6e2cb9bb461d1c186"
+  },
+  "references/architect/N01.jpg": {
+    "bytes": 467975,
+    "sha256": "10b53ccae8fd29ce6b1d08102c20e7add6cff197ab7e85f26a3608d6e471cf19"
+  },
+  "references/architect/N02.jpg": {
+    "bytes": 559197,
+    "sha256": "af87db4749caba0085900470435cce5b834d17aafe61a8339d1e799c752fa7dc"
+  },
+  "references/architect/N03.jpg": {
+    "bytes": 571948,
+    "sha256": "8a3905fc13c5a98e67be592056287b54a576379a9646019ee4bbebdafbbb01c1"
+  },
+  "references/architect/N04.jpg": {
+    "bytes": 667538,
+    "sha256": "e76077ae40beb0017377a89c41b158c071966413588f353c9cf474f4ae54032a"
+  },
+  "references/architect/N05.jpg": {
+    "bytes": 502380,
+    "sha256": "297064a920c3419701386b07b51ec6f4231110dda7be33d01040d1afa2559984"
+  },
+  "references/architect/N06.jpg": {
+    "bytes": 492540,
+    "sha256": "a6ac18797cb21e38b785a2a0f5400b202144abe7241e2959c390887349f87d56"
+  },
+  "references/architect/N07.jpg": {
+    "bytes": 638484,
+    "sha256": "58285951f01bea62eb21ff9ffb106eb9d1b8471332a25f4653d86f243dfd25a1"
+  },
+  "references/architect/N08.jpg": {
+    "bytes": 340134,
+    "sha256": "f3e411abb4c515a6c73932f4ff5e2db3760a4ad897cae9de9b3804f658179919"
+  },
+  "references/architect/N09.jpg": {
+    "bytes": 400529,
+    "sha256": "9e63fd8db55c48a297b683305a1258b569c57bffda5b26b6e2cb9bb461d1c186"
+  },
+  "references/architect/N10.jpg": {
+    "bytes": 644321,
+    "sha256": "7f7c833d173b83afc219bc571b9a28ed8b04fb857fa44cca1c104fd63a0e3f96"
+  },
+  "references/architect/N11.jpg": {
+    "bytes": 654035,
+    "sha256": "f988085e0a815894deab384127f02dc154ac0d037cf35c836f03f2603c4bd715"
+  },
+  "references/architect-manifest.csv": {
+    "bytes": 2069,
+    "sha256": "0f342b3d6736ca20c605408a9331a2c74fdd26ab013f9f91f8fc9d594518f71d"
+  },
+  "references/architect-news-manifest.csv": {
+    "bytes": 2849,
+    "sha256": "e09cf22b741002e747fa2bac82005572e57937f7f136d41ef09fefb2b6b8bcdc"
+  },
+  "references/architect-news-report.csv": {
+    "bytes": 3119,
+    "sha256": "ebb706475a3a69ca54cf8541e24f6265245cc1a3d735cc87a0086578b8907b89"
+  },
+  "references/architect-report.csv": {
+    "bytes": 2276,
+    "sha256": "132aad8aef9c962596e46881a4a433b72806b5d50714979b94fff88568037695"
+  },
+  "references/archive-manifest.json": {
+    "bytes": 28126,
+    "sha256": "2c8903850d31e5fcc127a807b91dee6540b2773786ef9d3ccc766a426315ed26"
+  },
+  "references/campus/page-extracts.json": {
+    "bytes": 22786,
+    "sha256": "814004ebf5a45dd524c15f4b52a67142d8e30e9500dcf7b51b1d08d36209855c"
+  },
+  "references/campus/phase2-01.jpg": {
+    "bytes": 213274,
+    "sha256": "73120261e593891dad024cc3b359e0fa7dc7af5b2c0d39d28825ef38922edbc2"
+  },
+  "references/campus/phase2-02.jpg": {
+    "bytes": 299791,
+    "sha256": "4696e943bee46d7414c87aa4432a88e2244922592b7cb2314f2c11cda001a32e"
+  },
+  "references/campus/phase2-03.jpg": {
+    "bytes": 123029,
+    "sha256": "fe9622b3b2ce610914787eebdd45dfce5724d1db02ca788e4eb426e983104d09"
+  },
+  "references/campus/phase2-04.jpg": {
+    "bytes": 162394,
+    "sha256": "d0b139c2d944f69ac689fa3da93e7f37b4c1cf3ea5de87ee23cbe3952516a080"
+  },
+  "references/campus/phase2-05.jpg": {
+    "bytes": 239026,
+    "sha256": "24fdd584f771afbc39d262aa67547865efa38c84342e7a648da636126f139349"
+  },
+  "references/campus/phase2-06.jpg": {
+    "bytes": 194843,
+    "sha256": "b405a0ad4e16cebb8a26307c86f349b0e72a87944d7d0b464a6df5c89f0d204c"
+  },
+  "references/campus/phase2-07.jpg": {
+    "bytes": 450815,
+    "sha256": "0b480169b9a7cdda1e043d476aae0bd7164e4d1b6027dccbd4ef0e10273d7bac"
+  },
+  "references/campus/phase2-08.jpg": {
+    "bytes": 296890,
+    "sha256": "2aa33dc9eeb584b02ba84da2289c8f58d9b531d44b916a589158d6ac14423a00"
+  },
+  "references/campus/phase2-09.jpg": {
+    "bytes": 224863,
+    "sha256": "807235ef07bcd539c7d1632f1d7e50a5ea020c291584e049be7482098fa5168f"
+  },
+  "references/campus/phase2-10.jpg": {
+    "bytes": 325671,
+    "sha256": "e90b751defaa13b060079a1ca6e10d9623ea476ba2429a136fc880d80a39747b"
+  },
+  "references/campus/sports-1.webp": {
+    "bytes": 103430,
+    "sha256": "5530a6eefc308dcb024a4b1ed8f0f2d760ba7a99fedaba106e27847c3b6cbcdd"
+  },
+  "references/campus/sports-2.webp": {
+    "bytes": 170740,
+    "sha256": "98c6626ecfca95690be3e3c5dd2db2a456de33ed8a08944b9fca5df3f941a212"
+  },
+  "references/campus/sports-3.webp": {
+    "bytes": 116976,
+    "sha256": "4a7f6bf022ae30b6239a2e42108ec5a38a6afb7c80c317d74ee68d43bbde0c89"
+  },
+  "references/campus/sports-4.webp": {
+    "bytes": 110846,
+    "sha256": "61b3ca52c23624168bb54a62a1d3a8f30c3848af560f91decafa0ed35d299131"
+  },
+  "references/campus/sports-5.webp": {
+    "bytes": 69292,
+    "sha256": "16ad10ddde2a70f57ab4bb43ad458cc95c997af5883877edeb47630091dd0616"
+  },
+  "references/campus-download-report.csv": {
+    "bytes": 2938,
+    "sha256": "b679ece8748bd0c7f791ab5864184dc3794071ad1057a23206b2e5dbefe2c27a"
+  },
+  "references/campus-downloads.csv": {
+    "bytes": 2585,
+    "sha256": "7e9bc8a85c213b84364dadacfb23f11e54eea36fef819d73e48327cda7a008c0"
+  },
+  "references/campus-index.html": {
+    "bytes": 16091,
+    "sha256": "e60fd376ff201fb826de73693ae8a958148591ddf027ddfca444729d648bb20d"
+  },
+  "references/campus-reference-board.jpg": {
+    "bytes": 1679582,
+    "sha256": "4e6cce465b5609eb1281da90896d903d3858c46eaae6eaddb4cb842ccd814402"
+  },
+  "references/campus-sources.json": {
+    "bytes": 19527,
+    "sha256": "b86f97b136f70fca1451c4bd4bf84ea9055ffe04257351ca41279abeea8d1702"
+  },
+  "references/candidate/sohu-1.png": {
+    "bytes": 490031,
+    "sha256": "607ae2707650f4be2b39ce829aac2e82b9aee4abdc45e3e774a8a66fdffe7d1e"
+  },
+  "references/candidate/sohu-2.png": {
+    "bytes": 281737,
+    "sha256": "6e6c869b663f3ace5d71f883efbb3909d43189255a6620b2336271ff2182edb9"
+  },
+  "references/candidate/sohu-3.png": {
+    "bytes": 436664,
+    "sha256": "cd888d57a90d11d1d87891dd227abeb94ba4d8f706995e0e09f3549d87eb97d9"
+  },
+  "references/candidate/sohu-4.png": {
+    "bytes": 275201,
+    "sha256": "4647078ed07ac44851766020eeb5e4af25cd8ce1395df266302edb9ddcfe351f"
+  },
+  "references/candidate/sohu-5.png": {
+    "bytes": 542563,
+    "sha256": "b807f225deb8b9f3cf9b8b25862168476de09278da208909edc420be1361d08c"
+  },
+  "references/candidate/sohu-6.png": {
+    "bytes": 868074,
+    "sha256": "2e3f0a14daea4db6a3a1c79c41385b5804a66bb4c7df219e773b8da1d39af87e"
+  },
+  "references/candidate/sohu-7.png": {
+    "bytes": 658478,
+    "sha256": "5724af06c67e2e467e614040a2ce0e3979546671adb2a87ac867825d075458a4"
+  },
+  "references/candidate/sohu-8.png": {
+    "bytes": 490774,
+    "sha256": "88b628c433104963fbec278f54b1084ed0378fe9e485bbe7b6cf0c6d762b4e6f"
+  },
+  "references/candidate-manifest.csv": {
+    "bytes": 810,
+    "sha256": "a96aa68ef473360c052876cbcaa1865f46d954859820087331f6334bf890b7dd"
+  },
+  "references/candidate-report.csv": {
+    "bytes": 1017,
+    "sha256": "e5e9995a48e2228814065f7b870ff17de72468a2c71312d7a00d93f00c9da3c2"
+  },
+  "references/download-manifest.csv": {
+    "bytes": 1088,
+    "sha256": "4304f5db1b8abb9f15d54806ec3dd06771a3de3722f3e49b932d02e79bd41c9f"
+  },
+  "references/download-report.csv": {
+    "bytes": 1317,
+    "sha256": "d8765f79f49528d1f50c2d74c1d2247f7b005a0c6ef76afd901e84109d3d9c5f"
+  },
+  "references/frames/V01-024s.jpg": {
+    "bytes": 98601,
+    "sha256": "519b63babdbbf2e07af1c2617354834c071cf4ad019e93c8f801c604c62fd732"
+  },
+  "references/frames/V01-025s.jpg": {
+    "bytes": 109781,
+    "sha256": "37074fa42b8de35439933181576ff5b00f2eaa350d12c7fc8192e2cecfbcbe76"
+  },
+  "references/frames/V01-026s.jpg": {
+    "bytes": 138940,
+    "sha256": "5293342b7dcf9f0bf5d1cba254971e280ba0e9c46359b85c3ebd7c5afdf98ffb"
+  },
+  "references/frames/V01-027s.jpg": {
+    "bytes": 128763,
+    "sha256": "f002117b1a21258113cc9767d2b84595c436e6f6200c1b7ac6b4e4f155abc409"
+  },
+  "references/frames/V01-028s.jpg": {
+    "bytes": 78995,
+    "sha256": "3d06784ab0c55e8d7f901a4dd02ee0341a3ac60b391a3d3deca7bb88e3449349"
+  },
+  "references/frames/V01-206s.jpg": {
+    "bytes": 100610,
+    "sha256": "805ed14aff07086982d79c1ba8d96424c99560f6888882b1e591a3500c5e872a"
+  },
+  "references/frames/V01-226s.jpg": {
+    "bytes": 185655,
+    "sha256": "2431441ab241d6ebf83953c03721de29e8e63df7d4c49cbf19e1e3a9036684f7"
+  },
+  "references/index.html": {
+    "bytes": 13314,
+    "sha256": "29ad0d0ac9774ae3e0af77ac956c6e3955f95b381297a33a162b1739e75fec8e"
+  },
+  "references/photos/01-cds-shanghai-main-entrance-samu6478.webp": {
+    "bytes": 227648,
+    "sha256": "70e1694509493c72fe75a369f7545a3f4ec1eb648b334c259d4b5555f3ba748f"
+  },
+  "references/photos/02-hkucds-zj-site01-scaled.jpg": {
+    "bytes": 425972,
+    "sha256": "c61ddc96135a5cfaa37d0f94b20304a07184a1054ce47a04e3ec255f43dfb4af"
+  },
+  "references/photos/03-Image_20260707175504-scaled.jpg": {
+    "bytes": 560143,
+    "sha256": "e601b13d67607f1b71868915fc47358319c211634931feeb2f728cacb41bb973"
+  },
+  "references/photos/04-Image_20260707175456-scaled.jpg": {
+    "bytes": 572606,
+    "sha256": "a0097d28572a69da57f80088eb4e252f60cefa7c53fa38a1d46e32cbdd259a0f"
+  },
+  "references/photos/05-SAMU6606-1-scaled.jpg": {
+    "bytes": 429013,
+    "sha256": "495775f453559c58ce6f1209bc5da74b05eeb7f852025e19aef6fb6061c1e638"
+  },
+  "references/photos/06-Main-Site-1-scaled.jpg": {
+    "bytes": 1346467,
+    "sha256": "25b2e6615145f377b183e9c07a95d242c6e414b6aa22cc4c32422b2422a9c2ce"
+  },
+  "references/photos/07-Main-Site-3-scaled.jpeg": {
+    "bytes": 842609,
+    "sha256": "53532a2e4326c95e13b60f2996b618e7a11282e678d9c5affc973c1b8e2546cd"
+  },
+  "references/photos/08-Main-Site-4-scaled.jpg": {
+    "bytes": 320609,
+    "sha256": "0d4fda12a361d8a297248f45ca0dc4a65019fa2d8973adc078931f1f1ae46fc3"
+  },
+  "references/photos/09-Orientation-Day--scaled.jpg": {
+    "bytes": 884569,
+    "sha256": "5afcc56f98c8fb8bed84f2db2cfafa5469444c103bb9f8b228661c64a228be5e"
+  },
+  "references/photos/10-cds-shanghai-campus-samu6463-cds-1440.webp": {
+    "bytes": 397468,
+    "sha256": "035de35ba8ae08ac40ccb327244e98a5f5ec33608e3e82e34d4271f0bf06d42e"
+  },
+  "references/photos/11-2025-dec-scaled-1-cds-1440.webp": {
+    "bytes": 402922,
+    "sha256": "bf747c137622faba4a46e4aa8b3640a4819b021ea90a547024bfcb458872c14f"
+  },
+  "references/photos/12-2026-aug-scaled-1-cds-1440.webp": {
+    "bytes": 201846,
+    "sha256": "b7ac297d32e19f5eaa84be996491462ae937bd6ee3d9d346f481d6213b01425e"
+  },
+  "references/photos/13-hku-zhangjiang-202608.png": {
+    "bytes": 1556111,
+    "sha256": "07d52bcf7ebdf88f9eb9c0bf7da8bfeff959966c400eef14fe6d9fc07559f5f4"
+  },
+  "references/reference-board.jpg": {
+    "bytes": 1164371,
+    "sha256": "6a9936a41d3cc97f4b34dac54b58dbe81f3a8b3d669f356bbef2aa88fc6df957"
+  },
+  "references/round2-manifest.csv": {
+    "bytes": 611,
+    "sha256": "a31385c651744ca32ddde874e7d4bd4f9369ee6854dd738c06e8518922c8ebbd"
+  },
+  "references/round2-report.csv": {
+    "bytes": 759,
+    "sha256": "94c8cf386bfe4436e737dc6c8830a5d7e48ff88acdda3254dce57379a4526386"
+  },
+  "references/sources.json": {
+    "bytes": 12700,
+    "sha256": "8f43f7890807706bc30cbe8436fe76b4b02fb6dc36a7a0ed880d415a0452d50a"
+  },
+  "references/user-supplied/U01-satellite.png": {
+    "bytes": 2412521,
+    "sha256": "d553b31d7a9c79e809f0eab0a9e1ab7d35f5d05e0f2590fcb652016ee655b9ed"
+  },
+  "scripts/check-campus.ts": {
+    "bytes": 1476,
+    "sha256": "677b66fd3fbfc6b2e25add5a4e1b0932eefaa9ece2d9c594f9243f60efa63c00"
+  },
+  "scripts/export-model.ts": {
+    "bytes": 2452,
+    "sha256": "ad04771e2db9f10434865ee4d60f35e47721d158c63d689a9ace7ce650c75c59"
+  },
+  "scripts/validate-glb.mjs": {
+    "bytes": 713,
+    "sha256": "011b85258a679c88810f969eec90800230f6c186bc9504db09da5770870220ce"
+  },
+  "src/main.ts": {
+    "bytes": 14356,
+    "sha256": "f49d804956d6933ee6e0cc1a2646c18df662dbf9477cc3e92f4fd5c08c843218"
+  },
+  "src/model/buildCampus.ts": {
+    "bytes": 17140,
+    "sha256": "7085d592d93d920f16b32c22e0b9f563e7772c1b9d17a8f6897b103252676cd1"
+  },
+  "src/model/buildSite.ts": {
+    "bytes": 17338,
+    "sha256": "cacd0eb8b71464333df61ef7cc3967b0d09784f736aba778eedb493c9c3b93b1"
+  },
+  "src/model/campusParameters.ts": {
+    "bytes": 3859,
+    "sha256": "7a0c5c5e2a0804bd51b4633e945c57a53c67bc20157cb0b26235e0cdaa967fbf"
+  },
+  "src/model/parameters.ts": {
+    "bytes": 2575,
+    "sha256": "b46d21dc0bf83a71df028594120f20ac9fe2d86a6d0204fe5bd51769997341d4"
+  },
+  "src/model/sign-font.json": {
+    "bytes": 18485,
+    "sha256": "7d786329469715005e603ee45b1a15a48dc5a8667ceef7dd256a4143dbc0d21e"
+  },
+  "src/style.css": {
+    "bytes": 10971,
+    "sha256": "37bf256541d73ea7d0e7e8096db9ce75bf6ff8bc3820d10984e04cac39357d67"
+  },
+  "src/viewer/export.ts": {
+    "bytes": 821,
+    "sha256": "69c583279b96bc3876b3414afe88518e6ebbc8f6089d8094033d6674ef8f86f0"
+  },
+  "src/viewer/scene.ts": {
+    "bytes": 4525,
+    "sha256": "e429630fd2cbf9ae747e56c8976a6c33b63ecc6af0e46f0ace401027aaf33a8e"
+  },
+  "src/viewer/siteViewer.ts": {
+    "bytes": 4125,
+    "sha256": "986809595b950bb0edffa495d263d2926b7501e2f1e5cad8b7460e8fa4c73194"
+  },
+  "tsconfig.json": {
+    "bytes": 282,
+    "sha256": "e4aefd21b60d3506088dcb1d43c94597bb025e785472f217182177b3f288b93c"
+  },
+  "vite.config.ts": {
+    "bytes": 589,
+    "sha256": "3872d55b23f4afec05dfa41466d56a7055e70198ebf7132af829747bfdbfcdbe"
+  }
+}

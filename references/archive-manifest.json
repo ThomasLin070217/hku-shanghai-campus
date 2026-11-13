@@ -1,0 +1,412 @@
+[
+  {
+    "file": "photos/10-cds-shanghai-campus-samu6463-cds-1440.webp",
+    "originalPageURL": "https://sh.cds.hku.hk/",
+    "originalImageOrVideoURL": "https://sh.cds.hku.hk/wp-content/uploads/2026/10/cds-shanghai-campus-samu6463-cds-1440.webp",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "035de35ba8ae08ac40ccb327244e98a5f5ec33608e3e82e34d4271f0bf06d42e"
+  },
+  {
+    "file": "photos/11-2025-dec-scaled-1-cds-1440.webp",
+    "originalPageURL": "https://sh.cds.hku.hk/about/about-us/",
+    "originalImageOrVideoURL": "https://sh.cds.hku.hk/wp-content/uploads/2026/09/2025-dec-scaled-1-cds-1440.webp",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "bf747c137622faba4a46e4aa8b3640a4819b021ea90a547024bfcb458872c14f"
+  },
+  {
+    "file": "photos/12-2026-aug-scaled-1-cds-1440.webp",
+    "originalPageURL": "https://sh.cds.hku.hk/about/about-us/",
+    "originalImageOrVideoURL": "https://sh.cds.hku.hk/wp-content/uploads/2026/09/2026-aug-scaled-1-cds-1440.webp",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "b7ac297d32e19f5eaa84be996491462ae937bd6ee3d9d346f481d6213b01425e"
+  },
+  {
+    "file": "photos/13-hku-zhangjiang-202608.png",
+    "originalPageURL": "https://lead.hku.hk/en/news/2026/09/hku-opens-new-zhangjiang-facilities/",
+    "originalImageOrVideoURL": "https://lead.hku.hk/media/0pvadyxx/hku-zhangjiang-202608.png",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "用于建模/核验：R05",
+    "sha256": "07d52bcf7ebdf88f9eb9c0bf7da8bfeff959966c400eef14fe6d9fc07559f5f4"
+  },
+  {
+    "file": "video/14-SH-website-1080p-web.mp4",
+    "originalPageURL": "https://sh.cds.hku.hk/about/about-us/",
+    "originalImageOrVideoURL": "https://sh.cds.hku.hk/wp-content/uploads/2026/10/SH-website-1080p-web.mp4",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "video",
+    "use": "按 4 秒间隔检视全片，并精确检查选用帧；未完整逐帧观看。",
+    "sha256": "50b5d111ec2d7b3a878b66bda25dccb96921427043fb99bf1126793bc87ee1df"
+  },
+  {
+    "file": "architect/A01.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/projects/hku-school-of-computing-and-data-science-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/HKU_Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-3.jpg?w=1920&h=1469&q=90&auto=format&fit=crop&dm=1784906368&s=952a778838976ff17887e6be94865328",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "10b53ccae8fd29ce6b1d08102c20e7add6cff197ab7e85f26a3608d6e471cf19"
+  },
+  {
+    "file": "architect/A02.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/projects/hku-school-of-computing-and-data-science-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/HKU_Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-8.jpg?w=1920&h=1440&q=90&auto=format&fit=crop&dm=1784905895&s=7a31aa7fecc2ee5155243b0dcd41ad46",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "8a3905fc13c5a98e67be592056287b54a576379a9646019ee4bbebdafbbb01c1"
+  },
+  {
+    "file": "architect/A03.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/projects/hku-school-of-computing-and-data-science-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/HKU_Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-9.jpg?w=1920&h=1440&q=90&auto=format&fit=crop&dm=1784906423&s=b3e8fe9a3411deabb0416aa160622ac7",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "af87db4749caba0085900470435cce5b834d17aafe61a8339d1e799c752fa7dc"
+  },
+  {
+    "file": "architect/A04.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/projects/hku-school-of-computing-and-data-science-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-12.jpg?w=1920&h=1279&q=90&auto=format&fit=crop&dm=1737099506&s=ac4ee10873cb82500db1e8eeb23f550e",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "用于建模/核验：R04",
+    "sha256": "e76077ae40beb0017377a89c41b158c071966413588f353c9cf474f4ae54032a"
+  },
+  {
+    "file": "architect/A05.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/projects/hku-school-of-computing-and-data-science-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-16.jpg?w=1920&h=1294&q=90&auto=format&fit=crop&dm=1737099765&s=49ddabacf450c480ec59bdfa3f57145e",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "f988085e0a815894deab384127f02dc154ac0d037cf35c836f03f2603c4bd715"
+  },
+  {
+    "file": "architect/A06.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/projects/hku-school-of-computing-and-data-science-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-13.jpg?w=1920&h=1279&q=90&auto=format&fit=crop&dm=1737099221&s=c674004f6a6531d33bf97b03b16c0d89",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "a6ac18797cb21e38b785a2a0f5400b202144abe7241e2959c390887349f87d56"
+  },
+  {
+    "file": "architect/A07.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/projects/hku-school-of-computing-and-data-science-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-4.jpg?w=1920&h=1440&q=90&auto=format&fit=crop&dm=1737099524&s=299a9c4faec4518fa586e62ecd837310",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "297064a920c3419701386b07b51ec6f4231110dda7be33d01040d1afa2559984"
+  },
+  {
+    "file": "architect/A08.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/projects/hku-school-of-computing-and-data-science-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/HKU_Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-7.jpg?w=1920&h=1440&q=90&auto=format&fit=crop&dm=1784906471&s=87b04475a15ff383d2fb8cfebafd988a",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "9e63fd8db55c48a297b683305a1258b569c57bffda5b26b6e2cb9bb461d1c186"
+  },
+  {
+    "file": "candidate/sohu-1.png",
+    "originalPageURL": "https://www.sohu.com/a/945826602_121124027",
+    "originalImageOrVideoURL": "https://q7.itc.cn/q_70/images03/20251020/f18e12b06e834014935752d60022ad08.png",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "607ae2707650f4be2b39ce829aac2e82b9aee4abdc45e3e774a8a66fdffe7d1e"
+  },
+  {
+    "file": "candidate/sohu-2.png",
+    "originalPageURL": "https://www.sohu.com/a/945826602_121124027",
+    "originalImageOrVideoURL": "https://q8.itc.cn/q_70/images03/20251020/fae0bfa07e54410d99831d146dad1195.png",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "用于建模/核验：P01",
+    "sha256": "6e6c869b663f3ace5d71f883efbb3909d43189255a6620b2336271ff2182edb9"
+  },
+  {
+    "file": "candidate/sohu-3.png",
+    "originalPageURL": "https://www.sohu.com/a/945826602_121124027",
+    "originalImageOrVideoURL": "https://q7.itc.cn/q_70/images03/20251020/043a6f0e9f36450989d83dc34cebcb61.png",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "cd888d57a90d11d1d87891dd227abeb94ba4d8f706995e0e09f3549d87eb97d9"
+  },
+  {
+    "file": "candidate/sohu-4.png",
+    "originalPageURL": "https://www.sohu.com/a/945826602_121124027",
+    "originalImageOrVideoURL": "https://q7.itc.cn/q_70/images03/20251020/fb10ba16a28644b0939f20476893d09e.png",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "4647078ed07ac44851766020eeb5e4af25cd8ce1395df266302edb9ddcfe351f"
+  },
+  {
+    "file": "candidate/sohu-5.png",
+    "originalPageURL": "https://www.sohu.com/a/945826602_121124027",
+    "originalImageOrVideoURL": "https://q5.itc.cn/q_70/images03/20251020/0480ea7d4d0b4ddfa220ac6eccc646f7.png",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "b807f225deb8b9f3cf9b8b25862168476de09278da208909edc420be1361d08c"
+  },
+  {
+    "file": "candidate/sohu-6.png",
+    "originalPageURL": "https://www.sohu.com/a/945826602_121124027",
+    "originalImageOrVideoURL": "https://q6.itc.cn/q_70/images03/20251020/2d17721c65a442e19e11a9ab40a19e53.png",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "2e3f0a14daea4db6a3a1c79c41385b5804a66bb4c7df219e773b8da1d39af87e"
+  },
+  {
+    "file": "candidate/sohu-7.png",
+    "originalPageURL": "https://www.sohu.com/a/945826602_121124027",
+    "originalImageOrVideoURL": "https://q6.itc.cn/q_70/images03/20251020/f45ce841c8674db3a93de46b21457626.png",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "5724af06c67e2e467e614040a2ce0e3979546671adb2a87ac867825d075458a4"
+  },
+  {
+    "file": "candidate/sohu-8.png",
+    "originalPageURL": "https://www.sohu.com/a/945826602_121124027",
+    "originalImageOrVideoURL": "https://q8.itc.cn/q_70/images03/20251020/d535d1556928407fafa450a928e782d6.png",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "用于建模/核验：P02",
+    "sha256": "88b628c433104963fbec278f54b1084ed0378fe9e485bbe7b6cf0c6d762b4e6f"
+  },
+  {
+    "file": "architect/N01.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/news/construction-has-now-completed-at-the-chapman-taylor-designed-zhangjiang-gaoke-office-park-in-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/HKU_Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-3.jpg?w=1920&h=1469&q=90&auto=format&fit=crop&dm=1784906368&s=952a778838976ff17887e6be94865328",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "10b53ccae8fd29ce6b1d08102c20e7add6cff197ab7e85f26a3608d6e471cf19"
+  },
+  {
+    "file": "architect/N02.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/news/construction-has-now-completed-at-the-chapman-taylor-designed-zhangjiang-gaoke-office-park-in-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/HKU_Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-9.jpg?w=1920&h=1440&q=90&auto=format&fit=crop&dm=1784906423&s=b3e8fe9a3411deabb0416aa160622ac7",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "af87db4749caba0085900470435cce5b834d17aafe61a8339d1e799c752fa7dc"
+  },
+  {
+    "file": "architect/N03.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/news/construction-has-now-completed-at-the-chapman-taylor-designed-zhangjiang-gaoke-office-park-in-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/HKU_Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-8.jpg?w=1920&h=1440&q=90&auto=format&fit=crop&dm=1784905895&s=7a31aa7fecc2ee5155243b0dcd41ad46",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "8a3905fc13c5a98e67be592056287b54a576379a9646019ee4bbebdafbbb01c1"
+  },
+  {
+    "file": "architect/N04.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/news/construction-has-now-completed-at-the-chapman-taylor-designed-zhangjiang-gaoke-office-park-in-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-12.jpg?w=1920&h=1279&q=90&auto=format&fit=crop&dm=1737099506&s=ac4ee10873cb82500db1e8eeb23f550e",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "e76077ae40beb0017377a89c41b158c071966413588f353c9cf474f4ae54032a"
+  },
+  {
+    "file": "architect/N05.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/news/construction-has-now-completed-at-the-chapman-taylor-designed-zhangjiang-gaoke-office-park-in-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-4.jpg?w=1920&h=1440&q=90&auto=format&fit=crop&dm=1737099524&s=299a9c4faec4518fa586e62ecd837310",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "297064a920c3419701386b07b51ec6f4231110dda7be33d01040d1afa2559984"
+  },
+  {
+    "file": "architect/N06.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/news/construction-has-now-completed-at-the-chapman-taylor-designed-zhangjiang-gaoke-office-park-in-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-13.jpg?w=1920&h=1279&q=90&auto=format&fit=crop&dm=1737099221&s=c674004f6a6531d33bf97b03b16c0d89",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "a6ac18797cb21e38b785a2a0f5400b202144abe7241e2959c390887349f87d56"
+  },
+  {
+    "file": "architect/N07.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/news/construction-has-now-completed-at-the-chapman-taylor-designed-zhangjiang-gaoke-office-park-in-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-6_250117_074106.jpg?w=1920&h=1525&q=90&auto=format&fit=crop&dm=1737099666&s=b5d157adc1f34cfc82ee6dea26d008dc",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "58285951f01bea62eb21ff9ffb106eb9d1b8471332a25f4653d86f243dfd25a1"
+  },
+  {
+    "file": "architect/N08.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/news/construction-has-now-completed-at-the-chapman-taylor-designed-zhangjiang-gaoke-office-park-in-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-2.jpg?w=1920&h=1440&q=90&auto=format&fit=crop&dm=1737099629&s=94291887d68be8e7d75c3617b66cee44",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "f3e411abb4c515a6c73932f4ff5e2db3760a4ad897cae9de9b3804f658179919"
+  },
+  {
+    "file": "architect/N09.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/news/construction-has-now-completed-at-the-chapman-taylor-designed-zhangjiang-gaoke-office-park-in-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/HKU_Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-7.jpg?w=1920&h=1440&q=90&auto=format&fit=crop&dm=1784906471&s=87b04475a15ff383d2fb8cfebafd988a",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "9e63fd8db55c48a297b683305a1258b569c57bffda5b26b6e2cb9bb461d1c186"
+  },
+  {
+    "file": "architect/N10.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/news/construction-has-now-completed-at-the-chapman-taylor-designed-zhangjiang-gaoke-office-park-in-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-10.jpg?w=1920&h=1620&q=90&auto=format&fit=crop&dm=1737099764&s=d62c58566f9e6d4a5268de0386eb90b0",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "7f7c833d173b83afc219bc571b9a28ed8b04fb857fa44cca1c104fd63a0e3f96"
+  },
+  {
+    "file": "architect/N11.jpg",
+    "originalPageURL": "https://www.chapmantaylor.com/news/construction-has-now-completed-at-the-chapman-taylor-designed-zhangjiang-gaoke-office-park-in-shanghai",
+    "originalImageOrVideoURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-16.jpg?w=1920&h=1294&q=90&auto=format&fit=crop&dm=1737099765&s=49ddabacf450c480ec59bdfa3f57145e",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "f988085e0a815894deab384127f02dc154ac0d037cf35c836f03f2603c4bd715"
+  },
+  {
+    "file": "photos/01-cds-shanghai-main-entrance-samu6478.webp",
+    "originalPageURL": "https://sh.cds.hku.hk/about/about-us/facilities/",
+    "originalImageOrVideoURL": "https://sh.cds.hku.hk/wp-content/uploads/2026/09/cds-shanghai-main-entrance-samu6478.webp",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "用于建模/核验：R01",
+    "sha256": "70e1694509493c72fe75a369f7545a3f4ec1eb648b334c259d4b5555f3ba748f"
+  },
+  {
+    "file": "photos/02-hkucds-zj-site01-scaled.jpg",
+    "originalPageURL": "https://master.cds.hku.hk/delta-x-26-27/",
+    "originalImageOrVideoURL": "https://master.cds.hku.hk/wp-content/uploads/2025/12/hkucds-zj-site01-scaled.jpg",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "用于建模/核验：R02",
+    "sha256": "c61ddc96135a5cfaa37d0f94b20304a07184a1054ce47a04e3ec255f43dfb4af"
+  },
+  {
+    "file": "photos/03-Image_20260707175504-scaled.jpg",
+    "originalPageURL": "https://master.cds.hku.hk/delta-x-26-27/",
+    "originalImageOrVideoURL": "https://master.cds.hku.hk/wp-content/uploads/2026/07/Image_20260707175504-scaled.jpg",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "e601b13d67607f1b71868915fc47358319c211634931feeb2f728cacb41bb973"
+  },
+  {
+    "file": "photos/04-Image_20260707175456-scaled.jpg",
+    "originalPageURL": "https://master.cds.hku.hk/delta-x-26-27/",
+    "originalImageOrVideoURL": "https://master.cds.hku.hk/wp-content/uploads/2026/07/Image_20260707175456-scaled.jpg",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "a0097d28572a69da57f80088eb4e252f60cefa7c53fa38a1d46e32cbdd259a0f"
+  },
+  {
+    "file": "photos/05-SAMU6606-1-scaled.jpg",
+    "originalPageURL": "https://master.cds.hku.hk/delta-x-26-27/",
+    "originalImageOrVideoURL": "https://master.cds.hku.hk/wp-content/uploads/2026/07/SAMU6606-1-scaled.jpg",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "495775f453559c58ce6f1209bc5da74b05eeb7f852025e19aef6fb6061c1e638"
+  },
+  {
+    "file": "photos/06-Main-Site-1-scaled.jpg",
+    "originalPageURL": "https://master.cds.hku.hk/delta-x-26-27/",
+    "originalImageOrVideoURL": "https://master.cds.hku.hk/wp-content/uploads/2026/07/Main-Site-1-scaled.jpg",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "25b2e6615145f377b183e9c07a95d242c6e414b6aa22cc4c32422b2422a9c2ce"
+  },
+  {
+    "file": "photos/07-Main-Site-3-scaled.jpeg",
+    "originalPageURL": "https://master.cds.hku.hk/delta-x-26-27/",
+    "originalImageOrVideoURL": "https://master.cds.hku.hk/wp-content/uploads/2026/07/Main-Site-3-scaled.jpeg",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "用于建模/核验：R06",
+    "sha256": "53532a2e4326c95e13b60f2996b618e7a11282e678d9c5affc973c1b8e2546cd"
+  },
+  {
+    "file": "photos/08-Main-Site-4-scaled.jpg",
+    "originalPageURL": "https://master.cds.hku.hk/delta-x-26-27/",
+    "originalImageOrVideoURL": "https://master.cds.hku.hk/wp-content/uploads/2026/07/Main-Site-4-scaled.jpg",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "0d4fda12a361d8a297248f45ca0dc4a65019fa2d8973adc078931f1f1ae46fc3"
+  },
+  {
+    "file": "photos/09-Orientation-Day--scaled.jpg",
+    "originalPageURL": "https://master.cds.hku.hk/delta-x-26-27/",
+    "originalImageOrVideoURL": "https://master.cds.hku.hk/wp-content/uploads/2026/07/Orientation-Day--scaled.jpg",
+    "publisher": "见页面域名与 sources.json",
+    "date": "以来源索引为准；未明确日期不得从上传路径推定拍摄日",
+    "type": "image",
+    "use": "已检视；留档未用于主体。可能为室内、邻楼或同图重复，不计独立证据。",
+    "sha256": "5afcc56f98c8fb8bed84f2db2cfafa5469444c103bb9f8b228661c64a228be5e"
+  }
+]

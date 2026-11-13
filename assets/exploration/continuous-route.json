@@ -1,0 +1,56 @@
+[
+  {
+    "label": "spawn",
+    "state": {
+      "position": [
+        52,
+        0.045,
+        33.5
+      ],
+      "yaw": 0,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": 0,
+      "lastClear": "keyup:KeyR",
+      "keys": [],
+      "enabled": true
+    }
+  },
+  {
+    "label": "entrance lane to courtyard",
+    "state": {
+      "position": [
+        20.79999999999768,
+        0.045,
+        33.71666666666668
+      ],
+      "yaw": 0,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": -4.712388980384689,
+      "lastClear": "keyup:KeyA",
+      "keys": [],
+      "enabled": true
+    }
+  },
+  {
+    "label": "courtyard north path",
+    "state": {
+      "position": [
+        20.79999999999768,
+        0,
+        0.9999999999988047
+      ],
+      "yaw": 0,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": -6.283185307179586,
+      "lastClear": "keyup:KeyW",
+      "keys": [],
+      "enabled": true
+    }
+  }
+]

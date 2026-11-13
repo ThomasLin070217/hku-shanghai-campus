@@ -1,0 +1,348 @@
+{
+  "version": 4,
+  "date": "2026-11-13",
+  "runtime": "Vite + TypeScript + Three.js; localhost Node HTTP/WebSocket",
+  "entry": "npm run play",
+  "files": [
+    {
+      "path": "src/agent/action.schema.json",
+      "bytes": 1445,
+      "sha256": "e3f0b549ced63d6fd8cb9b153cb1cc7721f150daed46c3db589781bd9233a3bd"
+    },
+    {
+      "path": "src/agent/bridge.ts",
+      "bytes": 2367,
+      "sha256": "2a149eb78b59afb5e7559b15ea5a1e0f87bd4aa1718d03f227532656a7e3976e"
+    },
+    {
+      "path": "src/agent/protocol.ts",
+      "bytes": 2325,
+      "sha256": "50dd230723fb4e550a96e3ac36317fe2186aafad47f798617f72bff66648be54"
+    },
+    {
+      "path": "src/exploration/config.ts",
+      "bytes": 923,
+      "sha256": "49024ffbc00e4042938ea7593ec1619e92c582c58bbdf8c29878a9e1b843f38f"
+    },
+    {
+      "path": "src/exploration/controller.ts",
+      "bytes": 7961,
+      "sha256": "728dcd30b26752e0e737c06d131b9350dbfdc0e8afc3183d96577c0c17006bad"
+    },
+    {
+      "path": "src/exploration/game.ts",
+      "bytes": 5258,
+      "sha256": "74bb84a1875adeef88e05ef8462e3d5db9e13bf50c0acd4bdf04267e266005e2"
+    },
+    {
+      "path": "src/exploration/navigation.ts",
+      "bytes": 7287,
+      "sha256": "45bb3ef74790d805ff8cfd2fe687820b46ff22ff214656daf4236aa0309fe82a"
+    },
+    {
+      "path": "src/exploration/physics.ts",
+      "bytes": 2761,
+      "sha256": "23741496049c4b94a1832627289dc12cfcab737d22a7d6a6638a10acc5782d20"
+    },
+    {
+      "path": "src/exploration/student.ts",
+      "bytes": 5299,
+      "sha256": "04b69de287a6cdbd2d26fd77a1cdee1806b752cf1a8babcfa1774d6588b7a49f"
+    },
+    {
+      "path": "src/main.ts",
+      "bytes": 18243,
+      "sha256": "916e6f19cf69c8e1bd43477cd2ce048df79c5306e301e0d764995d7b0f6f44af"
+    },
+    {
+      "path": "src/model/buildCampus.ts",
+      "bytes": 17331,
+      "sha256": "d8dc710911df65b72d096afee5ba0a74f6f060161894c10f963843cd7dda4443"
+    },
+    {
+      "path": "src/model/buildSite.ts",
+      "bytes": 20126,
+      "sha256": "47a74ed7792354cce6d57fc3dc2c702a793a54670e5b9c02c3bf68e2e382c597"
+    },
+    {
+      "path": "src/model/campusParameters.ts",
+      "bytes": 3859,
+      "sha256": "7a0c5c5e2a0804bd51b4633e945c57a53c67bc20157cb0b26235e0cdaa967fbf"
+    },
+    {
+      "path": "src/model/parameters.ts",
+      "bytes": 2575,
+      "sha256": "b46d21dc0bf83a71df028594120f20ac9fe2d86a6d0204fe5bd51769997341d4"
+    },
+    {
+      "path": "src/model/sign-font.json",
+      "bytes": 18485,
+      "sha256": "7d786329469715005e603ee45b1a15a48dc5a8667ceef7dd256a4143dbc0d21e"
+    },
+    {
+      "path": "src/style.css",
+      "bytes": 13649,
+      "sha256": "8d97e0e83b0e3e2d3a9f93fe77e0dc8fb1eda8016f9bb76c9315490888da3a6a"
+    },
+    {
+      "path": "src/viewer/export.ts",
+      "bytes": 821,
+      "sha256": "69c583279b96bc3876b3414afe88518e6ebbc8f6089d8094033d6674ef8f86f0"
+    },
+    {
+      "path": "src/viewer/scene.ts",
+      "bytes": 4525,
+      "sha256": "e429630fd2cbf9ae747e56c8976a6c33b63ecc6af0e46f0ace401027aaf33a8e"
+    },
+    {
+      "path": "src/viewer/siteViewer.ts",
+      "bytes": 4484,
+      "sha256": "0e178d8765cd5ef90ea825dc62d69588a209f7671c8afef057ffa0793122ac64"
+    },
+    {
+      "path": "src/voxel/materials.ts",
+      "bytes": 2381,
+      "sha256": "9e6fc674a0db9d6dac0db54112361cce2942138a28ac222867352a8cd88cb0ae"
+    },
+    {
+      "path": "scripts/agent-demo.mjs",
+      "bytes": 2767,
+      "sha256": "12938a8eb38dec1b3ba97e33e50393875d16eee4317d7a2b05042114e335bbe9"
+    },
+    {
+      "path": "scripts/agent-server.mjs",
+      "bytes": 3834,
+      "sha256": "63805f0ad3d8558a76f29166acf41ea7c62bd83d0ae2fadcd331bf5ebd8640af"
+    },
+    {
+      "path": "scripts/check-campus.ts",
+      "bytes": 1476,
+      "sha256": "677b66fd3fbfc6b2e25add5a4e1b0932eefaa9ece2d9c594f9243f60efa63c00"
+    },
+    {
+      "path": "scripts/check-exploration.ts",
+      "bytes": 3306,
+      "sha256": "9bfc4584d889ec7632e5f80f774489b1f0421a76e2cb1772580925d39728fbb0"
+    },
+    {
+      "path": "scripts/check-live-agent.mjs",
+      "bytes": 3440,
+      "sha256": "4ebb864d5c9a251a0d754a72c3c8f3aacc3d63e3372025674254632eba8f9a1e"
+    },
+    {
+      "path": "scripts/check-ramp-v4.ts",
+      "bytes": 1028,
+      "sha256": "f272d348810b89fd7e357769a4a03a40c2626b452108e2ee9164f82a30dc8d5e"
+    },
+    {
+      "path": "scripts/check-transport.mjs",
+      "bytes": 1110,
+      "sha256": "e8e4a0b76fd30909ff2b8eeed9a0bcc8b314f2f57ec5d90eb9785cc938b65e7d"
+    },
+    {
+      "path": "scripts/check-v4.ts",
+      "bytes": 5096,
+      "sha256": "7ade7716712acd90680329b539359805f4e8fd8353e0be19c45ebdb01bc33fd4"
+    },
+    {
+      "path": "scripts/export-model.ts",
+      "bytes": 3257,
+      "sha256": "498d137bfc02e9ed50557bea476ffd93ced0eb701d316f90d1c43a613053d062"
+    },
+    {
+      "path": "scripts/start.mjs",
+      "bytes": 473,
+      "sha256": "f1cdb7121ed71cb17c18c9bd6a1d80856e83bcfb9c52a2f8a585ab7188e28bdb"
+    },
+    {
+      "path": "scripts/validate-glb.mjs",
+      "bytes": 745,
+      "sha256": "4ecb2a13a3c648d7c54ce27684f68a3bfa43cbddb0d7df8f451639f6ff8d2fd1"
+    },
+    {
+      "path": "assets/voxel/after-same-view.png",
+      "bytes": 249638,
+      "sha256": "5072f6d947fb49ddd6c7505c07ba24a79f844c4672c8d016630d80c6bc260af2"
+    },
+    {
+      "path": "assets/voxel/agent-demo-final.log",
+      "bytes": 3422,
+      "sha256": "c0a53d7499b1fe15eaf3315ee1fce4706fa625f4bf1680da2be57e72287649fc"
+    },
+    {
+      "path": "assets/voxel/agent-demo.log",
+      "bytes": 3421,
+      "sha256": "89b81c7fb2d40f9875874a8ff438a517f1605ea1f96e9876bcf7f0f61cf82250"
+    },
+    {
+      "path": "assets/voxel/agent-takeover.log",
+      "bytes": 3429,
+      "sha256": "9c8e52d3a0012aef6015a503ef8383207bfadf23b50363c948f99c5ea821447f"
+    },
+    {
+      "path": "assets/voxel/before.png",
+      "bytes": 146998,
+      "sha256": "5ec583fe5c0a7d60e0fc1466a50d0ed2d3ea8b41a1a84ee46cdffbbe98fa2d81"
+    },
+    {
+      "path": "assets/voxel/browser-export-check.json",
+      "bytes": 271,
+      "sha256": "9889d93224057c28ee16434e3269bf9d6926399070eda45f027c68801d23b4c5"
+    },
+    {
+      "path": "assets/voxel/camera-wall-check.json",
+      "bytes": 213,
+      "sha256": "6e3b4e88a2adbdf17160f1e23c4f5a4db17d2c870a0a93ea86c9e057d7c34402"
+    },
+    {
+      "path": "assets/voxel/campus-overview.png",
+      "bytes": 744258,
+      "sha256": "184cc08061fca058cf98bdd17051d6ade964b3baf41b708bfa1d184ca4baf005"
+    },
+    {
+      "path": "assets/voxel/chrome-input-trace.json",
+      "bytes": 928491,
+      "sha256": "0aa142fddb535d97b6517bd2fb2913888b69d58462780e0264f7524aec16d1b4"
+    },
+    {
+      "path": "assets/voxel/chrome-state-start.json",
+      "bytes": 1170,
+      "sha256": "50a20252f9be7bff24c6a1e3e6a31aba1b2daaee2bfc10cfa4a28c0bafe49873"
+    },
+    {
+      "path": "assets/voxel/chrome-walk.json",
+      "bytes": 2156,
+      "sha256": "aa21cd6f69fbefd59d267289d2f813bdff21617ff500c8f44060d80bf55d3c0e"
+    },
+    {
+      "path": "assets/voxel/disconnect-check.json",
+      "bytes": 2043,
+      "sha256": "c17579197b57b7bb01dc5b7431a18987f09b99f1dd6634d500271480b24c2c3d"
+    },
+    {
+      "path": "assets/voxel/first-person.png",
+      "bytes": 315700,
+      "sha256": "2daa5973b15042dbb90d913def23deaddc273c591e628307a11c087e0741cf05"
+    },
+    {
+      "path": "assets/voxel/human-input-checks.json",
+      "bytes": 20947,
+      "sha256": "1159d91c68edec774a48a178f685da37f86ec025532ae24d4dc7b28060d307eb"
+    },
+    {
+      "path": "assets/voxel/human-run-jump.webm",
+      "bytes": 4038912,
+      "sha256": "f701e95c2bdd2c3068cf40844506c72d61dd1fc89c56e67e1db39f1015cdd9ef"
+    },
+    {
+      "path": "assets/voxel/live-agent-checks.json",
+      "bytes": 22507,
+      "sha256": "bd7fa563ce52283c1c0a25fb280b2935d5b128e3fff881ef203728c3a6ba2239"
+    },
+    {
+      "path": "assets/voxel/live-agent-checks.log",
+      "bytes": 179,
+      "sha256": "62c0f47e58f42d4d11a5d95c8d00c0b1a02696b7dafb9effff87871f6c2be7c9"
+    },
+    {
+      "path": "assets/voxel/logic-checks.json",
+      "bytes": 2248,
+      "sha256": "51fcf5d949d819300b44b79b9ccdacd009b091c18921e714390d56ddab19032e"
+    },
+    {
+      "path": "assets/voxel/manual-key-takeover.json",
+      "bytes": 2494,
+      "sha256": "07568e8ef7cbd526061f71b16b5c3724964b432560aba0745cf4a1420479630d"
+    },
+    {
+      "path": "assets/voxel/page-hide-check.json",
+      "bytes": 2024,
+      "sha256": "93ef740550208272e4a134ddee5633e486a739c919f2571909f5d0e53e456551"
+    },
+    {
+      "path": "assets/voxel/run-jump-demo.mp4",
+      "bytes": 3050120,
+      "sha256": "46022c9689920ba739191b79f55fe8311d24880cd3ae6943abef5865f0fa2297"
+    },
+    {
+      "path": "assets/voxel/student-back.png",
+      "bytes": 28421,
+      "sha256": "f2de2156958424adcd345a23e85b094e449c00fe63b5f92c10bc2fe113e40f84"
+    },
+    {
+      "path": "assets/voxel/student-front.png",
+      "bytes": 32088,
+      "sha256": "2fb98685fbcf282f8ada2604e7933d81778a083728ef75cbed2984fed57a0b27"
+    },
+    {
+      "path": "assets/voxel/student-side.png",
+      "bytes": 23806,
+      "sha256": "6bef497c278ff0841dc3af14ce506469a349d8eaaec9416ce3e75a8e733f954d"
+    },
+    {
+      "path": "assets/voxel/third-person.png",
+      "bytes": 359401,
+      "sha256": "500cddaacdb95be7f6258f18f0ce7c18410a9883ad16f9d7c8686ee97eaee5b4"
+    },
+    {
+      "path": "references/voxel/index.html",
+      "bytes": 3872,
+      "sha256": "2bd68dbd2801f83704bb09e97f3a3ae16b81ec5daad714309a18d9b27b5f8083"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4358,
+      "sha256": "6a11d1c9d35f88776abe076171935a4d96430cf7104dc160ec99916851dd7ac3"
+    },
+    {
+      "path": "AI-INTERFACE.md",
+      "bytes": 5603,
+      "sha256": "5a5388f712b69ce1d0cef81b5a9d1565659150ce3fb0e7c4500f322a5fbe66c4"
+    },
+    {
+      "path": "VALIDATION-V4.md",
+      "bytes": 5913,
+      "sha256": "9cc2623f8e629e3d9db3a9b28b97aaa7ecebf4af18a17e2c6e69bd513c273b22"
+    },
+    {
+      "path": "package.json",
+      "bytes": 979,
+      "sha256": "76ba22466137f8cd80ed238212753b9c708d6ec6686b9f0571554089591a1410"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 49219,
+      "sha256": "35a09bb6dc6e9a4a07634931a2d94147eed8e537511a9e51343f173beed425bb"
+    },
+    {
+      "path": "vite.config.ts",
+      "bytes": 589,
+      "sha256": "3872d55b23f4afec05dfa41466d56a7055e70198ebf7132af829747bfdbfcdbe"
+    },
+    {
+      "path": "index.html",
+      "bytes": 356,
+      "sha256": "e8446af8f3563dfb2e90500ac297765f137b86b102391e311d23f49edae91b76"
+    },
+    {
+      "path": "assets/HKU-Shanghai-Campus.glb",
+      "bytes": 11432604,
+      "sha256": "7ebc72a1bb31271d25cb503a795e9d92e1f82af632f6c0041535c753f45f29ff"
+    },
+    {
+      "path": "assets/Student-Green-Gown.glb",
+      "bytes": 106724,
+      "sha256": "56177ba276bd72c15186a75eb04bfed1035f78dd24bde842b106799e8d70696d"
+    },
+    {
+      "path": "assets/model-metadata.json",
+      "bytes": 12025,
+      "sha256": "4907764e8de2bb41a1de127caeaafff4003e122f11a45c644b61621a842e5c40"
+    },
+    {
+      "path": "assets/gltf-validation.json",
+      "bytes": 25474,
+      "sha256": "07eed08c6fb8308f3f5dfe0f0435349f3c50ec7cdd140a3e6ebdd1949a37df9d"
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "state": {
+    "protocolVersion": "hku-campus/1.0",
+    "frame": 7771,
+    "timeMs": 64758.333333340735,
+    "wallTimeMs": 1794546687509,
+    "mode": "human",
+    "controlEpoch": 1794546618957,
+    "aiEnabled": false,
+    "owner": null,
+    "paused": true,
+    "player": {
+      "position": [
+        42.96499999999933,
+        0.045,
+        33.5
+      ],
+      "velocity": [
+        0,
+        0,
+        0
+      ],
+      "yawDeg": 90,
+      "pitchDeg": 0,
+      "grounded": true
+    },
+    "view": "third",
+    "landmarks": [
+      {
+        "id": "B04",
+        "name": "CDS-1 · 4号楼",
+        "relativePosition": [
+          9.035000000000672,
+          -0.045,
+          -35.5
+        ],
+        "distance": 36.63172463862454
+      },
+      {
+        "id": "B03",
+        "name": "3号楼 · 东侧南塔",
+        "relativePosition": [
+          9.035000000000672,
+          -0.045,
+          36.5
+        ],
+        "distance": 37.60163892704694
+      },
+      {
+        "id": "B01",
+        "name": "1号楼 · 西侧北塔",
+        "relativePosition": [
+          -94.96499999999932,
+          -0.045,
+          -35.5
+        ],
+        "distance": 101.38344662714852
+      },
+      {
+        "id": "B02",
+        "name": "2号楼 · 西侧南塔",
+        "relativePosition": [
+          -94.96499999999932,
+          -0.045,
+          36.5
+        ],
+        "distance": 101.73791451568029
+      },
+      {
+        "id": "B05",
+        "name": "5号楼 · 学生活动",
+        "relativePosition": [
+          9.035000000000672,
+          -0.045,
+          -103.5
+        ],
+        "distance": 103.89361505886689
+      },
+      {
+        "id": "B06",
+        "name": "礼堂 · 中央公共建筑",
+        "relativePosition": [
+          -42.96499999999933,
+          -0.045,
+          -103.5
+        ],
+        "distance": 112.06356789786742
+      },
+      {
+        "id": "B07",
+        "name": "7号楼 · 西北配套楼",
+        "relativePosition": [
+          -94.96499999999932,
+          -0.045,
+          -103.5
+        ],
+        "distance": 140.46566573365845
+      }
+    ],
+    "lastCommand": {
+      "commandId": "key-test-1794546687502",
+      "status": "interrupted",
+      "acceptedAt": 1794546687504,
+      "expiresAt": 1794546688504,
+      "collisionIds": [],
+      "reason": "human_movement",
+      "finishedFrame": 7771
+    },
+    "collisions": []
+  },
+  "late": {
+    "ok": false,
+    "error": "stale_epoch",
+    "controlEpoch": 1794546618957
+  }
+}

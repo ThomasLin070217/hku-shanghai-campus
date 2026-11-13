@@ -1,0 +1,231 @@
+[
+  {
+    "test": "W approaches closed CDS-1 revolving doors",
+    "state": {
+      "position": [
+        52,
+        0.12,
+        23.143333333332563
+      ],
+      "yaw": 0,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": 0,
+      "keys": [],
+      "enabled": true
+    }
+  },
+  {
+    "test": "release stops immediately",
+    "before": {
+      "position": [
+        52,
+        0.12,
+        23.143333333332563
+      ],
+      "yaw": 0,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": 0,
+      "keys": [],
+      "enabled": true
+    },
+    "after": {
+      "position": [
+        52,
+        0.12,
+        23.143333333332563
+      ],
+      "yaw": 0,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": 0,
+      "keys": [],
+      "enabled": true
+    }
+  },
+  {
+    "test": "diagonal W+D and turn",
+    "state": {
+      "position": [
+        53.853798278010736,
+        0.045,
+        31.646201721989264
+      ],
+      "yaw": 0,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": -0.7853979741223769,
+      "keys": [],
+      "enabled": true
+    }
+  },
+  {
+    "test": "S",
+    "state": {
+      "position": [
+        52,
+        0.045,
+        35.081666666666784
+      ],
+      "yaw": 0,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": -3.1412862998508233,
+      "keys": [],
+      "enabled": true
+    }
+  },
+  {
+    "test": "A",
+    "state": {
+      "position": [
+        50.37499999999988,
+        0.045,
+        35.081666666666784
+      ],
+      "yaw": 0,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": -4.712240969136068,
+      "keys": [],
+      "enabled": true
+    }
+  },
+  {
+    "test": "D",
+    "state": {
+      "position": [
+        51.97833333333333,
+        0.045,
+        35.081666666666784
+      ],
+      "yaw": 0,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": -1.5710990119972337,
+      "keys": [],
+      "enabled": true
+    }
+  },
+  {
+    "test": "W after near 90 degree orbit",
+    "before": {
+      "position": [
+        52,
+        0.045,
+        33.5
+      ],
+      "yaw": -1.54,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": 0,
+      "keys": [],
+      "enabled": true
+    },
+    "after": {
+      "position": [
+        54.90195666152498,
+        0.045,
+        33.4106021304636
+      ],
+      "yaw": -1.54,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": -1.539999918300369,
+      "keys": [],
+      "enabled": true
+    }
+  },
+  {
+    "test": "move and drag simultaneously",
+    "state": {
+      "position": [
+        54.92361305452143,
+        0.045,
+        33.40993498218348
+      ],
+      "yaw": -1.1400000000000001,
+      "pitch": 0.46,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": -1.5399999360213248,
+      "keys": [],
+      "enabled": true
+    }
+  },
+  {
+    "test": "wheel zoom",
+    "state": {
+      "position": [
+        54.92361305452143,
+        0.045,
+        33.40993498218348
+      ],
+      "yaw": -1.1400000000000001,
+      "pitch": 0.46,
+      "distance": 5.458775895766546,
+      "actualDistance": 5.458775895766546,
+      "turn": -1.5399999360213248,
+      "keys": [],
+      "enabled": true
+    }
+  },
+  {
+    "test": "blur event clears held input",
+    "before": {
+      "position": [
+        54.92361305452143,
+        0.045,
+        33.40993498218348
+      ],
+      "yaw": -1.1400000000000001,
+      "pitch": 0.46,
+      "distance": 5.458775895766546,
+      "actualDistance": 5.458775895766546,
+      "turn": -1.5399999360213248,
+      "keys": [],
+      "enabled": true
+    },
+    "after": {
+      "position": [
+        54.92361305452143,
+        0.045,
+        33.40993498218348
+      ],
+      "yaw": -1.1400000000000001,
+      "pitch": 0.46,
+      "distance": 5.458775895766546,
+      "actualDistance": 5.458775895766546,
+      "turn": -1.5399999360213248,
+      "keys": [],
+      "enabled": true
+    }
+  },
+  {
+    "test": "R safe spawn restore",
+    "state": {
+      "position": [
+        52,
+        0.045,
+        33.5
+      ],
+      "yaw": 0,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": 0,
+      "keys": [],
+      "enabled": true
+    }
+  }
+]

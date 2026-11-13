@@ -1,0 +1,22 @@
+{
+  "campus-isometric.png": {
+    "size": [
+      2000,
+      1300
+    ],
+    "alpha": [
+      255,
+      255
+    ]
+  },
+  "campus-transparent.png": {
+    "size": [
+      2000,
+      1300
+    ],
+    "alpha": [
+      0,
+      255
+    ]
+  }
+}

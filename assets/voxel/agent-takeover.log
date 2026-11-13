@@ -1,0 +1,16 @@
+In the game pause menu, click 开启 AI 控制. Waiting up to 90 seconds…
+observe {"position":[52,0.045,33.5],"velocity":[0,0,0],"yawDeg":0,"pitchDeg":0,"grounded":true}
+acquired 1794545809530
+turn {"ok":true,"command":{"commandId":"demo-1794545886709-0","status":"accepted","acceptedAt":1794545886710,"expiresAt":1794545886810,"collisionIds":[]}}
+result {"ok":true,"command":{"commandId":"demo-1794545886709-0","status":"accepted","acceptedAt":1794545886710,"expiresAt":1794545886810,"collisionIds":[]}}
+walk {"ok":true,"command":{"commandId":"demo-1794545886894-1","status":"accepted","acceptedAt":1794545886895,"expiresAt":1794545887495,"collisionIds":[]}}
+result {"ok":true,"command":{"commandId":"demo-1794545886894-1","status":"expired","acceptedAt":1794545886895,"expiresAt":1794545887495,"collisionIds":[],"reason":"duration_elapsed","finishedFrame":8849}}
+sprint {"ok":true,"command":{"commandId":"demo-1794545887579-2","status":"accepted","acceptedAt":1794545887580,"expiresAt":1794545888180,"collisionIds":[]}}
+result {"ok":true,"command":{"commandId":"demo-1794545887579-2","status":"completed","acceptedAt":1794545887580,"expiresAt":1794545888180,"collisionIds":[],"startedFrame":8865,"reason":"duration_elapsed","finishedFrame":8934}}
+jump + change view {"ok":true,"command":{"commandId":"demo-1794545888265-3","status":"accepted","acceptedAt":1794545888267,"expiresAt":1794545889117,"collisionIds":[]}}
+result {"ok":true,"command":{"commandId":"demo-1794545888265-3","status":"completed","acceptedAt":1794545888267,"expiresAt":1794545889117,"collisionIds":[],"startedFrame":8947,"jumpResult":"jumped","reason":"duration_elapsed","finishedFrame":9048}}
+stop { ok: true }
+final {"ok":true,"state":{"protocolVersion":"hku-campus/1.0","frame":9088,"timeMs":75733.33333333503,"wallTimeMs":1794545889458,"mode":"ai","controlEpoch":1794545809530,"aiEnabled":true,"owner":"local-demo","paused":false,"player":{"position":[52,0.08,26.046666666666603],"velocity":[0,0,0],"yawDeg":0,"pitchDeg":0,"grounded":true},"view":"first","landmarks":[{"id":"B04","name":"CDS-1 · 4号楼","relativePosition":[0,-0.08,-28.046666666666603],"distance":28.046780761989556},{"id":"B03","name":"3号楼 · 东侧南塔","relativePosition":[0,-0.08,43.9533333333334],"distance":43.95340613776271},{"id":"B05","name":"5号楼 · 学生活动","relativePosition":[0,-0.08,-96.0466666666666],"distance":96.04669998379832},{"id":"B01","name":"1号楼 · 西侧北塔","relativePosition":[-104,-0.08,-28.046666666666603],"distance":107.71546737173408},{"id":"B06","name":"礼堂 · 中央公共建筑","relativePosition":[-52,-0.08,-96.0466666666666],"distance":109.21981769705425},{"id":"B02","name":"2号楼 · 西侧南塔","relativePosition":[-104,-0.08,43.9533333333334],"distance":112.9066070303732},{"id":"B07","name":"7号楼 · 西北配套楼","relativePosition":[-104,-0.08,-96.0466666666666],"distance":141.56612793241808}],"lastCommand":{"commandId":"demo-1794545888265-3","status":"completed","acceptedAt":1794545888267,"expiresAt":1794545889117,"collisionIds":[],"startedFrame":8947,"jumpResult":"jumped","reason":"duration_elapsed","finishedFrame":9048},"collisions":[]}}
+TAKEOVER TEST: click 一键接管 or press W now; waiting up to 30 seconds.
+PASS manual takeover: stale epoch rejected { ok: false, error: 'stale_epoch', controlEpoch: 1794545809532 }
+release { ok: false, error: 'stale_epoch', controlEpoch: 1794545809532 }

@@ -1,0 +1,93 @@
+[
+  {
+    "id": "E01",
+    "page": "https://sh.cds.hku.hk/about/about-us/facilities/",
+    "image": "https://sh.cds.hku.hk/wp-content/uploads/2026/09/cds-shanghai-main-entrance-samu6478.webp",
+    "local": "../photos/01-cds-shanghai-main-entrance-samu6478.webp",
+    "publisher": "HKU CDS (Shanghai)",
+    "date": "页面无发布日期；URL目录2026/09，不等于拍摄日",
+    "type": "实景照片",
+    "identity": "官方CDS-1栏目，右侧实物门牌可读CDS-1；与既有R01同图",
+    "supports": "中央旋转门、两侧门、薄平雨棚、两排文字、安防杆、两侧矮植栽及入口前黄色线；入口正前无塔间连桥",
+    "uncertain": "米制尺寸、人高参照约±25%；照片之外连桥节点不可确认",
+    "changes": "补入口铺装和两侧景观、安防杆；去除前版跨主入口的暂定塔间连桥；保留已匹配的门厅比例"
+  },
+  {
+    "id": "E02",
+    "page": "https://master.cds.hku.hk/delta-x-26-27/",
+    "image": "https://master.cds.hku.hk/wp-content/uploads/2026/07/Main-Site-3-scaled.jpeg",
+    "local": "../photos/07-Main-Site-3-scaled.jpeg",
+    "publisher": "HKU CDS Taught Masters",
+    "date": "未注明拍摄日期；URL目录2026/07",
+    "type": "实景照片",
+    "identity": "与设计方A06的中央低层礼堂体块对应；不是CDS-1",
+    "supports": "大框下左退右凸的玻璃正面、门厅外露平台、大台阶中间窄步行段及两侧宽阶",
+    "uncertain": "步数、层高、内部与楼后不确认；当前楼高和连接标高仍估计",
+    "changes": "分出礼堂左侧退入玻璃和右侧前置玻璃；减少屋顶任意设备；大阶两侧改宽坐阶、保留中央通行"
+  },
+  {
+    "id": "E03",
+    "page": "https://www.chapmantaylor.com/projects/hku-school-of-computing-and-data-science-shanghai",
+    "local": "../architect/A02.jpg",
+    "image": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/HKU_Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-8.jpg?w=1920&h=1440&q=90&auto=format&fit=crop&dm=1784905895&s=7a31aa7fecc2ee5155243b0dcd41ad46",
+    "publisher": "Chapman Taylor",
+    "date": "图集拍摄时间未注明；同组2025-01-17竣工报道先于HKU装修",
+    "type": "设计方竣工实景",
+    "identity": "西侧两栋密竖肋塔楼，通过A04航拍和总图定位；不是CDS-1",
+    "supports": "错位大框、深侧板和框内细分格；同图转载不独立计数",
+    "uncertain": "隐藏立面、大框对应楼栋及精确尺寸仍推断",
+    "changes": "大框厚度1.3→3.6m(估计)，前置玻璃和框内竖分格；未强改无新增测量支撑的总体楼高"
+  },
+  {
+    "id": "E04",
+    "page": "https://www.chapmantaylor.com/projects/hku-school-of-computing-and-data-science-shanghai",
+    "local": "../architect/A06.jpg",
+    "image": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-13.jpg?w=1920&h=1279&q=90&auto=format&fit=crop&dm=1737099221&s=c674004f6a6531d33bf97b03b16c0d89",
+    "publisher": "Chapman Taylor",
+    "date": "未注明拍摄日期",
+    "type": "设计方实景",
+    "identity": "中央礼堂与两侧北部配套楼同时入镜，可与A04航拍对应",
+    "supports": "两侧配套楼玻璃框的明显进深、礼堂低于背后塔楼",
+    "uncertain": "北侧场地后来变化、玻璃背后室内不可推断",
+    "changes": "配套楼北侧大框侧板由1.1→2.5m(估计)；不新增未知楼层"
+  },
+  {
+    "id": "E05",
+    "page": "https://english.shanghai.gov.cn/en-Latest-TalentsinShanghai/20260902/7d97d577b3f6489a93ac746dfcaea126.html",
+    "image": "https://english.shanghai.gov.cn/cmsres/39/39b8ccfcc8d84dde81d5d8db912f6b76/26660cfe7bafad37b839e1dbcceb03dc.jpg",
+    "local": "gov-south-lawn.jpg",
+    "publisher": "上海市政府英文网站；图片署名张江科学城科创产业服务中心公众号",
+    "date": "正文显示2026-09-04；URL为09-02，不以URL替代发布日期；活动08-30",
+    "type": "实景转载",
+    "identity": "图注明确张江基地南草坪；与既有C02/phase2-07构图对应，保守按同一照片组不增加独立证据",
+    "supports": "现状草坪、HKU字母、两类塔楼、内侧廊架和年轻乔木；正文3号与5号楼用途",
+    "uncertain": "无比例尺，不以标注推定每栋楼号位置；活动充气装饰不是永久建筑",
+    "changes": "保留南草坪而非旧规划水景；未加入活动充气狮子"
+  },
+  {
+    "id": "G01",
+    "page": "https://lead.hku.hk/en/article/2026/08/green-gowns-all-smiles/",
+    "image": "https://lead.hku.hk/media/xp5hjnt4/005-246-rad09585.jpg",
+    "local": "gown-005.jpg",
+    "publisher": "HKU Today / The University of Hong Kong",
+    "date": "2026-08-26活动及发布日期",
+    "type": "开学典礼实景照片",
+    "identity": "香港本部迎新，本文只作为服装参考，不作为上海建筑证据",
+    "supports": "本科生深青绿色袍、短而宽的袖口、敞襟、白衬衫可见、膝上衣摆",
+    "uncertain": "布料光照导致色差；不复制任何真实人物，身高1.76m为设定",
+    "changes": "原创低模角色的短袖开襟袍形与褶裥"
+  },
+  {
+    "id": "G02",
+    "page": "https://lead.hku.hk/en/article/2026/08/green-gowns-all-smiles/",
+    "image": "https://lead.hku.hk/media/3y0imqxd/009-314-rad09942.jpg",
+    "local": "gown-009.jpg",
+    "publisher": "HKU Today",
+    "date": "2026-08-26",
+    "type": "同一活动另一张实景照片",
+    "identity": "前排三位学生穿绿袍；背景可见背部褶裥；不用于上海定位",
+    "supports": "宽短袖、肩背褶裥和开放领口；未照搬手持校徽作袍上印花",
+    "uncertain": "下摆被画面及道具遮挡，结合G01；只有同活动而非独立服装标准",
+    "changes": "绿色袖筒、开放前片、白领、分离双腿；没有博士礼帽或彩色披肩"
+  }
+]

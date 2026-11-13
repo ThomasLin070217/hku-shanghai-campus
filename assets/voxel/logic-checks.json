@@ -1,0 +1,107 @@
+{
+  "date": "2026-11-13T05:06:57.846Z",
+  "results": [
+    {
+      "name": "walk/run/diagonal; fixed simulation at 30,60,144 render FPS",
+      "detail": [
+        [
+          85,
+          0,
+          34.79999999999961
+        ],
+        [
+          85,
+          0,
+          34.79999999999961
+        ],
+        [
+          85,
+          0,
+          34.79999999999961
+        ]
+      ]
+    },
+    {
+      "name": "jump once, air jump ignored, land, stop preserves falling",
+      "detail": {
+        "max": 1.1483333333333325
+      }
+    },
+    {
+      "name": "head collision with low ceiling fixture uses same world collider",
+      "detail": {
+        "hit": true,
+        "max": 0.39600000000000013
+      }
+    },
+    {
+      "name": "closed CDS doors, wall slide, outer boundary",
+      "detail": {
+        "door": [
+          52,
+          0.12,
+          23.143333333333292
+        ],
+        "slide": [
+          82.31472883817206,
+          0,
+          17.353910524340108
+        ],
+        "edge": [
+          103.03333333333356,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "name": "stair ascent/descent and high riser rejection",
+      "detail": {
+        "stairs": [
+          4,
+          0,
+          -22.399999999999807
+        ],
+        "high": [
+          11,
+          0,
+          -27.38333333333351
+        ]
+      }
+    },
+    {
+      "name": "view switch while sprinting airborne preserves physics",
+      "detail": {
+        "position": [
+          85,
+          0.11541666666666667,
+          39.91333333333333
+        ],
+        "velocity": [
+          0,
+          6.833333333333333,
+          -5.2000000000003865
+        ],
+        "yawDeg": 0,
+        "pitchDeg": 0,
+        "grounded": false
+      }
+    },
+    {
+      "name": "AI lifecycle: deferred one-shot, duplicate, expiry, replacement, takeover stale epoch",
+      "detail": {
+        "duplicateYaw": 0.3490658503988659,
+        "staleRejected": true,
+        "last": {
+          "commandId": "expired-before-frame",
+          "status": "expired",
+          "acceptedAt": 10000,
+          "expiresAt": 10300,
+          "collisionIds": [],
+          "reason": "duration_elapsed",
+          "finishedFrame": 3
+        }
+      }
+    }
+  ]
+}

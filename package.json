@@ -1,0 +1,33 @@
+{
+  "name": "hku-shanghai-whole-campus",
+  "version": "4.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "export:glb": "tsx scripts/export-model.ts",
+    "validate:glb": "node scripts/validate-glb.mjs",
+    "check:geometry": "tsx scripts/check-campus.ts",
+    "check:exploration": "tsx scripts/check-exploration.ts",
+    "play": "node scripts/start.mjs",
+    "agent:server": "node scripts/agent-server.mjs",
+    "agent:demo": "node scripts/agent-demo.mjs",
+    "check:v4": "tsx scripts/check-v4.ts"
+  },
+  "dependencies": {
+    "three": "0.181.2",
+    "ws": "^8.23.0"
+  },
+  "devDependencies": {
+    "@napi-rs/canvas": "^1.1.1",
+    "@types/node": "^24.0.0",
+    "@types/three": "0.181.0",
+    "@types/ws": "^8.18.2",
+    "gltf-validator": "^2.0.0-dev.3.10",
+    "tsx": "^4.20.6",
+    "typescript": "~5.9.3",
+    "vite": "^7.2.2"
+  }
+}

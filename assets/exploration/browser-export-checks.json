@@ -1,0 +1,110 @@
+{
+  "before": {
+    "triangles": 122436,
+    "meshes": 171,
+    "size": [
+      208,
+      85.5999984741211,
+      256
+    ],
+    "min": [
+      -104,
+      -4.5,
+      -142
+    ],
+    "max": [
+      104,
+      81.0999984741211,
+      114
+    ]
+  },
+  "reloaded": {
+    "stats": {
+      "triangles": 122436,
+      "meshes": 171,
+      "size": [
+        208,
+        85.5999984741211,
+        256
+      ],
+      "min": [
+        -104,
+        -4.5,
+        -142
+      ],
+      "max": [
+        104,
+        81.0999984741211,
+        114
+      ]
+    },
+    "groups": [
+      "HKU_Shanghai_Zhangjiang_Campus"
+    ],
+    "walking": false,
+    "orbit": true
+  },
+  "returnToExplore": {
+    "state": {
+      "position": [
+        52,
+        0.045,
+        33.5
+      ],
+      "yaw": 0,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": 0,
+      "lastClear": "mode/reset",
+      "keys": [],
+      "enabled": true
+    },
+    "imported": false,
+    "orbit": false
+  },
+  "walkAfterReload": {
+    "position": [
+      52,
+      0.045,
+      32.438333333333254
+    ],
+    "yaw": 0,
+    "pitch": 0.26,
+    "distance": 9,
+    "actualDistance": 9,
+    "turn": 0,
+    "lastClear": "keyup:KeyW",
+    "keys": [],
+    "enabled": true
+  },
+  "inputFocus": {
+    "before": [
+      52,
+      0.045,
+      33.5
+    ],
+    "after": [
+      52,
+      0.045,
+      33.5
+    ]
+  },
+  "simultaneousDrag": {
+    "position": [
+      53.24785986620273,
+      0.045,
+      31.654341624383
+    ],
+    "yaw": -0.6,
+    "pitch": 0.26,
+    "distance": 9,
+    "actualDistance": 9,
+    "turn": -0.5999982819584821,
+    "lastClear": "keyup:KeyR",
+    "keys": [
+      "KeyW"
+    ],
+    "enabled": true
+  }
+}

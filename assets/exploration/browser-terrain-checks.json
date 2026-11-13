@@ -1,0 +1,92 @@
+[
+  {
+    "test": "W climbs auditorium steps, isolated stair foot start",
+    "state": {
+      "position": [
+        4,
+        5.1000000000000005,
+        -50.718333333335245
+      ],
+      "yaw": 0,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": 0,
+      "lastClear": "keyup:KeyW",
+      "keys": [],
+      "enabled": true
+    }
+  },
+  {
+    "test": "S descends steps",
+    "state": {
+      "position": [
+        4,
+        0,
+        -26.7766666666668
+      ],
+      "yaw": 0,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": -3.1415926535897927,
+      "lastClear": "keyup:KeyS",
+      "keys": [],
+      "enabled": true
+    }
+  },
+  {
+    "test": "W walks onto descending ramp, isolated ramp start",
+    "state": {
+      "position": [
+        14,
+        -0.20607577613904038,
+        18.84666666666621
+      ],
+      "yaw": 0,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": 0,
+      "lastClear": "keyup:KeyW",
+      "keys": [],
+      "enabled": true
+    }
+  },
+  {
+    "test": "D blocked at map boundary, isolated start",
+    "state": {
+      "position": [
+        103.05499999999923,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 9,
+      "turn": -1.5707962961536035,
+      "lastClear": "keyup:KeyD",
+      "keys": [],
+      "enabled": true
+    }
+  },
+  {
+    "test": "wall-facing camera corrects its distance and orbit",
+    "state": {
+      "position": [
+        83,
+        0,
+        10
+      ],
+      "yaw": -0.17079632679489665,
+      "pitch": 0.26,
+      "distance": 9,
+      "actualDistance": 4.605985015896871,
+      "turn": -1.5707963267948966,
+      "lastClear": "mode/reset",
+      "keys": [],
+      "enabled": true
+    }
+  }
+]

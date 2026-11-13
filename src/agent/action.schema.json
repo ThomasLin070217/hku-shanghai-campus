@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HKU Campus Action v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "commandId",
+    "controlEpoch",
+    "durationMs"
+  ],
+  "properties": {
+    "commandId": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_.:-]{1,80}$"
+    },
+    "controlEpoch": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "durationMs": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "move": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "forward",
+        "right"
+      ],
+      "properties": {
+        "forward": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "right": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        }
+      }
+    },
+    "lookDelta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "yawDeg",
+        "pitchDeg"
+      ],
+      "properties": {
+        "yawDeg": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        },
+        "pitchDeg": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        }
+      }
+    },
+    "sprint": {
+      "type": "boolean"
+    },
+    "jump": {
+      "type": "boolean"
+    },
+    "switchView": {
+      "type": "boolean"
+    }
+  }
+}
