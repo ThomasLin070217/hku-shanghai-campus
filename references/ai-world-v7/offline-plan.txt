@@ -1,0 +1,25 @@
+
+> hku-shanghai-whole-campus@6.0.0 ai:atlas
+> tsx scripts/atlas-campus.ts plan
+
+{
+  "provider": "World Labs Atlas",
+  "sdk": "0.7.0",
+  "inputFrames": [
+    "U02-00-0000.08.jpg",
+    "U02-02-0000.71.jpg",
+    "U02-05-0001.67.jpg",
+    "U02-08-0002.62.jpg"
+  ],
+  "pipeline": [
+    "pose: photos → cameras + depth",
+    "splat: inspected poses → draft SPZ",
+    "mesh: SPZ → textured GLB"
+  ],
+  "output": "assets/ai-generated/b05-lounge-study.glb",
+  "targetFaces": 40000,
+  "textureSize": 2048,
+  "status": "offline plan; no upload, generation, or charge",
+  "execute": "Set WLT_API_KEY privately, then npm run ai:atlas -- pose; inspect poses before splat and mesh.",
+  "caution": "Single-video study with limited translation; hidden geometry and scale remain estimates."
+}

@@ -1,0 +1,27 @@
+{
+  "source": "User U02 video, Building 5 / 4F confirmed",
+  "purpose": "Atlas reconstruction study; not measured geometry",
+  "limitations": "Mostly rotation, limited translation, night light and blur. Selected overlapping frames inspected in contact sheet. Do not invent hidden dimensions.",
+  "frames": [
+    {
+      "file": "U02-00-0000.08.jpg",
+      "timestampSeconds": 0.08,
+      "sha256": "c4e9895a145a0083e25f0f7fea4df5f2e2a194e9369a581d6381a0087e50cff5"
+    },
+    {
+      "file": "U02-02-0000.71.jpg",
+      "timestampSeconds": 0.71,
+      "sha256": "a83e5960c5017e5bd8cefe7af5ee9082f1745e6c12d28ecb2a04d30c616bad08"
+    },
+    {
+      "file": "U02-05-0001.67.jpg",
+      "timestampSeconds": 1.67,
+      "sha256": "4290e81c1b8846511730440a26a2c874a9cc1e102d889534b9169ef6ce77ca24"
+    },
+    {
+      "file": "U02-08-0002.62.jpg",
+      "timestampSeconds": 2.62,
+      "sha256": "76db2480af2b5d960fa86dac0c28ede119849ed2e81620e67d66231f314eed57"
+    }
+  ]
+}

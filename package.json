@@ -17,7 +17,8 @@
     "check:v4": "tsx scripts/check-v4.ts",
     "check:video": "tsx scripts/check-video-details.ts",
     "check:gameplay": "tsx scripts/check-gameplay.ts",
-    "check:transport": "node scripts/check-agent-transport.mjs"
+    "check:transport": "node scripts/check-agent-transport.mjs",
+    "ai:atlas": "tsx scripts/atlas-campus.ts"
   },
   "dependencies": {
     "three": "0.181.2",
@@ -29,6 +30,7 @@
     "@types/node": "^24.0.0",
     "@types/three": "0.181.0",
     "@types/ws": "^8.18.2",
+    "@worldlabsai/client": "0.7.0",
     "gltf-validator": "^2.0.0-dev.3.10",
     "tsx": "^4.20.6",
     "typescript": "~5.9.3",

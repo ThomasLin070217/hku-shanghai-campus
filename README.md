@@ -1,5 +1,7 @@
 # 开源整合与物资练习 v6
 
+AI 3D 资产接入准备（2026-11-14）：[工具比较、实际测试与 Atlas 分步脚本](docs/AI-WORLD-ASSETS.md)。`npm run ai:atlas -- plan` 离线检查生成方案。Atlas 等待账号授权，TRELLIS.2 的 GLB 导出遇到免费 GPU 配额限制；尚未用 AI 生成资产替换当前校园。
+
 沿用 Vite + TypeScript + Three.js。新增 **XState 任务状态机、Kenney CC0 道具、E 拾取/提交、版本化练习存档**，修复控制器销毁后的事件与显存资源泄漏。建筑布局、玩家物理和本机 Agent 协议沿用现有版本。
 
 ```sh

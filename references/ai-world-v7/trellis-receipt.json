@@ -1,0 +1,13 @@
+{
+  "service": "microsoft/TRELLIS.2",
+  "input": "references/night-video/U02-00.71.jpg",
+  "seed": 1701,
+  "resolution": "512",
+  "started": 1794626003.71329,
+  "steps": [
+    "image_to_3d succeeded"
+  ],
+  "status": "failed",
+  "error": "You have exceeded your ZeroGPU quota (120s requested vs. 165s left). Try again in 23:59:40. Authenticate with a Hugging Face token for more quota - https://huggingface.co/settings/tokens",
+  "finished": 1794626031.422497
+}
