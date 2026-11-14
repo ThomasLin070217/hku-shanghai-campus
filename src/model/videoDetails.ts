@@ -1,13 +1,14 @@
+import {campusFont as font} from './fonts';
 import {addMonumentFace} from './monumentFace';
 import {subtractRects,promenadeCuts} from './groundLayout';
 import * as T from 'three';
 import {CALIBRATED_LAYOUT as CL} from './scaleCalibration';
-import {FontLoader} from 'three/addons/loaders/FontLoader.js';
+
 import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
-import fontData from 'three/examples/fonts/helvetiker_regular.typeface.json';
+
 import {VIDEO_DETAILS as V} from './videoDetailsParameters';
 import type {BuildingSpec} from './campusParameters';
-const font=new FontLoader().parse(fontData);
+
 export function addVideoDetails(environment:T.Group,circulation:T.Group,sports:T.Group,buildings:Map<string,T.Group>,specs:BuildingSpec[]){
  const root=new T.Group();root.name='Video_Observed_Exterior_Details';root.userData={source:'U03 00:00–03:08 / user IMG_4333.MOV',confidence:'observed-components; estimated dimensions and route placement'};environment.add(root);
  const mat=(name:string,color:number)=>new T.MeshStandardMaterial({name,color,roughness:.85});

@@ -1,15 +1,16 @@
+import {campusFont as font,campusSignFont as signFont} from './fonts';
 import {tagChildren,mergedTraces} from '../scene/authoring';
 import * as THREE from 'three';
 import {glassMaterial,pane,shallowDepth,GLAZING_DEPTH as GD} from './glazing';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
-import fontJSON from 'three/examples/fonts/helvetiker_regular.typeface.json';
-import signFontJSON from './sign-font.json';
+
+
 import { DEFAULT_PARAMETERS, validateParameters, type ModelParameters } from './parameters';
 
-const font = new FontLoader().parse(fontJSON);
-const signFont = new FontLoader().parse(signFontJSON);
+
+
 const mat=(name:string,color:number,roughness=.6,metalness=.08)=>new THREE.MeshStandardMaterial({name,color,roughness,metalness});
 const palette=()=>({
   core:mat('Opaque facade backing',0x43545a), glass:glassMaterial('office'),

@@ -1,10 +1,11 @@
+import {campusFont as font} from './fonts';
 import * as T from 'three';
-import {FontLoader} from 'three/addons/loaders/FontLoader.js';
+
 import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
-import fontData from 'three/examples/fonts/helvetiker_regular.typeface.json';
+
 import {signPhotoMaterial} from './nov14Details';
 
-const font=new FontLoader().parse(fontData);
+
 /** Black raised letters remain legible even while the reference crest is loading. */
 export function addMonumentFace(parent:T.Group,size:{width:number;height:number;depth:number}){
  const root=new T.Group();root.name='CDS_Monument_Lettering';

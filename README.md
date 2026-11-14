@@ -71,3 +71,5 @@ npm run play
 ### 剩余项收尾
 
 招牌照片独立无损加载，主程序约139kB；参数导入加固与WebGL反射恢复已完成。完整结果、测试与仍待验收项见 [剩余问题与收尾](docs/REMAINING-FIXES.md)。
+
+**最新代码卫生复核：** [逐项结论与验证](docs/REVIEW-FOLLOWUP-NOV14.md)。`npm test` 执行当前完整回归；CI 模板在 `docs/ci/campus-check.yml`；当前 GitHub 凭据缺少 workflow 权限，尚未启用自动运行。旧 v6 物资练习与重复 viewer 已移出当前代码，历史仍可在 Git 查询。

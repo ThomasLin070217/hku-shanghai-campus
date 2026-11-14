@@ -1,3 +1,4 @@
+import {campusFont as font} from './fonts';
 import {sceneRegistry} from '../scene/registry';
 import {driveSections,centralWalkLayout,subtractRects} from './groundLayout';
 import {decorateCampusLobby} from './observedInteriors';
@@ -13,13 +14,13 @@ import * as T from 'three';
 import {COLUMN_X,CALIBRATED_LAYOUT as CL,SCALE_CALIBRATION} from './scaleCalibration';
 
 import {LANDSCAPE as L} from '../exploration/config';
-import {FontLoader} from 'three/addons/loaders/FontLoader.js';
+
 import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
-import fontData from 'three/examples/fonts/helvetiker_regular.typeface.json';
+
 import {buildCampus,compact,disposeAsset} from './buildCampus';
 import {DEFAULT_PARAMETERS} from './parameters';
 import {BUILDINGS,SITE,validateCampus,type BuildingSpec,type SiteParameters} from './campusParameters';
-const font=new FontLoader().parse(fontData);
+
 const material=(name:string,color:number,roughness=.6,metalness=.15)=>new T.MeshStandardMaterial({name,color,roughness,metalness});
 function materials(){return {glass:glassMaterial('office'),dark:glassMaterial('reflective'),clear:glassMaterial('clear'),guard:glassMaterial('guard'),back:material('Opaque structural core',0x47575d),silver:material('Silver facade fins',0xd6dedb,.4,.38),frame:material('Mullion aluminium',0x93aeb2),roof:material('Roof membrane',0x8b9998),concrete:material('Limestone paving',0xc3c7be,.94),white:material('Ivory signage',0xeeeadd),road:material('Asphalt',0x6c7976,.95),grass:material('Lawn',0x8d9f69,1),leaf:material('Tree foliage',0x70885f,1),bark:material('Tree bark',0x796f5b,1),court:material('Sports turf',0x678c72,.95),blue:material('Jogging surface',0x648e97,.9),mesh:material('Fence steel',0x849b9b),equipment:material('Rooftop plant provisional',0xa8b3b0),yellow:material('Road marking',0xcbbb75)};}
 type M=ReturnType<typeof materials>;

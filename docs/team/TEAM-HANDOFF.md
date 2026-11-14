@@ -2,7 +2,7 @@
 
 版本：2026-11-13 / 团队实施草案。v5 基线为 `ceb7375`；v6 已增加下述练习模块。
 
-**v6 交接增量：** Harry 可直接复用 `src/gameplay/supplyQuest.ts` 的 XState 任务、去重与存档验证；WHL 可复用 `supplyScene.ts` 的近距离/遮挡检查和 E 交互入口。Kenney CC0 道具位于 `assets/third-party/kenney/`。物资练习不属于 Frost 的正式剧情。详情与限制见 ../../OPEN-SOURCE-V6.md。
+**当前交接入口：** Harry 从 `src/gameplay/survey.ts` 和 `scripts/check-survey.ts` 接手任务、去重与存档；WHL 参考 `landmarks.ts` 和 `experience.ts` 的交互/UI。旧 v6 物资练习及 XState 已退出当前工程，可从 Git 历史查询；Kenney CC0 道具仍保留。
 
 **怎么使用：** 四人先读本文，再把对应 `tasks/*.md` 和本仓库一起交给各自 Agent。不能只把任务文件发给一个无法访问仓库的 Agent，并假设它已拿到代码。职责是建议方案；NPC 名称、谜题与剧情梗概均为提案，尚未成为正式设定。
 

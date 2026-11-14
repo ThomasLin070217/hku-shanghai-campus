@@ -1,7 +1,8 @@
+import {campusFont as font} from './fonts';
 import * as T from 'three';
-import {FontLoader} from 'three/addons/loaders/FontLoader.js';import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';import fontData from 'three/examples/fonts/helvetiker_regular.typeface.json';
+import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
 import {glassMaterial,pane} from './glazing';import {compact}from './buildCampus';import {voxelizeMaterials}from '../voxel/materials';
-const font=new FontLoader().parse(fontData);
+
 export const INTERIORS={lobby:{width:18,depth:14,height:7.6},floor13:{width:18,depth:15,height:3.2},source:'User IMG_4347.MOV 03:14–04:05 / 04:49–05:00',scale:'All dimensions approximate; only photographed areas represented'};
 export function buildObservedInterior(kind:'lobby'|'floor13'){
  const root=new T.Group();root.name=kind==='lobby'?'CDS1_Observed_Lobby':'CDS1_13F_Public_Area';root.userData={source:INTERIORS.source,kind,parameters:INTERIORS[kind],confidence:INTERIORS.scale,scope:'Independent cutaway; not a full floor plan or functional elevator'};

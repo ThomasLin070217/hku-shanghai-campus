@@ -1,3 +1,5 @@
+> 历史资料：旧 v6 supplyQuest / supplyScene 与旧单楼 viewer 已在 2026-11-14 清理，可从提交 18d68d0 查看；当前任务入口为 src/gameplay/survey.ts。
+
 # 历史版本说明（不用于当前启动）
 
 # 开源整合与物资练习 v6
