@@ -20,8 +20,9 @@ export function addVideoDetails(environment:T.Group,circulation:T.Group,sports:T
  function uplight(x:number,z:number){box(root,'Landscape_uplight_housing',.20,.14,.24,x,.11,z,steel);box(root,'Landscape_uplight_lens',.16,.035,.16,x,.19,z,warm);}
  function sapling(x:number,z:number){box(root,'Slender_deciduous_tree',.16,3.7,.16,x,1.85,z,wood);for(const s of [-1,1]){beam(new T.Vector3(x+s*.5,.04,z+.2),new T.Vector3(x,1.7,z),.05);beam(new T.Vector3(x,2.2,z),new T.Vector3(x+s*.8,3.6,z+s*.25),.06);box(root,'Sparse_voxel_leaves',.65,.7,.55,x+s*.5,3.5,z+s*.25,leaf);}uplight(x-.45,z+.25);}
  for(const [i,p] of V.promenade.entries()){
+  const section=new T.Group();section.name=`R00${i+5}`;section.userData={sceneId:section.name,label:i?'北侧带状步道':'东侧带状步道',source:'U03',sourceFile:'src/model/videoDetails.ts'};root.add(section);
   const cuts=promenadeCuts(i);
-  const paving=(name:string,r:{x:number;z:number;width:number;depth:number},height:number,y:number,m:T.Material)=>{for(const part of subtractRects(r,cuts))box(root,name,part.width,height,part.depth,part.x,y,part.z,m);};
+  const paving=(name:string,r:{x:number;z:number;width:number;depth:number},height:number,y:number,m:T.Material)=>{for(const part of subtractRects(r,cuts))box(section,name,part.width,height,part.depth,part.x,y,part.z,m);};
   paving('Video_banded_promenade',p,V.pathHeight,V.pathHeight/2,stone);
   for(let z=p.z-p.depth/2+.5;z<p.z+p.depth/2;z+=2.6)paving('Contrasting_cross_band',{x:p.x,z,width:p.width,depth:.32},.008,V.pathHeight+.004,dark);
   for(const side of [-1,1])paving('Walkway_drain',{x:p.x+side*(p.width/2-.035),z:p.z,width:.07,depth:p.depth},.012,V.pathHeight+.006,steel);
@@ -29,12 +30,13 @@ export function addVideoDetails(environment:T.Group,circulation:T.Group,sports:T
  for(const p of V.hedgeCenters){box(root,'Trimmed_hedge_bed',1.65,.20,V.hedgeLength,p.x,.10,p.z,stone);box(root,'Low_voxel_hedge',1.55,.42,V.hedgeLength-.05,p.x,.41,p.z,leaf);sapling(p.x,p.z+2.3);}
  // Low linear beds along the northern facades leave the observed blue running strip unobstructed.
  for(const p of V.northernBeds){const x=p.x;box(root,'Northern_raised_bed',p.width,.32,2.6,x,.16,-90.5,stone);box(root,'Northern_low_hedge',p.width-.3,.45,2.3,x,.53,-90.5,leaf);uplight(x,-91.6);}
- const t=V.track;box(sports,'Observed_blue_two_way_track',t.width,t.height,t.depth,t.x,t.height/2,t.z,blue);
- for(const s of [-1,1])box(sports,'Track_white_edge',t.width,.009,.075,t.x,t.height+.006,t.z+s*(t.depth/2-.12),white);
- for(let x=-84;x<86;x+=3.5)box(sports,'Track_dashed_centre',1.6,.009,.075,x,t.height+.006,t.z,white);
+ const track=new T.Group();track.name='R010';track.userData={sceneId:'R010',label:'北侧蓝色跑道',sourceFile:'src/model/videoDetails.ts',source:'U03'};sports.add(track);
+ const t=V.track;box(track,'Observed_blue_two_way_track',t.width,t.height,t.depth,t.x,t.height/2,t.z,blue);
+ for(const s of [-1,1])box(track,'Track_white_edge',t.width,.009,.075,t.x,t.height+.006,t.z+s*(t.depth/2-.12),white);
+ for(let x=-84;x<86;x+=3.5)box(track,'Track_dashed_centre',1.6,.009,.075,x,t.height+.006,t.z,white);
  // Drain channel separates the jogging surface from the pedestrian margin.
- box(sports,'Track_side_drain',t.width,.012,.12,0,.07,t.z+t.depth/2+.10,steel);
- for(let x=-84;x<=84;x+=28)for(const lane of [-1,1]){const z=t.z+lane*.78;box(sports,'Track_direction_arrow',.65,.01,.08,x,.074,z,white);for(const s of [-1,1]){const a=box(sports,'Arrow_head',.42,.01,.07,x+lane*.18,.075,z+s*.12,white);a.rotation.y=lane*s*.6;}}
+ box(track,'Track_side_drain',t.width,.012,.12,0,.07,t.z+t.depth/2+.10,steel);
+ for(let x=-84;x<=84;x+=28)for(const lane of [-1,1]){const z=t.z+lane*.78;box(track,'Track_direction_arrow',.65,.01,.08,x,.074,z,white);for(const s of [-1,1]){const a=box(track,'Arrow_head',.42,.01,.07,x+lane*.18,.075,z+s*.12,white);a.rotation.y=lane*s*.6;}}
 
  for(let x=-24;x<79;x+=1.25)box(sports,'Fine_vertical_court_mesh',.015,3.8,.025,x,2,-104,steel);
  // A dark windscreen is observed on a section, not asserted for every court fence.

@@ -16,3 +16,6 @@ npm-debug.log*
 HKU-Shanghai-*-source.zip*
 work/
 dist-review/
+
+# Local design review cache; deliverable captures live in evidence/
+.impeccable/

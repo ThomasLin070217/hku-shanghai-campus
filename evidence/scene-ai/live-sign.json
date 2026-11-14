@@ -1,0 +1,75 @@
+
+> hku-shanghai-whole-campus@9.0.0 agent
+> node scripts/agent-cli.mjs entity S001
+
+{
+  "ok": true,
+  "revision": "cc6cd5cfd7fe",
+  "entity": {
+    "id": "S001",
+    "name": "计算与数据科学学院石牌",
+    "kind": "area",
+    "parentId": "A008",
+    "buildingId": null,
+    "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/CDS_Landscape_Monument#1",
+    "bounds": {
+      "min": [
+        28.2206,
+        0,
+        27.2763
+      ],
+      "max": [
+        34.0749,
+        2.05,
+        31.679
+      ]
+    },
+    "center": [
+      31.1478,
+      1.025,
+      29.4777
+    ],
+    "size": [
+      5.8543,
+      2.05,
+      4.4027
+    ],
+    "sourceFile": "src/model/videoDetails.ts",
+    "sourceAnchor": "CDS_Landscape_Monument",
+    "reference": "U03 00:17 + U06 02:55 panel close-up",
+    "confidence": "observed-components; estimated dimensions and route placement",
+    "editMode": "source"
+  },
+  "relativePosition": [
+    -1.8521999999999998,
+    0.9799999999999999,
+    -7.122300000000003
+  ],
+  "children": [
+    {
+      "id": "S001-P-6654dbace733",
+      "name": "Monument_grass_patch",
+      "kind": "part"
+    },
+    {
+      "id": "S001-P-9b751db9c6ec",
+      "name": "Pale_stone_sign",
+      "kind": "part"
+    },
+    {
+      "id": "S001-TEXT",
+      "name": "学院石牌黑字与校徽",
+      "kind": "area"
+    }
+  ],
+  "editGuide": {
+    "mode": "source",
+    "file": "src/model/videoDetails.ts",
+    "anchor": "CDS_Landscape_Monument",
+    "checks": [
+      "npm run check:scene",
+      "npm run check:all"
+    ],
+    "note": "Edit authoring parameters/code, not the merged mesh. Keep navigation consistent. No runtime coordinate-write endpoint."
+  }
+}

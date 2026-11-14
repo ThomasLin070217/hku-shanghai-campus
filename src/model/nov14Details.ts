@@ -12,7 +12,7 @@ export function addNov14Details(env:T.Group,circulation:T.Group,specs:BuildingSp
  const box=(g:T.Object3D,n:string,w:number,h:number,d:number,x:number,y:number,z:number,m:T.Material)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.name=n;o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;g.add(o);return o;};
  // Lawn and low plants beyond the north rim connect to the existing hall stair; leave a clear centre walk.
  const gl=NOV14.greenLink;for(const side of [-1,1]){box(root,'North_court_lawn',gl.bedWidth,.12,gl.depth,side*(gl.pathWidth/2+gl.bedWidth/2),.03,gl.centerZ,grass);box(root,'North_court_low_hedge',1.2,.42,gl.depth-1,side*13.1,.30,gl.centerZ,leaf);for(const z of [-20,-6]){box(root,'North_tree_trunk',.15,4.2,.15,side*10.5,2.1,z,bark);for(const [dx,h]of [[-.6,4.1],[.35,4.7],[.8,3.8]])box(root,'North_tree_leaf_cluster',1.1,.60,.95,side*10.5+dx,h,z+(dx*.5),leaf);}}
- box(root,'North_court_stair_link',gl.pathWidth,.04,29,0,.02,-12.5,ivory);
+ const walk=new T.Group();walk.name='R011';walk.userData={sceneId:'R011',label:'庭院北侧中央步道',sourceFile:'src/model/nov14Details.ts'};root.add(walk);box(walk,'North_court_stair_link',gl.pathWidth,.04,29,0,.02,-12.5,ivory);
  // Continuous low perimeter planting follows the courtyard, rather than scattered round bushes.
  for(let i=0;i<80;i++){const a=(i+.5)/80*Math.PI*2,rx=site.plazaRadiusX+1.15,rz=site.plazaRadiusZ+1.15,x=site.plazaX+rx*Math.cos(a),z=site.plazaZ+rz*Math.sin(a);if(Math.abs(x)<3&&Math.abs(z-site.plazaZ)>site.plazaRadiusZ-2)continue;const o=box(root,'Curved_low_hedge',1.45,.43,1.05,x,.245,z,leaf);o.rotation.y=-Math.atan2(rz*Math.cos(a),-rx*Math.sin(a));}
  // Elevated enclosed connection in U06 01:20–01:39. Gap and metrics remain editable estimates.

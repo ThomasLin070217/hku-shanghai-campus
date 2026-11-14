@@ -1,3 +1,4 @@
+import {tagChildren,mergedTraces} from '../scene/authoring';
 import * as THREE from 'three';
 import {glassMaterial,pane,shallowDepth,GLAZING_DEPTH as GD} from './glazing';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
@@ -42,6 +43,7 @@ function cylinder(g:THREE.Object3D,name:string,r:number,h:number,pos:number[],m:
 /** Merge repeated primitives by material *within* each named semantic group.
  * The GLB retains component groups, while reducing draw calls. All faces are geometry. */
 export function compact(g:THREE.Group){
+  tagChildren(g);
   for(const child of [...g.children]) if(child instanceof THREE.Group) compact(child);
   const buckets=new Map<THREE.Material,THREE.Mesh[]>();
   for(const c of g.children) if(c instanceof THREE.Mesh && !Array.isArray(c.material)){
@@ -57,7 +59,7 @@ export function compact(g:THREE.Group){
     if(!geometry)throw new Error(`Cannot merge ${g.name}`);
     geometry.computeBoundingSphere();
     const combined=new THREE.Mesh(geometry,material);combined.name=`${g.name}__${material.name}`;
-    combined.castShadow=material.userData.surfaceRole!=='glass';combined.receiveShadow=material.userData.surfaceRole!=='glass';combined.userData={...g.userData,...meshes[0].userData,primitiveCount:meshes.reduce((n,m)=>n+(m.userData.primitiveCount??1),0)};
+    combined.castShadow=material.userData.surfaceRole!=='glass';combined.receiveShadow=material.userData.surfaceRole!=='glass';combined.userData={...g.userData,...meshes[0].userData,primitiveCount:meshes.reduce((n,m)=>n+(m.userData.primitiveCount??1),0),authorParts:mergedTraces(meshes)};
     meshes.forEach(m=>{g.remove(m);m.geometry.dispose();});g.add(combined);
   }
 }

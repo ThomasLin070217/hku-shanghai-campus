@@ -182,10 +182,10 @@
   },
   "assets": {
     "HKU-Shanghai-Campus": {
-      "bytes": 17130540,
+      "bytes": 21757416,
       "before": {
         "triangles": 165608,
-        "meshes": 1050,
+        "meshes": 1062,
         "size": [
           208,
           85.59999848008155,
@@ -204,7 +204,7 @@
       },
       "after": {
         "triangles": 165608,
-        "meshes": 1050,
+        "meshes": 1062,
         "size": [
           208,
           85.59999848008155,
@@ -224,10 +224,10 @@
       "reload": "passed"
     },
     "HKU-Shanghai-Campus-no-ground": {
-      "bytes": 14234640,
+      "bytes": 18356880,
       "before": {
         "triangles": 137350,
-        "meshes": 1001,
+        "meshes": 1004,
         "size": [
           190,
           85.59999848008155,
@@ -246,7 +246,7 @@
       },
       "after": {
         "triangles": 137350,
-        "meshes": 1001,
+        "meshes": 1004,
         "size": [
           190,
           85.59999848008155,
@@ -266,7 +266,7 @@
       "reload": "passed"
     },
     "buildings/B01": {
-      "bytes": 1111120,
+      "bytes": 1578492,
       "before": {
         "triangles": 10674,
         "meshes": 76,
@@ -308,7 +308,7 @@
       "reload": "passed"
     },
     "buildings/B02": {
-      "bytes": 1025088,
+      "bytes": 1447664,
       "before": {
         "triangles": 9778,
         "meshes": 76,
@@ -350,7 +350,7 @@
       "reload": "passed"
     },
     "buildings/B03": {
-      "bytes": 3287328,
+      "bytes": 4409000,
       "before": {
         "triangles": 32622,
         "meshes": 135,
@@ -392,7 +392,7 @@
       "reload": "passed"
     },
     "buildings/B04": {
-      "bytes": 3961508,
+      "bytes": 5106692,
       "before": {
         "triangles": 39356,
         "meshes": 161,
@@ -434,7 +434,7 @@
       "reload": "passed"
     },
     "buildings/B05": {
-      "bytes": 607516,
+      "bytes": 797236,
       "before": {
         "triangles": 5576,
         "meshes": 63,
@@ -476,7 +476,7 @@
       "reload": "passed"
     },
     "buildings/B06": {
-      "bytes": 565940,
+      "bytes": 685300,
       "before": {
         "triangles": 4888,
         "meshes": 87,
@@ -518,7 +518,7 @@
       "reload": "passed"
     },
     "buildings/B07": {
-      "bytes": 606808,
+      "bytes": 791880,
       "before": {
         "triangles": 5576,
         "meshes": 63,
@@ -602,7 +602,7 @@
       "reload": "passed"
     },
     "B05-4F-Stepped-Lounge": {
-      "bytes": 414708,
+      "bytes": 486692,
       "before": {
         "triangles": 4080,
         "meshes": 20,
@@ -644,7 +644,7 @@
       "reload": "passed"
     },
     "CDS1-Observed-Lobby": {
-      "bytes": 287648,
+      "bytes": 310240,
       "before": {
         "triangles": 2684,
         "meshes": 29,
@@ -686,7 +686,7 @@
       "reload": "passed"
     },
     "CDS1-13F-Public-Area": {
-      "bytes": 132568,
+      "bytes": 148000,
       "before": {
         "triangles": 1172,
         "meshes": 18,

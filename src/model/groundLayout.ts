@@ -19,7 +19,8 @@ export function subtractRects(base:GroundRect,cuts:GroundRect[]):GroundRect[]{
  });
  return pieces;
 }
-export function driveLayout(){return DRIVE_RECTS.flatMap((r,i)=>subtractRects(r,[GRAND_STAIR_FOOTPRINT,...DRIVE_RECTS.slice(0,i)]));}
+export function driveSections(){return DRIVE_RECTS.map((r,i)=>({id:`R00${i+1}`,name:['西侧车道','东侧车道','北侧横向车道','南侧横向车道'][i],parts:subtractRects(r,[GRAND_STAIR_FOOTPRINT,...DRIVE_RECTS.slice(0,i)])}));}
+export function driveLayout(){return driveSections().flatMap(s=>s.parts);}
 export function promenadeCuts(index:number){return [...DRIVE_RECTS,...V.promenade.slice(0,index)];}
 export function promenadeLayout(){return V.promenade.flatMap((r,i)=>subtractRects(r,promenadeCuts(i)));}
 export function centralWalkLayout(s:SiteParameters){

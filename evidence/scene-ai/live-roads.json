@@ -1,0 +1,399 @@
+
+> hku-shanghai-whole-campus@9.0.0 agent
+> node scripts/agent-cli.mjs entities {"kind":"road","limit":15}
+
+{
+  "ok": true,
+  "schema": "hku-scene/1",
+  "revision": "cc6cd5cfd7fe",
+  "total": 11,
+  "offset": 0,
+  "limit": 15,
+  "items": [
+    {
+      "id": "R001",
+      "name": "西侧车道",
+      "kind": "road",
+      "parentId": "A002",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Roads_and_Paving#1/R001#1",
+      "bounds": {
+        "min": [
+          -97.5,
+          0,
+          -96.5
+        ],
+        "max": [
+          -90.5,
+          0.05,
+          96.5
+        ]
+      },
+      "center": [
+        -94,
+        0.025,
+        0
+      ],
+      "size": [
+        7,
+        0.05,
+        193
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "R001",
+      "reference": "M01,A03,A04",
+      "confidence": "inferred-layout",
+      "editMode": "source"
+    },
+    {
+      "id": "R002",
+      "name": "东侧车道",
+      "kind": "road",
+      "parentId": "A002",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Roads_and_Paving#1/R002#1",
+      "bounds": {
+        "min": [
+          90.5,
+          0,
+          -96.5
+        ],
+        "max": [
+          97.5,
+          0.05,
+          96.5
+        ]
+      },
+      "center": [
+        94,
+        0.025,
+        0
+      ],
+      "size": [
+        7,
+        0.05,
+        193
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "R002",
+      "reference": "M01,A03,A04",
+      "confidence": "inferred-layout",
+      "editMode": "source"
+    },
+    {
+      "id": "R003",
+      "name": "北侧横向车道",
+      "kind": "road",
+      "parentId": "A002",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Roads_and_Paving#1/R003#1",
+      "bounds": {
+        "min": [
+          -90.5,
+          0,
+          -47.5
+        ],
+        "max": [
+          90.5,
+          0.05,
+          -40.5
+        ]
+      },
+      "center": [
+        0,
+        0.025,
+        -44
+      ],
+      "size": [
+        181,
+        0.05,
+        7
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "R003",
+      "reference": "M01,A03,A04",
+      "confidence": "inferred-layout",
+      "editMode": "source"
+    },
+    {
+      "id": "R004",
+      "name": "南侧横向车道",
+      "kind": "road",
+      "parentId": "A002",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Roads_and_Paving#1/R004#1",
+      "bounds": {
+        "min": [
+          -94,
+          0,
+          94.5
+        ],
+        "max": [
+          94,
+          0.05,
+          101.5
+        ]
+      },
+      "center": [
+        0,
+        0.025,
+        98
+      ],
+      "size": [
+        188,
+        0.05,
+        7
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "R004",
+      "reference": "M01,A03,A04",
+      "confidence": "inferred-layout",
+      "editMode": "source"
+    },
+    {
+      "id": "R005",
+      "name": "东侧带状步道",
+      "kind": "road",
+      "parentId": "A008",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/R005#1",
+      "bounds": {
+        "min": [
+          21.9,
+          0,
+          -48
+        ],
+        "max": [
+          26.1,
+          0.047,
+          40
+        ]
+      },
+      "center": [
+        24,
+        0.0235,
+        -4
+      ],
+      "size": [
+        4.2,
+        0.047,
+        88
+      ],
+      "sourceFile": "src/model/videoDetails.ts",
+      "sourceAnchor": "R005",
+      "reference": "U03",
+      "confidence": "observed-components; estimated dimensions and route placement",
+      "editMode": "source"
+    },
+    {
+      "id": "R006",
+      "name": "北侧带状步道",
+      "kind": "road",
+      "parentId": "A008",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/R006#1",
+      "bounds": {
+        "min": [
+          22.9,
+          0,
+          -93
+        ],
+        "max": [
+          27.1,
+          0.047,
+          -47.5
+        ]
+      },
+      "center": [
+        25,
+        0.0235,
+        -70.25
+      ],
+      "size": [
+        4.2,
+        0.047,
+        45.5
+      ],
+      "sourceFile": "src/model/videoDetails.ts",
+      "sourceAnchor": "R006",
+      "reference": "U03",
+      "confidence": "observed-components; estimated dimensions and route placement",
+      "editMode": "source"
+    },
+    {
+      "id": "R007",
+      "name": "南草坪西侧步道",
+      "kind": "road",
+      "parentId": "A002",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Roads_and_Paving#1/R007#1",
+      "bounds": {
+        "min": [
+          -18.3,
+          0,
+          49
+        ],
+        "max": [
+          -15.3,
+          0.07,
+          94.5
+        ]
+      },
+      "center": [
+        -16.8,
+        0.035,
+        71.75
+      ],
+      "size": [
+        3,
+        0.07,
+        45.5
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "R007",
+      "reference": "M01,A03",
+      "confidence": "inferred-layout",
+      "editMode": "source"
+    },
+    {
+      "id": "R008",
+      "name": "南草坪东侧步道",
+      "kind": "road",
+      "parentId": "A002",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Roads_and_Paving#1/R008#1",
+      "bounds": {
+        "min": [
+          15.3,
+          0,
+          49
+        ],
+        "max": [
+          18.3,
+          0.07,
+          94.5
+        ]
+      },
+      "center": [
+        16.8,
+        0.035,
+        71.75
+      ],
+      "size": [
+        3,
+        0.07,
+        45.5
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "R008",
+      "reference": "M01,A03",
+      "confidence": "inferred-layout",
+      "editMode": "source"
+    },
+    {
+      "id": "R009",
+      "name": "CDS-1 门前到达车道",
+      "kind": "road",
+      "parentId": "A007",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/CDS1_Entrance_Forecourt#1/R009#1",
+      "bounds": {
+        "min": [
+          26.15,
+          0.005,
+          30.25
+        ],
+        "max": [
+          89.85,
+          0.045,
+          36.75
+        ]
+      },
+      "center": [
+        58,
+        0.025,
+        33.5
+      ],
+      "size": [
+        63.7,
+        0.04,
+        6.5
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "R009",
+      "reference": "R01",
+      "confidence": "observed-components_estimated-layout",
+      "editMode": "source"
+    },
+    {
+      "id": "R010",
+      "name": "北侧蓝色跑道",
+      "kind": "road",
+      "parentId": "A014",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/R010#1",
+      "bounds": {
+        "min": [
+          -87,
+          0,
+          -99.6
+        ],
+        "max": [
+          87,
+          0.08,
+          -96.24
+        ]
+      },
+      "center": [
+        0,
+        0.04,
+        -97.92
+      ],
+      "size": [
+        174,
+        0.08,
+        3.36
+      ],
+      "sourceFile": "src/model/videoDetails.ts",
+      "sourceAnchor": "R010",
+      "reference": "U03",
+      "confidence": "confirmed-types_provisional-layout",
+      "editMode": "source"
+    },
+    {
+      "id": "R011",
+      "name": "庭院北侧中央步道",
+      "kind": "road",
+      "parentId": "A010",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/U06_Daylight_Details#1/R011#1",
+      "bounds": {
+        "min": [
+          -2,
+          0,
+          -27
+        ],
+        "max": [
+          2,
+          0.04,
+          2
+        ]
+      },
+      "center": [
+        0,
+        0.02,
+        -12.5
+      ],
+      "size": [
+        4,
+        0.04,
+        29
+      ],
+      "sourceFile": "src/model/nov14Details.ts",
+      "sourceAnchor": "R011",
+      "reference": "references/nov14-video/REPORT.md",
+      "confidence": "observed components, approximate positions and dimensions",
+      "editMode": "source"
+    }
+  ]
+}

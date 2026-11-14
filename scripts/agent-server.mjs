@@ -1,3 +1,4 @@
+import {capabilities,protocolVersion} from './agent-tools.mjs';
 import http from 'node:http';
 import {WebSocketServer,WebSocket} from 'ws';
 import {randomUUID} from 'node:crypto';
@@ -9,14 +10,17 @@ function rpc(method,args){return new Promise(resolve=>{if(!ready())return resolv
 const server=http.createServer(async(req,res)=>{
  if(req.headers.origin&&!allowed.has(req.headers.origin))return send(res,403,{ok:false,error:'origin_rejected'});
  const host=req.headers.host?.split(':')[0];if(!['127.0.0.1','localhost'].includes(host))return send(res,403,{ok:false,error:'host_rejected'});
- const path=new URL(req.url,'http://localhost').pathname;
- if(req.method==='GET'&&path==='/health')return send(res,200,{ok:true,ready:ready(),protocolVersion:'hku-campus/1.2',listen:'127.0.0.1'});
+ let url;try{url=new URL(req.url,'http://localhost');}catch{return send(res,400,{ok:false,error:'invalid_url'});}const path=url.pathname;
+ if(req.method==='GET'&&path==='/health')return send(res,200,{ok:true,ready:ready(),protocolVersion,listen:'127.0.0.1'});
+ if(req.method==='GET'&&path==='/capabilities')return send(res,200,capabilities(ready()));
  let method,args={};
  if(req.method==='GET'&&path==='/observe')method='observe';
- else if(req.method==='GET'&&path.startsWith('/commands/')){method='command';args={commandId:decodeURIComponent(path.slice(10))};}
- else if(req.method==='POST'&&['/acquireControl','/act','/stop','/releaseControl','/screenshot'].includes(path)){
+ else if(req.method==='GET'&&path==='/entities'){method='entities';try{for(const [key,value] of url.searchParams){if(['offset','limit','radius'].includes(key))args[key]=Number(value);else if(key==='near')args[key]=JSON.parse(value);else args[key]=value;}}catch{return send(res,400,{ok:false,error:'invalid_query'});}}
+ else if(req.method==='GET'&&path.startsWith('/entities/')){method='entity';try{args={id:decodeURIComponent(path.slice(10))};}catch{return send(res,400,{ok:false,error:'invalid_entity_id'});}}
+ else if(req.method==='GET'&&path.startsWith('/commands/')){method='command';try{args={commandId:decodeURIComponent(path.slice(10))};}catch{return send(res,400,{ok:false,error:'invalid_command_id'});}}
+ else if(req.method==='POST'&&['/acquireControl','/act','/stop','/releaseControl','/screenshot','/scene/select'].includes(path)){
   if(!req.headers['content-type']?.startsWith('application/json'))return send(res,415,{ok:false,error:'json_required'});
-  let body='';try{for await(const chunk of req){body+=chunk;if(body.length>16384)return send(res,413,{ok:false,error:'body_too_large'});}args=JSON.parse(body||'{}');if(!args||typeof args!=='object'||Array.isArray(args))throw Error();}catch{return send(res,400,{ok:false,error:'invalid_json'});}method=path.slice(1);
+  let body='';try{for await(const chunk of req){body+=chunk;if(body.length>16384)return send(res,413,{ok:false,error:'body_too_large'});}args=JSON.parse(body||'{}');if(!args||typeof args!=='object'||Array.isArray(args))throw Error();}catch{return send(res,400,{ok:false,error:'invalid_json'});}method=path==='/scene/select'?'selectEntity':path.slice(1);
  }else return send(res,404,{ok:false,error:'not_found'});
  const result=await rpc(method,args);send(res,result.error==='not_ready'?503:result.ok===false?409:200,result);
 });

@@ -1,4 +1,5 @@
-import {driveLayout,centralWalkLayout,subtractRects} from './groundLayout';
+import {sceneRegistry} from '../scene/registry';
+import {driveSections,centralWalkLayout,subtractRects} from './groundLayout';
 import {decorateCampusLobby} from './observedInteriors';
 import {addNov14Details} from './nov14Details';
 import {addObservedCourtyard} from './courtyard';
@@ -92,13 +93,13 @@ function landscape(root:T.Group,circulation:T.Group,s:SiteParameters,m:M){
  // True hole in paving: coordinate transform maps Shape XY to world XZ.
  const sh=new T.Shape();const z0=s.centerZ-s.depth/2,z1=s.centerZ+s.depth/2;sh.moveTo(-s.width/2,-z0);sh.lineTo(s.width/2,-z0);sh.lineTo(s.width/2,-z1);sh.lineTo(-s.width/2,-z1);sh.closePath();const hole=new T.Path();hole.absellipse(s.plazaX,-s.plazaZ,s.plazaRadiusX,s.plazaRadiusZ,0,Math.PI*2,true,0);sh.holes.push(hole);
  const geo=new T.ExtrudeGeometry(sh,{depth:.6,bevelEnabled:false,curveSegments:48});geo.rotateX(-Math.PI/2);geo.translate(0,-.6,0);mesh(ground,'Perforated_site_paving',geo,m.concrete);
- for(const r of driveLayout())box(paths,'Joined_drive',r.width,.05,r.depth,r.x,.025,r.z,m.road);
+ for(const road of driveSections()){const section=group(paths,road.id,'M01,A03,A04','inferred-layout');section.userData.sceneId=road.id;section.userData.label=road.name;for(const r of road.parts)box(section,'Joined_drive',r.width,.05,r.depth,r.x,.025,r.z,m.road);}
  for(let z=-88;z<94;z+=10)for(const x of [-94,94])if(z+1.75< -47.5||z-1.75> -40.5)box(paths,'Lane_dash',.12,.012,3.5,x,.056,z,m.yellow);
  for(let x=-85;x<90;x+=10)box(paths,'Lane_dash',3.5,.012,.12,x,.056,98,m.yellow);
  // Lawn now occupies south central forecourt; no obsolete planned fountain is invented.
  box(green,'South_lawn',28,.16,40,0,.05,73,m.grass);
  text(green,'HKU',3.2,0,.2,91,m.white);
- for(const r of centralWalkLayout(s))box(paths,'Central_walk',r.width,.07,r.depth,r.x,.035,r.z,m.concrete);
+ for(const [i,r] of centralWalkLayout(s).entries()){const section=group(paths,`R00${i+7}`,'M01,A03','inferred-layout');section.userData.sceneId=section.name;section.userData.label=i?'南草坪东侧步道':'南草坪西侧步道';box(section,'Central_walk',r.width,.07,r.depth,r.x,.035,r.z,m.concrete);}
  for(const z of [-94,-27,92])for(const x of [-COLUMN_X,COLUMN_X])box(green,'Planting_bed',55,.14,3.5,x,.1,z,m.grass);
  function tree(x:number,z:number,h=s.treeHeight){box(green,'Block_tree_trunk',.44,h*.70,.44,x,h*.35,z,m.bark);for(const [dx,dy,dz,w,ht] of [[0,.77,0,.65,.35],[-.18,.66,.10,.42,.28],[.19,.69,-.09,.38,.28],[0,1.00,0,.42,.22]])box(green,'Block_leaf_cluster',h*w,h*ht,h*w,x+dx*h,h*dy,z+dz*h,m.leaf);}
  for(let z=-94;z<=94;z+=13)for(const x of [-101,101])tree(x,z);
@@ -130,10 +131,10 @@ export function buildSite(specs:BuildingSpec[]=BUILDINGS.map(b=>({...b})),site:S
  }
  landscape(environment,circulation,site,m);
  // Raised inner walks, tower-to-tower spans and a circular oculus opening.
- for(const x of [CL.westWalkX]){if(x<0){box(circulation,'Inner_walk_north',4.4,.4,85,x,site.bridgeHeight,-15,m.silver);box(circulation,'Inner_walk_south',4.4,.4,15,x,site.bridgeHeight,50,m.silver);}else box(circulation,'Inner_colonnade_deck',4.4,.4,115,x,site.bridgeHeight,0,m.silver);for(let z=-52;z<=55;z+=12)if(z<27.5||z>42.5)box(circulation,'Column',.6,site.bridgeHeight,.6,x,site.bridgeHeight/2,z,m.silver);for(const side of [-1,1]){const rail=new T.Group();rail.name='Walkway_glass_guard';circulation.add(rail);for(const [start,end]of [[-57.5,27.5],[42.5,57.5]]){for(let z=start;z<end;z+=2.5)pane(rail,'Guard_glass',2.45,1.0,x+side*2.2,site.bridgeHeight+.7,z+1.25,m.guard,Math.PI/2);box(rail,'Opaque_top_rail',.075,.065,end-start,x+side*2.2,site.bridgeHeight+1.23,(start+end)/2,m.frame);for(let z=start;z<=end;z+=2.5)box(rail,'Guard_post',.065,1.1,.065,x+side*2.2,site.bridgeHeight+.7,z,m.frame);}}}
+ for(const x of [CL.westWalkX]){const raised=group(circulation,'R012','A02,A08','visible-features_inferred-connections');raised.userData={...raised.userData,sceneId:'R012',label:'西侧架空步道（高架）'};if(x<0){box(raised,'Inner_walk_north',4.4,.4,85,x,site.bridgeHeight,-15,m.silver);box(raised,'Inner_walk_south',4.4,.4,15,x,site.bridgeHeight,50,m.silver);}else box(raised,'Inner_colonnade_deck',4.4,.4,115,x,site.bridgeHeight,0,m.silver);for(let z=-52;z<=55;z+=12)if(z<27.5||z>42.5)box(raised,'Column',.6,site.bridgeHeight,.6,x,site.bridgeHeight/2,z,m.silver);for(const side of [-1,1]){const rail=new T.Group();rail.name='Walkway_glass_guard';raised.add(rail);for(const [start,end]of [[-57.5,27.5],[42.5,57.5]]){for(let z=start;z<end;z+=2.5)pane(rail,'Guard_glass',2.45,1.0,x+side*2.2,site.bridgeHeight+.7,z+1.25,m.guard,Math.PI/2);box(rail,'Opaque_top_rail',.075,.065,end-start,x+side*2.2,site.bridgeHeight+1.23,(start+end)/2,m.frame);for(let z=start;z<=end;z+=2.5)box(rail,'Guard_post',.065,1.1,.065,x+side*2.2,site.bridgeHeight+.7,z,m.frame);}}}
  // R01 shows no bridge over the CDS-1 entrance: remove unsupported tower-pair spans.
 
- for(const x of [-23,23])box(circulation,'Auditorium_link',12,.45,5,x,9,-70,m.silver);
+ for(const [i,x] of [-23,23].entries()){const link=group(circulation,`R01${i+3}`,'A06','inferred-connection');link.userData={...link.userData,sceneId:link.name,label:i?'礼堂东侧连接平台（高架）':'礼堂西侧连接平台（高架）'};box(link,'Auditorium_link',12,.45,5,x,9,-70,m.silver);}
  const oculus=group(circulation,'Oculus_Pavilion','A08,N08,N09','confirmed-feature_position-estimated');oculus.position.set(CL.westWalkX,0,35);
  ribbon(oculus,'Open_oculus_canopy',6,6,3,0,0,0,Math.PI*2,site.bridgeHeight+.2,site.bridgeHeight+.2,m.silver,.4);
  for(const [x,z]of [[-5,-5],[5,-5],[-5,5],[5,5]])box(oculus,'Oculus_column',.6,site.bridgeHeight,.6,x,site.bridgeHeight/2,z,m.silver);
@@ -142,7 +143,7 @@ export function buildSite(specs:BuildingSpec[]=BUILDINGS.map(b=>({...b})),site:S
 
  buildEntranceExterior(environment,specs.find(b=>b.id==='B04')!,m);
  const edge=group(environment,'Exploration_boundary','prototype','provisional-limit_not-campus-fence-survey');for(const k of [-1,1]){box(edge,'Boundary_kerb',.3,.3,site.depth,k*(site.width/2-.5),.15,site.centerZ,m.silver);box(edge,'Boundary_kerb',site.width,.3,.3,0,.15,site.centerZ+k*(site.depth/2-.5),m.silver);}for(let x=-site.width/2+2;x<site.width/2;x+=8)for(const k of [-1,1])box(edge,'Boundary_post',.14,1.1,.14,x,.55,site.centerZ+k*(site.depth/2-.5),m.frame);
- addLandscapeDetails(environment,specs,site);buildSports(sports,site,m);addVideoDetails(environment,circulation,sports,byId,specs);addNov13Details(environment,circulation,site);addNov14Details(environment,circulation,specs,site);compact(root);voxelizeMaterials(root);return{root,buildings,environment,circulation,sports,byId,parameters:specs.map(b=>({...b})),site:{...site}};
+ addLandscapeDetails(environment,specs,site);buildSports(sports,site,m);addVideoDetails(environment,circulation,sports,byId,specs);addNov13Details(environment,circulation,site);addNov14Details(environment,circulation,specs,site);compact(root);voxelizeMaterials(root);sceneRegistry(root);return{root,buildings,environment,circulation,sports,byId,parameters:specs.map(b=>({...b})),site:{...site}};
 }
 function buildSports(g:T.Group,s:SiteParameters,m:M){const z=s.sportsZ;g.userData={...g.userData,warning:'Court sequence, dimensions and hall location provisional; current facilities C03, planning R02'};
  box(g,'Sports_strip',s.sportsWidth,.12,s.sportsDepth,0,.08,z,m.blue);
@@ -164,7 +165,7 @@ function buildSports(g:T.Group,s:SiteParameters,m:M){const z=s.sportsZ;g.userDat
 function buildEntranceExterior(parent:T.Group,b:BuildingSpec,m:M){
  const g=group(parent,'CDS1_Entrance_Forecourt','R01 official CDS-1 entrance','observed-components_estimated-layout');g.position.set(b.x,0,b.z);g.rotation.y=b.rotation*Math.PI/180;const f=b.depth/2;
  box(g,'Entrance_paving',b.width,.08,9.6,0,.04,f+4.9,m.concrete);
- box(g,'Front_arrival_lane',b.width+4,.04,6.5,0,.025,f+13,m.road);
+ const lane=group(g,'R009','R01','observed-components_estimated-layout');lane.userData.sceneId='R009';lane.userData.label='CDS-1 门前到达车道';box(lane,'Front_arrival_lane',b.width+4,.04,6.5,0,.025,f+13,m.road);
  for(const dz of [10.3,15.8])box(g,'Yellow_kerb_line',b.width+4,.012,.10,0,.052,f+dz,m.yellow);
  for(let x=-b.width/2;x<b.width/2;x+=1.2)box(g,'Long_paving_joint',.018,.01,9.4,x,.085,f+4.9,m.roof);
  const longitudinal=[];for(let x=-b.width/2;x<b.width/2;x+=1.2)longitudinal.push({x,z:f+4.9,width:.018,depth:9.4});

@@ -1,0 +1,1520 @@
+Found 11 roads; S001 → src/model/videoDetails.ts
+[
+  {
+    "tool": "campus_entities",
+    "args": {
+      "kind": "road",
+      "limit": 20
+    },
+    "result": {
+      "ok": true,
+      "schema": "hku-scene/1",
+      "revision": "cc6cd5cfd7fe",
+      "total": 11,
+      "offset": 0,
+      "limit": 20,
+      "items": [
+        {
+          "id": "R001",
+          "name": "西侧车道",
+          "kind": "road",
+          "parentId": "A002",
+          "buildingId": null,
+          "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Roads_and_Paving#1/R001#1",
+          "bounds": {
+            "min": [
+              -97.5,
+              0,
+              -96.5
+            ],
+            "max": [
+              -90.5,
+              0.05,
+              96.5
+            ]
+          },
+          "center": [
+            -94,
+            0.025,
+            0
+          ],
+          "size": [
+            7,
+            0.05,
+            193
+          ],
+          "sourceFile": "src/model/buildSite.ts",
+          "sourceAnchor": "R001",
+          "reference": "M01,A03,A04",
+          "confidence": "inferred-layout",
+          "editMode": "source"
+        },
+        {
+          "id": "R002",
+          "name": "东侧车道",
+          "kind": "road",
+          "parentId": "A002",
+          "buildingId": null,
+          "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Roads_and_Paving#1/R002#1",
+          "bounds": {
+            "min": [
+              90.5,
+              0,
+              -96.5
+            ],
+            "max": [
+              97.5,
+              0.05,
+              96.5
+            ]
+          },
+          "center": [
+            94,
+            0.025,
+            0
+          ],
+          "size": [
+            7,
+            0.05,
+            193
+          ],
+          "sourceFile": "src/model/buildSite.ts",
+          "sourceAnchor": "R002",
+          "reference": "M01,A03,A04",
+          "confidence": "inferred-layout",
+          "editMode": "source"
+        },
+        {
+          "id": "R003",
+          "name": "北侧横向车道",
+          "kind": "road",
+          "parentId": "A002",
+          "buildingId": null,
+          "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Roads_and_Paving#1/R003#1",
+          "bounds": {
+            "min": [
+              -90.5,
+              0,
+              -47.5
+            ],
+            "max": [
+              90.5,
+              0.05,
+              -40.5
+            ]
+          },
+          "center": [
+            0,
+            0.025,
+            -44
+          ],
+          "size": [
+            181,
+            0.05,
+            7
+          ],
+          "sourceFile": "src/model/buildSite.ts",
+          "sourceAnchor": "R003",
+          "reference": "M01,A03,A04",
+          "confidence": "inferred-layout",
+          "editMode": "source"
+        },
+        {
+          "id": "R004",
+          "name": "南侧横向车道",
+          "kind": "road",
+          "parentId": "A002",
+          "buildingId": null,
+          "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Roads_and_Paving#1/R004#1",
+          "bounds": {
+            "min": [
+              -94,
+              0,
+              94.5
+            ],
+            "max": [
+              94,
+              0.05,
+              101.5
+            ]
+          },
+          "center": [
+            0,
+            0.025,
+            98
+          ],
+          "size": [
+            188,
+            0.05,
+            7
+          ],
+          "sourceFile": "src/model/buildSite.ts",
+          "sourceAnchor": "R004",
+          "reference": "M01,A03,A04",
+          "confidence": "inferred-layout",
+          "editMode": "source"
+        },
+        {
+          "id": "R005",
+          "name": "东侧带状步道",
+          "kind": "road",
+          "parentId": "A008",
+          "buildingId": null,
+          "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/R005#1",
+          "bounds": {
+            "min": [
+              21.9,
+              0,
+              -48
+            ],
+            "max": [
+              26.1,
+              0.047,
+              40
+            ]
+          },
+          "center": [
+            24,
+            0.0235,
+            -4
+          ],
+          "size": [
+            4.2,
+            0.047,
+            88
+          ],
+          "sourceFile": "src/model/videoDetails.ts",
+          "sourceAnchor": "R005",
+          "reference": "U03",
+          "confidence": "observed-components; estimated dimensions and route placement",
+          "editMode": "source"
+        },
+        {
+          "id": "R006",
+          "name": "北侧带状步道",
+          "kind": "road",
+          "parentId": "A008",
+          "buildingId": null,
+          "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/R006#1",
+          "bounds": {
+            "min": [
+              22.9,
+              0,
+              -93
+            ],
+            "max": [
+              27.1,
+              0.047,
+              -47.5
+            ]
+          },
+          "center": [
+            25,
+            0.0235,
+            -70.25
+          ],
+          "size": [
+            4.2,
+            0.047,
+            45.5
+          ],
+          "sourceFile": "src/model/videoDetails.ts",
+          "sourceAnchor": "R006",
+          "reference": "U03",
+          "confidence": "observed-components; estimated dimensions and route placement",
+          "editMode": "source"
+        },
+        {
+          "id": "R007",
+          "name": "南草坪西侧步道",
+          "kind": "road",
+          "parentId": "A002",
+          "buildingId": null,
+          "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Roads_and_Paving#1/R007#1",
+          "bounds": {
+            "min": [
+              -18.3,
+              0,
+              49
+            ],
+            "max": [
+              -15.3,
+              0.07,
+              94.5
+            ]
+          },
+          "center": [
+            -16.8,
+            0.035,
+            71.75
+          ],
+          "size": [
+            3,
+            0.07,
+            45.5
+          ],
+          "sourceFile": "src/model/buildSite.ts",
+          "sourceAnchor": "R007",
+          "reference": "M01,A03",
+          "confidence": "inferred-layout",
+          "editMode": "source"
+        },
+        {
+          "id": "R008",
+          "name": "南草坪东侧步道",
+          "kind": "road",
+          "parentId": "A002",
+          "buildingId": null,
+          "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Roads_and_Paving#1/R008#1",
+          "bounds": {
+            "min": [
+              15.3,
+              0,
+              49
+            ],
+            "max": [
+              18.3,
+              0.07,
+              94.5
+            ]
+          },
+          "center": [
+            16.8,
+            0.035,
+            71.75
+          ],
+          "size": [
+            3,
+            0.07,
+            45.5
+          ],
+          "sourceFile": "src/model/buildSite.ts",
+          "sourceAnchor": "R008",
+          "reference": "M01,A03",
+          "confidence": "inferred-layout",
+          "editMode": "source"
+        },
+        {
+          "id": "R009",
+          "name": "CDS-1 门前到达车道",
+          "kind": "road",
+          "parentId": "A007",
+          "buildingId": null,
+          "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/CDS1_Entrance_Forecourt#1/R009#1",
+          "bounds": {
+            "min": [
+              26.15,
+              0.005,
+              30.25
+            ],
+            "max": [
+              89.85,
+              0.045,
+              36.75
+            ]
+          },
+          "center": [
+            58,
+            0.025,
+            33.5
+          ],
+          "size": [
+            63.7,
+            0.04,
+            6.5
+          ],
+          "sourceFile": "src/model/buildSite.ts",
+          "sourceAnchor": "R009",
+          "reference": "R01",
+          "confidence": "observed-components_estimated-layout",
+          "editMode": "source"
+        },
+        {
+          "id": "R010",
+          "name": "北侧蓝色跑道",
+          "kind": "road",
+          "parentId": "A014",
+          "buildingId": null,
+          "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/R010#1",
+          "bounds": {
+            "min": [
+              -87,
+              0,
+              -99.6
+            ],
+            "max": [
+              87,
+              0.08,
+              -96.24
+            ]
+          },
+          "center": [
+            0,
+            0.04,
+            -97.92
+          ],
+          "size": [
+            174,
+            0.08,
+            3.36
+          ],
+          "sourceFile": "src/model/videoDetails.ts",
+          "sourceAnchor": "R010",
+          "reference": "U03",
+          "confidence": "confirmed-types_provisional-layout",
+          "editMode": "source"
+        },
+        {
+          "id": "R011",
+          "name": "庭院北侧中央步道",
+          "kind": "road",
+          "parentId": "A010",
+          "buildingId": null,
+          "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/U06_Daylight_Details#1/R011#1",
+          "bounds": {
+            "min": [
+              -2,
+              0,
+              -27
+            ],
+            "max": [
+              2,
+              0.04,
+              2
+            ]
+          },
+          "center": [
+            0,
+            0.02,
+            -12.5
+          ],
+          "size": [
+            4,
+            0.04,
+            29
+          ],
+          "sourceFile": "src/model/nov14Details.ts",
+          "sourceAnchor": "R011",
+          "reference": "references/nov14-video/REPORT.md",
+          "confidence": "observed components, approximate positions and dimensions",
+          "editMode": "source"
+        }
+      ]
+    }
+  },
+  {
+    "tool": "campus_entity",
+    "args": {
+      "id": "S001"
+    },
+    "result": {
+      "ok": true,
+      "revision": "cc6cd5cfd7fe",
+      "entity": {
+        "id": "S001",
+        "name": "计算与数据科学学院石牌",
+        "kind": "area",
+        "parentId": "A008",
+        "buildingId": null,
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/CDS_Landscape_Monument#1",
+        "bounds": {
+          "min": [
+            28.2206,
+            0,
+            27.2763
+          ],
+          "max": [
+            34.0749,
+            2.05,
+            31.679
+          ]
+        },
+        "center": [
+          31.1478,
+          1.025,
+          29.4777
+        ],
+        "size": [
+          5.8543,
+          2.05,
+          4.4027
+        ],
+        "sourceFile": "src/model/videoDetails.ts",
+        "sourceAnchor": "CDS_Landscape_Monument",
+        "reference": "U03 00:17 + U06 02:55 panel close-up",
+        "confidence": "observed-components; estimated dimensions and route placement",
+        "editMode": "source"
+      },
+      "relativePosition": [
+        -1.8521999999999998,
+        0.9799999999999999,
+        -7.122300000000003
+      ],
+      "children": [
+        {
+          "id": "S001-P-6654dbace733",
+          "name": "Monument_grass_patch",
+          "kind": "part"
+        },
+        {
+          "id": "S001-P-9b751db9c6ec",
+          "name": "Pale_stone_sign",
+          "kind": "part"
+        },
+        {
+          "id": "S001-TEXT",
+          "name": "学院石牌黑字与校徽",
+          "kind": "area"
+        }
+      ],
+      "editGuide": {
+        "mode": "source",
+        "file": "src/model/videoDetails.ts",
+        "anchor": "CDS_Landscape_Monument",
+        "checks": [
+          "npm run check:scene",
+          "npm run check:all"
+        ],
+        "note": "Edit authoring parameters/code, not the merged mesh. Keep navigation consistent. No runtime coordinate-write endpoint."
+      }
+    }
+  },
+  {
+    "tool": "campus_observe",
+    "args": {},
+    "result": {
+      "ok": true,
+      "state": {
+        "protocolVersion": "hku-campus/1.3",
+        "frame": 3523,
+        "timeMs": 29358.333333331924,
+        "wallTimeMs": 1794658258562,
+        "mode": "human",
+        "controlEpoch": 1794658204508,
+        "aiEnabled": true,
+        "owner": null,
+        "paused": false,
+        "player": {
+          "id": "PLAYER",
+          "position": [
+            33,
+            0.045,
+            36.6
+          ],
+          "velocity": [
+            0,
+            0,
+            0
+          ],
+          "yawDeg": 17.188733853924695,
+          "pitchDeg": 4.583662361046586,
+          "grounded": true
+        },
+        "view": "first",
+        "survey": {
+          "id": "campus-digital-survey",
+          "title": "校园数字巡检",
+          "status": "collecting",
+          "count": 0,
+          "total": 3,
+          "collectedClues": [],
+          "discovered": [
+            "record-cds-entry",
+            "record-hku-square",
+            "record-east-walk"
+          ],
+          "archive": null,
+          "elapsedSeconds": 572,
+          "target": null,
+          "objectives": [
+            {
+              "id": "record-cds-entry",
+              "name": "CDS-1 入口",
+              "position": [
+                58,
+                0.045,
+                30.5
+              ],
+              "collected": false
+            },
+            {
+              "id": "record-hku-square",
+              "name": "HKU 标识广场",
+              "position": [
+                8,
+                0.13,
+                91
+              ],
+              "collected": false
+            },
+            {
+              "id": "record-east-walk",
+              "name": "东侧露天步道",
+              "position": [
+                24,
+                0.05,
+                -45
+              ],
+              "collected": false
+            }
+          ]
+        },
+        "panel": null,
+        "world": {
+          "units": "metres",
+          "revision": "2026-11-14-v9-scale1-glass1-experience1-U06",
+          "scaleCalibration": {
+            "id": "amap-2026-11-14",
+            "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+            "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+            "verticalStatus": "estimated-not-measured",
+            "source": "references/scale-calibration/REPORT.md",
+            "imageryDate": "unknown",
+            "worldUnits": "metres",
+            "globalScaleFactor": 1,
+            "columnCentreSpacing": 116,
+            "columnSpacingUncertainty": 3
+          }
+        },
+        "inventory": {
+          "slots": [
+            {
+              "index": 0,
+              "itemId": "macbook-air-13-silver",
+              "instanceId": "student-macbook-001",
+              "count": 1,
+              "empty": false
+            },
+            {
+              "index": 1,
+              "empty": true
+            },
+            {
+              "index": 2,
+              "empty": true
+            },
+            {
+              "index": 3,
+              "empty": true
+            },
+            {
+              "index": 4,
+              "empty": true
+            },
+            {
+              "index": 5,
+              "empty": true
+            },
+            {
+              "index": 6,
+              "empty": true
+            },
+            {
+              "index": 7,
+              "empty": true
+            },
+            {
+              "index": 8,
+              "empty": true
+            },
+            {
+              "index": 9,
+              "empty": true
+            },
+            {
+              "index": 10,
+              "empty": true
+            },
+            {
+              "index": 11,
+              "empty": true
+            },
+            {
+              "index": 12,
+              "empty": true
+            },
+            {
+              "index": 13,
+              "empty": true
+            },
+            {
+              "index": 14,
+              "empty": true
+            },
+            {
+              "index": 15,
+              "empty": true
+            },
+            {
+              "index": 16,
+              "empty": true
+            },
+            {
+              "index": 17,
+              "empty": true
+            },
+            {
+              "index": 18,
+              "empty": true
+            },
+            {
+              "index": 19,
+              "empty": true
+            },
+            {
+              "index": 20,
+              "empty": true
+            },
+            {
+              "index": 21,
+              "empty": true
+            },
+            {
+              "index": 22,
+              "empty": true
+            },
+            {
+              "index": 23,
+              "empty": true
+            },
+            {
+              "index": 24,
+              "empty": true
+            },
+            {
+              "index": 25,
+              "empty": true
+            },
+            {
+              "index": 26,
+              "empty": true
+            },
+            {
+              "index": 27,
+              "empty": true
+            },
+            {
+              "index": 28,
+              "empty": true
+            },
+            {
+              "index": 29,
+              "empty": true
+            },
+            {
+              "index": 30,
+              "empty": true
+            },
+            {
+              "index": 31,
+              "empty": true
+            },
+            {
+              "index": 32,
+              "empty": true
+            },
+            {
+              "index": 33,
+              "empty": true
+            },
+            {
+              "index": 34,
+              "empty": true
+            },
+            {
+              "index": 35,
+              "empty": true
+            }
+          ],
+          "selectedHotbar": 1,
+          "equipped": null,
+          "revision": 1,
+          "open": false
+        },
+        "landmarks": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "relativePosition": [
+              25,
+              0,
+              -6.100000000000001
+            ],
+            "distance": 25.733441277839233
+          },
+          {
+            "id": "campus-directory",
+            "name": "校园导览牌",
+            "position": [
+              21.2,
+              0,
+              61
+            ],
+            "relativePosition": [
+              -11.8,
+              -0.045,
+              24.4
+            ],
+            "distance": 27.103542665120365
+          },
+          {
+            "id": "B03",
+            "name": "CDS-2 · 3号楼",
+            "position": [
+              58,
+              0,
+              70
+            ],
+            "relativePosition": [
+              25,
+              -0.045,
+              33.4
+            ],
+            "distance": 41.72004344436856
+          },
+          {
+            "id": "B04",
+            "name": "CDS-1 · 4号楼",
+            "position": [
+              58,
+              0,
+              -2
+            ],
+            "relativePosition": [
+              25,
+              -0.045,
+              -38.6
+            ],
+            "distance": 45.988716279104814
+          },
+          {
+            "id": "entrance-lion",
+            "name": "入口草坪小狮子",
+            "position": [
+              0,
+              0,
+              76
+            ],
+            "relativePosition": [
+              -33,
+              -0.045,
+              39.4
+            ],
+            "distance": 51.39418279338626
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "relativePosition": [
+              -25,
+              0.085,
+              54.4
+            ],
+            "distance": 59.86958514137207
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "relativePosition": [
+              -9,
+              0.0050000000000000044,
+              -81.6
+            ],
+            "distance": 82.09482337516782
+          },
+          {
+            "id": "B02",
+            "name": "2号楼 · 西侧南塔",
+            "position": [
+              -58,
+              0,
+              70
+            ],
+            "relativePosition": [
+              -91,
+              -0.045,
+              33.4
+            ],
+            "distance": 96.9358655245828
+          },
+          {
+            "id": "B01",
+            "name": "1号楼 · 西侧北塔",
+            "position": [
+              -58,
+              0,
+              -2
+            ],
+            "relativePosition": [
+              -91,
+              -0.045,
+              -38.6
+            ],
+            "distance": 98.84817663973372
+          },
+          {
+            "id": "B05",
+            "name": "5号楼 · 学生活动",
+            "position": [
+              58,
+              0,
+              -70
+            ],
+            "relativePosition": [
+              25,
+              -0.045,
+              -106.6
+            ],
+            "distance": 109.49229208031038
+          },
+          {
+            "id": "B06",
+            "name": "6号楼 · 礼堂",
+            "position": [
+              0,
+              0,
+              -70
+            ],
+            "relativePosition": [
+              -33,
+              -0.045,
+              -106.6
+            ],
+            "distance": 111.5910481400726
+          },
+          {
+            "id": "B07",
+            "name": "7号楼 · 西北配套楼",
+            "position": [
+              -58,
+              0,
+              -70
+            ],
+            "relativePosition": [
+              -91,
+              -0.045,
+              -106.6
+            ],
+            "distance": 140.1590597321486
+          }
+        ],
+        "lastCommand": null,
+        "collisions": []
+      }
+    }
+  },
+  {
+    "tool": "campus_acquire_control",
+    "args": {
+      "agentId": "scene-demo"
+    },
+    "result": {
+      "ok": true,
+      "controlEpoch": 1794658204509,
+      "protocolVersion": "hku-campus/1.3"
+    }
+  },
+  {
+    "tool": "campus_select_entity",
+    "args": {
+      "id": "S001",
+      "controlEpoch": 1794658204509,
+      "sceneRevision": "cc6cd5cfd7fe"
+    },
+    "result": {
+      "ok": true,
+      "revision": "cc6cd5cfd7fe",
+      "entity": {
+        "id": "S001",
+        "name": "计算与数据科学学院石牌",
+        "kind": "area",
+        "parentId": "A008",
+        "buildingId": null,
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/CDS_Landscape_Monument#1",
+        "bounds": {
+          "min": [
+            28.2206,
+            0,
+            27.2763
+          ],
+          "max": [
+            34.0749,
+            2.05,
+            31.679
+          ]
+        },
+        "center": [
+          31.1478,
+          1.025,
+          29.4777
+        ],
+        "size": [
+          5.8543,
+          2.05,
+          4.4027
+        ],
+        "sourceFile": "src/model/videoDetails.ts",
+        "sourceAnchor": "CDS_Landscape_Monument",
+        "reference": "U03 00:17 + U06 02:55 panel close-up",
+        "confidence": "observed-components; estimated dimensions and route placement",
+        "editMode": "source"
+      },
+      "relativePosition": [
+        -1.8521999999999998,
+        0.9799999999999999,
+        -7.122300000000003
+      ],
+      "children": [
+        {
+          "id": "S001-P-6654dbace733",
+          "name": "Monument_grass_patch",
+          "kind": "part"
+        },
+        {
+          "id": "S001-P-9b751db9c6ec",
+          "name": "Pale_stone_sign",
+          "kind": "part"
+        },
+        {
+          "id": "S001-TEXT",
+          "name": "学院石牌黑字与校徽",
+          "kind": "area"
+        }
+      ],
+      "editGuide": {
+        "mode": "source",
+        "file": "src/model/videoDetails.ts",
+        "anchor": "CDS_Landscape_Monument",
+        "checks": [
+          "npm run check:scene",
+          "npm run check:all"
+        ],
+        "note": "Edit authoring parameters/code, not the merged mesh. Keep navigation consistent. No runtime coordinate-write endpoint."
+      }
+    }
+  },
+  {
+    "tool": "campus_act",
+    "args": {
+      "commandId": "scene-demo-1794658258568",
+      "controlEpoch": 1794658204509,
+      "durationMs": 500,
+      "lookDelta": {
+        "yawDeg": 15,
+        "pitchDeg": 0
+      },
+      "move": {
+        "forward": 0.4,
+        "right": 0
+      }
+    },
+    "result": {
+      "ok": true,
+      "command": {
+        "commandId": "scene-demo-1794658258568",
+        "status": "accepted",
+        "acceptedAt": 1794658258569,
+        "expiresAt": 1794658259069,
+        "collisionIds": []
+      }
+    }
+  },
+  {
+    "tool": "campus_command",
+    "args": {
+      "commandId": "scene-demo-1794658258568"
+    },
+    "result": {
+      "ok": true,
+      "command": {
+        "commandId": "scene-demo-1794658258568",
+        "status": "completed",
+        "acceptedAt": 1794658258569,
+        "expiresAt": 1794658259069,
+        "collisionIds": [],
+        "startedFrame": 3524,
+        "reason": "duration_elapsed",
+        "finishedFrame": 3583
+      }
+    }
+  },
+  {
+    "tool": "campus_stop",
+    "args": {
+      "controlEpoch": 1794658204509
+    },
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "campus_observe",
+    "args": {},
+    "result": {
+      "ok": true,
+      "state": {
+        "protocolVersion": "hku-campus/1.3",
+        "frame": 3603,
+        "timeMs": 30024.999999998494,
+        "wallTimeMs": 1794658259229,
+        "mode": "ai",
+        "controlEpoch": 1794658204509,
+        "aiEnabled": true,
+        "owner": "scene-demo",
+        "paused": false,
+        "player": {
+          "id": "PLAYER",
+          "position": [
+            32.72299086361062,
+            0.045,
+            36.1599250764279
+          ],
+          "velocity": [
+            0,
+            0,
+            0
+          ],
+          "yawDeg": 32.188733853924695,
+          "pitchDeg": 4.583662361046586,
+          "grounded": true
+        },
+        "view": "first",
+        "survey": {
+          "id": "campus-digital-survey",
+          "title": "校园数字巡检",
+          "status": "collecting",
+          "count": 0,
+          "total": 3,
+          "collectedClues": [],
+          "discovered": [
+            "record-cds-entry",
+            "record-hku-square",
+            "record-east-walk"
+          ],
+          "archive": null,
+          "elapsedSeconds": 573,
+          "target": null,
+          "objectives": [
+            {
+              "id": "record-cds-entry",
+              "name": "CDS-1 入口",
+              "position": [
+                58,
+                0.045,
+                30.5
+              ],
+              "collected": false
+            },
+            {
+              "id": "record-hku-square",
+              "name": "HKU 标识广场",
+              "position": [
+                8,
+                0.13,
+                91
+              ],
+              "collected": false
+            },
+            {
+              "id": "record-east-walk",
+              "name": "东侧露天步道",
+              "position": [
+                24,
+                0.05,
+                -45
+              ],
+              "collected": false
+            }
+          ]
+        },
+        "panel": null,
+        "world": {
+          "units": "metres",
+          "revision": "2026-11-14-v9-scale1-glass1-experience1-U06",
+          "scaleCalibration": {
+            "id": "amap-2026-11-14",
+            "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+            "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+            "verticalStatus": "estimated-not-measured",
+            "source": "references/scale-calibration/REPORT.md",
+            "imageryDate": "unknown",
+            "worldUnits": "metres",
+            "globalScaleFactor": 1,
+            "columnCentreSpacing": 116,
+            "columnSpacingUncertainty": 3
+          }
+        },
+        "inventory": {
+          "slots": [
+            {
+              "index": 0,
+              "itemId": "macbook-air-13-silver",
+              "instanceId": "student-macbook-001",
+              "count": 1,
+              "empty": false
+            },
+            {
+              "index": 1,
+              "empty": true
+            },
+            {
+              "index": 2,
+              "empty": true
+            },
+            {
+              "index": 3,
+              "empty": true
+            },
+            {
+              "index": 4,
+              "empty": true
+            },
+            {
+              "index": 5,
+              "empty": true
+            },
+            {
+              "index": 6,
+              "empty": true
+            },
+            {
+              "index": 7,
+              "empty": true
+            },
+            {
+              "index": 8,
+              "empty": true
+            },
+            {
+              "index": 9,
+              "empty": true
+            },
+            {
+              "index": 10,
+              "empty": true
+            },
+            {
+              "index": 11,
+              "empty": true
+            },
+            {
+              "index": 12,
+              "empty": true
+            },
+            {
+              "index": 13,
+              "empty": true
+            },
+            {
+              "index": 14,
+              "empty": true
+            },
+            {
+              "index": 15,
+              "empty": true
+            },
+            {
+              "index": 16,
+              "empty": true
+            },
+            {
+              "index": 17,
+              "empty": true
+            },
+            {
+              "index": 18,
+              "empty": true
+            },
+            {
+              "index": 19,
+              "empty": true
+            },
+            {
+              "index": 20,
+              "empty": true
+            },
+            {
+              "index": 21,
+              "empty": true
+            },
+            {
+              "index": 22,
+              "empty": true
+            },
+            {
+              "index": 23,
+              "empty": true
+            },
+            {
+              "index": 24,
+              "empty": true
+            },
+            {
+              "index": 25,
+              "empty": true
+            },
+            {
+              "index": 26,
+              "empty": true
+            },
+            {
+              "index": 27,
+              "empty": true
+            },
+            {
+              "index": 28,
+              "empty": true
+            },
+            {
+              "index": 29,
+              "empty": true
+            },
+            {
+              "index": 30,
+              "empty": true
+            },
+            {
+              "index": 31,
+              "empty": true
+            },
+            {
+              "index": 32,
+              "empty": true
+            },
+            {
+              "index": 33,
+              "empty": true
+            },
+            {
+              "index": 34,
+              "empty": true
+            },
+            {
+              "index": 35,
+              "empty": true
+            }
+          ],
+          "selectedHotbar": 1,
+          "equipped": null,
+          "revision": 1,
+          "open": false
+        },
+        "landmarks": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "relativePosition": [
+              25.27700913638938,
+              0,
+              -5.659925076427903
+            ],
+            "distance": 25.90293309167689
+          },
+          {
+            "id": "campus-directory",
+            "name": "校园导览牌",
+            "position": [
+              21.2,
+              0,
+              61
+            ],
+            "relativePosition": [
+              -11.52299086361062,
+              -0.045,
+              24.840074923572097
+            ],
+            "distance": 27.382670900617587
+          },
+          {
+            "id": "B03",
+            "name": "CDS-2 · 3号楼",
+            "position": [
+              58,
+              0,
+              70
+            ],
+            "relativePosition": [
+              25.27700913638938,
+              -0.045,
+              33.8400749235721
+            ],
+            "distance": 42.23836983968587
+          },
+          {
+            "id": "B04",
+            "name": "CDS-1 · 4号楼",
+            "position": [
+              58,
+              0,
+              -2
+            ],
+            "relativePosition": [
+              25.27700913638938,
+              -0.045,
+              -38.1599250764279
+            ],
+            "distance": 45.772361723202614
+          },
+          {
+            "id": "entrance-lion",
+            "name": "入口草坪小狮子",
+            "position": [
+              0,
+              0,
+              76
+            ],
+            "relativePosition": [
+              -32.72299086361062,
+              -0.045,
+              39.8400749235721
+            ],
+            "distance": 51.55606391081249
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "relativePosition": [
+              -24.72299086361062,
+              0.085,
+              54.8400749235721
+            ],
+            "distance": 60.155359859826085
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "relativePosition": [
+              -8.722990863610619,
+              0.0050000000000000044,
+              -81.1599250764279
+            ],
+            "distance": 81.62734856050406
+          },
+          {
+            "id": "B02",
+            "name": "2号楼 · 西侧南塔",
+            "position": [
+              -58,
+              0,
+              70
+            ],
+            "relativePosition": [
+              -90.72299086361062,
+              -0.045,
+              33.8400749235721
+            ],
+            "distance": 96.82878583908686
+          },
+          {
+            "id": "B01",
+            "name": "1号楼 · 西侧北塔",
+            "position": [
+              -58,
+              0,
+              -2
+            ],
+            "relativePosition": [
+              -90.72299086361062,
+              -0.045,
+              -38.1599250764279
+            ],
+            "distance": 98.42176069384944
+          },
+          {
+            "id": "B05",
+            "name": "5号楼 · 学生活动",
+            "position": [
+              58,
+              0,
+              -70
+            ],
+            "relativePosition": [
+              25.27700913638938,
+              -0.045,
+              -106.1599250764279
+            ],
+            "distance": 109.12771833092587
+          },
+          {
+            "id": "B06",
+            "name": "6号楼 · 礼堂",
+            "position": [
+              0,
+              0,
+              -70
+            ],
+            "relativePosition": [
+              -32.72299086361062,
+              -0.045,
+              -106.1599250764279
+            ],
+            "distance": 111.08881963677861
+          },
+          {
+            "id": "B07",
+            "name": "7号楼 · 西北配套楼",
+            "position": [
+              -58,
+              0,
+              -70
+            ],
+            "relativePosition": [
+              -90.72299086361062,
+              -0.045,
+              -106.1599250764279
+            ],
+            "distance": 139.644522944767
+          }
+        ],
+        "lastCommand": {
+          "commandId": "scene-demo-1794658258568",
+          "status": "completed",
+          "acceptedAt": 1794658258569,
+          "expiresAt": 1794658259069,
+          "collisionIds": [],
+          "startedFrame": 3524,
+          "reason": "duration_elapsed",
+          "finishedFrame": 3583
+        },
+        "collisions": []
+      }
+    }
+  },
+  {
+    "tool": "campus_release_control",
+    "result": {
+      "ok": true,
+      "controlEpoch": 1794658204510
+    }
+  }
+]

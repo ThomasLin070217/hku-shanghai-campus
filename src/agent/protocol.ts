@@ -1,4 +1,4 @@
-export const PROTOCOL_VERSION='hku-campus/1.2';
+export const PROTOCOL_VERSION='hku-campus/1.3';
 export type ViewMode='first'|'third';
 export interface Action {
  commandId:string;controlEpoch:number;durationMs:number;
@@ -10,7 +10,7 @@ export interface CommandRecord {commandId:string;status:CommandStatus;acceptedAt
 export interface Observation {
  protocolVersion:string;frame:number;timeMs:number;wallTimeMs:number;
  mode:'human'|'ai';controlEpoch:number;aiEnabled:boolean;owner:string|null;paused:boolean;
- player:{position:number[];velocity:number[];yawDeg:number;pitchDeg:number;grounded:boolean};
+ player:{id:'PLAYER';position:number[];velocity:number[];yawDeg:number;pitchDeg:number;grounded:boolean};
  world:{units:'metres';revision:string;scaleCalibration?:{id:string;horizontalStatus:string;verticalStatus:string;source:string}};
  inventory:import('../items/inventory').InventorySnapshot & {open:boolean};
  survey:ReturnType<import('../gameplay/survey').Survey['snapshot']>;panel:'computer'|'settings'|null;

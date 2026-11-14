@@ -1,3 +1,4 @@
+import {sceneRegistry} from '../src/scene/registry';
 import {createCanvas, ImageData, loadImage} from '@napi-rs/canvas';
 import {writeFileSync,mkdirSync} from 'node:fs';
 import {resolve} from 'node:path';
@@ -26,7 +27,7 @@ entries.push(['Student-Green-Gown',createStudent().root],['B05-4F-Stepped-Lounge
 const metadata:Record<string,unknown>={version:9,videoRevision:'U06-2026-11-14',date:'2026-11-14',glazing:asset.root.userData.glazing,scaleCalibration:SCALE_CALIBRATION,parameters:asset.parameters,site:asset.site,assets:{}};
 for(const [name,root]of entries){const before=modelStats(root),binary=await exportGLB(root);writeFileSync(resolve(out,name+'.glb'),Buffer.from(binary));const loaded=await reloadGLB(binary),after=modelStats(loaded.scene);
  if(before.triangles!==after.triangles||before.size.some((v,i)=>Math.abs(v-after.size[i])>.001))throw new Error(`${name}: round-trip geometry mismatch`);
- if(name==='HKU-Shanghai-Campus'){for(const id of [...asset.byId.keys(),'Environment','Circulation','Sports'])if(!loaded.scene.getObjectByName(id))throw new Error(`Missing ${id}`);}
+ if(name==='HKU-Shanghai-Campus'){const original=sceneRegistry(root),restored=sceneRegistry(loaded.scene.getObjectByName(root.name)!);if(JSON.stringify(original.entities.map(e=>e.id))!==JSON.stringify(restored.entities.map(e=>e.id)))throw Error('Scene IDs lost in GLB round trip');for(const id of [...asset.byId.keys(),'Environment','Circulation','Sports'])if(!loaded.scene.getObjectByName(id))throw new Error(`Missing ${id}`);}
  (metadata.assets as Record<string,unknown>)[name]={bytes:binary.byteLength,before,after,reload:'passed'};disposeAsset(loaded.scene);console.log(`${name}: ${(binary.byteLength/1048576).toFixed(2)} MiB, ${after.triangles} triangles, reload passed`);
 }
 writeFileSync(resolve(out,'model-metadata.json'),JSON.stringify(metadata,null,2));writeFileSync(resolve(out,'HKU-campus-parameters.json'),JSON.stringify({version:2,modelVersion:8,units:'metres',absoluteScale:'horizontal-ruler-checked-vertical-unverified',scaleCalibration:SCALE_CALIBRATION,buildings:asset.parameters,site:asset.site},null,2));disposeAsset(asset.root);

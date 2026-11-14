@@ -1,4 +1,4 @@
-# HKU Campus native Agent API · v1.2
+# HKU Campus native Agent API · v1.3
 
 该接口直接连接正在运行的浏览器游戏。无模型、API Key、浏览器自动化或模拟键盘依赖。
 
@@ -57,7 +57,7 @@ await post('/act',{
 
 ## observe
 
-包含协议版本 `hku-campus/1.2`、逻辑 frame、累计运行 timeMs、墙钟 wallTimeMs、mode、controlEpoch、aiEnabled、owner、paused、player.position/velocity/yawDeg/pitchDeg/grounded、view、160 m 内地标、lastCommand 与当前碰撞。
+包含协议版本 `hku-campus/1.3`、逻辑 frame、累计运行 timeMs、墙钟 wallTimeMs、mode、controlEpoch、aiEnabled、owner、paused、player.position/velocity/yawDeg/pitchDeg/grounded、view、160 m 内地标、lastCommand 与当前碰撞。
 
 地标 ID 稳定为 B01–B07，CDS-1 为 **B04**。relativePosition 是世界坐标的“地标中心减角色位置”，不随镜头旋转；distance 为该向量长度。建筑 ID 与地图对应仍遵循项目参考档案的证据等级，不能视作校方楼栋 GIS。
 
@@ -108,3 +108,14 @@ E 打开背包会清空输入、停止速度、暂停并撤销 AI；数字键、
 `computer` 支持 `map`、`tasks`、`clues`、`submit`。动作在固定步长首次消费一次，结果查看 `/commands/<id>` 的 `operation`；HTTP accepted 不代表已经收集。目标须在 2.7 单位内、对准、无遮挡，玻璃同样阻挡；提交须装备真实 MacBook 且三条记录齐备。重复交互变为 viewed，重复提交返回 already_completed。AI 与玩家共用 `Survey.interact()` / `Survey.computer()`。
 
 AI 页面读取为无界面业务动作，不自动打开玩家暂停面板；结果与 observe 同步。玩家 C、E 或设置面板会停止当前动作、撤销 epoch，关闭/载入不会恢复 AI。存档不包含 AI 控制权。扩展示例与存档规则见 [数字巡检说明](docs/DIGITAL-SURVEY-V9.md)。
+
+
+## 场景编号与 MCP（v1.3，向后兼容原动作）
+
+- `GET /capabilities`：无需浏览器也可取得工具列表、JSON Schema 和就绪状态。
+- `GET /entities?q=石牌&kind=area&offset=0&limit=30`：查询，最多 100 项；可用 `parentId` 或 `near=[x,y,z]&radius=30`。
+- `GET /entities/S001`：源码定位、范围、子部件、相对玩家坐标和 scene revision。
+- `POST /scene/select`：`{"id":"S001","controlEpoch":123,"sceneRevision":"当前值"}`；同一控制权规则，只做高亮。旧控制权/旧场景分别返回 `stale_epoch` / `stale_scene`。
+- 玩家 state.player.id 为 `PLAYER`；schema 为 `hku-scene/1`。
+
+命令行、MCP 配置和本地示例见 [AI-START](docs/AI-START.md)。类型：`src/scene/registry.ts`；HTTP/MCP 工具 Schema：`scripts/agent-tools.mjs`。

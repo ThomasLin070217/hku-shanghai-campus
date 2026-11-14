@@ -51,8 +51,9 @@ export function buildObservedInterior(kind:'lobby'|'floor13'){
 }
 /** A shallow, closed scenic version behind the campus portal; full room stays a separate editable asset. */
 export function decorateCampusLobby(building:T.Group){
- const g=building.getObjectByName('Lobby_visual_recess_PROVISIONAL');if(!g)return;const m=new T.MeshStandardMaterial({name:'Night_U06_foyer_warm_detail',color:0xe1cfaa,roughness:.8});m.emissive.setHex(0xffd6a0);m.emissiveIntensity=.12;
+ const g=building.getObjectByName('Lobby_visual_recess_PROVISIONAL');if(!g)return;const existing=new Set(g.children);const m=new T.MeshStandardMaterial({name:'Night_U06_foyer_warm_detail',color:0xe1cfaa,roughness:.8});m.emissive.setHex(0xffd6a0);m.emissiveIntensity=.12;
  const dark=new T.MeshStandardMaterial({name:'U06 interior entry mat',color:0x303a38,roughness:1});const make=(n:string,w:number,h:number,d:number,x:number,y:number,z:number,mat:T.Material)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),mat);o.name=n;o.position.set(x,y,z);g.add(o);};
  make('Observed_foyer_warm_rear',15,7.7,.08,0,3.85,-2.30,m);make('Observed_foyer_black_mat',4.5,.02,2.2,0,.12,-1.1,dark);
  for(const x of [-3,-1,1,3]){make('Observed_gate_body',.2,.95,.45,x,.6,-1.6,m);pane(g,'Observed_gate_glass',.65,.65,x+.43,.8,-1.5,glassMaterial('clear'));}
+ for(const child of g.children)if(!existing.has(child))child.userData.sourceFile='src/model/observedInteriors.ts';
 }

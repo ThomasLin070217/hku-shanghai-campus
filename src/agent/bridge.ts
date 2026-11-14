@@ -1,6 +1,6 @@
 import type {CampusGame} from '../exploration/game';
 /** Real transport; actions are consumed only by the game's fixed-step loop. */
-export function connectAgent(getGame:()=>CampusGame,screenshot:()=>string,status:(s:string)=>void){
+export function connectAgent(getGame:()=>CampusGame,screenshot:()=>string,status:(s:string)=>void,sceneRequest?:(method:string,args:Record<string,unknown>)=>unknown){
  let socket:WebSocket|null=null,lastHeartbeat=0,disposed=false,retry:ReturnType<typeof setTimeout>|undefined;
  const revoke=(reason:string)=>{const g=getGame();if(g.owner||g.armed)g.pause(reason);};
  function connect(claim=false){
@@ -19,6 +19,7 @@ export function connectAgent(getGame:()=>CampusGame,screenshot:()=>string,status
     else if(msg.method==='stop')result=g.stop(args.controlEpoch);
     else if(msg.method==='releaseControl')result=g.releaseControl(args.controlEpoch);
     else if(msg.method==='command')result=g.records.has(args.commandId)?{ok:true,command:g.records.get(args.commandId)}:{ok:false,error:'unknown_command'};
+    else if(['entities','entity','selectEntity'].includes(msg.method)&&sceneRequest)result=sceneRequest(msg.method,args);
     else if(msg.method==='screenshot')result={ok:true,mimeType:'image/png',dataUrl:screenshot()};
     else result={ok:false,error:'unknown_method'};
    }catch{result={ok:false,error:'invalid_request'};}
