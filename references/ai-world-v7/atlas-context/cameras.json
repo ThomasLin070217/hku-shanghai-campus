@@ -1,0 +1,187 @@
+[
+  {
+    "imageAsset": {
+      "url": "01-u02-00-0000-08.png"
+    },
+    "camera": {
+      "intrinsics": {
+        "fx": 859.5757446289062,
+        "fy": 859.7489013671875,
+        "cx": 480,
+        "cy": 360,
+        "width": 960,
+        "height": 720
+      },
+      "extrinsics": {
+        "position": [
+          5.105877470970154,
+          4.506020545959473,
+          1.5709987640380865
+        ],
+        "quaternion": [
+          -0.15082971458408004,
+          0.8592931619589617,
+          0.286851075048176,
+          0.39570458646919976
+        ],
+        "coordinateSystem": "rub"
+      }
+    },
+    "depth": {
+      "confidenceAsset": {
+        "url": "01-u02-00-0000-08-confidence.png"
+      },
+      "depthAsset": {
+        "url": "01-u02-00-0000-08-depth.exr"
+      }
+    }
+  },
+  {
+    "imageAsset": {
+      "url": "02-u02-02-0000-71.png"
+    },
+    "camera": {
+      "intrinsics": {
+        "fx": 858.8969116210938,
+        "fy": 859.070068359375,
+        "cx": 480,
+        "cy": 360,
+        "width": 960,
+        "height": 720
+      },
+      "extrinsics": {
+        "position": [
+          5.086426043510437,
+          4.52016544342041,
+          1.5562374114990236
+        ],
+        "quaternion": [
+          -0.0720409218672382,
+          0.8953328985115031,
+          0.13597066547087297,
+          0.41797258827693123
+        ],
+        "coordinateSystem": "rub"
+      }
+    },
+    "depth": {
+      "confidenceAsset": {
+        "url": "02-u02-02-0000-71-confidence.png"
+      },
+      "depthAsset": {
+        "url": "02-u02-02-0000-71-depth.exr"
+      }
+    }
+  },
+  {
+    "imageAsset": {
+      "url": "03-u02-05-0001-67.png"
+    },
+    "camera": {
+      "intrinsics": {
+        "fx": 855.5877685546875,
+        "fy": 855.7601928710938,
+        "cx": 480,
+        "cy": 360,
+        "width": 960,
+        "height": 720
+      },
+      "extrinsics": {
+        "position": [
+          5.092821645736695,
+          4.5595831871032715,
+          1.5306531429290775
+        ],
+        "quaternion": [
+          0.0013351912260056535,
+          0.9155130340742096,
+          -0.011073501133139733,
+          0.4021336584734976
+        ],
+        "coordinateSystem": "rub"
+      }
+    },
+    "depth": {
+      "confidenceAsset": {
+        "url": "03-u02-05-0001-67-confidence.png"
+      },
+      "depthAsset": {
+        "url": "03-u02-05-0001-67-depth.exr"
+      }
+    }
+  },
+  {
+    "imageAsset": {
+      "url": "04-u02-08-0002-62.png"
+    },
+    "camera": {
+      "intrinsics": {
+        "fx": 858.9511108398438,
+        "fy": 859.1243896484375,
+        "cx": 480,
+        "cy": 360,
+        "width": 960,
+        "height": 720
+      },
+      "extrinsics": {
+        "position": [
+          5.247073245048523,
+          4.558084011077881,
+          1.4835358619689947
+        ],
+        "quaternion": [
+          -0.0028291041436830236,
+          0.983629194701219,
+          0.007687724564040614,
+          0.18001806129442446
+        ],
+        "coordinateSystem": "rub"
+      }
+    },
+    "depth": {
+      "confidenceAsset": {
+        "url": "04-u02-08-0002-62-confidence.png"
+      },
+      "depthAsset": {
+        "url": "04-u02-08-0002-62-depth.exr"
+      }
+    }
+  },
+  {
+    "imageAsset": {
+      "url": "05-view.png"
+    },
+    "camera": {
+      "intrinsics": {
+        "fx": 858.9511108398438,
+        "fy": 858.9511108398438,
+        "cx": 480,
+        "cy": 360,
+        "width": 960,
+        "height": 720
+      },
+      "extrinsics": {
+        "position": [
+          5.247073245048523,
+          4.558084011077881,
+          1.4835358619689947
+        ],
+        "quaternion": [
+          -0.002829104143683023,
+          0.983629194701219,
+          0.007687724564040612,
+          0.18001806129442444
+        ],
+        "coordinateSystem": "rub"
+      }
+    },
+    "depth": {
+      "confidenceAsset": {
+        "url": "05-view-confidence.png"
+      },
+      "depthAsset": {
+        "url": "05-view-depth.exr"
+      }
+    }
+  }
+]

@@ -18,9 +18,11 @@
     "check:video": "tsx scripts/check-video-details.ts",
     "check:gameplay": "tsx scripts/check-gameplay.ts",
     "check:transport": "node scripts/check-agent-transport.mjs",
-    "ai:atlas": "tsx scripts/atlas-campus.ts"
+    "ai:atlas": "tsx scripts/atlas-campus.ts",
+    "ai:depth": "tsx scripts/export-atlas-depth.ts"
   },
   "dependencies": {
+    "@sparkjsdev/spark": "2.4.0",
     "three": "0.181.2",
     "ws": "^8.23.0",
     "xstate": "5.33.4"

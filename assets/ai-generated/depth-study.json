@@ -1,0 +1,13 @@
+{
+  "type": "partial RGBD surface mesh",
+  "provider": "Atlas images2PosedRGBD",
+  "frames": 4,
+  "triangles": 46199,
+  "samplingPixels": 8,
+  "discontinuityRelativeThreshold": 0.12,
+  "overlap": "Earlier visible surfaces preferred; hidden surfaces remain absent",
+  "closed": false,
+  "collisionReady": false,
+  "texture": "baked real photos; unlit",
+  "scale": "Atlas estimate, not surveyed"
+}

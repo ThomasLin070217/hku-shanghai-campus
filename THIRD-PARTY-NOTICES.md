@@ -7,3 +7,9 @@
 Downloaded file hashes and source pages are in `assets/third-party/kenney/manifest.json`. Original palettes remain intact; runtime adjusts scale, placement and texture filtering. When moving an original Kenney GLB, copy its sibling `Textures` directory too.
 
 Other existing npm dependencies retain their own licenses in their distributions. Campus reference photography is not included in the above CC0 grant. Original school geometry and the student character are not imported from Minecraft or Kenney.
+
+## AI study v7
+
+- Spark 2.4.0 — World Labs, MIT. https://github.com/sparkjsdev/spark . Full license: `assets/third-party/spark/LICENSE`. Loaded only by the SPZ study page.
+- World Labs client SDK 0.7.0 — Apache-2.0, server-side workflow scripts. https://www.npmjs.com/package/@worldlabsai/client . License remains in its npm distribution.
+- Atlas-generated SPZ and RGBD-derived mesh originate from the user's authorized U02 video frames. They are project reference assets, not third-party CC0 assets. Atlas service terms apply; no broader open-content license is asserted.

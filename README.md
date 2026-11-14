@@ -1,6 +1,6 @@
 # 开源整合与物资练习 v6
 
-AI 3D 资产接入准备（2026-11-14）：[工具比较、实际测试与 Atlas 分步脚本](docs/AI-WORLD-ASSETS.md)。`npm run ai:atlas -- plan` 离线检查生成方案。Atlas 等待账号授权，TRELLIS.2 的 GLB 导出遇到免费 GPU 配额限制；尚未用 AI 生成资产替换当前校园。
+AI 实景重建 v7（2026-11-14）：已用四张获授权的视频帧生成 **5 号楼四楼休闲区 Atlas SPZ**，并接入本地 Three.js 对照页。启动后打开 **http://127.0.0.1:5174/ai-study.html**，或点击校园顶部「AI 重建对照」。支持旋转、缩放、实拍对照、PNG 保存与 SPZ / 深度 GLB 下载。详见 [实际成果、局限和复现方法](docs/AI-WORLD-ASSETS.md)。本轮是独立资产检查视图，尚未替换校园行走碰撞。
 
 沿用 Vite + TypeScript + Three.js。新增 **XState 任务状态机、Kenney CC0 道具、E 拾取/提交、版本化练习存档**，修复控制器销毁后的事件与显存资源泄漏。建筑布局、玩家物理和本机 Agent 协议沿用现有版本。
 

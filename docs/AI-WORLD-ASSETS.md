@@ -1,66 +1,78 @@
-# 用 AI 3D 模型补充校园细节
+# AI 实景重建：5 号楼四楼休闲区
 
-核验日期：2026-11-14。沿用现有 Three.js 项目。
+完成日期：2026-11-14。沿用现有 Vite / TypeScript / Three.js 工程。
 
-优先用 **Atlas 做局部空间、TRELLIS.2 做单件道具**。生成资产先单独检查，再进入校园。校区布局、建筑轮廓和门牌继续以真实资料为准。
+本轮已实际用 World Labs Atlas 处理四张获授权的视频截图，生成并下载三维 SPZ；项目新增独立对照页，可以旋转、缩放、对照原始照片和参数模型，保存 PNG，下载资产。它是局部细节参考，尚未替换游戏里的可行走校园或碰撞。
 
-| 工具 | 适合本项目的用途 | 接入与限制 |
-| --- | --- | --- |
-| [World Labs Atlas](https://worldlabs.ai/atlas) | 5 号楼四楼休闲区、入口附近的一小段空间 | 官方支持图片估计相机与深度、生成 SPZ，再转 GLB。网页需要账号，开发者 API 另外需要项目密钥。 |
-| [Microsoft TRELLIS.2](https://github.com/microsoft/TRELLIS.2) | 盆栽、座椅、垃圾桶等独立物件 | 开源 MIT；有官方 Hugging Face 演示。官方本地路线要求 Linux / NVIDIA 24 GB 显存，不能直接当成此 Mac 上可运行的工具。 |
-| [腾讯 Hunyuan3D 2.1](https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1) | 图片生成带 PBR 材质的道具 | 可自部署的备选；许可为腾讯专门许可，不能按 MIT/CC0 处理。本轮尚未运行。 |
-| [Meshy](https://docs.meshy.ai/en/api/image-to-3d) | 控制面数的游戏道具、角色静态模型 | 当前文档列出 Meshy 7.1 和 Smart Topology T2.5，支持 GLB。API 创建任务需要付费计划，本轮未购买、未调用。 |
-
-不直接用生成结果替换整座校园：单张图片未拍到的空间会被补全，网格也不自动具备可靠尺寸、闭合碰撞、角色绑定或可交互任务。
-
-## 本轮实际测试
-
-- **TRELLIS.2**：向 Microsoft 官方 Space 提交 `U02-00.71.jpg`，seed 1701、512 分辨率。`image_to_3d` 成功；`extract_glb` 被 ZeroGPU 免费配额拒绝。没有拿到可用 GLB，也没有把生成步骤成功描述成完整资产交付。[原始回执](../references/ai-world-v7/trellis-receipt.json)
-- **Atlas 网页**：已实际打开。账号尚需手机号验证时已交给用户；尚未提交生成任务。
-- **Atlas SDK**：接入官方 `@worldlabsai/client` 0.7.0，新增分步脚本，已通过离线计划与 TypeScript / Vite 构建。远程执行尚待项目 API Key；网页登录不等于 API 授权。
-- 没有将样例资源、手工方块或现有 Kenney 道具冒充本轮 AI 生成成果。
-
-## 第一块样例：5 号楼四楼休闲区
-
-用户已确认楼栋及楼层。选取同一段 U02 视频的 4 帧，时间为 0.08、0.71、1.67、2.62 秒，保留原图和 SHA-256：[输入索引](../references/ai-world-v7/inputs.json)。已查看拼图，能看到木阶、侧楼梯、白桌、靠垫和玻璃护栏。
-
-这段视频主要是转动镜头，平移视差有限，还有夜间模糊。因此先做重建实验，不把生成结果的尺寸和隐藏面当作实测。最终必须与现有 `assets/B05-4F-Stepped-Lounge.glb` 对照；目前仍保持现有资产不变。
-
-## 使用已接好的 Atlas 脚本
+## 打开结果
 
 ```sh
-npm install
-npm run ai:atlas -- plan
+npm ci
+npm run play
 ```
 
-`plan` 只核对输入和输出方案，不联网、不生成、不计费。
+- 校园：<http://127.0.0.1:5174/>
+- **Atlas 三维小样**：<http://127.0.0.1:5174/ai-study.html>
+- 可见面网格：<http://127.0.0.1:5174/ai-study.html?format=mesh>
 
-在 Atlas 开发者后台建立项目密钥，通过本机终端私密配置 `WLT_API_KEY`。不要发进聊天、放入 `VITE_*` 或提交 Git。官方区分网页会话和开发者密钥：[认证说明](https://docs.atlas.worldlabs.ai/authentication)。
+校园顶部新增「AI 重建对照」入口。小样支持左键旋转、右键平移、滚轮缩放、重置视角、参考帧切换、参数模型切换和 PNG 保存。并排比较只用于深度网格；完整 splat 包含估计的周围空间，其包围盒不适合拿来比较实测尺寸。
+
+## 实际交付的资产
+
+| 文件 | 内容与限制 |
+| --- | --- |
+| `assets/ai-generated/b05-atlas.spz` | Atlas 四帧任务的真实输出，2,000,000 个高斯点，31,824,281 字节。视觉细节较完整，用 Spark 在 Three.js 中显示；不是闭合三角网格。 |
+| `assets/ai-generated/b05-atlas-depth-study.glb` | 本地使用 Atlas 导出的相机、深度和原图重建的局部可见面网格，46,199 三角形、4 个命名网格、1,734,220 字节。不是官方 Splat-to-mesh 转换结果；遮挡和未拍到的面仍有缺口。 |
+| `references/ai-world-v7/atlas-context/` | 已归档的相机估计、深度、置信度和图像；本地网格导出只使用四张实拍帧。 |
+| `assets/ai-generated/previews/atlas-splat.png` | 本地预览页面截图。 |
+| `assets/ai-generated/previews/atlas-orbit-short.mp4` | 实际浏览器旋转操作录屏，截取原录屏开头及结尾；没有生成视频或改变播放速度。完整记录为 `atlas-orbit.webm`。 |
+| `assets/ai-generated/previews/depth-study.png` / `parameter-model.png` | 局部网格与原有参数模型的预览，二者不是等精度测绘比较。 |
+
+照片里可辨认的木阶层次、白桌、彩色及条纹坐垫、两侧护栏和盆栽，在 SPZ 的实拍近似视角中都能查看。侧后方缺乏照片，生成结果可能有补全、模糊或漂浮区域。深度网格保留真实照片纹理，离开拍摄角度后可见缺口与接缝。这些缺陷没有通过虚构几何来掩盖。
+
+## 来源与身份
+
+用户确认视频 U02 拍摄于 **Building 5 / 4F**，并明确允许向 Atlas 上传 0.08、0.71、1.67、2.62 秒这四张截图。输入索引和哈希在 [inputs.json](../references/ai-world-v7/inputs.json)。它们是同一段视频的相邻画面，不能计作四份独立建筑证据。
+
+[Atlas 原始会话](https://atlas.worldlabs.ai/workflows/viewfinder/wsess_50438e5a36834caea55ad4f6fd2399b1)中，交付使用 **Splats 1 / 4 frames**。用户接管期间出现额外生成视图与另一个五帧任务；第五张图是 AI 生成视图，不能当作实拍证据，也没有用于本地深度网格。任务与资产记录见 [atlas-receipt.json](../references/ai-world-v7/atlas-receipt.json)。
+
+## 可编辑与复现
+
+- `src/ai-study.ts`：独立场景、相机、原图对照、SPZ / GLB 加载及下载。
+- `src/ai-study.css`：界面样式。
+- `assets/ai-generated/manifest.json`：资产路径、初始参考相机、显示朝向和估计展示尺度。
+- `scripts/export-atlas-depth.ts`：可见面 GLB 的完整生成代码。
+- `src/model/buildLounge.ts`：原有参数化休闲区，仍可编辑并用于比较。
 
 ```sh
-npm run ai:atlas -- pose
-# 查看 .atlas-local/pose.json 的相机/深度与参考画面后，再进行下一步。
-npm run ai:atlas -- splat
-npm run ai:atlas -- mesh
+npm run ai:depth  # 从已归档 RGBD 数据重新生成局部 GLB；不联网、不计费
+npm run build
+npm run preview -- --port 4174
 ```
 
-每一步会消耗账户积分。没有自动充值；实际价格按后台当时显示的费率判断，不能沿用转载文章的数字。[官方计费说明](https://docs.atlas.worldlabs.ai/billing)
+生产构建包含校园与 AI 对照两个入口，并复制必要参考与资产。Spark 为 MIT 开源渲染器，仅在 SPZ 页面动态加载。首个小样加载约 32 MB，暂未做移动端性能优化。
 
-脚本保存操作 ID 和幂等键，重跑会继续等待已有任务。中断本机等待不等于取消远端生成。`.atlas-local/` 被 Git 忽略，不存密钥或签名下载链接。输入发生变化时拒绝复用旧任务。
+深度导出按 Atlas 的 RUB 相机约定、平面 Z 深度和 EXR 行翻转规则反投影，每 8 像素采样，剔除无效深度与剧烈断层，重叠区域优先保留较早实拍帧；不生成背面。材质使用原图和 unlit，以保留拍摄光照。置信度图一并存档，但当前导出尚未用它过滤。相机和尺度是 AI 估计，不能标成米制测量。依据：[官方相机与深度说明](https://docs.atlas.worldlabs.ai/cameras-and-posed-images)。
 
-完成后输出：
+## 验证结果
 
-- `assets/ai-generated/b05-lounge-study.glb`
-- `assets/ai-generated/b05-lounge-study.provenance.json`
+- TypeScript / Vite 构建通过；原有 `check:v4`、`check:gameplay`、`check:video` 通过。
+- 实际浏览器加载 SPZ，确认 2,000,000 个 splats；完成鼠标旋转、重置和截图，保存实际录屏。
+- 深度 GLB 经 GLTFLoader 重载；Khronos glTF Validator **0 错误、0 警告**。4 条提示仅为 960×720 的非 2 次幂图像尺寸，详见 `depth-validation.json`。
+- 原有校园物理与 Agent 控制未被替换；此轮没有宣称完成室内碰撞或室内任务。
 
-输出为最多 40,000 面、2048 贴图的实验网格。可在当前页面切到“模型浏览与导出”，使用“重载 GLB”检查。先核对正面、左右侧、台阶和护栏，再决定替换哪些视觉细节。生成网格不会自动覆盖角色碰撞。
+## 尚未完成的官方网格转换
 
-## 下一批优先做什么
+将下载后的 SPZ 回传同一 Atlas 服务进行 Splat-to-mesh 时，自动审批要求对衍生文件再次上传单独授权，操作未执行。之后读取到 **0 Studio credits**，本轮没有充值、购买或再提交生成。现有局部 GLB 来自已下载 RGBD 的本地处理，并非绕过上传审批。
 
-1. **休闲区家具**：从白桌、靠垫、盆栽中挑 2–3 件，先用照片做单件生成，确认轮廓后再压低面数、统一像素材质。
-2. **CDS-1 入口细节**：门厅周边灯具、导视牌底座、花坛边缘。标牌文字仍用清晰原创贴图，不接受 AI 乱字。
-3. **建筑之间的步道**：用相邻、重叠的白天照片重建一小段；验证比例后接回原来的道路和碰撞系统。
+还不能把小样当作可直接进入游戏的最终室内资产。下一步需要补齐有平移视差的白天照片、校正尺度、清理网格、统一像素风材质，并另外制作简化碰撞体。优先补拍：入口往座席的全景、左右侧各一个斜角、沿座席侧边平移的一段视频。
 
-官方对视频输入的建议是从连续片段选清楚且重叠的帧，单房间通常先用 8–16 张；不能靠大量重复帧补足缺失角度。[Atlas 视频工作流](https://docs.atlas.worldlabs.ai/using-video-footage)
+## 已尝试的其他路线
 
-实现顺序：生成 → 对照实景 → 清理网格与贴图 → 定尺度 → 放入校园 → 验证行走/碰撞。整场景 splat 也可用于视觉参考，但本轮优先选现有 GLTFLoader 能直接读取的 GLB。[官方 splat 转网格接口](https://docs.atlas.worldlabs.ai/api-reference/splats2-mesh)
+| 工具 | 实际状态 |
+| --- | --- |
+| [Microsoft TRELLIS.2](https://github.com/microsoft/TRELLIS.2) | 公共演示 image_to_3d 成功，但 GLB 提取被免费 GPU 配额拦住；没有交付其模型。原始回执见 `trellis-receipt.json`。 |
+| [Hunyuan3D 2.1](https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1) | 单件道具备选，本轮未运行；需遵守腾讯专门许可。 |
+| [Meshy](https://docs.meshy.ai/en/api/image-to-3d) | 单件道具备选，本轮未购买或调用。 |
+
+保留 `scripts/atlas-campus.ts` 官方 SDK 分步工作流。`npm run ai:atlas -- plan` 只校验本地输入；`pose`、`splat`、`mesh` 需要私密配置服务端 `WLT_API_KEY`，会消耗对应账户积分，本轮未调用这些付费 API。网页登录不等于开发者 API 授权。不要把密钥放在 `VITE_*`、聊天或 Git 中。参考：[认证](https://docs.atlas.worldlabs.ai/authentication)、[计费](https://docs.atlas.worldlabs.ai/billing)。

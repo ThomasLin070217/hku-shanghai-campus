@@ -1,0 +1,31 @@
+{
+  "provider": "World Labs Atlas",
+  "sessionUrl": "https://atlas.worldlabs.ai/workflows/viewfinder/wsess_50438e5a36834caea55ad4f6fd2399b1",
+  "sourceFrames": 4,
+  "authorizedUpload": "User explicitly approved four U02 frames at 0.08 / 0.71 / 1.67 / 2.62 sec",
+  "contextExportFrames": 5,
+  "extraFrame": "05-view is Atlas-generated, not an independent real photograph; same camera pose as frame 4",
+  "poseStatus": "completed",
+  "splatStatus": "completed",
+  "meshStatus": "not_started_upload_approval_required_and_studio_balance_zero",
+  "displayedStartingStudioCredits": 10000,
+  "displayedBalanceAfterPoseAndExtraView": 9922,
+  "splatQuotedCredits": 5000,
+  "notes": "Delivered Splats 1 / 4 real source frames. A second 5-frame job appeared during user handoff and was also completed; agent did not submit it. No recharge or mesh conversion performed.",
+  "displayedFinalStudioCredits": 0,
+  "verificationDate": "2026-11-14",
+  "assets": [
+    {
+      "file": "b05-atlas.spz",
+      "type": "Atlas Splats 1 downloaded output",
+      "bytes": 31824281,
+      "sha256": "99a9249f210f9685e4e33e9b67337eb22b0ce350e3ddb9e1d6a651ac449b9a9f"
+    },
+    {
+      "file": "b05-atlas-depth-study.glb",
+      "type": "Local partial surface mesh from archived Atlas RGBD; NOT Splat-to-mesh",
+      "bytes": 1734220,
+      "sha256": "33ca2535620654a04d3e26cc236c318e02ed7bb172c3972de38ddd9519358014"
+    }
+  ]
+}

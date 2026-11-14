@@ -1,0 +1,26 @@
+{
+  "status": "splat_ready",
+  "source": "U02 user video, Building 5 / floor 4 confirmed",
+  "rotationDeg": [
+    0,
+    228.65385158286446,
+    0
+  ],
+  "displayWidth": 14.8,
+  "note": "Atlas 使用四张已授权视频帧生成的 SPZ 场景。可与参数模型及深度网格对照。未拍到的空间可能被补全，尺寸与隐藏面未经实测。",
+  "glb": "./assets/ai-generated/b05-atlas-depth-study.glb",
+  "representation": "Atlas SPZ · 四帧实景重建",
+  "camera": {
+    "position": [
+      5.105877470970154,
+      4.506020545959473,
+      1.5709987640380865
+    ],
+    "target": [
+      1.5447505165966051,
+      0.8319424204446486,
+      4.70461085592943
+    ]
+  },
+  "spz": "./assets/ai-generated/b05-atlas.spz"
+}
