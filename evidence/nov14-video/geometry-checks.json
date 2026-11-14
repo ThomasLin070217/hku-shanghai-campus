@@ -1,0 +1,51 @@
+[
+  {
+    "name": "curved flight 0 down/up",
+    "bottom": [
+      14.349907477664924,
+      -4.2,
+      25.027198228024847
+    ],
+    "end": [
+      0.0002335874205208889,
+      0,
+      47.971422782329235
+    ]
+  },
+  {
+    "name": "curved flight 1 down/up",
+    "bottom": [
+      -14.349907477664924,
+      -4.2,
+      24.97280177197512
+    ],
+    "end": [
+      -0.00023358742051858558,
+      0,
+      2.02857721767051
+    ]
+  },
+  {
+    "name": "underpass clear / overhead solid",
+    "layout": {
+      "x": 58,
+      "z": -39.75,
+      "length": 31.1,
+      "width": 14,
+      "bottom": 5.8,
+      "height": 6.8
+    }
+  },
+  {
+    "name": "east-west passage beside observed troughs",
+    "end": [
+      78.4000000000027,
+      0,
+      -36.25
+    ]
+  },
+  {
+    "name": "obsolete straight flights and spiral removed",
+    "passed": true
+  }
+]

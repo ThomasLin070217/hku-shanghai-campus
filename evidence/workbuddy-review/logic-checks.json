@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-14T11:38:54.728Z",
+  "checks": [
+    "Line/Points/Sprite resources released once; retained materials/textures survive subtree removal",
+    "Landmarks reuse identity/support results; paused observe performs no target query",
+    "Saving avoids observe; world revision mismatch preserves progress and resets position safely",
+    "Rebuild preserves frame/history and invalidates AI epoch; stale commands stay rejected",
+    "Map entry path is identical with B04 moved to another array index"
+  ]
+}

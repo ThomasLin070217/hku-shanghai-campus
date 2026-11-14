@@ -1,0 +1,61 @@
+[in#0/mov,mp4,m4a,3gp,3g2,mj2 @ 0x12f613e00] Could not find codec parameters for stream 2 (Audio: apple_apac (apac / 0x63617061), 48000 Hz, 4 channels, 396 kb/s): unspecified sample format
+Consider increasing the value for the 'analyzeduration' (0) and 'probesize' (5000000) options
+[aist#0:2/apple_apac @ 0x130005c20] Guessed Channel Layout: 4.0
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/Users/thomaslin/Downloads/IMG_4339.MOV':
+  Metadata:
+    major_brand     : qt  
+    minor_version   : 0
+    compatible_brands: qt  
+    creation_time   : 2026-11-13T09:04:40.000000Z
+    com.apple.quicktime.location.accuracy.horizontal: 25.015476
+    com.apple.quicktime.full-frame-rate-playback-intent: 0
+    com.apple.quicktime.location.ISO6709: +31.2121+121.6326+005.268/
+    com.apple.quicktime.make: Apple
+    com.apple.quicktime.model: iPhone 17
+    com.apple.quicktime.software: 26.6.1
+    com.apple.quicktime.creationdate: 2026-11-13T17:04:40+0800
+  Duration: 00:02:26.72, start: 0.000000, bitrate: 95362 kb/s
+  Stream #0:0[0x1](und): Video: hevc (Main 10) (hvc1 / 0x31637668), yuv420p10le(tv, bt2020nc/bt2020/arib-std-b67), 3840x2160, 94679 kb/s, 54.35 fps, 60 tbr, 600 tbn (default)
+    Metadata:
+      creation_time   : 2026-11-13T09:04:40.000000Z
+      handler_name    : Core Media Video
+      vendor_id       : [0][0][0][0]
+      encoder         : HEVC
+    Side data:
+      DOVI configuration record: version: 1.0, profile: 8, level: 9, rpu flag: 1, el flag: 0, bl flag: 1, compatibility id: 4, compression: 0
+      Ambient viewing environment: ambient_illuminance=314.000000, ambient_light_x=0.312700, ambient_light_y=0.329000
+  Stream #0:1[0x2](und): Audio: aac (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 192 kb/s (default)
+    Metadata:
+      creation_time   : 2026-11-13T09:04:40.000000Z
+      handler_name    : Core Media Audio
+      vendor_id       : [0][0][0][0]
+  Stream #0:2[0x3](und): Audio: apple_apac (apac / 0x63617061), 48000 Hz, 4.0, 396 kb/s
+    Metadata:
+      creation_time   : 2026-11-13T09:04:40.000000Z
+      handler_name    : Core Media Audio
+      vendor_id       : [0][0][0][0]
+  Stream #0:3[0x4](und): Data: none (mebx / 0x7862656D), 0 kb/s (default)
+    Metadata:
+      creation_time   : 2026-11-13T09:04:40.000000Z
+      handler_name    : Core Media Metadata
+  Stream #0:4[0x5](und): Data: none (mebx / 0x7862656D), 0 kb/s (default)
+    Metadata:
+      creation_time   : 2026-11-13T09:04:40.000000Z
+      handler_name    : Core Media Metadata
+  Stream #0:5[0x6](und): Data: none (mebx / 0x7862656D) (default)
+    Metadata:
+      creation_time   : 2026-11-13T09:04:40.000000Z
+      handler_name    : Core Media Metadata
+  Stream #0:6[0x7](und): Data: none (mebx / 0x7862656D), 62 kb/s (default)
+    Metadata:
+      creation_time   : 2026-11-13T09:04:40.000000Z
+      handler_name    : Core Media Metadata
+  Stream #0:7[0x8](und): Data: none (mebx / 0x7862656D), 5 kb/s (default)
+    Metadata:
+      creation_time   : 2026-11-13T09:04:40.000000Z
+      handler_name    : Core Media Metadata
+  Stream #0:8[0x9](und): Data: none (mebx / 0x7862656D), 0 kb/s (default)
+    Metadata:
+      creation_time   : 2026-11-13T09:04:40.000000Z
+      handler_name    : Core Media Metadata
+At least one output file must be specified

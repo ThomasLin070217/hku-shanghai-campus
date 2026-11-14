@@ -1,0 +1,25 @@
+{
+  "input": "native Shift+W",
+  "start": [
+    42,
+    0,
+    -36.25
+  ],
+  "end": {
+    "position": [
+      73.33000000000233,
+      0,
+      -36.25
+    ],
+    "velocity": [
+      5.2000000000003865,
+      0,
+      0
+    ],
+    "yawDeg": -90,
+    "pitchDeg": 0,
+    "grounded": true
+  },
+  "frame": 26078,
+  "earlierCentreRoute": "Stopped correctly at side-passage-planter; adjacent path tested"
+}

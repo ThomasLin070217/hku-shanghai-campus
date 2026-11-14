@@ -1,0 +1,25 @@
+[
+  {
+    "file": "/Users/thomaslin/Downloads/IMG_4339.MOV",
+    "duration": 146.72,
+    "sampleTimes": [
+      0,
+      15,
+      30,
+      45,
+      60,
+      75,
+      90,
+      105,
+      120,
+      135
+    ]
+  },
+  {
+    "file": "/Users/thomaslin/Downloads/IMG_4342.MOV",
+    "duration": 15.88,
+    "sampleTimes": [
+      0
+    ]
+  }
+]

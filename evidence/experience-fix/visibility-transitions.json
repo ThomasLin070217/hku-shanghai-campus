@@ -1,0 +1,35 @@
+{
+  "events": [
+    {
+      "hidden": true,
+      "at": 634675.5,
+      "paused": true,
+      "audio": "suspended"
+    },
+    {
+      "hidden": false,
+      "at": 634850.6999999285,
+      "paused": true,
+      "audio": "suspended"
+    }
+  ],
+  "paused": true,
+  "audio": {
+    "state": "suspended",
+    "active": false,
+    "ambientVoices": 1,
+    "ambientStarts": 1,
+    "activeShots": 0,
+    "counts": {
+      "collect": 1,
+      "select": 1
+    },
+    "failed": false,
+    "gains": {
+      "ambient": 0.20000000298023224,
+      "steps": 0.550000011920929,
+      "ui": 0.550000011920929,
+      "music": 0
+    }
+  }
+}

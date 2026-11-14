@@ -1,0 +1,87 @@
+{
+  "date": "2026-11-14",
+  "reviewRows": 158,
+  "changedSourceFiles": [
+    {
+      "path": "src/main.ts",
+      "sha256": "4480759916f1032564d31c9d692b2574a0d6b847caa3197d90b67cfe9c03e4f4"
+    },
+    {
+      "path": "src/ui/exploration.css",
+      "sha256": "4fcb05dad588e5494906b057439a78ece813b10cb149223d7ba73d678aef6bd1"
+    },
+    {
+      "path": "src/ui/dom.ts",
+      "sha256": "bee5f75e7043453f0cbe046967dc4ba697587548937906da4f5a1c00ead5c604"
+    },
+    {
+      "path": "src/agent/bridge.ts",
+      "sha256": "ec5f114e1d58f926b8f5b56d5d62c291f5a9d7af999ff8ab810af18bd20d71aa"
+    },
+    {
+      "path": "src/exploration/game.ts",
+      "sha256": "ca70016bf2d282dbe1ebf1c6f9ce5fb7f00619091a1563786c88d4e4aa171570"
+    },
+    {
+      "path": "src/exploration/controller.ts",
+      "sha256": "7c2290af6a82968ff025a0cb1f7d5282dd3e5cc2f10693800d452ea04d095b4e"
+    },
+    {
+      "path": "src/viewer/glassEnvironment.ts",
+      "sha256": "164cc1ea0acf1c72c092fa8c348a792e9cf10b2dded91c66431c1182a8908b07"
+    },
+    {
+      "path": "src/viewer/siteViewer.ts",
+      "sha256": "1295954d9f920a775b839a81e53b5d539b1987c17dd7871011b0e740a08c021c"
+    },
+    {
+      "path": "src/gameplay/audio.ts",
+      "sha256": "1b81f3f182842f320171b111209c11323c4809fa3281f2609a5bcdcb13079c86"
+    },
+    {
+      "path": "src/gameplay/map.ts",
+      "sha256": "15f253c408dff23217558a5c94299b645aa3f84f3ea4de9f3e800177287ebd9d"
+    },
+    {
+      "path": "src/gameplay/experience.ts",
+      "sha256": "e64ec749784ca1d4dd6739f94d270b0d3567bbe8baf7771f11254ec483ecf19a"
+    },
+    {
+      "path": "src/gameplay/survey.ts",
+      "sha256": "91d371ae5ac11b71bea8ef1970fec7dc60c3bed0c2d6ea04322a20ee92a8391b"
+    },
+    {
+      "path": "src/gameplay/save.ts",
+      "sha256": "7af3bccd787afa42ed19ced1cb202d402ea08ca1328385086c6dbadda4fa1ee2"
+    },
+    {
+      "path": "src/model/buildCampus.ts",
+      "sha256": "8a4534572828dd2215ff8b131e9a2941433f3a91453269fcea56dfd24db4265e"
+    },
+    {
+      "path": "src/model/buildSite.ts",
+      "sha256": "bd63791510116cd190ebb68e4f2f8b69bd30b7d87f75ef6ea032f7e6eaf4b4c3"
+    },
+    {
+      "path": "src/items/inventoryUI.ts",
+      "sha256": "b450b45c0e61b042d5763b6a20d6c713ed529711e846c78df3e4a42d19f09c1d"
+    }
+  ],
+  "runtimeBytes": 6717725,
+  "checks": [
+    "check:all",
+    "check:transport",
+    "real HTTP agent-demo --takeover-test",
+    "20 rebuilds stable 790 geometries / 15 textures",
+    "real UI keyboard/C/settings/PNG",
+    "unsupported save protected and backed up",
+    "production no __CAMPUS"
+  ],
+  "limitations": [
+    "Ego Lite Pointer Lock denied; compatibility mode tested",
+    "No subjective audio listening",
+    "No human first-play experiment",
+    "Large inline photo chunk still warns",
+    "No Git commit or push"
+  ]
+}

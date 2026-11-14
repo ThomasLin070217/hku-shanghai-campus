@@ -1,0 +1,19 @@
+
+> hku-shanghai-whole-campus@9.0.0 validate:glb
+> node scripts/validate-glb.mjs
+
+assets/HKU-Shanghai-Campus.glb 0 errors 0 warnings
+assets/HKU-Shanghai-Campus-no-ground.glb 0 errors 0 warnings
+assets/Student-Green-Gown.glb 0 errors 0 warnings
+assets/B05-4F-Stepped-Lounge.glb 0 errors 0 warnings
+assets/characters/hku-green.glb 0 errors 0 warnings
+assets/characters/navy-student.glb 0 errors 0 warnings
+assets/characters/sand-student.glb 0 errors 0 warnings
+assets/items/entrance-lion.glb 0 errors 0 warnings
+assets/buildings/B01.glb 0 errors 0 warnings
+assets/buildings/B02.glb 0 errors 0 warnings
+assets/buildings/B03.glb 0 errors 0 warnings
+assets/buildings/B04.glb 0 errors 0 warnings
+assets/buildings/B05.glb 0 errors 0 warnings
+assets/buildings/B06.glb 0 errors 0 warnings
+assets/buildings/B07.glb 0 errors 0 warnings

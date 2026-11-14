@@ -1,0 +1,319 @@
+{
+  "version": 1,
+  "method": "Read final 共N米 result after completing a two-point ruler; screenshots retain endpoints, platform result and attribution.",
+  "uncertainty": "Practical picking/roof-parallax allowance, not a statistical confidence interval. Rounded whole-metre map readouts.",
+  "measurements": [
+    {
+      "id": "SM01",
+      "screenshot": "R01-cds1-roof-width.png",
+      "label": "CDS-1 / B04 屋顶宽度",
+      "metres": 60,
+      "practicalUncertaintyMetres": 2,
+      "modelBeforeMetres": 59.7,
+      "modelAfterMetres": 59.7,
+      "endpointsCSSPixels": [
+        [
+          811,
+          301
+        ],
+        [
+          1283,
+          301
+        ]
+      ],
+      "viewport": [
+        1698,
+        980
+      ],
+      "modelTarget": "B04.width",
+      "decision": "保留；屋顶外缘作为主体宽度近似，不含立面凸出装饰",
+      "screenshotSha256": "844c19460adae9fff1d8709b56201e4448acf93ff3a4d9fc17fd2c96a29f7e60",
+      "source": {
+        "pageUrl": "https://ditu.amap.com/place/B0LKXUOH6U",
+        "publisher": "高德地图",
+        "imageryCredit": "Image © DigitalGlobe & spaceview",
+        "mapApproval": "GS(2026)4805号",
+        "accessDate": "2026-11-14",
+        "imageryCaptureDate": null,
+        "type": "卫星影像＋高德网页原生测距工具",
+        "view": "2D, north up",
+        "identityBasis": "用户 M03 导览图的 7–6–5 北排、1/2 西塔、CDS-1/2 东塔，与现存 M01 卫星图、A04 实景航拍及中央礼堂/下沉广场形态交叉对应。POI 标点不能独立确认楼号。",
+        "independence": "八条线来自同一高德影像，不算八份独立影像；与既有 M01 也不是独立来源。",
+        "addressNote": "该 POI 显示集电路305号；官网入口地址芳春路500号。通过同一七栋地块和已归档导览图对应，未用 POI 标题代替楼栋身份。"
+      }
+    },
+    {
+      "id": "SM02",
+      "screenshot": "R02-cds1-roof-depth.png",
+      "label": "CDS-1 / B04 屋顶进深",
+      "metres": 45,
+      "practicalUncertaintyMetres": 2,
+      "modelBeforeMetres": 45,
+      "modelAfterMetres": 45,
+      "endpointsCSSPixels": [
+        [
+          1353,
+          591
+        ],
+        [
+          1353,
+          768
+        ]
+      ],
+      "viewport": [
+        1698,
+        980
+      ],
+      "modelTarget": "B04.depth",
+      "decision": "保留；同一屋顶两端，不跨越屋顶和地面量距",
+      "screenshotSha256": "7ba797fae413352bfad4db9593d325feb3f12570c0da68f004caafbfaad61f2a",
+      "source": {
+        "pageUrl": "https://ditu.amap.com/place/B0LKXUOH6U",
+        "publisher": "高德地图",
+        "imageryCredit": "Image © DigitalGlobe & spaceview",
+        "mapApproval": "GS(2026)4805号",
+        "accessDate": "2026-11-14",
+        "imageryCaptureDate": null,
+        "type": "卫星影像＋高德网页原生测距工具",
+        "view": "2D, north up",
+        "identityBasis": "用户 M03 导览图的 7–6–5 北排、1/2 西塔、CDS-1/2 东塔，与现存 M01 卫星图、A04 实景航拍及中央礼堂/下沉广场形态交叉对应。POI 标点不能独立确认楼号。",
+        "independence": "八条线来自同一高德影像，不算八份独立影像；与既有 M01 也不是独立来源。",
+        "addressNote": "该 POI 显示集电路305号；官网入口地址芳春路500号。通过同一七栋地块和已归档导览图对应，未用 POI 标题代替楼栋身份。"
+      }
+    },
+    {
+      "id": "SM03",
+      "screenshot": "R03-cds2-roof-width.png",
+      "label": "CDS-2 / B03 屋顶宽度",
+      "metres": 60,
+      "practicalUncertaintyMetres": 2,
+      "modelBeforeMetres": 59.7,
+      "modelAfterMetres": 59.7,
+      "endpointsCSSPixels": [
+        [
+          974,
+          495
+        ],
+        [
+          1210,
+          495
+        ]
+      ],
+      "viewport": [
+        1698,
+        980
+      ],
+      "modelTarget": "B03.width",
+      "decision": "保留；由导览图楼号和东列南塔位置对应",
+      "screenshotSha256": "87e53daa8135d6be5e756a8c996c65b05919180cf22706373cc365c332d07b63",
+      "source": {
+        "pageUrl": "https://ditu.amap.com/place/B0LKXUOH6U",
+        "publisher": "高德地图",
+        "imageryCredit": "Image © DigitalGlobe & spaceview",
+        "mapApproval": "GS(2026)4805号",
+        "accessDate": "2026-11-14",
+        "imageryCaptureDate": null,
+        "type": "卫星影像＋高德网页原生测距工具",
+        "view": "2D, north up",
+        "identityBasis": "用户 M03 导览图的 7–6–5 北排、1/2 西塔、CDS-1/2 东塔，与现存 M01 卫星图、A04 实景航拍及中央礼堂/下沉广场形态交叉对应。POI 标点不能独立确认楼号。",
+        "independence": "八条线来自同一高德影像，不算八份独立影像；与既有 M01 也不是独立来源。",
+        "addressNote": "该 POI 显示集电路305号；官网入口地址芳春路500号。通过同一七栋地块和已归档导览图对应，未用 POI 标题代替楼栋身份。"
+      }
+    },
+    {
+      "id": "SM04",
+      "screenshot": "R04-east-tower-centres.png",
+      "label": "B04—B03 屋顶中心南北间距",
+      "metres": 73,
+      "practicalUncertaintyMetres": 3,
+      "modelBeforeMetres": 72,
+      "modelAfterMetres": 72,
+      "endpointsCSSPixels": [
+        [
+          1092,
+          284
+        ],
+        [
+          1092,
+          568
+        ]
+      ],
+      "viewport": [
+        1698,
+        980
+      ],
+      "modelTarget": "B03.z-B04.z",
+      "decision": "差 1 m 在误差内，保留；同型同高塔楼降低视差影响",
+      "screenshotSha256": "e60144a21d90be50e76a0c5240ddd644c017a67298d2889e0d9872217d405b97",
+      "source": {
+        "pageUrl": "https://ditu.amap.com/place/B0LKXUOH6U",
+        "publisher": "高德地图",
+        "imageryCredit": "Image © DigitalGlobe & spaceview",
+        "mapApproval": "GS(2026)4805号",
+        "accessDate": "2026-11-14",
+        "imageryCaptureDate": null,
+        "type": "卫星影像＋高德网页原生测距工具",
+        "view": "2D, north up",
+        "identityBasis": "用户 M03 导览图的 7–6–5 北排、1/2 西塔、CDS-1/2 东塔，与现存 M01 卫星图、A04 实景航拍及中央礼堂/下沉广场形态交叉对应。POI 标点不能独立确认楼号。",
+        "independence": "八条线来自同一高德影像，不算八份独立影像；与既有 M01 也不是独立来源。",
+        "addressNote": "该 POI 显示集电路305号；官网入口地址芳春路500号。通过同一七栋地块和已归档导览图对应，未用 POI 标题代替楼栋身份。"
+      }
+    },
+    {
+      "id": "SM05",
+      "screenshot": "R05-building5-roof-width.png",
+      "label": "B05 屋顶宽度",
+      "metres": 59,
+      "practicalUncertaintyMetres": 2,
+      "modelBeforeMetres": 59.7,
+      "modelAfterMetres": 59.7,
+      "endpointsCSSPixels": [
+        [
+          1304,
+          392
+        ],
+        [
+          1534,
+          392
+        ]
+      ],
+      "viewport": [
+        1698,
+        980
+      ],
+      "modelTarget": "B05.width",
+      "decision": "保留；中央礼堂东侧低楼",
+      "screenshotSha256": "357396cfd3021e4c04372ac4924ff10f01c5f2eeffedc9c5d528c616680a122d",
+      "source": {
+        "pageUrl": "https://ditu.amap.com/place/B0LKXUOH6U",
+        "publisher": "高德地图",
+        "imageryCredit": "Image © DigitalGlobe & spaceview",
+        "mapApproval": "GS(2026)4805号",
+        "accessDate": "2026-11-14",
+        "imageryCaptureDate": null,
+        "type": "卫星影像＋高德网页原生测距工具",
+        "view": "2D, north up",
+        "identityBasis": "用户 M03 导览图的 7–6–5 北排、1/2 西塔、CDS-1/2 东塔，与现存 M01 卫星图、A04 实景航拍及中央礼堂/下沉广场形态交叉对应。POI 标点不能独立确认楼号。",
+        "independence": "八条线来自同一高德影像，不算八份独立影像；与既有 M01 也不是独立来源。",
+        "addressNote": "该 POI 显示集电路305号；官网入口地址芳春路500号。通过同一七栋地块和已归档导览图对应，未用 POI 标题代替楼栋身份。"
+      }
+    },
+    {
+      "id": "SM06",
+      "screenshot": "R06-north-low-rise-centres.png",
+      "label": "B07—B05 屋顶中心东西间距",
+      "metres": 116,
+      "practicalUncertaintyMetres": 3,
+      "modelBeforeMetres": 104,
+      "modelAfterMetres": 116,
+      "endpointsCSSPixels": [
+        [
+          966,
+          451
+        ],
+        [
+          1420,
+          451
+        ]
+      ],
+      "viewport": [
+        1698,
+        980
+      ],
+      "modelTarget": "B05.x-B07.x",
+      "decision": "修正；两列各外移 6 m，高层采用共列对齐推断",
+      "screenshotSha256": "c61684772cabe839ee75cd9ffd7042d87a3b2f018d322685c36e2b67f161923e",
+      "source": {
+        "pageUrl": "https://ditu.amap.com/place/B0LKXUOH6U",
+        "publisher": "高德地图",
+        "imageryCredit": "Image © DigitalGlobe & spaceview",
+        "mapApproval": "GS(2026)4805号",
+        "accessDate": "2026-11-14",
+        "imageryCaptureDate": null,
+        "type": "卫星影像＋高德网页原生测距工具",
+        "view": "2D, north up",
+        "identityBasis": "用户 M03 导览图的 7–6–5 北排、1/2 西塔、CDS-1/2 东塔，与现存 M01 卫星图、A04 实景航拍及中央礼堂/下沉广场形态交叉对应。POI 标点不能独立确认楼号。",
+        "independence": "八条线来自同一高德影像，不算八份独立影像；与既有 M01 也不是独立来源。",
+        "addressNote": "该 POI 显示集电路305号；官网入口地址芳春路500号。通过同一七栋地块和已归档导览图对应，未用 POI 标题代替楼栋身份。"
+      }
+    },
+    {
+      "id": "SM07",
+      "screenshot": "R07-building7-roof-width.png",
+      "label": "B07 屋顶宽度",
+      "metres": 61,
+      "practicalUncertaintyMetres": 2,
+      "modelBeforeMetres": 59.5,
+      "modelAfterMetres": 59.5,
+      "endpointsCSSPixels": [
+        [
+          847,
+          392
+        ],
+        [
+          1086,
+          392
+        ]
+      ],
+      "viewport": [
+        1698,
+        980
+      ],
+      "modelTarget": "B07.width",
+      "decision": "保留；中央礼堂西侧低楼",
+      "screenshotSha256": "9b14422379d244ef367daa142fd13d3380be3a6701bd43cbc97246b5318b5b54",
+      "source": {
+        "pageUrl": "https://ditu.amap.com/place/B0LKXUOH6U",
+        "publisher": "高德地图",
+        "imageryCredit": "Image © DigitalGlobe & spaceview",
+        "mapApproval": "GS(2026)4805号",
+        "accessDate": "2026-11-14",
+        "imageryCaptureDate": null,
+        "type": "卫星影像＋高德网页原生测距工具",
+        "view": "2D, north up",
+        "identityBasis": "用户 M03 导览图的 7–6–5 北排、1/2 西塔、CDS-1/2 东塔，与现存 M01 卫星图、A04 实景航拍及中央礼堂/下沉广场形态交叉对应。POI 标点不能独立确认楼号。",
+        "independence": "八条线来自同一高德影像，不算八份独立影像；与既有 M01 也不是独立来源。",
+        "addressNote": "该 POI 显示集电路305号；官网入口地址芳春路500号。通过同一七栋地块和已归档导览图对应，未用 POI 标题代替楼栋身份。"
+      }
+    },
+    {
+      "id": "SM08",
+      "screenshot": "R08-north-site-width.png",
+      "label": "北侧可见地块边缘宽度",
+      "metres": 208,
+      "practicalUncertaintyMetres": 5,
+      "modelBeforeMetres": 208,
+      "modelAfterMetres": 208,
+      "endpointsCSSPixels": [
+        [
+          1581,
+          213
+        ],
+        [
+          766,
+          213
+        ]
+      ],
+      "viewport": [
+        1698,
+        980
+      ],
+      "modelTarget": "SITE.width",
+      "decision": "仅作总体宽度核对；不是权属边界测绘，也不确认南北长边",
+      "screenshotSha256": "c33d87522984934cdb4d9f63fef6f6d15efad61141cd25549d1db8e2c1625b51",
+      "source": {
+        "pageUrl": "https://ditu.amap.com/place/B0LKXUOH6U",
+        "publisher": "高德地图",
+        "imageryCredit": "Image © DigitalGlobe & spaceview",
+        "mapApproval": "GS(2026)4805号",
+        "accessDate": "2026-11-14",
+        "imageryCaptureDate": null,
+        "type": "卫星影像＋高德网页原生测距工具",
+        "view": "2D, north up",
+        "identityBasis": "用户 M03 导览图的 7–6–5 北排、1/2 西塔、CDS-1/2 东塔，与现存 M01 卫星图、A04 实景航拍及中央礼堂/下沉广场形态交叉对应。POI 标点不能独立确认楼号。",
+        "independence": "八条线来自同一高德影像，不算八份独立影像；与既有 M01 也不是独立来源。",
+        "addressNote": "该 POI 显示集电路305号；官网入口地址芳春路500号。通过同一七栋地块和已归档导览图对应，未用 POI 标题代替楼栋身份。"
+      }
+    }
+  ]
+}

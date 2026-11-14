@@ -1,103 +1,71 @@
-# 开源整合与物资练习 v6
+# HKU Shanghai · 校园数字巡检 v9
 
-AI 实景重建 v7（2026-11-14）：已用四张获授权的视频帧生成 **5 号楼四楼休闲区 Atlas SPZ**，并接入本地 Three.js 对照页。启动后打开 **http://127.0.0.1:5174/ai-study.html**，或点击校园顶部「AI 重建对照」。支持旋转、缩放、实拍对照、PNG 保存与 SPZ / 深度 GLB 下载。详见 [实际成果、局限和复现方法](docs/AI-WORLD-ASSETS.md)。本轮是独立资产检查视图，尚未替换校园行走碰撞。
+**最近修复（2026-11-14）：** 学院石牌新增黑色三维字并修复贴图空白；修整道路与步道重叠、入口铺装及地面碰撞。包含近期 WorkBuddy 反馈复核、界面与音频恢复、存档和资源生命周期修复。详见 [石牌与道路修复](docs/SIGN-ROADS-FIX.md)、[评审逐项处理](docs/WORKBUDDY-REVIEW.md)、[后续修复及验证](docs/REMAINING-FIXES.md)。
 
-沿用 Vite + TypeScript + Three.js。新增 **XState 任务状态机、Kenney CC0 道具、E 拾取/提交、版本化练习存档**，修复控制器销毁后的事件与显存资源泄漏。建筑布局、玩家物理和本机 Agent 协议沿用现有版本。
+**最新：11 月 14 日实录更新。** 双弧形下沉楼梯、北侧绿地、教学楼—5号楼连接体、连续绿篱与实拍石牌；按新视频目测将狮子本体暂定为 4.8 m。新增门厅及 13 层公共区的独立参考模型。查看 [修改说明](docs/NOV14-VIDEO-UPDATE.md)、[前后对照与实际通行录像](evidence/nov14-video/index.html)。室内预览 <http://127.0.0.1:5184/interiors.html>，校园关闭门碰撞保留。
+
+**2026-11-14 体验修复：** 稳定头部与距离驱动步态、真实脚步采样/单实例环境音、分层绿化、狮子等比例暂定尺度。查看 [修复说明](docs/EXPERIENCE-FIX.md) 与 [带声录屏及前后对比](evidence/experience-fix/index.html)。该轮狮子为 5.8 米估算（已被下述新视频更新为 4.8 米）；音色主观试听尚未验证。
 
 ```sh
 npm ci
 npm run play
 ```
 
-打开 http://127.0.0.1:5174 ，暂停菜单选择「开始物资检查练习」，然后「进入探索」。用 WASD/Shift/Space 移动跑跳，靠近绿色地标按 **E** 收集三件物品，再到金色终端按 E 提交。Esc 暂停；「重置练习进度」只重置练习。当前练习是可替换示例，不是正式剧情。
+打开 **http://127.0.0.1:5184/**；人物预览 **http://127.0.0.1:5184/characters.html**。AI 服务端口为 **8788**，避免占用旧工程端口。
 
-实现、开源选型、许可证、模型审阅裁定及验证见 [OPEN-SOURCE-V6.md](OPEN-SOURCE-V6.md)。代码入口：`src/gameplay/supplyQuest.ts`、`supplyScene.ts`；按键与物理参数：`src/exploration/config.ts`。回归：`npm run check:gameplay && npm run check:v4 && npm run check:video && npm run build`。
+先前的 Atlas 室内重建小样也已保留：开发服务打开 `http://127.0.0.1:5184/ai-study.html`；需打包参考页时执行 `npm run build:review`。日常运行包不包含这份大型研究素材。
+
+本目录从原有 `2026-11-12/codex-hku-shanghai-campus-hku-shanghai/outputs/hku-shanghai-campus` 工程复制并继续开发；旧工程未改动。
+
+本轮可完整试玩：走访三个室外地标 → F 收集记录 → 1 装备 MacBook → C 打开任务页同步。加入统一交互、小地图、电脑地图/任务/线索、存档、声音与舒适度设置；保留既有角色、27+9 背包、跑跳、视角、卫星尺度及玻璃碰撞。
+
+- [试玩与配置、存档、设置说明](docs/DIGITAL-SURVEY-V9.md)
+- [实际操作及验证边界](docs/VALIDATION-V9.md)
+- [本轮截图与完整任务操作记录](evidence/v9/index.html)
+- 历史交付包：`HKU-Shanghai-v9-source.zip`（本轮修复前的归档；当前修复请使用本目录源码）。
+
+浏览器完整操作用时约 **4 分 24 秒**，包含截图、界面阅读与工具衔接；纯步行路线约 103 秒。还需首次进入的同学确认独立游玩时间。
+
+**E 背包；1–9 / 滚轮装备；F 收集/查看；C 电脑；V 视角；[ ] 镜头距离；WASD / Shift / Space 跑跳。关闭背包后点击进入探索恢复控制。**
+
+- [角色与物品扩展说明](docs/CHARACTERS-AND-ITEMS-V8.md)
+- [许可证与实际资产使用](docs/ASSET-LICENSES-V8.md)
+- [视频时间戳修改清单与尺寸边界](references/nov13/CORRECTIONS.md)
+- [v8 人物/装备历史验收](evidence/v8/index.html)
+
+`npm run check:all` 验证；`npm run export:glb` 导出校准后的校园及单栋 GLB，`npm run export:v8` 导出人物与道具。
+
+**卫星测距校准（2026-11-14）：** 高德原生测距得到 CDS-1 约60×45 m，保留模型59.7×45 m；北侧东西楼中心距104→116 m，两列各外移6 m，环境及碰撞同步。没有整体缩放；高度、地下深度和未测边界仍暂定。无需团队为此专程现场量楼宽。
+
+- [原始测距与前后对照](references/scale-calibration/index.html) · [方法、误差与修改依据](references/scale-calibration/REPORT.md)
+- 参数集中在 `src/model/scaleCalibration.ts`，`observe.world.scaleCalibration` 与导出元数据同步说明证据边界。
+- 旧 DELIVERY-V8.json/压缩包是修改前快照；当前源码见 DELIVERY-V9.json；DELIVERY-SCALE.json 保留测距阶段记录。
+
+**玻璃还原（2026-11-14 · glass1）：** 入口、首层幕墙、深色上层玻璃和连廊玻璃护栏分离建模；金属框及层间背板保持不透明，窗后增加封闭的简化纵深。门和玻璃仍阻挡角色。光学参数为依据照片调出的游戏表现，不是测量值。
+
+- [实景—修改前—修改后（7 组）](references/glass/index.html) · [逐项依据及局限](references/glass/REPORT.md)
+- [行走操作记录](evidence/glass/walking-checks.json) · [入口行走录像](evidence/glass/glass-entry-walk.webm)
+- 参数：`src/model/glazing.ts`；校验：`npm run check:glass`；当前玻璃交付清单：`DELIVERY-GLASS.json`。之前的 DELIVERY-SCALE.json 保留为测距修改时的历史记录。
 
 ---
 
-# 实录细节更新 v5
+以下是历史版本说明，旧端口和旧按键以本文顶部 v9 为准。
 
-新增视频参考的室外细节、日夜切换，以及用户确认位于 **5号楼4楼** 的独立阶梯休闲区。完整说明见 [VIDEO-DETAILS-V5.md](VIDEO-DETAILS-V5.md)，逐帧依据见 [参考档案](references/night-video/index.html)。
 
-`npm ci && npm run play` 后打开 http://127.0.0.1:5174 。顶部「5号楼 · 4F」查看及导出室内参考资产；「切换夜景」查看室外灯光。
+旧版端口、按键和物资示例见 [历史说明](docs/HISTORY-PRE-V9.md)，当前操作以上文为准。
 
-团队协作见 [四人分工与 Agent 交接](docs/team/TEAM-HANDOFF.md)，包含 Frost、Harry、Thomas、WHL 各自的任务书。
+## Workbuddy 复核更新
 
-以下保留此前版本的控制、接口和校园建模说明。
+`npm run play` 启动 http://127.0.0.1:5184，AI 服务为 8788。C 键自动取出电脑；工具入口位于右上「校园工具」。审计与验证见 `docs/WORKBUDDY-REVIEW.md`。
 
----
+`npm run build` 生成运行版（不复制私有录像、研究和证据）；`npm run build:review` 生成仅供团队本机查看的完整证据版，包含开发检查接口。请勿把证据版直接公开发布。
 
-# HKU Shanghai · Voxel Campus Explorer v4
+### 最终评审补修（2026-11-14）
 
-现有张江校园模型上的方块风室外探索版本。Vite + TypeScript + Three.js；原创方块学生穿 HKU 绿色长袍，第一／第三人称共用跑跳物理与碰撞。
+通过 `npm run play` 在 HTTP 页面运行，不要直接双击 `dist/index.html`。设置页可分别试听环境音、脚步和提示音；总静音对试听同样生效。声音失败可点“重试声音”。一个窗口接管存档后，其他窗口会暂停；再次操作会接续最新进度。
 
-## 启动
+详见 [最终报告复核](docs/WORKBUDDY-FINAL-REVIEW.md)，原逐条审核保留在 [第一轮复核](docs/WORKBUDDY-REVIEW.md)。
 
-需要 Node.js 22 或更高版本：
+### 剩余项收尾
 
-```sh
-npm install
-npm run play
-```
-
-打开 **http://127.0.0.1:5174**。该命令同时启动游戏与仅监听本机的 AI 服务 8787。
-
-只玩游戏可 `npm run dev`；单独控制服务为 `npm run agent:server`。如端口已占用，先关闭之前的该项目进程。
-
-生产构建：`npm run build`，`npm run preview -- --port 4174`。AI 服务仍需另外运行。
-
-## 操作
-
-点击 **进入探索** 获取鼠标控制。WASD 行走、左 Shift 奔跑、Space 跳跃、V 切换第一／第三人称、鼠标观察、Esc 释放鼠标并暂停。第三人称可滚轮调整镜头距离；暂停界面可调整灵敏度。顶部返回入口按钮复位，V 不会复位任何物理状态。
-
-标准 Chrome 已实测支持 Pointer Lock。Ego Lite 本次返回 `WrongDocumentError`；失败后会出现“拖动兼容模式”，可用 WASD/跑跳/V，按住左键拖动观察。这是兼容入口，默认仍请求 Pointer Lock。
-
-建筑只开放外部观察；门、玻璃和墙体阻挡。可探索广场、步道、大台阶与下沉广场坡道。模型浏览／导出继续保留正交视图、参数修改、GLB 导出／重载和 PNG 保存。
-
-## 本机 AI
-
-暂停菜单点击“开启 AI 控制”，运行 `npm run agent:demo`。演示不需要付费模型或 API Key。可先运行脚本，再回游戏授权。
-
-API 文档见 [AI-INTERFACE.md](AI-INTERFACE.md)，类型与 Schema 位于 `src/agent/`。`node scripts/agent-demo.mjs --takeover-test` 包含人工接管测试。
-
-## 参数与代码
-
-| 内容 | 位置 |
-|---|---|
-| 按键、走跑速度、重力、起跳、眼高、碰撞体、出生偏移、镜头距离 | `src/exploration/config.ts` |
-| 固定步长物理、台阶、头顶碰撞、落地 | `src/exploration/physics.ts` |
-| 权限仲裁、意图消费、状态与命令结果 | `src/exploration/game.ts` |
-| Pointer Lock、失焦处理、两种镜头 | `src/exploration/controller.ts` |
-| 方块短发角色与动作 | `src/exploration/student.ts` |
-| 场景碰撞与地面标高 | `src/exploration/navigation.ts` |
-| 楼栋位置、尺寸及样式 | `src/model/campusParameters.ts`、`buildSite.ts`、`buildCampus.ts` |
-| 原创像素贴图、世界尺度 UV | `src/voxel/materials.ts` |
-| HTTP／WS 服务与示例 | `scripts/agent-server.mjs`、`agent-demo.mjs` |
-
-## 资产与证据
-
-`assets/HKU-Shanghai-Campus.glb`、`assets/buildings/`、`assets/Student-Green-Gown.glb` 可重载，包含原创像素贴图。角色 GLB 是站立几何资产，运行时步行／奔跑／跳跃动画在源码中实现。
-
-本轮未更改经参考整理的建筑布局和体量；立面窗格、入口、CDS-1 标识与之前实景依据沿用。改变主要是：完整方块短发与像素五官、开襟短袖绿色袍、方块树冠、方形栏杆、草地／铺装／墙体像素纹理、降低泛白光照。
-
-服装依据 `references/exploration/gown-005.jpg` 与 `gown-009.jpg`（HKU 官方 Green Gown 实景）；建筑依据见 `references/campus-index.html`、`references/exploration/BASIS.md`。角色是原创通用年轻学生，不复刻照片中的具体人物。
-
-16×16 原创材质使用 nearest 放大、mipmap 缩小和各向异性过滤。校园每纹理块 4 m，角色服装 0.32 m；静态建筑／树叶按材质合并，无整屏马赛克效果。历史 v3 截图和报告保留在 `assets/exploration/`，本轮位于 `assets/voxel/`。
-
-## 检查
-
-```sh
-npm run build
-npm run check:v4
-npx tsx scripts/check-ramp-v4.ts
-npm run export:glb
-npm run validate:glb
-```
-
-详细实际操作记录见 `VALIDATION-V4.md`。本轮文件校验清单为 `DELIVERY-V4.json`；旧版报告和截图保留为历史记录。
-
-图册：`references/voxel/index.html`；录像：`assets/voxel/run-jump-demo.mp4`。
-
-## 仍属估计
-
-建筑绝对尺寸、层数、隐藏立面、屋顶设备、步道连接节点与运动场精确边界沿用 v3 的暂定项。方块树冠与纹理是美术简化，不是植物测绘。碰撞为保守圆柱／定向盒近似，不含室内、复杂攀爬或布料模拟。校园范围受可见边界限制。
+招牌照片独立无损加载，主程序约139kB；参数导入加固与WebGL反射恢复已完成。完整结果、测试与仍待验收项见 [剩余问题与收尾](docs/REMAINING-FIXES.md)。

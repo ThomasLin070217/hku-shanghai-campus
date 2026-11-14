@@ -1,0 +1,74 @@
+{
+  "parameterJSONLoaded": [
+    {
+      "id": "B01",
+      "x": -58
+    },
+    {
+      "id": "B02",
+      "x": -58
+    },
+    {
+      "id": "B03",
+      "x": 58
+    },
+    {
+      "id": "B04",
+      "x": 58
+    },
+    {
+      "id": "B05",
+      "x": 58
+    },
+    {
+      "id": "B06",
+      "x": 0
+    },
+    {
+      "id": "B07",
+      "x": -58
+    }
+  ],
+  "buildings": [
+    {
+      "id": "B01",
+      "x": -58
+    },
+    {
+      "id": "B02",
+      "x": -58
+    },
+    {
+      "id": "B03",
+      "x": 58
+    },
+    {
+      "id": "B04",
+      "x": 58
+    },
+    {
+      "id": "B05",
+      "x": 58
+    },
+    {
+      "id": "B06",
+      "x": 0
+    },
+    {
+      "id": "B07",
+      "x": -58
+    }
+  ],
+  "calibration": {
+    "id": "amap-2026-11-14",
+    "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+    "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+    "verticalStatus": "estimated-not-measured",
+    "source": "references/scale-calibration/REPORT.md",
+    "imageryDate": "unknown",
+    "worldUnits": "metres",
+    "globalScaleFactor": 1,
+    "columnCentreSpacing": 116,
+    "columnSpacingUncertainty": 3
+  }
+}

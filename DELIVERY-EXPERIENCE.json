@@ -1,0 +1,95 @@
+{
+  "revision": "2026-11-14-v9-scale1-glass1-experience1",
+  "entry": "http://127.0.0.1:5184/",
+  "verificationEntry": "http://127.0.0.1:4174/evidence/experience-fix/index.html",
+  "start": "npm run play",
+  "fullChecks": "npm run check:all",
+  "automatedChecks": "passed",
+  "runtimeChecks": {
+    "qa-standing": {
+      "startSeconds": 1.0603999999761582,
+      "endSeconds": 1.6655,
+      "newSteps": 0,
+      "newLandings": 0
+    },
+    "qa-stopped": {
+      "startSeconds": 8.849200000047684,
+      "endSeconds": 10.183300000071526,
+      "newSteps": 0,
+      "newLandings": 0
+    },
+    "qa-jump": {
+      "startSeconds": 10.334600000023842,
+      "endSeconds": 11.286800000071526,
+      "newSteps": 0,
+      "newLandings": 1
+    },
+    "qa-against-glass-wall": {
+      "startSeconds": 18.350300000071524,
+      "endSeconds": 20.433399999976157,
+      "newSteps": 0,
+      "newLandings": 0
+    },
+    "qa-air-switch": {
+      "startSeconds": 47.05130000007153,
+      "endSeconds": 47.41730000007153,
+      "newSteps": 0,
+      "newLandings": 0
+    },
+    "qa-air-switch-back": {
+      "startSeconds": 47.550800000071526,
+      "endSeconds": 68.20210000002385,
+      "newSteps": 0,
+      "newLandings": 1
+    },
+    "events": {
+      "footsteps": 149,
+      "landings": 2
+    },
+    "ambientStarts": 1,
+    "audioContextRunningThroughout": true,
+    "uiAndTakeover": "passed"
+  },
+  "limitations": [
+    "Subjective listening not verified: tool audio input unsupported; actual playback and capture executed.",
+    "Lion body height 5.8 m/support .12 m provisional, not measured.",
+    "Exact plant species/count/spacing remain estimated."
+  ],
+  "files": [
+    {
+      "path": "docs/EXPERIENCE-FIX.md",
+      "bytes": 7354,
+      "sha256": "fe3c5f23ff35d0690b18a2302aa44ce502a95e0747cf129cb2b7fb9889b1229f"
+    },
+    {
+      "path": "references/experience-fix/REFERENCES.md",
+      "bytes": 3389,
+      "sha256": "811bfd677c38ae432f1df65f45f12f1bb489951f35675246d77393782dcd8389"
+    },
+    {
+      "path": "evidence/experience-fix/campus-demo.mp4",
+      "bytes": 48661202,
+      "sha256": "b4814726b8e464c4766bd9f1b0d3f377fb8b7b55c49b577cc6eeb7a84bbda10f"
+    },
+    {
+      "path": "evidence/experience-fix/campus-walk-with-audio.webm",
+      "bytes": 21516683,
+      "sha256": "60564333e4ea157d02ea4657b39fbeb1c665413282a2798d3713eb7a0be4e997"
+    },
+    {
+      "path": "assets/HKU-Shanghai-Campus.glb",
+      "bytes": 17950848,
+      "sha256": "b65a9a019a8eba846f078c019bccd6e052666dbc74000fc6556a64a57ff1ab0b"
+    },
+    {
+      "path": "assets/items/entrance-lion.glb",
+      "bytes": 99388,
+      "sha256": "55c09d48875c98a589a31b2caf4433ee9d5b3193846a58b01b1e915147287ae7"
+    },
+    {
+      "path": "assets/characters/hku-green.glb",
+      "bytes": 133180,
+      "sha256": "a5b95a5452017e89b6f9a52bdc91297cb2a1a158ab948fea10094c67a8dc647d"
+    }
+  ]
+}

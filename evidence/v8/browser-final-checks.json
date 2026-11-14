@@ -1,0 +1,27 @@
+{
+  "switchWhileWDown": {
+    "startZ": 64,
+    "endZ": 62.87333333333325,
+    "selectedHotbar": 0,
+    "equipped": "macbook-air-13-silver"
+  },
+  "wheel": {
+    "beforeIndex": 0,
+    "afterIndex": 1,
+    "beforeCameraDistance": 4.8,
+    "afterCameraDistance": 4.8
+  },
+  "liveKeyboardStairDescent": {
+    "position": [
+      -9,
+      -4.2,
+      24.769999999998348
+    ],
+    "grounded": true,
+    "velocity": [
+      0,
+      0,
+      0
+    ]
+  }
+}

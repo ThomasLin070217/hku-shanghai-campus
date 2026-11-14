@@ -1,0 +1,12 @@
+{
+  "debugAbsent": true,
+  "photo": "http://127.0.0.1:4174/assets/cds-monument-runtime-BQolCP7W.png",
+  "main": [
+    {
+      "url": "http://127.0.0.1:4174/assets/main-CHLg_QyA.js",
+      "bytes": 139106
+    }
+  ],
+  "toast": "",
+  "photoStatus": 200
+}

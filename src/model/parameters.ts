@@ -20,7 +20,7 @@ export const DEFAULT_PARAMETERS = {
 } as const;
 export type ModelParameters = { -readonly [K in keyof typeof DEFAULT_PARAMETERS]: number };
 export const PARAMETER_EVIDENCE = {
-  dimensions: '暂定：P01 候选总平面 4# 标注约 59.70 × 45.00 m / H66.15；原始审批版本未核实，容许约 ±20%。',
+  dimensions: '水平核对：SM01/SM02 高德卫星测距约 60±2 × 45±2 m，保留 P01 的 59.70×45.00 m。H66.15 仍暂定（约±20%），不由卫星屋顶测距确认。',
   floors: '暂定：P01 标注 14F；实景楼层分隔与此大致相容。不能仅依据 14 楼办公室信息推断总层数。',
   facade: '已确认构件类型和分段节奏：R02 官方 C 标注、R04 实景航拍；分格数量与构件厚度为照片估计。',
   entrance: '已确认入口形式：R01 门牌、旋转门、两侧门、薄雨棚。尺寸以照片中人高作粗略参照，约 ±25%。',

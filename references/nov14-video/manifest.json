@@ -1,0 +1,45 @@
+{
+  "sourceId": "U06",
+  "source": "/Users/thomaslin/Downloads/IMG_4347.MOV",
+  "author": "user",
+  "type": "daylight walkthrough video",
+  "privateUpload": false,
+  "transcription": "local mlx-whisper; opening hallucinated repetition excluded",
+  "items": [
+    {
+      "id": "courtyard",
+      "title": "中央弧形下沉楼梯",
+      "frame": "0142.0s.jpg",
+      "timestamp": "02:22",
+      "change": "两条弧形台阶、玻璃栏杆、下层围护与环形铺装；精确起止角和深度暂定。"
+    },
+    {
+      "id": "walkway",
+      "title": "连续绿篱与步道",
+      "frame": "0110.0s.jpg",
+      "timestamp": "01:50",
+      "change": "路边低篱延长，减少零散大灌木，保留小树及步道净宽。"
+    },
+    {
+      "id": "link",
+      "title": "教学楼—5 号楼连接",
+      "frame": "0090.0s.jpg",
+      "timestamp": "01:30",
+      "change": "架空连接体、白色构架、透明围护和下方通道；构件尺度估算。"
+    },
+    {
+      "id": "sign",
+      "title": "学院石牌",
+      "frame": "0175.0s.jpg",
+      "timestamp": "02:55",
+      "change": "牌面透视裁切后重新贴图，补草地。位置和石牌尺寸仍暂定。"
+    },
+    {
+      "id": "green-link",
+      "title": "庭院至中央楼的绿化",
+      "frame": "0157.0s.jpg",
+      "timestamp": "02:37",
+      "change": "绿地、低篱、疏冠树与中央通道衔接到原有台阶。"
+    }
+  ]
+}

@@ -1,0 +1,287 @@
+[
+  {
+    "label": "sliders-while-suspended",
+    "audio": {
+      "state": "suspended",
+      "active": false,
+      "ambientVoices": 1,
+      "ambientStarts": 1,
+      "activeShots": 1,
+      "counts": {
+        "collect": 1
+      },
+      "failed": false,
+      "gains": {
+        "ambient": 0.20296138525009155,
+        "steps": 0.5516658425331116,
+        "ui": 0.5519033074378967,
+        "music": 0.004229703452438116
+      }
+    }
+  },
+  {
+    "label": "sliders-after-resume",
+    "audio": {
+      "state": "running",
+      "active": false,
+      "ambientVoices": 1,
+      "ambientStarts": 1,
+      "activeShots": 1,
+      "counts": {
+        "collect": 1
+      },
+      "failed": false,
+      "gains": {
+        "ambient": 0.10000000149011612,
+        "steps": 0.25,
+        "ui": 0.4000000059604645,
+        "music": 0.15000000596046448
+      }
+    }
+  },
+  {
+    "label": "W-release-stop",
+    "position": [
+      0,
+      0.13,
+      79.96666666666744
+    ],
+    "velocity": [
+      0,
+      0,
+      0
+    ],
+    "paused": false,
+    "view": "first",
+    "inventory": false,
+    "panel": null,
+    "steps": 1,
+    "audio": {
+      "state": "suspended",
+      "active": true,
+      "ambientVoices": 1,
+      "ambientStarts": 1,
+      "activeShots": 0,
+      "counts": {
+        "collect": 1
+      },
+      "failed": false,
+      "gains": {
+        "ambient": 0.20000000298023224,
+        "steps": 0.550000011920929,
+        "ui": 0.550000011920929,
+        "music": 0
+      }
+    }
+  },
+  {
+    "label": "six-view-switches",
+    "position": [
+      0,
+      0.13,
+      79.96666666666744
+    ],
+    "velocity": [
+      0,
+      0,
+      0
+    ],
+    "paused": false,
+    "view": "first",
+    "inventory": false,
+    "panel": null,
+    "steps": 1,
+    "audio": {
+      "state": "suspended",
+      "active": true,
+      "ambientVoices": 1,
+      "ambientStarts": 1,
+      "activeShots": 0,
+      "counts": {
+        "collect": 1
+      },
+      "failed": false,
+      "gains": {
+        "ambient": 0.20000000298023224,
+        "steps": 0.550000011920929,
+        "ui": 0.550000011920929,
+        "music": 0
+      }
+    }
+  },
+  {
+    "label": "inventory-open",
+    "position": [
+      0,
+      0.13,
+      79.96666666666744
+    ],
+    "velocity": [
+      0,
+      0,
+      0
+    ],
+    "paused": true,
+    "view": "first",
+    "inventory": true,
+    "panel": null,
+    "steps": 1,
+    "audio": {
+      "state": "suspended",
+      "active": true,
+      "ambientVoices": 1,
+      "ambientStarts": 1,
+      "activeShots": 0,
+      "counts": {
+        "collect": 1
+      },
+      "failed": false,
+      "gains": {
+        "ambient": 0.20000000298023224,
+        "steps": 0.550000011920929,
+        "ui": 0.550000011920929,
+        "music": 0
+      }
+    }
+  },
+  {
+    "label": "inventory-close",
+    "position": [
+      0,
+      0.13,
+      79.96666666666744
+    ],
+    "velocity": [
+      0,
+      0,
+      0
+    ],
+    "paused": true,
+    "view": "first",
+    "inventory": false,
+    "panel": null,
+    "steps": 1,
+    "audio": {
+      "state": "suspended",
+      "active": false,
+      "ambientVoices": 1,
+      "ambientStarts": 1,
+      "activeShots": 0,
+      "counts": {
+        "collect": 1
+      },
+      "failed": false,
+      "gains": {
+        "ambient": 0.20000000298023224,
+        "steps": 0.550000011920929,
+        "ui": 0.550000011920929,
+        "music": 0
+      }
+    }
+  },
+  {
+    "label": "computer-open",
+    "position": [
+      0,
+      0.13,
+      79.96666666666744
+    ],
+    "velocity": [
+      0,
+      0,
+      0
+    ],
+    "paused": true,
+    "view": "first",
+    "inventory": false,
+    "panel": "computer",
+    "steps": 1,
+    "audio": {
+      "state": "suspended",
+      "active": false,
+      "ambientVoices": 1,
+      "ambientStarts": 1,
+      "activeShots": 0,
+      "counts": {
+        "collect": 1
+      },
+      "failed": false,
+      "gains": {
+        "ambient": 0.20000000298023224,
+        "steps": 0.550000011920929,
+        "ui": 0.550000011920929,
+        "music": 0
+      }
+    }
+  },
+  {
+    "label": "return-entry",
+    "position": [
+      58,
+      0.045,
+      33.5
+    ],
+    "velocity": [
+      0,
+      0,
+      0
+    ],
+    "paused": true,
+    "view": "first",
+    "inventory": false,
+    "panel": null,
+    "steps": 1,
+    "audio": {
+      "state": "suspended",
+      "active": false,
+      "ambientVoices": 1,
+      "ambientStarts": 1,
+      "activeShots": 0,
+      "counts": {
+        "collect": 1
+      },
+      "failed": false,
+      "gains": {
+        "ambient": 0.20000000298023224,
+        "steps": 0.550000011920929,
+        "ui": 0.550000011920929,
+        "music": 0
+      }
+    }
+  },
+  {
+    "label": "escape-pause",
+    "position": [
+      58,
+      0.045,
+      33.5
+    ],
+    "velocity": [
+      0,
+      0,
+      0
+    ],
+    "paused": true,
+    "view": "first",
+    "inventory": false,
+    "panel": null,
+    "steps": 1,
+    "audio": {
+      "state": "suspended",
+      "active": false,
+      "ambientVoices": 1,
+      "ambientStarts": 1,
+      "activeShots": 0,
+      "counts": {
+        "collect": 1
+      },
+      "failed": false,
+      "gains": {
+        "ambient": 0.20000000298023224,
+        "steps": 0.550000011920929,
+        "ui": 0.550000011920929,
+        "music": 0
+      }
+    }
+  }
+]

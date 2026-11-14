@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Inventory moves and swaps preserve identity/count; actual hotbar slots equip",
+    "passed": true
+  },
+  {
+    "name": "Independent pose, material, config, equipment; curated distance-driven animation updates",
+    "passed": true
+  },
+  {
+    "name": "MacBook physical dimensions and reusable hinged lid",
+    "passed": true
+  },
+  {
+    "name": "AI selects once via epoch-checked act; stale/expired/repeated commands cannot equip",
+    "passed": true
+  }
+]

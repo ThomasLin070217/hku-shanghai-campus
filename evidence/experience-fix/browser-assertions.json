@@ -1,0 +1,45 @@
+{
+  "qa-standing": {
+    "startSeconds": 1.0603999999761582,
+    "endSeconds": 1.6655,
+    "newSteps": 0,
+    "newLandings": 0
+  },
+  "qa-stopped": {
+    "startSeconds": 8.849200000047684,
+    "endSeconds": 10.183300000071526,
+    "newSteps": 0,
+    "newLandings": 0
+  },
+  "qa-jump": {
+    "startSeconds": 10.334600000023842,
+    "endSeconds": 11.286800000071526,
+    "newSteps": 0,
+    "newLandings": 1
+  },
+  "qa-against-glass-wall": {
+    "startSeconds": 18.350300000071524,
+    "endSeconds": 20.433399999976157,
+    "newSteps": 0,
+    "newLandings": 0
+  },
+  "qa-air-switch": {
+    "startSeconds": 47.05130000007153,
+    "endSeconds": 47.41730000007153,
+    "newSteps": 0,
+    "newLandings": 0
+  },
+  "qa-air-switch-back": {
+    "startSeconds": 47.550800000071526,
+    "endSeconds": 68.20210000002385,
+    "newSteps": 0,
+    "newLandings": 1
+  },
+  "events": {
+    "footsteps": 149,
+    "landings": 2
+  },
+  "ambientStarts": 1,
+  "audioContextRunningThroughout": true,
+  "uiAndTakeover": "passed"
+}

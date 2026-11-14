@@ -9,6 +9,7 @@ export function pixelTile(kind:string){
   if(kind==='bark')c=170+(x%4)*20+Math.floor(rand()*15);
   if(kind==='leaf')c=195+Math.floor(rand()*60);
   if(kind==='glass')c=242+Math.floor(rand()*13);
+  if(kind==='metal')c=246+Math.floor(rand()*7);
   const i=(y*n+x)*4;data[i]=data[i+1]=data[i+2]=c;data[i+3]=255;
  }
  const t=new T.DataTexture(data,n,n,T.RGBAFormat);t.name='Original_pixel_'+kind;t.colorSpace=T.SRGBColorSpace;t.wrapS=t.wrapT=T.RepeatWrapping;t.magFilter=T.NearestFilter;t.minFilter=T.NearestMipmapLinearFilter;t.generateMipmaps=true;t.anisotropy=4;t.needsUpdate=true;return t;
@@ -19,10 +20,10 @@ export function pixelUV(geo:T.BufferGeometry,tileMeters=4){
 }
 export function voxelizeMaterials(root:T.Object3D){
  const maps=new Map<string,T.DataTexture>(),done=new Set<T.Material>();
- root.traverse(o=>{if(!(o instanceof T.Mesh))return;const mats=Array.isArray(o.material)?o.material:[o.material];let textured=false;
-  for(const m of mats){if(!(m instanceof T.MeshStandardMaterial))continue;const name=m.name.toLowerCase();if(/^night_|sign|letter|marking|ivory/.test(name))continue;
-   const kind=/glass|glaz/.test(name)?'glass':/grass|lawn|turf/.test(name)?'grass':/leaf|foliage/.test(name)?'leaf':/bark/.test(name)?'bark':/pav|concrete|limestone/.test(name)?'paving':/road|asphalt|track|jogging/.test(name)?'road':'wall';
-   if(!done.has(m)){if(!maps.has(kind))maps.set(kind,pixelTile(kind));m.map=maps.get(kind)!;m.roughness=kind==='glass'?.38:.90;m.metalness=kind==='glass'?.22:.05;if(kind==='grass')m.color.setHex(0x638448);if(kind==='leaf')m.color.setHex(0x42764a);m.needsUpdate=true;done.add(m);}textured=true;
-  }if(textured)pixelUV(o.geometry);
+ root.traverse(o=>{if(!(o instanceof T.Mesh))return;const mats=Array.isArray(o.material)?o.material:[o.material];let textured=false,paving=false;
+  for(const m of mats){if(!(m instanceof T.MeshStandardMaterial))continue;if(m.userData.surfaceRole==='glass'){o.castShadow=false;o.receiveShadow=false;continue;}const name=m.name.toLowerCase();if(/^night_|sign|letter|marking|ivory/.test(name))continue;
+   const kind=/glass|glaz/.test(name)?'glass':/frame|aluminium|silver|mullion|anodised|fins|steel/.test(name)?'metal':/grass|lawn|turf/.test(name)?'grass':/leaf|foliage/.test(name)?'leaf':/bark/.test(name)?'bark':/pav|concrete|limestone/.test(name)?'paving':/road|asphalt|track|jogging/.test(name)?'road':'wall';
+   if(!done.has(m)){if(!maps.has(kind))maps.set(kind,pixelTile(kind));m.map=maps.get(kind)!;m.roughness=kind==='glass'?.38:kind==='metal'?.34:.90;m.metalness=kind==='glass'?.22:kind==='metal'?.55:.05;if(kind==='grass'&&!m.userData.keepColor)m.color.setHex(0x638448);if(kind==='leaf'&&!m.userData.keepColor)m.color.setHex(0x42764a);m.needsUpdate=true;done.add(m);}textured=true;if(/pav|concrete|limestone/.test(name))paving=true;
+  }if(textured){pixelUV(o.geometry,paving?.6:4);if(paving){const uv=o.geometry.getAttribute('uv'),n=o.geometry.getAttribute('normal');for(let i=0;i<uv.count;i++)if(Math.abs(n.getY(i))>.8)uv.setY(i,uv.getY(i)*2);}}
  });
 }

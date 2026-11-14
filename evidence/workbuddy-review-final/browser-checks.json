@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-14",
+  "method": "Ego Lite real browser; native clicks plus explicit instrumentation/fault injection",
+  "slider": {
+    "inputEvents": 30,
+    "saveWritesDuringInput": 0,
+    "saveWritesAfterChange": 1
+  },
+  "outputSignal": {
+    "ambientPreviewPeak": 0.005179096478968859,
+    "mutedPeak": 0,
+    "subjectiveListening": false
+  },
+  "crossTab": {
+    "lostOwnerPaused": true,
+    "lostOwnerAudioActive": false,
+    "restoredSetting": 0.35,
+    "restoredVisibleValue": "35%",
+    "userSettingsRestored": true
+  },
+  "viewport": {
+    "width": 888,
+    "height": 609,
+    "horizontalOverflow": false
+  },
+  "sourceManifest": "build-manifest.json",
+  "audioRetry": "audio-retry.json",
+  "agentLog": "agent-demo.log"
+}

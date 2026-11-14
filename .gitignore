@@ -11,3 +11,8 @@ npm-debug.log*
 
 # Atlas local operation cache (asset IDs, poses)
 .atlas-local/
+
+# Historical release archives and reproducible review scratch
+HKU-Shanghai-*-source.zip*
+work/
+dist-review/

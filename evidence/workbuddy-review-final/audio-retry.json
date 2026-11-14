@@ -1,0 +1,302 @@
+{
+  "injectedFault": "collect.wav HTTP 503",
+  "failed": {
+    "state": "running",
+    "active": false,
+    "running": true,
+    "muted": false,
+    "resumeError": "",
+    "masterGain": 1,
+    "gates": {
+      "steps": 0,
+      "ambient": 0
+    },
+    "ambientEligible": false,
+    "ambientVoices": 1,
+    "ambientStarts": 1,
+    "activeShots": 1,
+    "previewShots": 1,
+    "counts": {
+      "collect": 1
+    },
+    "failed": true,
+    "failedFiles": [
+      "collect"
+    ],
+    "loading": [],
+    "loaded": 16,
+    "total": 17,
+    "buffers": [
+      {
+        "name": "step-paving-0",
+        "duration": 0.06575,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 12624
+      },
+      {
+        "name": "select",
+        "duration": 0.08497916666666666,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 16316
+      },
+      {
+        "name": "bag",
+        "duration": 0.16995833333333332,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 32632
+      },
+      {
+        "name": "step-grass-0",
+        "duration": 0.11520833333333333,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 22120
+      },
+      {
+        "name": "step-paving-3",
+        "duration": 0.06254166666666666,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 12008
+      },
+      {
+        "name": "step-paving-4",
+        "duration": 0.06379166666666666,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 12248
+      },
+      {
+        "name": "step-paving-1",
+        "duration": 0.066375,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 12744
+      },
+      {
+        "name": "step-grass-1",
+        "duration": 0.158125,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 30360
+      },
+      {
+        "name": "equip",
+        "duration": 0.16995833333333332,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 32632
+      },
+      {
+        "name": "view",
+        "duration": 0.16995833333333332,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 32632
+      },
+      {
+        "name": "step-paving-2",
+        "duration": 0.067375,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 12936
+      },
+      {
+        "name": "step-grass-3",
+        "duration": 0.10220833333333333,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 19624
+      },
+      {
+        "name": "step-grass-2",
+        "duration": 0.16075,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 30864
+      },
+      {
+        "name": "step-grass-4",
+        "duration": 0.11741666666666667,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 22544
+      },
+      {
+        "name": "complete",
+        "duration": 0.3399375,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 65268
+      },
+      {
+        "name": "campus-breeze",
+        "duration": 45,
+        "channels": 2,
+        "sampleRate": 48000,
+        "decodedBytes": 17280000
+      }
+    ],
+    "gains": {
+      "ambient": 0.20226818323135376,
+      "steps": 0.5512759685516357,
+      "ui": 0.5514577031135559,
+      "music": 0.003239648649469018
+    }
+  },
+  "recovered": {
+    "state": "running",
+    "active": false,
+    "running": true,
+    "muted": false,
+    "resumeError": "",
+    "masterGain": 1,
+    "gates": {
+      "steps": 0,
+      "ambient": 0
+    },
+    "ambientEligible": false,
+    "ambientVoices": 1,
+    "ambientStarts": 1,
+    "activeShots": 0,
+    "previewShots": 0,
+    "counts": {
+      "collect": 1
+    },
+    "failed": false,
+    "failedFiles": [],
+    "loading": [],
+    "loaded": 17,
+    "total": 17,
+    "buffers": [
+      {
+        "name": "step-paving-0",
+        "duration": 0.06575,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 12624
+      },
+      {
+        "name": "select",
+        "duration": 0.08497916666666666,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 16316
+      },
+      {
+        "name": "bag",
+        "duration": 0.16995833333333332,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 32632
+      },
+      {
+        "name": "step-grass-0",
+        "duration": 0.11520833333333333,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 22120
+      },
+      {
+        "name": "step-paving-3",
+        "duration": 0.06254166666666666,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 12008
+      },
+      {
+        "name": "step-paving-4",
+        "duration": 0.06379166666666666,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 12248
+      },
+      {
+        "name": "step-paving-1",
+        "duration": 0.066375,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 12744
+      },
+      {
+        "name": "step-grass-1",
+        "duration": 0.158125,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 30360
+      },
+      {
+        "name": "equip",
+        "duration": 0.16995833333333332,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 32632
+      },
+      {
+        "name": "view",
+        "duration": 0.16995833333333332,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 32632
+      },
+      {
+        "name": "step-paving-2",
+        "duration": 0.067375,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 12936
+      },
+      {
+        "name": "step-grass-3",
+        "duration": 0.10220833333333333,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 19624
+      },
+      {
+        "name": "step-grass-2",
+        "duration": 0.16075,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 30864
+      },
+      {
+        "name": "step-grass-4",
+        "duration": 0.11741666666666667,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 22544
+      },
+      {
+        "name": "complete",
+        "duration": 0.3399375,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 65268
+      },
+      {
+        "name": "campus-breeze",
+        "duration": 45,
+        "channels": 2,
+        "sampleRate": 48000,
+        "decodedBytes": 17280000
+      },
+      {
+        "name": "collect",
+        "duration": 0.25495833333333334,
+        "channels": 1,
+        "sampleRate": 48000,
+        "decodedBytes": 48952
+      }
+    ],
+    "gains": {
+      "ambient": 0.20000000298023224,
+      "steps": 0.550000011920929,
+      "ui": 0.550000011920929,
+      "music": 0
+    }
+  }
+}

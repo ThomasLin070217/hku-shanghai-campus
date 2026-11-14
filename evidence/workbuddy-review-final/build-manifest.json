@@ -1,0 +1,45 @@
+{
+  "changedSource": [
+    "src/gameplay/audio.ts",
+    "src/gameplay/experience.ts"
+  ],
+  "runtimeBytes": 6182169,
+  "wav": [
+    "assets/equip-IMTeO7tq.wav",
+    "assets/complete-mNN8Ib_m.wav",
+    "assets/campus-breeze-BHnNQej4.wav",
+    "assets/step-grass-0-Ciw4J3Ek.wav",
+    "assets/step-paving-2-DrPyPk0_.wav",
+    "assets/step-grass-1-DJk0s6Fp.wav",
+    "assets/step-paving-1-BZkhy9PN.wav",
+    "assets/bag-BZJTAz0N.wav",
+    "assets/select-DbwT0RKC.wav",
+    "assets/step-grass-3-BavoOF_L.wav",
+    "assets/step-grass-4-uz_-T9AO.wav",
+    "assets/step-paving-3-lfH4OpWf.wav",
+    "assets/collect-DsaR9nuI.wav",
+    "assets/step-paving-4-Zp1SgjDI.wav",
+    "assets/step-grass-2-vANsoS9t.wav",
+    "assets/step-paving-0-BRy0lynE.wav",
+    "assets/view-CF5DJVWr.wav"
+  ],
+  "sources": {
+    "src/gameplay/audio.ts": "fb9c34aa523074b2ef1bb949d3abd7590106ac691f809902449e20dca410cf9d",
+    "src/gameplay/experience.ts": "48429f30ff0fb3b55b354d8ade57b3019868c513e84a78af0d523ef13ec0a893"
+  },
+  "additionalEditedFiles": [
+    "scripts/check-audio-review.ts",
+    "vite.config.ts",
+    "README.md",
+    "THIRD-PARTY-NOTICES.md",
+    "assets/audio/SOURCES.md",
+    "docs/WORKBUDDY-REVIEW.md",
+    "docs/WORKBUDDY-FINAL-REVIEW.md"
+  ],
+  "checks": {
+    "checkAll": 0,
+    "checkTransport": 0,
+    "agentDemoTakeover": 0,
+    "buildReview": 0
+  }
+}

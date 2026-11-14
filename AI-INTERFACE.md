@@ -1,16 +1,16 @@
-# HKU Campus native Agent API · v1
+# HKU Campus native Agent API · v1.2
 
 该接口直接连接正在运行的浏览器游戏。无模型、API Key、浏览器自动化或模拟键盘依赖。
 
 ## 启动
 
-Node 22+：`npm install`，然后 `npm run play`。打开 http://127.0.0.1:5174 。
+Node 22+：`npm install`，然后 `npm run play`。打开 http://127.0.0.1:5184 。
 
 游戏暂停界面点击 **开启 AI 控制** 后，运行 `npm run agent:demo`。演示依次读取状态、取得权限、转向、行走、奔跑、跳跃并切换视角、停止、释放权限。
 
 `node scripts/agent-demo.mjs --takeover-test` 额外等待人工按 W 或点击“一键接管”，再提交旧 epoch 验证拒绝。启用 AI 是页面的用户操作，API 没有绕过它的入口。窗口失焦或页面隐藏会撤销 AI 授权，因此建议先启动演示脚本，再回到游戏点击开启 AI。
 
-服务只监听 **127.0.0.1:8787**。HTTP 客户端无需账户或密钥；此服务面向可信的本机进程，不是公网服务。WS 只接受本机 5174/4174 页面 Origin，HTTP 拒绝外站 Origin、非本机 Host；POST 必须 application/json。只有一个游戏连接，避免多标签控制错误实例。
+服务只监听 **127.0.0.1:8788**。HTTP 客户端无需账户或密钥；此服务面向可信的本机进程，不是公网服务。WS 只接受本机 5184/5174/4174 页面 Origin，HTTP 拒绝外站 Origin、非本机 Host；POST 必须 application/json。只有一个游戏连接，避免多标签控制错误实例。
 
 ## HTTP 方法
 
@@ -30,7 +30,7 @@ Node 22+：`npm install`，然后 `npm run play`。打开 http://127.0.0.1:5174 
 示例：
 
 ```js
-const base='http://127.0.0.1:8787';
+const base='http://127.0.0.1:8788';
 const post=(path,data)=>fetch(base+path,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(data)}).then(r=>r.json());
 const observed=await fetch(base+'/observe').then(r=>r.json());
 const grant=await post('/acquireControl',{agentId:'my-agent'});
@@ -57,7 +57,7 @@ await post('/act',{
 
 ## observe
 
-包含协议版本 `hku-campus/1.0`、逻辑 frame、累计运行 timeMs、墙钟 wallTimeMs、mode、controlEpoch、aiEnabled、owner、paused、player.position/velocity/yawDeg/pitchDeg/grounded、view、160 m 内地标、lastCommand 与当前碰撞。
+包含协议版本 `hku-campus/1.2`、逻辑 frame、累计运行 timeMs、墙钟 wallTimeMs、mode、controlEpoch、aiEnabled、owner、paused、player.position/velocity/yawDeg/pitchDeg/grounded、view、160 m 内地标、lastCommand 与当前碰撞。
 
 地标 ID 稳定为 B01–B07，CDS-1 为 **B04**。relativePosition 是世界坐标的“地标中心减角色位置”，不随镜头旋转；distance 为该向量长度。建筑 ID 与地图对应仍遵循项目参考档案的证据等级，不能视作校方楼栋 GIS。
 
@@ -76,4 +76,35 @@ W/A/S/D、左 Shift、Space 是明确人工输入，会立即撤销 AI，未锁�
 
 ## v6 多窗口连接
 
-本机服务同一时刻只连接一个校园窗口。默认后台连接不抢占已有窗口；在想控制的页面点击「开启 AI 控制」会显式切换到此窗口（WebSocket `/game?claim=1`）。旧窗口收到关闭码 4001 并立即停控；在途 RPC 返回 `game_replaced`，脚本应重新 observe 并按用户授权重新 acquireControl，不重放旧 epoch 命令。普通重连不会自动夺回。HTTP 端点与协议版本保持兼容。任务拾取/提交暂未作为 Agent RPC 暴露。
+本机服务同一时刻只连接一个校园窗口。默认后台连接不抢占已有窗口；在想控制的页面点击「开启 AI 控制」会显式切换到此窗口（WebSocket `/game?claim=1`）。旧窗口收到关闭码 4001 并立即停控；在途 RPC 返回 `game_replaced`，脚本应重新 observe 并按用户授权重新 acquireControl，不重放旧 epoch 命令。普通重连不会自动夺回。HTTP 端点与协议版本保持兼容。v9 数字巡检交互与提交通过下方新增动作暴露，旧物资练习不再挂载到主场景。
+
+## v8 背包与装备
+
+`observe.inventory` 返回同一份 36 格槽位、`selectedHotbar`（0–8）、`equipped`、`revision` 和 `open`；`observe.world` 返回米制约定与校园修订版本。地标增加绝对坐标，包含入口狮子及导览牌。
+
+```json
+{"commandId":"equip-001","controlEpoch":12345,"durationMs":400,"selectHotbar":0}
+```
+
+通过 `/act` 提交，下一逻辑步仅消费一次，沿用 epoch、超时及去重检查。快捷栏为空会收起物品。v9 新试玩把 MacBook 放在快捷栏第 1 格（索引 0），初始选中空手第 2 格；旧人物/物品单元示例仍从储物区第 1 格开始。接口本轮不开放背包移动；用户可随时打开背包接管。
+
+E 打开背包会清空输入、停止速度、暂停并撤销 AI；数字键、滚轮和界面物品操作也撤销 AI。关闭背包仍暂停，需点击进入探索。人类和 AI 调用同一个 `CampusGame.selectHotbar()`。示例和完整配置见 [v8 扩展说明](docs/CHARACTERS-AND-ITEMS-V8.md)。
+
+2026-11-14 卫星测距校准后，`observe.world.revision` 为 `2026-11-14-v8-scale1`；新增只读 `world.scaleCalibration`（`id`、`horizontalStatus`、`verticalStatus`、`source` 等）。当前七栋稳定ID不变，东西两列x=±58，入口出生点自动跟随。Agent 应使用最新 `observe` 的位置，避免缓存旧 x=±52 地标。水平尺度核对不代表楼高或地下深度已经测量；详见[测距报告](references/scale-calibration/REPORT.md)。
+
+
+## v9 数字巡检
+
+`observe.survey` 返回稳定任务 ID、状态、count/total、collectedClues、discovered、archive、objectives 及当前 `target`（距离、可执行 collect/view）。`panel` 说明玩家面板状态；`landmarks` 与两张地图、记录牌共享坐标及实际地面 Y。
+
+```json
+{"commandId":"survey-collect-001","controlEpoch":123,"durationMs":500,"interact":"record-cds-entry"}
+```
+
+```json
+{"commandId":"survey-submit-001","controlEpoch":123,"durationMs":500,"selectHotbar":0,"computer":"submit"}
+```
+
+`computer` 支持 `map`、`tasks`、`clues`、`submit`。动作在固定步长首次消费一次，结果查看 `/commands/<id>` 的 `operation`；HTTP accepted 不代表已经收集。目标须在 2.7 单位内、对准、无遮挡，玻璃同样阻挡；提交须装备真实 MacBook 且三条记录齐备。重复交互变为 viewed，重复提交返回 already_completed。AI 与玩家共用 `Survey.interact()` / `Survey.computer()`。
+
+AI 页面读取为无界面业务动作，不自动打开玩家暂停面板；结果与 observe 同步。玩家 C、E 或设置面板会停止当前动作、撤销 epoch，关闭/载入不会恢复 AI。存档不包含 AI 控制权。扩展示例与存档规则见 [数字巡检说明](docs/DIGITAL-SURVEY-V9.md)。

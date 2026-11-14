@@ -1,0 +1,145 @@
+{
+  "revision": "glass1",
+  "createdAt": "2026-11-14T05:21:14.752533+00:00",
+  "purpose": "Evidence-based glass/material correction on current campus. Preserves concurrently added gameplay changes.",
+  "run": "npm ci && npm run play",
+  "url": "http://127.0.0.1:5184/",
+  "comparison": "http://127.0.0.1:5184/references/glass/index.html",
+  "files": [
+    {
+      "path": "src/model/glazing.ts",
+      "bytes": 5056,
+      "sha256": "83a6319033027c0242dd51d4e58200e14a7dfcea24b7645798b609eb251b8d5d"
+    },
+    {
+      "path": "src/model/buildCampus.ts",
+      "bytes": 19950,
+      "sha256": "45eaf5924a7066e4b60232d449694e7bef21fd8012f86988b20d8dba5a256b46"
+    },
+    {
+      "path": "src/model/buildSite.ts",
+      "bytes": 24484,
+      "sha256": "b148a68ce867ccb286801790b250b376560f5dd3e024e7c5d3f8f74ecff19194"
+    },
+    {
+      "path": "src/model/videoDetails.ts",
+      "bytes": 7495,
+      "sha256": "3523160a1dc1230784aa3f2d9fdf57026bfaf81de92d72322c1d5413bbe7fa85"
+    },
+    {
+      "path": "src/model/nov13Parameters.ts",
+      "bytes": 1107,
+      "sha256": "f7b3b718fdaffe647b7415cb1d9c87798ba3f49bd87fd3025365b0c8e14d4c43"
+    },
+    {
+      "path": "src/exploration/navigation.ts",
+      "bytes": 10727,
+      "sha256": "5213ec7282c241ff8a45f0f05e7446ffa8cd5f440fae2eac96a0a3d98756e588"
+    },
+    {
+      "path": "src/voxel/materials.ts",
+      "bytes": 2891,
+      "sha256": "ef7da4e2b6cdc70bc8830e4e1c0938e7376d2eb04bb0c95fb09354295471c4a3"
+    },
+    {
+      "path": "src/viewer/glassEnvironment.ts",
+      "bytes": 1573,
+      "sha256": "a7bcc95ec0efe34ef4288c2425b49178cf62257fac8efe293d08d01a152328f8"
+    },
+    {
+      "path": "src/viewer/nightLighting.ts",
+      "bytes": 1391,
+      "sha256": "ce5dcddd50ce6efede01652ac29d21945a052b405255021560de29e9214f0294"
+    },
+    {
+      "path": "src/viewer/export.ts",
+      "bytes": 933,
+      "sha256": "58e7641afebc1933d3d895ca923e2a71edeb262a79954aca0c4b453e5004bd7c"
+    },
+    {
+      "path": "src/main.ts",
+      "bytes": 21325,
+      "sha256": "f8398cb0bb470174cdd70db92ccdea89d2a7bf45e22c8edbc1e0f0c8557e828b"
+    },
+    {
+      "path": "scripts/check-glass.ts",
+      "bytes": 3186,
+      "sha256": "36f847f23b81ad8f8f95ee9565591c17b200f68778207103e54cbdd91d22ded3"
+    },
+    {
+      "path": "scripts/export-model.ts",
+      "bytes": 3613,
+      "sha256": "7c755bc81a5d004927110ecbf56de30d1aad6df3cbe0ba6f30ff42819b35d118"
+    },
+    {
+      "path": "vite.config.ts",
+      "bytes": 1348,
+      "sha256": "c499c4b470769394a2ae4b5e9a5874c8fba9bbaa1f63375d434d0b9631ed3bb3"
+    },
+    {
+      "path": "package.json",
+      "bytes": 1806,
+      "sha256": "93f649ce043cae484796c7581bdc2293f53f103a7733ea31ca875523b4eb7112"
+    },
+    {
+      "path": "README.md",
+      "bytes": 9610,
+      "sha256": "625fa7b31212d2d83454813fa802c787cd85c559707577de8301b1c055eafe5c"
+    },
+    {
+      "path": "assets/HKU-Shanghai-Campus.glb",
+      "bytes": 17383684,
+      "sha256": "ef910eed7d996457f9353058e1ca30059fe025769f415ef8fd2c649f7dfa9ae3"
+    },
+    {
+      "path": "assets/HKU-Shanghai-Campus-no-ground.glb",
+      "bytes": 16091864,
+      "sha256": "37292c17de44b48f3352443007e8e92a2d1ea9f845875f6217bdf79639025594"
+    },
+    {
+      "path": "assets/HKU-Shanghai-Campus-browser.glb",
+      "bytes": 17383156,
+      "sha256": "c6641bf81cd28efe371affab164c9e331439713b286e3bee01d183ea7bd39bdb"
+    },
+    {
+      "path": "references/glass/index.html",
+      "bytes": 9163,
+      "sha256": "6fa10e235602c66bec33715c8a8cd927a9fec01d3a340f617f1806e322fd6890"
+    },
+    {
+      "path": "references/glass/REPORT.md",
+      "bytes": 6969,
+      "sha256": "4cd383ed84e642cfea39e59ad9d1f13a4d994a6b49fe6baaf1fe86e7bf6d1b46"
+    },
+    {
+      "path": "references/glass/sources.json",
+      "bytes": 7574,
+      "sha256": "051c0e857ee43ab06af181729964a9861e3acd93e46630309e3d371206f368c0"
+    },
+    {
+      "path": "evidence/glass/views.json",
+      "bytes": 2114,
+      "sha256": "de9349161de238e8c0814c5f3642e11df201dcc049947b5c5565c0036c406969"
+    },
+    {
+      "path": "evidence/glass/glass-entry-walk.webm",
+      "bytes": 2603450,
+      "sha256": "7d653f3a5c224f18812fb4a57e3cf3302a39a22d376aae2556bf167e4132bce9"
+    }
+  ],
+  "tests": [
+    "evidence/glass/check-all-final.log",
+    "evidence/glass/check-geometry.log",
+    "evidence/glass/geometry-material-checks.json",
+    "evidence/glass/render-checks.json",
+    "evidence/glass/walking-checks.json",
+    "evidence/glass/browser-glb-check.json",
+    "evidence/glass/validate.log"
+  ],
+  "limitations": [
+    "Unknown facades and scenic depth remain provisional; no full interiors.",
+    "Single environment probe; art-directed alpha values, not measured transmission.",
+    "Mouse drag and Pointer Lock not validated as passing in this round.",
+    "Historical source zip/DELIVERY-V8 and DELIVERY-SCALE are not this glass revision."
+  ]
+}

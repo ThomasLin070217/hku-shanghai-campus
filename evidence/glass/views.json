@@ -1,0 +1,149 @@
+[
+  {
+    "id": "entrance",
+    "position": [
+      58,
+      5,
+      46
+    ],
+    "target": [
+      58,
+      5,
+      20.5
+    ],
+    "fov": 38,
+    "night": false,
+    "reference": "references/photos/01-cds-shanghai-main-entrance-samu6478.webp",
+    "resolution": [
+      1600,
+      1000
+    ],
+    "aspect": 1.6
+  },
+  {
+    "id": "entrance-night",
+    "position": [
+      36,
+      2.4,
+      46
+    ],
+    "target": [
+      58,
+      5,
+      21
+    ],
+    "fov": 60,
+    "night": true,
+    "reference": "references/night-video/U03-0009.jpg",
+    "resolution": [
+      1600,
+      1000
+    ],
+    "aspect": 1.6
+  },
+  {
+    "id": "side-walk",
+    "position": [
+      24,
+      1.64,
+      16
+    ],
+    "target": [
+      30,
+      3,
+      -22
+    ],
+    "fov": 72,
+    "night": true,
+    "reference": "references/night-video/U03-0052.jpg",
+    "resolution": [
+      1600,
+      1000
+    ],
+    "aspect": 1.6
+  },
+  {
+    "id": "tower",
+    "position": [
+      -8,
+      10,
+      47
+    ],
+    "target": [
+      58,
+      31,
+      -2
+    ],
+    "fov": 60,
+    "night": false,
+    "reference": "references/photos/02-hkucds-zj-site01-scaled.jpg",
+    "resolution": [
+      1600,
+      1000
+    ],
+    "aspect": 1.6
+  },
+  {
+    "id": "north-low",
+    "position": [
+      58,
+      5,
+      -118
+    ],
+    "target": [
+      58,
+      12,
+      -85
+    ],
+    "fov": 48,
+    "night": false,
+    "reference": "references/architect/A06.jpg",
+    "resolution": [
+      1600,
+      1000
+    ],
+    "aspect": 1.6
+  },
+  {
+    "id": "hall",
+    "position": [
+      0,
+      12,
+      -12
+    ],
+    "target": [
+      0,
+      14,
+      -53
+    ],
+    "fov": 48,
+    "night": false,
+    "reference": "references/photos/07-Main-Site-3-scaled.jpeg",
+    "resolution": [
+      1600,
+      1000
+    ],
+    "aspect": 1.6
+  },
+  {
+    "id": "oculus",
+    "position": [
+      -22,
+      1.64,
+      47
+    ],
+    "target": [
+      -26,
+      5.7,
+      34
+    ],
+    "fov": 72,
+    "night": false,
+    "reference": "references/architect/A08.jpg",
+    "resolution": [
+      1600,
+      1000
+    ],
+    "aspect": 1.6
+  }
+]

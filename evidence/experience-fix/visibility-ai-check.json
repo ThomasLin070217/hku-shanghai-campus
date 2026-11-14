@@ -1,0 +1,78 @@
+{
+  "hidden": {
+    "hidden": false,
+    "paused": true,
+    "audio": {
+      "state": "suspended",
+      "active": false,
+      "ambientVoices": 1,
+      "ambientStarts": 1,
+      "activeShots": 0,
+      "counts": {
+        "collect": 1
+      },
+      "failed": false,
+      "gains": {
+        "ambient": 0.20000000298023224,
+        "steps": 0.550000011920929,
+        "ui": 0.550000011920929,
+        "music": 0
+      }
+    }
+  },
+  "grant": {
+    "ok": true,
+    "controlEpoch": 1794639957643,
+    "protocolVersion": "hku-campus/1.2"
+  },
+  "accepted": {
+    "ok": true,
+    "command": {
+      "commandId": "manual-takeover-1794640007822",
+      "status": "accepted",
+      "acceptedAt": 1794640007823,
+      "expiresAt": 1794640008823,
+      "collisionIds": []
+    }
+  },
+  "stale": {
+    "ok": false,
+    "error": "stale_epoch",
+    "controlEpoch": 1794639957645
+  },
+  "after": {
+    "player": {
+      "position": [
+        58,
+        0.045,
+        33.5
+      ],
+      "velocity": [
+        0,
+        0,
+        0
+      ],
+      "yawDeg": 0,
+      "pitchDeg": 0,
+      "grounded": true
+    },
+    "paused": true,
+    "audio": {
+      "state": "running",
+      "active": false,
+      "ambientVoices": 1,
+      "ambientStarts": 1,
+      "activeShots": 0,
+      "counts": {
+        "collect": 1
+      },
+      "failed": false,
+      "gains": {
+        "ambient": 0.20000000298023224,
+        "steps": 0.550000011920929,
+        "ui": 0.550000011920929,
+        "music": 0
+      }
+    }
+  }
+}

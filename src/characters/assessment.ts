@@ -1,0 +1,15 @@
+import * as T from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {PlayerObject} from './vendor/skinview-model.js';
+import {WalkingAnimation} from './vendor/skinview-animation.js';
+import {createStudent as legacy} from '../exploration/studentLegacy';
+import {createCharacter} from './character';
+const scene=new T.Scene();scene.background=new T.Color(0xdce7e3);const r=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});r.setSize(innerWidth,innerHeight);document.body.append(r.domElement);scene.add(new T.HemisphereLight(0xffffff,0x6f8c71,2.5));const l=new T.DirectionalLight(0xffffff,2);l.position.set(3,5,5);scene.add(l);const camera=new T.PerspectiveCamera(35,innerWidth/innerHeight,.01,50);camera.position.set(0,2.2,8.5);camera.lookAt(0,1,0);
+const old=legacy();old.root.position.x=-2.5;old.root.rotation.y=Math.PI;scene.add(old.root);
+const k=await new GLTFLoader().loadAsync('/assets/characters/kenney/source-character-c.glb');k.scene.scale.setScalar(1.8/2.7);k.scene.position.x=-.85;scene.add(k.scene);const mix=new T.AnimationMixer(k.scene);mix.clipAction(k.animations.find(a=>a.name==='walk')!).play();
+const player=new PlayerObject(),skin=player.skin;player.position.set(.85,1.35,0);player.scale.setScalar(1.8/32);skin.setOuterLayerVisible(false);player.cape.visible=false;player.elytra.visible=false;player.ears.visible=false;
+const pixels=new Uint8Array(64*64*4);for(let i=0;i<64*64;i++)pixels.set([30,116,81,255],i*4);const px=(x:number,y:number,c:number[])=>pixels.set([...c,255],((63-y)*64+x)*4);
+for(let y=0;y<16;y++)for(let x=0;x<32;x++)px(x,y,y<10?[22,27,32]:[224,173,134]);for(const x of [10,13])px(x,12,[22,27,32]);px(11,14,[145,85,65]);px(12,14,[145,85,65]);
+const texture=new T.DataTexture(pixels,64,64);texture.magFilter=T.NearestFilter;texture.colorSpace=T.SRGBColorSpace;texture.needsUpdate=true;skin.map=texture;scene.add(player);const skinWalk=new WalkingAnimation();
+const hku=createCharacter();hku.root.position.x=2.5;hku.root.rotation.y=Math.PI;scene.add(hku.root);
+const clock=new T.Clock();function frame(){const dt=clock.getDelta();mix.update(dt);old.animate(dt,dt*2.6);hku.animate(dt,dt*2.6);skinWalk.update(player,dt);r.render(scene,camera);requestAnimationFrame(frame);}frame();Object.assign(window,{assessment:{scene,r,camera,hku,k,mix,skin}});

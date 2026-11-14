@@ -1,0 +1,21 @@
+{
+  "sourceHashes": {
+    "src/main.ts": "c760196c4f6eea09c2bbb9b827750135354c25e13a36fab8b6acd78467382fe1",
+    "src/viewer/nightLighting.ts": "064fe9d629c2c7d2081a17cf790681e66437e3987f2baf75bf4e4f86bf9e20ca",
+    "src/viewer/glassEnvironment.ts": "cc33ed75116619c08789314b006e33c0a716a40db2f9f11ec2ae02e643fbc0d2",
+    "src/viewer/export.ts": "3c62be9e7c66aaad85a5f7a4e006986a434ec67d5986468db51c147f40432762",
+    "src/viewer/siteViewer.ts": "3506901bf1bf9ed2503027f0c9b65b21b21b4ad1804b86258031dfa2ae285065",
+    "src/model/campusParameters.ts": "a9eaa588647546a488f62e3937dafa1cf6c4b50601da85cec33d5af8768b80bb",
+    "src/model/signPhoto.ts": "66f811565725f93f998e94ac4be476a1704df7eb3dea4e5bcb1ad6902d52e5b3",
+    "src/model/nov14Details.ts": "9740e4210107b1ebd43bb2ebce3e2e05329a7a6a2fb3a9ad8570bbd318fa5002",
+    "src/model/deferredTextures.ts": "6b8a63797f5c0a0b02b1d935e6d81de0cf6008c7a60660bb8fdabae6647aeb40"
+  },
+  "runtimeBytes": 5559454,
+  "checks": {
+    "all": 0,
+    "exportGLB": 0,
+    "validateGLB": 0,
+    "reviewBuild": 0
+  },
+  "validationFile": "assets/gltf-validation.json"
+}

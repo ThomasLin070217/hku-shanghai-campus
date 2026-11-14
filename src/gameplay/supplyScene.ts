@@ -40,7 +40,7 @@ export function createSupplyScene(scene:T.Scene,explorer:ReturnType<typeof creat
   function refresh(){const s=quest.actor.getSnapshot(),count=s.context.collected.length;
     title.textContent=s.matches('completed')?'检查完成':s.matches('ready')?'物资齐备，返回终端':`收集门前物资 · ${count} / ${SUPPLIES.length}`;
     items.textContent=SUPPLIES.map(i=>`${s.context.collected.includes(i.id)?'✓':'□'} ${i.name}`).join('   ');
-    next.textContent=s.matches('completed')?'已保存进度。可继续自由探索，Esc 中可重置练习。':s.matches('ready')?'前往金色地标，按 E 提交。':'寻找绿色地标，靠近后按 E。此为可替换练习，不是真实校园设施。';
+    next.textContent=s.matches('completed')?'已保存进度。可继续自由探索，Esc 中可重置练习。':s.matches('ready')?'前往金色地标，按 F 提交。':'寻找绿色地标，靠近后按 F。此为可替换练习，不是真实校园设施。';
     for(const e of entries)e.group.visible=e.id==='station'||!s.context.collected.includes(e.id as never);
     try{localStorage.setItem(QUEST_STORAGE_KEY,JSON.stringify(quest.save()));}catch{/* Session remains usable without persistence. */}
   }

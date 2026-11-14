@@ -1,0 +1,15 @@
+[
+  {
+    "name": "actual-sprint-jump-third",
+    "grounded": false,
+    "velocity": [
+      0,
+      4.0833333333333295,
+      -5.2000000000003865
+    ],
+    "view": "third",
+    "held": "macbook-air-13-silver",
+    "thirdVisible": true,
+    "firstVisible": false
+  }
+]

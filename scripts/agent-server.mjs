@@ -1,8 +1,8 @@
 import http from 'node:http';
 import {WebSocketServer,WebSocket} from 'ws';
 import {randomUUID} from 'node:crypto';
-const port=Number(process.env.HKU_AGENT_PORT||8787),pending=new Map();let game=null,lastSeen=0;
-const allowed=new Set(['http://localhost:5174','http://127.0.0.1:5174','http://localhost:4174','http://127.0.0.1:4174']);
+const port=Number(process.env.HKU_AGENT_PORT||8788),pending=new Map();let game=null,lastSeen=0;
+const allowed=new Set(['http://localhost:5184','http://127.0.0.1:5184','http://localhost:5174','http://127.0.0.1:5174','http://localhost:4174','http://127.0.0.1:4174']);
 const ready=()=>game?.readyState===WebSocket.OPEN&&Date.now()-lastSeen<2000;
 const send=(res,status,data)=>{res.writeHead(status,{'content-type':'application/json','cache-control':'no-store','x-content-type-options':'nosniff'});res.end(JSON.stringify(data));};
 function rpc(method,args){return new Promise(resolve=>{if(!ready())return resolve({ok:false,error:'not_ready'});const id=randomUUID(),timer=setTimeout(()=>{pending.delete(id);resolve({ok:false,error:'game_timeout'});},2500);pending.set(id,{resolve,timer});game.send(JSON.stringify({type:'rpc',id,method,args,expiresAt:Date.now()+2000}));});}
@@ -10,7 +10,7 @@ const server=http.createServer(async(req,res)=>{
  if(req.headers.origin&&!allowed.has(req.headers.origin))return send(res,403,{ok:false,error:'origin_rejected'});
  const host=req.headers.host?.split(':')[0];if(!['127.0.0.1','localhost'].includes(host))return send(res,403,{ok:false,error:'host_rejected'});
  const path=new URL(req.url,'http://localhost').pathname;
- if(req.method==='GET'&&path==='/health')return send(res,200,{ok:true,ready:ready(),protocolVersion:'hku-campus/1.0',listen:'127.0.0.1'});
+ if(req.method==='GET'&&path==='/health')return send(res,200,{ok:true,ready:ready(),protocolVersion:'hku-campus/1.2',listen:'127.0.0.1'});
  let method,args={};
  if(req.method==='GET'&&path==='/observe')method='observe';
  else if(req.method==='GET'&&path.startsWith('/commands/')){method='command';args={commandId:decodeURIComponent(path.slice(10))};}

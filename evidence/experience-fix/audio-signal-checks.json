@@ -1,0 +1,11 @@
+{
+  "recordingSeconds": 68.16,
+  "channels": 2,
+  "sampleRate": 48000,
+  "peak": 0.06231689453125,
+  "rms": 0.003188720626254118,
+  "clippedSamples": 0,
+  "loopSeamDelta": 0.0159912109375,
+  "loopMaxAdjacentDelta": 0.128692626953125,
+  "subjectiveListening": "not verified: tool reports audio input unsupported; actual browser + afplay playback executed"
+}

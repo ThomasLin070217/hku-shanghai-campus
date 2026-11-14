@@ -1,0 +1,110 @@
+{
+  "before": {
+    "position": [
+      3,
+      0.13,
+      81
+    ],
+    "audio": {
+      "state": "running",
+      "active": true,
+      "ambientVoices": 1,
+      "ambientStarts": 1,
+      "activeShots": 0,
+      "counts": {},
+      "failed": false,
+      "failedFiles": [],
+      "gains": {
+        "ambient": 0.20000000298023224,
+        "steps": 0.550000011920929,
+        "ui": 0.550000011920929,
+        "music": 0
+      }
+    }
+  },
+  "computer": {
+    "panel": "computer",
+    "equipped": {
+      "itemId": "macbook-air-13-silver",
+      "instanceId": "student-macbook-001",
+      "count": 1
+    },
+    "paused": true
+  },
+  "settings": {
+    "sliders": [
+      "sensitivity",
+      "fov",
+      "ambient",
+      "steps",
+      "ui",
+      "bob",
+      "muted"
+    ],
+    "footer": "已保存至本机 · 17:44游戏已暂停 · 关闭后点击继续"
+  },
+  "audio": {
+    "state": "running",
+    "active": true,
+    "ambientVoices": 1,
+    "ambientStarts": 1,
+    "activeShots": 0,
+    "counts": {
+      "step-grass-0": 1,
+      "step-grass-3": 1,
+      "step-grass-1": 1,
+      "equip": 2
+    },
+    "failed": false,
+    "failedFiles": [],
+    "gains": {
+      "ambient": 0.20000000298023224,
+      "steps": 0.550000011920929,
+      "ui": 0.550000011920929,
+      "music": 0
+    }
+  },
+  "layout": {
+    "badge": {
+      "x": 678.0078125,
+      "y": 140,
+      "w": 185.9921875,
+      "h": 46.5
+    },
+    "map": {
+      "x": 722,
+      "y": 202,
+      "w": 150,
+      "h": 209.921875
+    },
+    "toast": {
+      "x": 230.8828125,
+      "y": 92,
+      "w": 426.234375,
+      "h": 69
+    },
+    "prompt": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+    },
+    "dock": {
+      "x": 140.07421875,
+      "y": 491,
+      "w": 607.8515625,
+      "h": 70
+    },
+    "help": {
+      "x": 16,
+      "y": 578.5,
+      "w": 856,
+      "h": 28.5
+    },
+    "fonts": {
+      "#survey-next": "13px",
+      "#mini-map span": "12px",
+      ".stage-bottom>span:first-child": "12px"
+    }
+  }
+}

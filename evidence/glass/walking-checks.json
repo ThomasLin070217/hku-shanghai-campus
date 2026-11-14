@@ -1,0 +1,72 @@
+{
+  "testedAt": "2026-11-14T05:13:48.085Z",
+  "method": "Native keyboard in drag-compatible control. QA placement only before separate routes. Side test uses static production preview 5194 to avoid dev HMR. No coordinate edits during recording.",
+  "checks": [
+    {
+      "case": "native W + sprint into closed entry",
+      "position": [
+        58,
+        0.12,
+        23.164999999999292
+      ],
+      "velocity": [
+        0,
+        0,
+        0
+      ],
+      "grounded": true,
+      "collisions": [
+        {
+          "type": "wall",
+          "id": "B04/closed-doors"
+        }
+      ]
+    },
+    {
+      "case": "S backs away; V third then first",
+      "position": [
+        58,
+        0.08,
+        27.71499999999963
+      ]
+    },
+    {
+      "case": "native W along CDS1 side at night",
+      "from": [
+        24,
+        0.05,
+        16
+      ],
+      "position": [
+        24,
+        0.035,
+        8.221666666666726
+      ],
+      "velocity": [
+        0,
+        0,
+        -2.59999999999998
+      ],
+      "yawDeg": 0,
+      "pitchDeg": 0,
+      "grounded": true,
+      "collisions": []
+    }
+  ],
+  "paused": true,
+  "keys": [],
+  "keysCleared": true,
+  "recording": "glass-entry-walk.webm",
+  "limits": "Pointer Lock not exercised in this glass-only round. Physics regression covers jump/head collisions.",
+  "visualInspection": {
+    "sideOblique": "walk-side-oblique.png",
+    "placement": [
+      24,
+      0.035,
+      8.22
+    ],
+    "yawRadians": -1.0471975512,
+    "method": "QA inspection camera placed at same first-person eye height after native walking. Mouse drag test did not change yaw in automation; not counted as a pass.",
+    "observed": "Opaque frame, clear pane, ceiling strip and recessed seating visible; no visible pane flashing or depth inversion in inspected shots."
+  }
+}

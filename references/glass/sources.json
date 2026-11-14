@@ -1,0 +1,151 @@
+{
+  "reviewDate": "2026-11-14",
+  "method": "实际查看项目内既有原图和已截视频帧；本轮未重新联网获取这些图片",
+  "dedup": [
+    "A08 与 N09 为同图",
+    "A06 与 N06 为同图",
+    "U03 的两帧来自同一连续视频",
+    "R02 的规划效果图不用于核实实景玻璃"
+  ],
+  "references": [
+    {
+      "id": "R01",
+      "file": "photos/01-cds-shanghai-main-entrance-samu6478.webp",
+      "title": "CDS-1 主入口实景",
+      "page": "https://sh.cds.hku.hk/about/about-us/facilities/",
+      "publisher": "HKU CDS (Shanghai)",
+      "date": "页面未标发布日期；路径含 2026/09，不等于拍摄日期",
+      "type": "实景照片",
+      "identity": "Facilities 的 CDS-1 栏目；右侧导视牌可读 CDS-1；入口中文校名可见。",
+      "supports": "双层高玻璃门厅、薄平雨棚、中央旋转门和两侧平开门、两侧植物、浅门槛。",
+      "uncertainty": "只有入口局部，不证明整栋层数、背立面或绝对尺寸。",
+      "status": "已确认",
+      "originalImageURL": "https://sh.cds.hku.hk/wp-content/uploads/2026/09/cds-shanghai-main-entrance-samu6478.webp",
+      "accessDate": "2026-11-12",
+      "independenceGroup": "R01",
+      "sha256": "70e1694509493c72fe75a369f7545a3f4ec1eb648b334c259d4b5555f3ba748f",
+      "dimensions": [
+        1440,
+        960
+      ],
+      "reviewedLocally": "2026-11-14",
+      "glassSupports": "CDS-1 入口透明门厅、旋转门、银色不透明竖框和雨棚"
+    },
+    {
+      "id": "R02",
+      "file": "photos/02-hkucds-zj-site01-scaled.jpg",
+      "title": "官方 A/B/C/D 建筑对照",
+      "page": "https://master.cds.hku.hk/delta-x-26-27/",
+      "publisher": "HKU CDS taught master programmes",
+      "date": "页面未标发布日期；文件路径 2025/12；图内标 Construction completed (April 2025)",
+      "type": "两幅实景照片 + 一幅规划效果图的官方拼图",
+      "identity": "两张实景中的 C 明确标 CDS Main Building；结合 R01 入口形态、T02 楼号以及礼堂相对位置识别 CDS-1。",
+      "supports": "主体长方体、中部内凹玻璃带、宽窄交替竖向构件、横向分段、与 A 礼堂/B 配套体块关系。",
+      "uncertainty": "右图是效果图，不能当作已建成场地或实测地图；C 与 CDS-1 的关联是交叉核对结果。",
+      "status": "已确认主楼标注；交叉核对身份",
+      "originalImageURL": "https://master.cds.hku.hk/wp-content/uploads/2025/12/hkucds-zj-site01-scaled.jpg",
+      "accessDate": "2026-11-12",
+      "independenceGroup": "R02",
+      "sha256": "c61ddc96135a5cfaa37d0f94b20304a07184a1054ce47a04e3ec255f43dfb4af",
+      "dimensions": [
+        2560,
+        783
+      ],
+      "reviewedLocally": "2026-11-14",
+      "glassSupports": "仅使用左侧实景分图：深色反光幕墙及立柱；右侧规划效果图不作玻璃证据"
+    },
+    {
+      "id": "C06",
+      "title": "架空步道圆形天井",
+      "file": "architect/A08.jpg",
+      "pageURL": "https://www.chapmantaylor.com/projects/hku-school-of-computing-and-data-science-shanghai",
+      "publisher": "Chapman Taylor",
+      "date": "日期未明，项目图库实景",
+      "type": "实景照片",
+      "identity": "背景相邻幕墙与项目图库关联，楼栋局部归属为推断",
+      "supports": "白色支柱、可见圆形顶洞与树池",
+      "uncertainty": "只确认特征存在，具体落点与节点尺度缺少精确地图；模型位置可改。A08/N09重复。",
+      "accessDate": "2026-11-12",
+      "sha256": "9e63fd8db55c48a297b683305a1258b569c57bffda5b26b6e2cb9bb461d1c186",
+      "rawURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/HKU_Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-7.jpg?w=1920&h=1440&q=90&auto=format&fit=crop&dm=1784906471&s=87b04475a15ff383d2fb8cfebafd988a",
+      "dimensions": [
+        1920,
+        1440
+      ],
+      "reviewedLocally": "2026-11-14",
+      "glassSupports": "圆形天井及架空步道的透明玻璃护栏，白色实体板和支柱"
+    },
+    {
+      "id": "C07",
+      "title": "北侧三栋低层正面",
+      "file": "architect/A06.jpg",
+      "pageURL": "https://www.chapmantaylor.com/projects/hku-school-of-computing-and-data-science-shanghai",
+      "publisher": "Chapman Taylor",
+      "date": "2025年完工图；拍摄日未知",
+      "type": "实景照片",
+      "identity": "中央礼堂和两侧配套体块与 R02 标注 A/B 对应",
+      "supports": "中央较窄大框礼堂，两侧宽体低层，后方两类高层",
+      "uncertainty": "图中无可读5/6/7门牌，楼号对应依候选图纸。A06/N06重复。",
+      "accessDate": "2026-11-12",
+      "sha256": "a6ac18797cb21e38b785a2a0f5400b202144abe7241e2959c390887349f87d56",
+      "rawURL": "https://chapman-taylor.transforms.svdcdn.com/production/uploads/Zhangjiang_Gaoke_Office_Park_Shanghai_China_Complete_Jan_2025_Chapman_Taylor-13.jpg?w=1920&h=1279&q=90&auto=format&fit=crop&dm=1737099221&s=c674004f6a6531d33bf97b03b16c0d89",
+      "dimensions": [
+        1920,
+        1279
+      ],
+      "reviewedLocally": "2026-11-14",
+      "glassSupports": "北侧低层的大框玻璃窗、细窗格、深色上层玻璃"
+    },
+    {
+      "id": "C08",
+      "title": "礼堂入口与大台阶",
+      "file": "photos/07-Main-Site-3-scaled.jpeg",
+      "pageURL": "https://master.cds.hku.hk/delta-x-26-27/",
+      "publisher": "HKU CDS",
+      "date": "上传路径2026/07，拍摄日未知",
+      "type": "校方实景照片",
+      "identity": "R02 A Auditorium；校名及大框窗直接对应",
+      "supports": "大台阶、中央分隔、平台、门厅与白色宽框",
+      "uncertainty": "入口尺寸与标高估计；该台阶不属于CDS-1。",
+      "accessDate": "2026-11-12",
+      "sha256": "53532a2e4326c95e13b60f2996b618e7a11282e678d9c5affc973c1b8e2546cd",
+      "rawURL": "https://master.cds.hku.hk/wp-content/uploads/2026/07/Main-Site-3-scaled.jpeg",
+      "dimensions": [
+        2560,
+        1707
+      ],
+      "reviewedLocally": "2026-11-14",
+      "glassSupports": "礼堂左侧退台玻璃护栏与后退入口；右侧反光玻璃；下层不透明设备门"
+    },
+    {
+      "id": "U03-0009",
+      "file": "night-video/U03-0009.jpg",
+      "originalPageURL": null,
+      "rawURL": null,
+      "publisher": "用户实拍",
+      "date": "2026-11-13 收到；拍摄日期未知",
+      "type": "夜间视频截帧",
+      "video": "IMG_4333.MOV",
+      "timestampSeconds": 9,
+      "identity": "原片连续步行路线与已确认 CDS-1 入口及侧面对应",
+      "glassSupports": "CDS-1 门厅的透视和暖色室内灯光；玻璃不是白色实体墙",
+      "uncertainty": "夜景曝光影响颜色与透光判断；同一视频各帧不是独立来源",
+      "reviewedLocally": "2026-11-14"
+    },
+    {
+      "id": "U03-0052",
+      "file": "night-video/U03-0052.jpg",
+      "originalPageURL": null,
+      "rawURL": null,
+      "publisher": "用户实拍",
+      "date": "2026-11-13 收到；拍摄日期未知",
+      "type": "夜间视频截帧",
+      "video": "IMG_4333.MOV",
+      "timestampSeconds": 52,
+      "identity": "原片连续步行路线与已确认 CDS-1 入口及侧面对应",
+      "glassSupports": "CDS-1 侧面首层透过玻璃可见灯、桌椅；黑色不透明层间带与细金属框",
+      "uncertainty": "夜景曝光影响颜色与透光判断；同一视频各帧不是独立来源",
+      "reviewedLocally": "2026-11-14"
+    }
+  ]
+}

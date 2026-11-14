@@ -1,0 +1,100 @@
+[
+  {
+    "view": "entrance",
+    "phase": "before",
+    "calls": 105,
+    "triangles": 107376,
+    "error": 0
+  },
+  {
+    "view": "entrance",
+    "phase": "after",
+    "calls": 321,
+    "triangles": 88424,
+    "error": 0
+  },
+  {
+    "view": "entrance-night",
+    "phase": "before",
+    "calls": 88,
+    "triangles": 106112,
+    "error": 0
+  },
+  {
+    "view": "entrance-night",
+    "phase": "after",
+    "calls": 254,
+    "triangles": 84242,
+    "error": 0
+  },
+  {
+    "view": "side-walk",
+    "phase": "before",
+    "calls": 113,
+    "triangles": 66028,
+    "error": 0
+  },
+  {
+    "view": "side-walk",
+    "phase": "after",
+    "calls": 344,
+    "triangles": 66042,
+    "error": 0
+  },
+  {
+    "view": "tower",
+    "phase": "before",
+    "calls": 119,
+    "triangles": 157848,
+    "error": 0
+  },
+  {
+    "view": "tower",
+    "phase": "after",
+    "calls": 361,
+    "triangles": 142872,
+    "error": 0
+  },
+  {
+    "view": "north-low",
+    "phase": "before",
+    "calls": 160,
+    "triangles": 164232,
+    "error": 0
+  },
+  {
+    "view": "north-low",
+    "phase": "after",
+    "calls": 585,
+    "triangles": 160948,
+    "error": 0
+  },
+  {
+    "view": "hall",
+    "phase": "before",
+    "calls": 92,
+    "triangles": 22348,
+    "error": 0
+  },
+  {
+    "view": "hall",
+    "phase": "after",
+    "calls": 243,
+    "triangles": 34212,
+    "error": 0
+  },
+  {
+    "view": "oculus",
+    "phase": "before",
+    "calls": 143,
+    "triangles": 115464,
+    "error": 0
+  },
+  {
+    "view": "oculus",
+    "phase": "after",
+    "calls": 412,
+    "triangles": 121722,
+    "error": 0
+  }
+]

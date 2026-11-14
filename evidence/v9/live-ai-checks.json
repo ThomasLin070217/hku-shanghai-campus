@@ -1,0 +1,558 @@
+{
+  "note": "Isolated regression: restored real 2-record save; debug positioned at third marker. Full keyboard walking evidence is playthrough.json.",
+  "grant": {
+    "ok": true,
+    "controlEpoch": 1794633453695,
+    "protocolVersion": "hku-campus/1.2"
+  },
+  "accepted": {
+    "ok": true,
+    "command": {
+      "commandId": "v9-ai-collect-1",
+      "status": "accepted",
+      "acceptedAt": 1794633474992,
+      "expiresAt": 1794633475492,
+      "collisionIds": []
+    }
+  },
+  "duplicate": {
+    "ok": true,
+    "duplicate": true,
+    "command": {
+      "commandId": "v9-ai-collect-1",
+      "status": "running",
+      "acceptedAt": 1794633474992,
+      "expiresAt": 1794633475492,
+      "collisionIds": [],
+      "startedFrame": 4,
+      "operation": {
+        "ok": true,
+        "code": "collected",
+        "message": "步道记录：抬头看看没有顶盖的天空，下一段路仍有新的问题。档案标记：EXPLORE。",
+        "id": "record-east-walk"
+      }
+    }
+  },
+  "repeat": {
+    "ok": true,
+    "command": {
+      "commandId": "v9-ai-collect-2",
+      "status": "accepted",
+      "acceptedAt": 1794633475107,
+      "expiresAt": 1794633475607,
+      "collisionIds": []
+    }
+  },
+  "repeatResult": {
+    "ok": true,
+    "command": {
+      "commandId": "v9-ai-collect-2",
+      "status": "completed",
+      "acceptedAt": 1794633475107,
+      "expiresAt": 1794633475607,
+      "collisionIds": [],
+      "startedFrame": 18,
+      "operation": {
+        "ok": true,
+        "code": "viewed",
+        "message": "步道记录：抬头看看没有顶盖的天空，下一段路仍有新的问题。档案标记：EXPLORE。",
+        "id": "record-east-walk"
+      },
+      "reason": "duration_elapsed",
+      "finishedFrame": 77
+    }
+  },
+  "submit": {
+    "ok": true,
+    "command": {
+      "commandId": "v9-ai-submit",
+      "status": "accepted",
+      "acceptedAt": 1794633476314,
+      "expiresAt": 1794633476814,
+      "collisionIds": []
+    }
+  },
+  "final": {
+    "ok": true,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 164,
+      "timeMs": 1366.6666666666654,
+      "wallTimeMs": 1794633476322,
+      "mode": "ai",
+      "controlEpoch": 1794633453695,
+      "aiEnabled": true,
+      "owner": "v9-regression",
+      "paused": false,
+      "player": {
+        "position": [
+          24,
+          0.05,
+          -43
+        ],
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": 0,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "first",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "completed",
+        "count": 3,
+        "total": 3,
+        "collectedClues": [
+          {
+            "id": "clue-learning",
+            "title": "CDS-1 入口",
+            "text": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。"
+          },
+          {
+            "id": "clue-belonging",
+            "title": "HKU 标识广场",
+            "text": "广场记录：不同的来处，在这里成为同路人。档案标记：CONNECT。"
+          },
+          {
+            "id": "clue-explore",
+            "title": "东侧露天步道",
+            "text": "步道记录：抬头看看没有顶盖的天空，下一段路仍有新的问题。档案标记：EXPLORE。"
+          }
+        ],
+        "discovered": [
+          "record-cds-entry",
+          "campus-directory",
+          "record-hku-square",
+          "record-east-walk"
+        ],
+        "archive": {
+          "id": "archive-campus-001",
+          "title": "校园数字档案 001 · 未完的地图",
+          "text": "LEARN · CONNECT · EXPLORE。三条记录已归档。同步结束时，档案目录中出现了一条尚未命名的路径：“如果校园也有记忆，谁会记得下一次相遇？”——待后续故事继续。"
+        },
+        "elapsedSeconds": 92,
+        "target": {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "actions": [
+            "view"
+          ],
+          "distance": 2.02869416127715
+        },
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": true
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            0,
+            0,
+            -2
+          ],
+          "distance": 2
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -24,
+            -0.05,
+            -27
+          ],
+          "distance": 36.124818338643585
+        },
+        {
+          "id": "B05",
+          "name": "5号楼 · 学生活动",
+          "position": [
+            58,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            34,
+            -0.05,
+            -27
+          ],
+          "distance": 43.416615483015256
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            34,
+            -0.05,
+            41
+          ],
+          "distance": 53.263519410568435
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            34,
+            -0.0050000000000000044,
+            73.5
+          ],
+          "distance": 80.98302306656625
+        },
+        {
+          "id": "B07",
+          "name": "7号楼 · 西北配套楼",
+          "position": [
+            -58,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -82,
+            -0.05,
+            -27
+          ],
+          "distance": 86.33077377158159
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -82,
+            -0.05,
+            41
+          ],
+          "distance": 91.6788007120512
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            -2.8000000000000007,
+            -0.05,
+            104
+          ],
+          "distance": 104.03769749470622
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            34,
+            -0.05,
+            113
+          ],
+          "distance": 118.00424780489895
+        },
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            -24,
+            -0.05,
+            119
+          ],
+          "distance": 121.39605636098729
+        },
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            -16,
+            0.08,
+            134
+          ],
+          "distance": 134.95186697485886
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -82,
+            -0.05,
+            113
+          ],
+          "distance": 139.61734312040176
+        }
+      ],
+      "lastCommand": {
+        "commandId": "v9-ai-submit",
+        "status": "running",
+        "acceptedAt": 1794633476314,
+        "expiresAt": 1794633476814,
+        "collisionIds": [],
+        "startedFrame": 162,
+        "operation": {
+          "ok": true,
+          "code": "completed",
+          "message": "LEARN · CONNECT · EXPLORE。三条记录已归档。同步结束时，档案目录中出现了一条尚未命名的路径：“如果校园也有记忆，谁会记得下一次相遇？”——待后续故事继续。"
+        }
+      },
+      "collisions": []
+    }
+  },
+  "stale": {
+    "ok": false,
+    "error": "stale_epoch",
+    "controlEpoch": 1794633453697
+  }
+}

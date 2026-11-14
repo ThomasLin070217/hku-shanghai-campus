@@ -1,0 +1,14 @@
+[
+  {
+    "name": "video east promenade south to north",
+    "end": [
+      24,
+      0.035,
+      -53.20000000000486
+    ]
+  },
+  {
+    "name": "removed east deck collision; lion solid",
+    "passed": true
+  }
+]

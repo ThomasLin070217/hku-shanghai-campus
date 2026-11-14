@@ -1,0 +1,50 @@
+{
+  "revision": "2026-11-14-U06",
+  "source": "IMG_4347.MOV",
+  "referenceIndex": "references/nov14-video/REPORT.md",
+  "guide": "docs/NOV14-VIDEO-UPDATE.md",
+  "evidence": "evidence/nov14-video/index.html",
+  "runtime": "http://127.0.0.1:5184/",
+  "interiors": "http://127.0.0.1:5184/interiors.html",
+  "checks": {
+    "check:all": "passed",
+    "curvedStairsPhysics": "both flights down/up",
+    "browserRoute": "29.2 seconds down/up via external HTTP, normal loop",
+    "underpass": "native Shift+W passed adjacent clear route; trough correctly blocks centre",
+    "GLB": "17 files zero errors/warnings, geometry roundtrip passed",
+    "browserExport": "13F UI download validated"
+  },
+  "limitations": [
+    "Interior preview only; campus doors remain closed",
+    "No new subjective audio timbre review; machine transcription checked against frames",
+    "Curved stair extent, count, depth, connecting structure metrics and interior floorplan provisional",
+    "Lion 4.8m body based on user rough estimate, not measured"
+  ],
+  "assets": [
+    {
+      "path": "assets/HKU-Shanghai-Campus.glb",
+      "bytes": 15760528,
+      "sha256": "e53dd69d9fed7fb61cc5a786de04eae303e7cc22d0dde27231c28ba10eae2546"
+    },
+    {
+      "path": "assets/CDS1-Observed-Lobby.glb",
+      "bytes": 287648,
+      "sha256": "49ba5d3f7530150473b4a09962eae360b6fa361f8818a342a55e226b0483fdf2"
+    },
+    {
+      "path": "assets/CDS1-13F-Public-Area.glb",
+      "bytes": 132548,
+      "sha256": "5d4188c8aa6795e489453da27cc6e3bbd443604a134dcbb4e3e9ed7a8ff91254"
+    },
+    {
+      "path": "assets/items/entrance-lion.glb",
+      "bytes": 99368,
+      "sha256": "779e9852cce9305e53f20659349641b0d4315ec736f0ceca960be31f35382e82"
+    },
+    {
+      "path": "evidence/nov14-video/curved-stairs-walk.mp4",
+      "bytes": 12629585,
+      "sha256": "5619e1b3165380ddf76f6d1bcd25950703c155877c41bae3a00b40430693fbc4"
+    }
+  ]
+}

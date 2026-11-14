@@ -1,0 +1,42 @@
+/* Workbuddy UI review: adapted to the existing voxel identity. */
+:root{--campus-ink:#173e31;--campus-paper:#f3f2e5;--campus-panel:rgba(243,242,229,.97);--campus-shadow:3px 3px 0 #123c3147}
+body.exploring #toast{top:14px;bottom:auto;max-width:min(48%,480px);font-size:13px;line-height:1.5;pointer-events:none;border:2px solid var(--campus-ink)}
+body.exploring #crosshair{color:#fff;text-shadow:1px 0 #10291f,-1px 0 #10291f,0 1px #10291f,0 -1px #10291f}
+body.exploring #survey-prompt{font-size:14px;max-width:calc(100% - 40px);white-space:normal;text-align:center;pointer-events:none}
+body.exploring .stage-bottom>span:first-child{font-size:12px;padding:5px 10px;max-width:96vw;white-space:normal}
+body.exploring #mini-map span{font-size:12px;line-height:1.4}
+body.exploring #mini-map{top:134px;background:var(--campus-panel);border:2px solid var(--campus-ink);box-shadow:var(--campus-shadow)}
+body.exploring #survey-hud{padding:12px 14px;background:var(--campus-panel);border:2px solid var(--campus-ink);box-shadow:var(--campus-shadow)}
+#survey-hud summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:28px}
+#survey-hud summary span{font-size:12px;text-decoration:underline;text-underline-offset:3px}
+#survey-hud #survey-count{font-size:16px;display:inline}
+#survey-hud #survey-objectives{font-size:13px;margin-top:12px}
+#survey-hud details p,#survey-hud #survey-next{font-size:13px;line-height:1.65}
+#survey-hud #survey-next{margin:8px 0 0}
+body.exploring #control-badge{font-size:12px;border:2px solid #6b8067;padding:6px 8px;background:#132f29;color:#f3f7ee;gap:8px}
+body.exploring[data-ai-control="armed"] #control-badge{border-color:#e0b357}
+body.exploring[data-ai-control="active"] #control-badge{border-color:#e0b357;background:#3a2c14;color:#ffe9b0}
+body.exploring[data-ai-control="active"] #takeover{background:#e0b357;color:#241a06;font-weight:bold}
+.inventory-dock{display:flex;align-items:stretch;gap:8px}
+body.exploring .bag-open{position:static;white-space:nowrap;font-size:12px}
+body.exploring #inventory-hud{bottom:48px}
+.item-slot.empty:not(.selected):not(.picked){background:#9ba797}
+body.exploring #held-name,body.exploring .slot-number{font-size:12px}
+#campus-panel #terminal-content{scroll-padding:20px;padding-top:28px}
+#campus-panel footer,#campus-panel .muted{font-size:12px}
+#campus-tools{position:relative;font-size:14px;z-index:30}
+#campus-tools summary{cursor:pointer;padding:10px;border:1px solid #91a18c;list-style:none}
+.tools-content{position:absolute;right:0;top:calc(100% + 8px);width:220px;padding:12px;display:grid;gap:6px;background:var(--campus-paper);border:2px solid var(--campus-ink);box-shadow:var(--campus-shadow)}
+.tools-content>*{display:block!important;text-align:left;padding:10px!important;margin:0!important;font-size:14px!important}
+.header:has(#campus-tools[open]){position:relative;z-index:35}
+.desktop-note{font-size:12px!important;color:#355d48;margin:10px 0!important}
+body.exploring .header-right{font-size:14px;gap:14px}
+body.exploring #session-save,body.exploring #bridge-status{font-size:12px}
+body.exploring .key-guide{font-size:12px}
+button:focus-visible,summary:focus-visible{outline:3px solid #b4812f;outline-offset:3px}
+@media(max-width:1000px){body.exploring #mini-map{width:150px}body.exploring #survey-hud{width:248px}body.exploring .header-right{gap:8px}}
+@media(max-width:650px){body.exploring .brand-copy{display:none}body.exploring .header-right{gap:4px}body.exploring #mini-map{display:none}body.exploring #survey-hud{width:190px}body.exploring .inventory-dock{gap:4px}body.exploring .hotbar{gap:2px}body.exploring .item-slot{width:28px;height:36px}body.exploring .bag-open{padding:4px}body.exploring .stage-bottom>span:first-child{font-size:12px}}
+@media(prefers-reduced-motion:reduce){#toast,.item-slot{transition:none!important;animation:none!important}}
+
+.pause-options{margin-top:12px}.pause-options summary{cursor:pointer;padding:8px 0;font-size:13px}.pause-options button{margin:8px 0}.pause-options p{margin:8px 0}
+@media(prefers-contrast:more){body.exploring #survey-hud,body.exploring #mini-map,body.exploring #survey-prompt{background:#fffdf0;color:#10291f;border-color:#10291f}}

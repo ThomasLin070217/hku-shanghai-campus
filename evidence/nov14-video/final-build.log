@@ -1,0 +1,43 @@
+
+> hku-shanghai-whole-campus@9.0.0 build
+> tsc --noEmit && vite build
+
+vite v7.3.8 building client environment for production...
+transforming...
+✓ 93 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                             0.76 kB │ gzip:   0.41 kB
+dist/assessment.html                        0.80 kB │ gzip:   0.47 kB
+dist/interiors.html                         1.52 kB │ gzip:   0.98 kB
+dist/characters.html                        2.35 kB │ gzip:   1.27 kB
+dist/assets/step-grass-3-BavoOF_L.wav       4.95 kB
+dist/assets/step-grass-0-Ciw4J3Ek.wav       5.57 kB
+dist/assets/step-grass-4-uz_-T9AO.wav       5.68 kB
+dist/assets/step-paving-Bu_Op9Mp.wav        5.78 kB
+dist/assets/bag-BZJTAz0N.wav                7.54 kB
+dist/assets/equip-IMTeO7tq.wav              7.54 kB
+dist/assets/view-CF5DJVWr.wav               7.54 kB
+dist/assets/step-grass-1-DJk0s6Fp.wav       7.63 kB
+dist/assets/step-grass-2-vANsoS9t.wav       7.76 kB
+dist/assets/step-grass-Ddgf4CoI.wav         8.42 kB
+dist/assets/collect-DsaR9nuI.wav           11.29 kB
+dist/assets/complete-mNN8Ib_m.wav          15.04 kB
+dist/assets/wind-leaves-kFe2dPYr.wav      529.24 kB
+dist/assets/campus-breeze-BHnNQej4.wav  4,320.04 kB
+dist/assets/main-C4Tsj79H.css              23.81 kB │ gzip:   6.37 kB
+dist/assets/interiors-B1uJRo-P.js           1.93 kB │ gzip:   1.26 kB
+dist/assets/characters-Dg2PWwLr.js          2.93 kB │ gzip:   1.58 kB
+dist/assets/materials-CLU7U1iH.js           3.01 kB │ gzip:   1.53 kB
+dist/assets/studentLegacy-DoDa0TAu.js       3.79 kB │ gzip:   2.03 kB
+dist/assets/assessment-DlgkuVom.js         13.87 kB │ gzip:   3.49 kB
+dist/assets/character-f9BIWdKQ.js          18.23 kB │ gzip:   6.67 kB
+dist/assets/export-CQhhZg8o.js             42.39 kB │ gzip:  18.67 kB
+dist/assets/three-BitdPJ2q.js             765.69 kB │ gzip: 208.32 kB
+dist/assets/main-C8MaehPR.js              897.35 kB │ gzip: 255.29 kB
+
+(!) Some chunks are larger than 850 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.06s

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {glassMaterial,pane,shallowDepth,GLAZING_DEPTH as GD} from './glazing';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
@@ -10,8 +11,8 @@ const font = new FontLoader().parse(fontJSON);
 const signFont = new FontLoader().parse(signFontJSON);
 const mat=(name:string,color:number,roughness=.6,metalness=.08)=>new THREE.MeshStandardMaterial({name,color,roughness,metalness});
 const palette=()=>({
-  core:mat('Dark facade backing',0x273c46), glass:mat('Blue grey glazing',0x2c5364,.24,.48),
-  glassLight:mat('Sky reflecting glazing',0x446b7b,.27,.38),glassDark:mat('Shadow glazing',0x203c4d,.30,.35),
+  core:mat('Opaque facade backing',0x43545a), glass:glassMaterial('office'),
+  glassLight:glassMaterial('clear'),glassDark:glassMaterial('reflective'),
   silver:mat('Warm silver aluminium',0xd9dedb,.42,.35), frame:mat('Slender anodised mullions',0x8fabae,.38,.40),
   white:mat('Entrance lettering',0xf4f1e5),roof:mat('Roof membrane',0x7c9093),equipment:mat('Roof equipment',0xa9b6b4),
   concrete:mat('Light grey paving',0xbac0b9,.93), pavement:mat('Paving joints',0x919b97,.94),
@@ -48,19 +49,21 @@ export function compact(g:THREE.Group){
   }
   for(const [material,meshes] of buckets){
     if(meshes.length<2)continue;
-    const geometries=meshes.map(m=>{m.updateMatrix();const geom=m.geometry.clone().applyMatrix4(m.matrix);return geom.index?geom.toNonIndexed():geom;});
+    // Curved rails and revolving leaves need separate transparent sorting. Coplanar panes still merge.
+    if(material.userData.surfaceRole==='glass'&&meshes.some(m=>Math.abs(m.quaternion.dot(meshes[0].quaternion))<.99999))continue;
+    const geometries=meshes.map(m=>{m.updateMatrix();const geom=m.geometry.clone().applyMatrix4(m.matrix);if(!geom.index)return geom;const flat=geom.toNonIndexed();geom.dispose();return flat;});
     const geometry=mergeGeometries(geometries,false);
     geometries.forEach(x=>x.dispose());
     if(!geometry)throw new Error(`Cannot merge ${g.name}`);
     geometry.computeBoundingSphere();
     const combined=new THREE.Mesh(geometry,material);combined.name=`${g.name}__${material.name}`;
-    combined.castShadow=true;combined.receiveShadow=true;combined.userData={primitiveCount:meshes.length};
+    combined.castShadow=material.userData.surfaceRole!=='glass';combined.receiveShadow=material.userData.surfaceRole!=='glass';combined.userData={...g.userData,...meshes[0].userData,primitiveCount:meshes.reduce((n,m)=>n+(m.userData.primitiveCount??1),0)};
     meshes.forEach(m=>{g.remove(m);m.geometry.dispose();});g.add(combined);
   }
 }
 export interface CampusAsset {root:THREE.Group;building:THREE.Group;environment:THREE.Group;ground:THREE.Group;parameters:ModelParameters}
 export function buildCampus(parameters:ModelParameters={...DEFAULT_PARAMETERS}):CampusAsset{
-  const p={...parameters};validateParameters(p);const M=palette();
+  const p={...parameters};validateParameters(p);const M=palette();M.core.userData.surfaceRole='opaque-backing';
   const root=new THREE.Group();root.name='HKU_Shanghai_CDS1';root.userData={version:'1.0.0',units:'metres',up:'Y',entrance:'+Z (local, not surveyed north)',status:'Evidence-based visual prototype; dimensions provisional',parameters:p};
   const building=group('CDS1_Building',root,'mixed','R01,R02,R04; see references/MODELING_BASIS.md');
   building.userData={...building.userData,units:'metres',up:'Y',parameters:p,version:'1.0.0',dimensionsStatus:'provisional'};
@@ -80,17 +83,25 @@ export function buildCampus(parameters:ModelParameters={...DEFAULT_PARAMETERS}):
   const floorH=(H-p.roofScreenHeight)/p.floors;
   // H-like footprint: two broad bars joined by an inset glazed centre.
   const wingD=(D-R)/2;
-  for(const s of [-1,1]) box(mass,`Wing_${s}`,[W,H,wingD],[0,y0+H/2,s*(D+R)/4],M.core);
-  box(mass,'Recessed_centre',[W-2*S,H,R],[0,y0+H/2,0],M.core);
+  for(const s of [-1,1]) box(mass,`Wing_${s}`,[W-2*GD.facade,H,wingD-2*GD.facade],[0,y0+H/2,s*(D+R)/4],M.core);
+  box(mass,'Recessed_centre',[W-2*S-2*GD.facade,H,R-2*GD.facade],[0,y0+H/2,0],M.core);
   box(mass,'Foundation',[W+.35,y0,D+.35],[0,y0/2,0],M.concrete);
   // Scale the visible broad/slender bands with floor count; top band includes screen.
   const levels=[0,2,5,7,10,12,14].map(i=>i/14*p.floors*floorH);levels[levels.length-1]=H;
   // Facade local horizontal axis U; +normal always points outward.
   function facade(name:string,length:number,origin:THREE.Vector3,u:THREE.Vector3,n:THREE.Vector3,bays:number,recess=false,front=false){
     const bay=length/bays;
+    const faceGlass=group(name+'_Glass_plane',glass,'visible-glass_material-inferred',front?'R01,U03-0009':'R02,U03-0052');
+    const depthGroup=group(name+'_Depth',mass,'provisional-shallow-depth','R01,U03-0052');
+    depthGroup.position.copy(origin);depthGroup.position.y=y0;depthGroup.rotation.y=Math.atan2(n.x,n.z);
+    if(front){const sideWidth=(length-p.entranceWidth)/2;for(const side of [-1,1]){const d=new THREE.Group();d.position.x=side*(p.entranceWidth/2+sideWidth/2);depthGroup.add(d);shallowDepth(d,sideWidth,floorH-.1,GD.facade,Math.round(sideWidth/bay),true);}}else shallowDepth(depthGroup,length,floorH-.1,GD.facade,bays,true);
+    // Floor edges behind upper windows give parallax without inventing rooms.
+    for(let f=1;f<p.floors;f++){if(front&&f*floorH<p.entranceHeight){const w=(length-p.entranceWidth)/2;for(const side of [-1,1])box(depthGroup,'Recess_floor_edge',[w,.16,GD.facade],[side*(p.entranceWidth/2+w/2),f*floorH,-GD.facade/2],M.core);}else box(depthGroup,'Recess_floor_edge',[length,.16,GD.facade],[0,f*floorH,-GD.facade/2],M.core);}
+
     const put=(target:THREE.Object3D,nm:string,uw:number,hh:number,dd:number,uc:number,y:number,offset:number,m:THREE.Material)=>{
       const pos=origin.clone().addScaledVector(u,uc).addScaledVector(n,offset);pos.y=y+y0;
-      const mesh=box(target,`${name}_${nm}`,n.z!==0?[uw,hh,dd]:[dd,hh,uw],[pos.x,pos.y,pos.z],m);return mesh;
+      if(m.userData.surfaceRole==='glass')return pane(target,`${name}_${nm}`,uw,hh,pos.x,pos.y,pos.z,m,Math.atan2(n.x,n.z));
+      return box(target,`${name}_${nm}`,n.z!==0?[uw,hh,dd]:[dd,hh,uw],[pos.x,pos.y,pos.z],m);
     };
     for(let f=0;f<p.floors;f++){
       const base=f*floorH;
@@ -98,13 +109,13 @@ export function buildCampus(parameters:ModelParameters={...DEFAULT_PARAMETERS}):
         const uc=-length/2+(b+.5)*bay;
         if(front&&f<2&&Math.abs(uc-p.entranceX)<p.entranceWidth/2)continue;
         const k=(b*7+f*3+(front?1:0))%13;
-        put(glass,`window_${f}_${b}`,bay-.12,floorH-.16,.10,uc,base+floorH/2,.065,k<3?M.glassLight:k===6?M.glassDark:M.glass);
+        put(faceGlass,`window_${f}_${b}`,bay-.12,floorH-.16,.10,uc,base+floorH/2,.065,f===0?M.glassLight:k===6?M.glassDark:M.glass);
         put(bands,`spandrel_${f}_${b}`,bay-.1,.48,.12,uc,base+.27,.13,M.core);
       }
       put(bands,`floor_${f}`,length,.075,.13,0,base,.16,M.frame);
     }
     // Glazed rooftop screen continues the top band; equipment sits below/behind it.
-    for(let b=0;b<bays;b++)put(glass,`roof_screen_${b}`,bay-.12,p.roofScreenHeight,.10,-length/2+(b+.5)*bay,H-p.roofScreenHeight/2,.065,M.glassDark);
+    for(let b=0;b<bays;b++)put(faceGlass,`roof_screen_${b}`,bay-.12,p.roofScreenHeight,.10,-length/2+(b+.5)*bay,H-p.roofScreenHeight/2,.065,M.glassDark);
     // Thin full-height mullions are retained behind decorative multi-storey fins.
     for(let b=0;b<=bays;b++){
       const uc=-length/2+b*bay;
@@ -132,14 +143,22 @@ export function buildCampus(parameters:ModelParameters={...DEFAULT_PARAMETERS}):
   }
   // Front portal: no tall stair from the separate auditorium is attached here.
   const ex=p.entranceX,front=D/2+.23;
-  box(entrance,'Double_height_glass_portal',[p.entranceWidth,p.entranceHeight,.14],[ex,y0+p.entranceHeight/2,front],M.glassDark);
+  const lobby=new THREE.Group();lobby.name='Lobby_visual_recess_PROVISIONAL';lobby.position.set(ex,y0,front);entrance.add(lobby);
+  shallowDepth(lobby,p.entranceWidth,p.entranceHeight,GD.lobby,8,true);box(lobby,'Lobby_rear_shadow_PROVISIONAL',[p.doorWidth*.82,p.doorHeight+.6,.06],[0,(p.doorHeight+.6)/2,-GD.lobby+.10],M.core);
+  const flank=(p.entranceWidth-p.doorWidth)/2;
+  for(const side of [-1,1])pane(entrance,'Portal_side_glass',flank,p.entranceHeight,ex+side*(p.doorWidth/2+flank/2),y0+p.entranceHeight/2,front,M.glassLight);
+  pane(entrance,'Portal_upper_glass',p.doorWidth,p.entranceHeight-p.doorHeight,ex,y0+(p.doorHeight+p.entranceHeight)/2,front,M.glassLight);
+  // Observed ceiling arches simplified to rectangular light ribs; depth is provisional.
+  const light=mat('Night_lobby_arch_light',0xe6d4af);light.emissive.setHex(0xffdfac);light.userData.nightIntensity=1.8;
+  for(const z of [-.6,-1.4,-2.2]){box(lobby,'Lobby_light_crossbar',[p.entranceWidth*.58,.065,.065],[0,p.entranceHeight-1.0,z],light);for(const side of [-1,1])box(lobby,'Lobby_light_return',[.065,1.2,.065],[side*p.entranceWidth*.29,p.entranceHeight-1.6,z],light);}
+
   for(const s of [-1,1])box(entrance,'Portal_jamb',[.55,p.entranceHeight,.85],[ex+s*p.entranceWidth/2,y0+p.entranceHeight/2,front+.12],M.silver);
   box(entrance,'Portal_header',[p.entranceWidth+.55,.4,1.0],[ex,y0+p.entranceHeight,front+.2],M.silver);
   for(let i=-4;i<=4;i++)box(entrance,'Lobby_mullion',[.09,p.entranceHeight,.12],[ex+i*p.entranceWidth/8,y0+p.entranceHeight/2,front+.13],M.frame);
   box(entrance,'Lobby_transom',[p.entranceWidth,.1,.13],[ex,y0+5.6,front+.16],M.frame);
   const doorSideWidth=(p.doorWidth-2*p.revolvingRadius)/2,doorSideCenter=p.revolvingRadius+doorSideWidth/2;
   for(const s of [-1,1]){
-    box(entrance,'Side_door',[doorSideWidth,p.doorHeight,.12],[ex+s*doorSideCenter,y0+p.doorHeight/2,front+.20],M.glass);
+    pane(entrance,'Closed_side_door_glass',doorSideWidth,p.doorHeight,ex+s*doorSideCenter,y0+p.doorHeight/2,front+.20,M.glassLight);
     for(const x of [s*p.revolvingRadius,s*p.doorWidth/2])box(entrance,'Door_jamb',[.10,p.doorHeight,.19],[ex+x,y0+p.doorHeight/2,front+.25],M.silver);
     box(entrance,'Door_lintel',[doorSideWidth+.1,.10,.19],[ex+s*doorSideCenter,y0+p.doorHeight,front+.25],M.silver);
     box(entrance,'Door_handle',[.06,.85,.12],[ex+s*(p.revolvingRadius+.3),y0+1.5,front+.35],M.silver);
@@ -149,7 +168,7 @@ export function buildCampus(parameters:ModelParameters={...DEFAULT_PARAMETERS}):
   cylinder(rot,'Door_cap',rr,.12,[ex,y0+dh,front+.8],M.silver,20);
   cylinder(rot,'Door_base',rr,.06,[ex,y0+.03,front+.8],M.silver,20);
   for(let i=0;i<3;i++){
-    const a=i*Math.PI*2/3;const pane=box(rot,'Revolving_leaf',[rr,dh-.18,.07],[ex+Math.sin(a)*rr/2,y0+dh/2,front+.8+Math.cos(a)*rr/2],M.glassLight);pane.rotation.y=a-Math.PI/2;
+    const a=i*Math.PI*2/3;pane(rot,'Closed_revolving_leaf_glass',rr,dh-.18,ex+Math.sin(a)*rr/2,y0+dh/2,front+.8+Math.cos(a)*rr/2,M.glassLight,a-Math.PI/2);
     cylinder(rot,'Door_post',.045,dh,[ex+Math.sin(a)*rr,y0+dh/2,front+.8+Math.cos(a)*rr],M.silver,6);
   }
   cylinder(rot,'Door_axis',.06,dh,[ex,y0+dh/2,front+.8],M.silver,8);
@@ -215,11 +234,25 @@ function buildEnvironment(p:ModelParameters,M:Palette,ground:THREE.Group,landsca
   for(let i=0;i<9;i++)box(context,'Context_mullions',[.14,p.contextHeight-3,.2],[cx-10+i*2.5,p.contextHeight/2,cz+8.7],M.context);
   for(let i=0;i<8;i++)box(context,'Context_steps',[20,.4*(8-i),1.8],[cx,.2*(8-i),cz+9.5+i*1.8],M.concrete);
 }
-export function disposeAsset(asset:THREE.Object3D){
-  const geometries=new Set<THREE.BufferGeometry>(),materials=new Set<THREE.Material>();
-  asset.traverse(o=>{if(o instanceof THREE.Mesh){geometries.add(o.geometry);(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>materials.add(m));}});
-  const textures=new Set<THREE.Texture>();materials.forEach(m=>{for(const value of Object.values(m))if(value instanceof THREE.Texture)textures.add(value);});
-  textures.forEach(t=>t.dispose());geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());
+/** Dispose an owned subtree, excluding resources retained by another root.
+ * Reflection render targets are owned by the viewer, never by model materials. */
+export function disposeAsset(asset:THREE.Object3D, retained?:THREE.Object3D){
+  function resources(root:THREE.Object3D){
+    const geometries=new Set<THREE.BufferGeometry>(),materials=new Set<THREE.Material>(),textures=new Set<THREE.Texture>();
+    root.traverse(o=>{const drawable=o as THREE.Mesh;
+      if(drawable.geometry)geometries.add(drawable.geometry);
+      if(drawable.material)for(const m of Array.isArray(drawable.material)?drawable.material:[drawable.material])materials.add(m);
+    });
+    const seen=new Set<object>();
+    function collect(v:unknown){if(v instanceof THREE.Texture){if(!v.isRenderTargetTexture)textures.add(v);return;}
+      if(!v||typeof v!=='object'||seen.has(v))return;seen.add(v);
+      if(Array.isArray(v))v.forEach(collect);else for(const x of Object.values(v))collect(x);
+    }
+    materials.forEach(m=>{for(const v of Object.values(m))if(v instanceof THREE.Texture)collect(v);if(m instanceof THREE.ShaderMaterial)collect(m.uniforms);});
+    return {geometries,materials,textures};
+  }
+  const owned=resources(asset),keep=retained?resources(retained):null;
+  for(const kind of ['textures','geometries','materials'] as const)for(const value of owned[kind])if(!(keep?.[kind] as Set<unknown>|undefined)?.has(value))value.dispose();
 }
 export function modelStats(root:THREE.Object3D){
   let triangles=0,meshes=0;root.traverse(o=>{if(o instanceof THREE.Mesh){meshes++;triangles+=(o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count)/3;}});

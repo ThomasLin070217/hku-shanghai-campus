@@ -1,0 +1,7 @@
+
+> hku-shanghai-whole-campus@9.0.0 export:v8
+> tsx scripts/export-v8.ts
+
+assets/items/macbook-air-13-silver.glb
+assets/items/entrance-lion.glb
+Exported three animated characters, authored PNG atlases, MacBook and lion.

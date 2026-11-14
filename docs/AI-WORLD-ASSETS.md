@@ -50,7 +50,7 @@ npm run build
 npm run preview -- --port 4174
 ```
 
-生产构建包含校园与 AI 对照两个入口，并复制必要参考与资产。Spark 为 MIT 开源渲染器，仅在 SPZ 页面动态加载。首个小样加载约 32 MB，暂未做移动端性能优化。
+开发服务可访问 ai-study.html；`npm run build:review` 包含 AI 对照入口与必要参考和资产。日常 `npm run build` 保持轻量，不打包历史重建资料。Spark 为 MIT 开源渲染器，仅在 SPZ 页面动态加载。首个小样加载约 32 MB，暂未做移动端性能优化。
 
 深度导出按 Atlas 的 RUB 相机约定、平面 Z 深度和 EXR 行翻转规则反投影，每 8 像素采样，剔除无效深度与剧烈断层，重叠区域优先保留较早实拍帧；不生成背面。材质使用原图和 unlit，以保留拍摄光照。置信度图一并存档，但当前导出尚未用它过滤。相机和尺度是 AI 估计，不能标成米制测量。依据：[官方相机与深度说明](https://docs.atlas.worldlabs.ai/cameras-and-posed-images)。
 

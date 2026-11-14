@@ -1,0 +1,41 @@
+{
+  "loaded": true,
+  "meshes": 756,
+  "buildings": [
+    {
+      "id": "B01",
+      "present": true
+    },
+    {
+      "id": "B02",
+      "present": true
+    },
+    {
+      "id": "B03",
+      "present": true
+    },
+    {
+      "id": "B04",
+      "present": true
+    },
+    {
+      "id": "B05",
+      "present": true
+    },
+    {
+      "id": "B06",
+      "present": true
+    },
+    {
+      "id": "B07",
+      "present": true
+    }
+  ],
+  "render": {
+    "frame": 1185,
+    "calls": 756,
+    "triangles": 179070,
+    "points": 0,
+    "lines": 0
+  }
+}

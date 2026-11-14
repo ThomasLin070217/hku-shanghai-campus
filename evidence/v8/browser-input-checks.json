@@ -1,0 +1,216 @@
+[
+  {
+    "name": "drag-to-hotbar",
+    "pass": true,
+    "inventory": {
+      "slots": [
+        {
+          "index": 0,
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1,
+          "empty": false
+        },
+        {
+          "index": 1,
+          "empty": true
+        },
+        {
+          "index": 2,
+          "empty": true
+        },
+        {
+          "index": 3,
+          "empty": true
+        },
+        {
+          "index": 4,
+          "empty": true
+        },
+        {
+          "index": 5,
+          "empty": true
+        },
+        {
+          "index": 6,
+          "empty": true
+        },
+        {
+          "index": 7,
+          "empty": true
+        },
+        {
+          "index": 8,
+          "empty": true
+        },
+        {
+          "index": 9,
+          "empty": true
+        },
+        {
+          "index": 10,
+          "empty": true
+        },
+        {
+          "index": 11,
+          "empty": true
+        },
+        {
+          "index": 12,
+          "empty": true
+        },
+        {
+          "index": 13,
+          "empty": true
+        },
+        {
+          "index": 14,
+          "empty": true
+        },
+        {
+          "index": 15,
+          "empty": true
+        },
+        {
+          "index": 16,
+          "empty": true
+        },
+        {
+          "index": 17,
+          "empty": true
+        },
+        {
+          "index": 18,
+          "empty": true
+        },
+        {
+          "index": 19,
+          "empty": true
+        },
+        {
+          "index": 20,
+          "empty": true
+        },
+        {
+          "index": 21,
+          "empty": true
+        },
+        {
+          "index": 22,
+          "empty": true
+        },
+        {
+          "index": 23,
+          "empty": true
+        },
+        {
+          "index": 24,
+          "empty": true
+        },
+        {
+          "index": 25,
+          "empty": true
+        },
+        {
+          "index": 26,
+          "empty": true
+        },
+        {
+          "index": 27,
+          "empty": true
+        },
+        {
+          "index": 28,
+          "empty": true
+        },
+        {
+          "index": 29,
+          "empty": true
+        },
+        {
+          "index": 30,
+          "empty": true
+        },
+        {
+          "index": 31,
+          "empty": true
+        },
+        {
+          "index": 32,
+          "empty": true
+        },
+        {
+          "index": 33,
+          "empty": true
+        },
+        {
+          "index": 34,
+          "empty": true
+        },
+        {
+          "index": 35,
+          "empty": true
+        }
+      ],
+      "selectedHotbar": 0,
+      "equipped": {
+        "itemId": "macbook-air-13-silver",
+        "instanceId": "student-macbook-001",
+        "count": 1
+      },
+      "revision": 1,
+      "open": false
+    }
+  },
+  {
+    "name": "sprint-jump-third",
+    "view": "third",
+    "grounded": true,
+    "held": "macbook-air-13-silver",
+    "fpVisible": true,
+    "thirdVisible": false,
+    "note": "Immediate key-event receipt before the render/physics frame; not used as the jump/visibility assertion. See recorded-motion-checks.json for the awaited airborne result."
+  },
+  {
+    "name": "bag-stops-player",
+    "paused": true,
+    "velocity": [
+      0,
+      0,
+      0
+    ],
+    "keys": []
+  },
+  {
+    "name": "bag-blocks-game-keys",
+    "position": [
+      52,
+      0.045,
+      34.951666666666775
+    ],
+    "before": [
+      52,
+      0.045,
+      34.951666666666775
+    ],
+    "selected": 0
+  },
+  {
+    "name": "close-requires-resume",
+    "paused": true
+  },
+  {
+    "name": "empty-slot-hides-item",
+    "equipped": null
+  },
+  {
+    "name": "return-to-storage",
+    "equipped": null,
+    "total": 1,
+    "slot17": {
+      "itemId": "macbook-air-13-silver",
+      "instanceId": "student-macbook-001",
+      "count": 1
+    }
+  }
+]

@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-14T11:38:53.268Z",
+  "profiles": {
+    "clear": {
+      "color": 10008753,
+      "opacity": 0.26,
+      "roughness": 0.12,
+      "envMapIntensity": 1
+    },
+    "office": {
+      "color": 6589852,
+      "opacity": 0.43,
+      "roughness": 0.17,
+      "envMapIntensity": 1.25
+    },
+    "reflective": {
+      "color": 3497074,
+      "opacity": 0.68,
+      "roughness": 0.12,
+      "envMapIntensity": 1.65
+    },
+    "guard": {
+      "color": 12047821,
+      "opacity": 0.18,
+      "roughness": 0.1,
+      "envMapIntensity": 1.05
+    }
+  },
+  "glassMeshes": 447,
+  "opaqueMeshes": 603,
+  "materialCount": 436,
+  "gaps": [
+    {
+      "name": "entrance flank",
+      "glassDistance": 19.270000457763672,
+      "opaqueDistance": 21.559999961853027,
+      "gap": 2.289999504089355
+    },
+    {
+      "name": "CDS1 west ground glazing",
+      "glassDistance": 4.084999084472656,
+      "opaqueDistance": 6.699999999254942,
+      "gap": 2.6150009147822857
+    }
+  ],
+  "closedDoor": [
+    58,
+    0.12,
+    23.143333333333292
+  ],
+  "glassGuardCollision": true,
+  "opaqueOverlaysRemoved": true
+}

@@ -1,0 +1,238 @@
+{
+  "animation": {
+    "worldHeadErrorDeg": 0,
+    "footGroundErrorMetres": 2.220446049250313e-16,
+    "stationaryStepEvents": 0,
+    "landingEvents": 1
+  },
+  "gaitFrameRates": {
+    "fps": [
+      30,
+      60,
+      120,
+      240
+    ],
+    "footfalls": [
+      36,
+      36,
+      36,
+      36
+    ]
+  },
+  "lion": {
+    "body": [
+      3.907503089744437,
+      5.799999999999999,
+      2.2260778303031428
+    ],
+    "support": {
+      "width": 3.5,
+      "depth": 2,
+      "height": 0.12
+    },
+    "total": [
+      3.907503089744437,
+      5.919999998658895,
+      2.282733966769096
+    ],
+    "uniformScale": [
+      1.2197686651752164,
+      1.2197686651752164,
+      1.2197686651752164
+    ],
+    "provisional": true
+  },
+  "routes": [
+    {
+      "name": "east promenade",
+      "from": [
+        24,
+        69
+      ],
+      "to": [
+        24,
+        0.035,
+        -35.00000000000351
+      ],
+      "collisions": []
+    },
+    {
+      "name": "lion lawn front east-west",
+      "from": [
+        12,
+        87
+      ],
+      "to": [
+        -11.39999999999986,
+        0.13,
+        87
+      ],
+      "collisions": []
+    },
+    {
+      "name": "west walkway",
+      "from": [
+        -24,
+        55
+      ],
+      "to": [
+        -24,
+        0,
+        36.79999999999865
+      ],
+      "collisions": []
+    }
+  ],
+  "planting": {
+    "beds": [
+      {
+        "id": "plaza-bed--1-10",
+        "x": -19.4,
+        "z": 10,
+        "w": 2.3,
+        "d": 12,
+        "y": 0,
+        "kerb": 0.18,
+        "shrub": 0.55,
+        "source": "A03; U04 01:21/02:12; placement estimated"
+      },
+      {
+        "id": "plaza-bed--1-39",
+        "x": -19.4,
+        "z": 39,
+        "w": 2.3,
+        "d": 9,
+        "y": 0,
+        "kerb": 0.18,
+        "shrub": 0.55,
+        "source": "A03; U04 01:21/02:12; placement estimated"
+      },
+      {
+        "id": "plaza-bed-1-10",
+        "x": 19.4,
+        "z": 10,
+        "w": 2.3,
+        "d": 12,
+        "y": 0,
+        "kerb": 0.18,
+        "shrub": 0.55,
+        "source": "A03; U04 01:21/02:12; placement estimated"
+      },
+      {
+        "id": "plaza-bed-1-39",
+        "x": 19.4,
+        "z": 39,
+        "w": 2.3,
+        "d": 9,
+        "y": 0,
+        "kerb": 0.18,
+        "shrub": 0.55,
+        "source": "A03; U04 01:21/02:12; placement estimated"
+      },
+      {
+        "id": "lawn-edge--1-60",
+        "x": -12.7,
+        "z": 60,
+        "w": 2.2,
+        "d": 5,
+        "y": 0.13,
+        "kerb": 0,
+        "shrub": 0.42,
+        "source": "U04 00:34; U05 00:07/00:14"
+      },
+      {
+        "id": "lawn-edge--1-85",
+        "x": -12.7,
+        "z": 85,
+        "w": 2.2,
+        "d": 5,
+        "y": 0.13,
+        "kerb": 0,
+        "shrub": 0.42,
+        "source": "U04 00:34; U05 00:07/00:14"
+      },
+      {
+        "id": "lawn-edge-1-60",
+        "x": 12.7,
+        "z": 60,
+        "w": 2.2,
+        "d": 5,
+        "y": 0.13,
+        "kerb": 0,
+        "shrub": 0.42,
+        "source": "U04 00:34; U05 00:07/00:14"
+      },
+      {
+        "id": "lawn-edge-1-85",
+        "x": 12.7,
+        "z": 85,
+        "w": 2.2,
+        "d": 5,
+        "y": 0.13,
+        "kerb": 0,
+        "shrub": 0.42,
+        "source": "U04 00:34; U05 00:07/00:14"
+      },
+      {
+        "id": "entry-layer--1",
+        "x": 40,
+        "z": 24.1,
+        "w": 15.5,
+        "d": 4.1,
+        "y": 0.38,
+        "kerb": 0,
+        "shrub": 0.75,
+        "source": "R01 official entrance: mixed low groundcover, rounded shrubs; use existing bed boundary"
+      },
+      {
+        "id": "entry-layer-1",
+        "x": 76,
+        "z": 24.1,
+        "w": 15.5,
+        "d": 4.1,
+        "y": 0.38,
+        "kerb": 0,
+        "shrub": 0.75,
+        "source": "R01 official entrance: mixed low groundcover, rounded shrubs; use existing bed boundary"
+      }
+    ],
+    "trees": [
+      {
+        "id": "lawn-tree--1-60",
+        "x": -12.7,
+        "z": 60,
+        "y": 0.13,
+        "height": 5.7,
+        "crown": 2.8,
+        "source": "U04 00:34 / 01:21; sparse young tree type, exact placement estimated"
+      },
+      {
+        "id": "lawn-tree--1-85",
+        "x": -12.7,
+        "z": 85,
+        "y": 0.13,
+        "height": 5,
+        "crown": 2.4,
+        "source": "U04 00:34 / 01:21; sparse young tree type, exact placement estimated"
+      },
+      {
+        "id": "lawn-tree-1-60",
+        "x": 12.7,
+        "z": 60,
+        "y": 0.13,
+        "height": 5.7,
+        "crown": 2.8,
+        "source": "U04 00:34 / 01:21; sparse young tree type, exact placement estimated"
+      },
+      {
+        "id": "lawn-tree-1-85",
+        "x": 12.7,
+        "z": 85,
+        "y": 0.13,
+        "height": 5,
+        "crown": 2.4,
+        "source": "U04 00:34 / 01:21; sparse young tree type, exact placement estimated"
+      }
+    ]
+  }
+}

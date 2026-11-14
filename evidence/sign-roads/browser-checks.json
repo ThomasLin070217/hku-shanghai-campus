@@ -1,0 +1,50 @@
+{
+  "date": "2026-11-14",
+  "url": "http://127.0.0.1:5184/",
+  "textureBug": {
+    "before": "512x272 CPU pixels loaded but GPU still showed 1x1 placeholder",
+    "diagnostic": "GPU disposal/reupload restored original photograph in actual browser",
+    "fixed": "dispose immutable GPU storage before changing DataTexture dimensions"
+  },
+  "walking": [
+    {
+      "setup": "diagnostic placement at [33,0.045,36], yaw 0.3; subsequent movement used real W key",
+      "result": "approached sign",
+      "end": [
+        31.66818893531274,
+        0.045,
+        31.694616889007595
+      ]
+    },
+    {
+      "setup": "continued W until wall contact",
+      "result": "blocked by CDS-landscape-monument",
+      "end": [
+        30.95105990048114,
+        0.14,
+        29.47982846171788
+      ]
+    },
+    {
+      "setup": "diagnostic placement at [24,0.035,-38], yaw 0; real W key across road and walkway seam",
+      "result": "grounded, no contacts at finish",
+      "end": [
+        24,
+        0.035,
+        -50.19833333333424
+      ]
+    }
+  ],
+  "visual": [
+    "fixed before/after orthographic sign view",
+    "first-person approach",
+    "third-person contact with sign",
+    "walkway junction after crossing",
+    "same-angle campus overview"
+  ],
+  "limitations": [
+    "Not an exhaustive collision audit of every mesh in the campus.",
+    "Sign and lawn dimensions remain estimates.",
+    "Diagnostic placements establish test start positions; travel between them is not claimed as one continuous walk."
+  ]
+}

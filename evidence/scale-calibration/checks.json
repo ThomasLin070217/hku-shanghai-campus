@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-14T11:38:52.745Z",
+  "measured": [
+    {
+      "id": "SM01",
+      "ruler": 60,
+      "model": 59.7,
+      "withinTolerance": true
+    },
+    {
+      "id": "SM02",
+      "ruler": 45,
+      "model": 45,
+      "withinTolerance": true
+    },
+    {
+      "id": "SM03",
+      "ruler": 60,
+      "model": 59.7,
+      "withinTolerance": true
+    },
+    {
+      "id": "SM04",
+      "ruler": 73,
+      "model": 72,
+      "withinTolerance": true
+    },
+    {
+      "id": "SM05",
+      "ruler": 59,
+      "model": 59.7,
+      "withinTolerance": true
+    },
+    {
+      "id": "SM06",
+      "ruler": 116,
+      "model": 116,
+      "withinTolerance": true
+    },
+    {
+      "id": "SM07",
+      "ruler": 61,
+      "model": 59.5,
+      "withinTolerance": true
+    },
+    {
+      "id": "SM08",
+      "ruler": 208,
+      "model": 208,
+      "withinTolerance": true
+    }
+  ],
+  "buildingVisualCollisionSync": true,
+  "spawn": [
+    58,
+    0.045,
+    33.5
+  ],
+  "vacatedStripPassable": true,
+  "newWallSolid": true,
+  "eastPerimeterLaneEnd": [
+    89.5,
+    0,
+    -27.200000000001666
+  ],
+  "eastPromenadeX": 24,
+  "verticalScaleUnverified": true
+}

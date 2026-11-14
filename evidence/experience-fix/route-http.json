@@ -1,0 +1,7631 @@
+[
+  {
+    "label": "standing",
+    "t": 1.649,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 6349,
+      "timeMs": 52908.33333333729,
+      "wallTimeMs": 1794639569307,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          18,
+          0.07,
+          87
+        ],
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": 90,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "first",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 53,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            -10,
+            0.06,
+            4
+          ],
+          "distance": 10.770496738776721
+        },
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            -18,
+            -0.07,
+            -11
+          ],
+          "distance": 21.095139250547742
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            3.1999999999999993,
+            -0.07,
+            -26
+          ],
+          "distance": 26.196276452961783
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            40,
+            -0.07,
+            -17
+          ],
+          "distance": 43.46268399443366
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            40,
+            -0.02500000000000001,
+            -56.5
+          ],
+          "distance": 69.22608341514056
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -76,
+            -0.07,
+            -17
+          ],
+          "distance": 77.87814134916164
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            40,
+            -0.07,
+            -89
+          ],
+          "distance": 97.57563681575436
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -76,
+            -0.07,
+            -89
+          ],
+          "distance": 117.03420397473552
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            6,
+            -0.020000000000000004,
+            -132
+          ],
+          "distance": 132.13629478686013
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -18,
+            -0.07,
+            -157
+          ],
+          "distance": 158.0284939496672
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-standing-2",
+        "status": "interrupted",
+        "acceptedAt": 1794639568707,
+        "expiresAt": 1794639569301,
+        "collisionIds": [],
+        "startedFrame": 6276,
+        "reason": "stop",
+        "finishedFrame": 6349
+      },
+      "collisions": []
+    }
+  },
+  {
+    "label": "paving-walk",
+    "t": 2.965,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 6505,
+      "timeMs": 54208.333333337665,
+      "wallTimeMs": 1794639570624,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          14.619999999999862,
+          0,
+          87
+        ],
+        "velocity": [
+          -2.59999999999998,
+          0,
+          0
+        ],
+        "yawDeg": 90,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "first",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 54,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            -6.619999999999862,
+            0.13,
+            4
+          ],
+          "distance": 7.735715868618636
+        },
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            -14.619999999999862,
+            0,
+            -11
+          ],
+          "distance": 18.29602142543553
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            6.580000000000137,
+            0,
+            -26
+          ],
+          "distance": 26.819701713479247
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            43.38000000000014,
+            0,
+            -17
+          ],
+          "distance": 46.59210662762538
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            43.38000000000014,
+            0.045,
+            -56.5
+          ],
+          "distance": 71.23255172321157
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -72.61999999999986,
+            0,
+            -17
+          ],
+          "distance": 74.58327158284209
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            43.38000000000014,
+            0,
+            -89
+          ],
+          "distance": 99.00921371266419
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -72.61999999999986,
+            0,
+            -89
+          ],
+          "distance": 114.86803036528475
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            9.380000000000138,
+            0.05,
+            -132
+          ],
+          "distance": 132.33286402099822
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -14.619999999999862,
+            0,
+            -157
+          ],
+          "distance": 157.6792453051447
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-paving-walk-4",
+        "status": "interrupted",
+        "acceptedAt": 1794639569974,
+        "expiresAt": 1794639570615,
+        "collisionIds": [],
+        "startedFrame": 6430,
+        "reason": "stop",
+        "finishedFrame": 6505
+      },
+      "collisions": []
+    }
+  },
+  {
+    "label": "grass-walk",
+    "t": 5.574,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 6821,
+      "timeMs": 56841.666666671765,
+      "wallTimeMs": 1794639573232,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          8.033333333333246,
+          0.13,
+          87
+        ],
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": 90,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "first",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 57,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            -0.03333333333324617,
+            0,
+            4
+          ],
+          "distance": 4.000138886477706
+        },
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            -8.033333333333246,
+            -0.13,
+            -11
+          ],
+          "distance": 13.621723255316965
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            13.166666666666753,
+            -0.13,
+            -26
+          ],
+          "distance": 29.144090500667772
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            49.966666666666754,
+            -0.13,
+            -17
+          ],
+          "distance": 52.779585805288264
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -66.03333333333325,
+            -0.13,
+            -17
+          ],
+          "distance": 68.18664100182013
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            49.966666666666754,
+            -0.085,
+            -56.5
+          ],
+          "distance": 75.42496272970764
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            49.966666666666754,
+            -0.13,
+            -89
+          ],
+          "distance": 102.06705970967218
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -66.03333333333325,
+            -0.13,
+            -89
+          ],
+          "distance": 110.82155932448839
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            15.966666666666754,
+            -0.08,
+            -132
+          ],
+          "distance": 132.96217824796813
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -8.033333333333246,
+            -0.13,
+            -157
+          ],
+          "distance": 157.2054431132855
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-grass-walk-8",
+        "status": "completed",
+        "acceptedAt": 1794639572610,
+        "expiresAt": 1794639573223,
+        "collisionIds": [],
+        "startedFrame": 6746,
+        "reason": "duration_elapsed",
+        "finishedFrame": 6817
+      },
+      "collisions": []
+    }
+  },
+  {
+    "label": "grass-sprint",
+    "t": 8.728,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 7199,
+      "timeMs": 59991.66666667268,
+      "wallTimeMs": 1794639576386,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          -8.00000000000004,
+          0.13,
+          87
+        ],
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": 90,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "first",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 60,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            8.00000000000004,
+            -0.13,
+            -11
+          ],
+          "distance": 13.602091750903632
+        },
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            16.000000000000043,
+            0,
+            4
+          ],
+          "distance": 16.492422502470685
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            29.20000000000004,
+            -0.13,
+            -26
+          ],
+          "distance": 39.09804215047094
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -49.99999999999996,
+            -0.13,
+            -17
+          ],
+          "distance": 52.81114371039502
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            66.00000000000004,
+            -0.13,
+            -17
+          ],
+          "distance": 68.15436082893012
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            66.00000000000004,
+            -0.085,
+            -56.5
+          ],
+          "distance": 86.88070686291638
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -49.99999999999996,
+            -0.13,
+            -89
+          ],
+          "distance": 102.08338209522643
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            66.00000000000004,
+            -0.13,
+            -89
+          ],
+          "distance": 110.80170079922061
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            32.00000000000004,
+            -0.08,
+            -132
+          ],
+          "distance": 135.8234383307977
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            8.00000000000004,
+            -0.13,
+            -157
+          ],
+          "distance": 157.2037432760429
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-grass-sprint-13",
+        "status": "completed",
+        "acceptedAt": 1794639575873,
+        "expiresAt": 1794639576373,
+        "collisionIds": [],
+        "startedFrame": 7136,
+        "reason": "duration_elapsed",
+        "finishedFrame": 7195
+      },
+      "collisions": []
+    }
+  },
+  {
+    "label": "stopped",
+    "t": 10.236,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 7379,
+      "timeMs": 61491.66666667312,
+      "wallTimeMs": 1794639577895,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          -8.00000000000004,
+          0.13,
+          87
+        ],
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": 90,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "first",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 62,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            8.00000000000004,
+            -0.13,
+            -11
+          ],
+          "distance": 13.602091750903632
+        },
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            16.000000000000043,
+            0,
+            4
+          ],
+          "distance": 16.492422502470685
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            29.20000000000004,
+            -0.13,
+            -26
+          ],
+          "distance": 39.09804215047094
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -49.99999999999996,
+            -0.13,
+            -17
+          ],
+          "distance": 52.81114371039502
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            66.00000000000004,
+            -0.13,
+            -17
+          ],
+          "distance": 68.15436082893012
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            66.00000000000004,
+            -0.085,
+            -56.5
+          ],
+          "distance": 86.88070686291638
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -49.99999999999996,
+            -0.13,
+            -89
+          ],
+          "distance": 102.08338209522643
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            66.00000000000004,
+            -0.13,
+            -89
+          ],
+          "distance": 110.80170079922061
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            32.00000000000004,
+            -0.08,
+            -132
+          ],
+          "distance": 135.8234383307977
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            8.00000000000004,
+            -0.13,
+            -157
+          ],
+          "distance": 157.2037432760429
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-stopped-15",
+        "status": "interrupted",
+        "acceptedAt": 1794639577299,
+        "expiresAt": 1794639577890,
+        "collisionIds": [],
+        "startedFrame": 7308,
+        "reason": "stop",
+        "finishedFrame": 7379
+      },
+      "collisions": []
+    }
+  },
+  {
+    "label": "jump-landed",
+    "t": 11.241,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 7499,
+      "timeMs": 62491.66666667341,
+      "wallTimeMs": 1794639578900,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          -8.00000000000004,
+          0.13,
+          87
+        ],
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": 90,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "first",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 63,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            8.00000000000004,
+            -0.13,
+            -11
+          ],
+          "distance": 13.602091750903632
+        },
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            16.000000000000043,
+            0,
+            4
+          ],
+          "distance": 16.492422502470685
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            29.20000000000004,
+            -0.13,
+            -26
+          ],
+          "distance": 39.09804215047094
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -49.99999999999996,
+            -0.13,
+            -17
+          ],
+          "distance": 52.81114371039502
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            66.00000000000004,
+            -0.13,
+            -17
+          ],
+          "distance": 68.15436082893012
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            66.00000000000004,
+            -0.085,
+            -56.5
+          ],
+          "distance": 86.88070686291638
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -49.99999999999996,
+            -0.13,
+            -89
+          ],
+          "distance": 102.08338209522643
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            66.00000000000004,
+            -0.13,
+            -89
+          ],
+          "distance": 110.80170079922061
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            32.00000000000004,
+            -0.08,
+            -132
+          ],
+          "distance": 135.8234383307977
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            8.00000000000004,
+            -0.13,
+            -157
+          ],
+          "distance": 157.2037432760429
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-jump-16",
+        "status": "completed",
+        "acceptedAt": 1794639577897,
+        "expiresAt": 1794639578797,
+        "collisionIds": [],
+        "startedFrame": 7380,
+        "jumpResult": "jumped",
+        "reason": "duration_elapsed",
+        "finishedFrame": 7487
+      },
+      "collisions": []
+    }
+  },
+  {
+    "label": "toward-building",
+    "t": 18.203,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 8335,
+      "timeMs": 69458.33333333868,
+      "wallTimeMs": 1794639585862,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          27.533333333333097,
+          0,
+          87
+        ],
+        "velocity": [
+          5.19999999999996,
+          0,
+          0
+        ],
+        "yawDeg": -90,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "first",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 70,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            -19.533333333333097,
+            0.13,
+            4
+          ],
+          "distance": 19.939107580609065
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            -6.333333333333098,
+            0,
+            -26
+          ],
+          "distance": 26.760252448568345
+        },
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            -27.533333333333097,
+            0,
+            -11
+          ],
+          "distance": 29.649358246755217
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            30.466666666666903,
+            0,
+            -17
+          ],
+          "distance": 34.88864826527093
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            30.466666666666903,
+            0.045,
+            -56.5
+          ],
+          "distance": 64.19088566749794
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -85.5333333333331,
+            0,
+            -17
+          ],
+          "distance": 87.20637081722339
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            30.466666666666903,
+            0,
+            -89
+          ],
+          "distance": 94.070281055059
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -85.5333333333331,
+            0,
+            -89
+          ],
+          "distance": 123.43804563873762
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            -3.533333333333097,
+            0.05,
+            -132
+          ],
+          "distance": 132.04729056078523
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -27.533333333333097,
+            0,
+            -157
+          ],
+          "distance": 159.39599883448903
+        },
+        {
+          "id": "B05",
+          "name": "5号楼 · 学生活动",
+          "position": [
+            58,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            30.466666666666903,
+            0,
+            -157
+          ],
+          "distance": 159.92878970897576
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-toward-building-27",
+        "status": "interrupted",
+        "acceptedAt": 1794639585476,
+        "expiresAt": 1794639585853,
+        "collisionIds": [],
+        "startedFrame": 8290,
+        "reason": "stop",
+        "finishedFrame": 8335
+      },
+      "collisions": []
+    }
+  },
+  {
+    "label": "against-glass-wall",
+    "t": 20.412,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 8601,
+      "timeMs": 71675.00000000406,
+      "wallTimeMs": 1794639588071,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          27.684999999999775,
+          0,
+          87
+        ],
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": -90,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "first",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 72,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            -19.684999999999775,
+            0.13,
+            4
+          ],
+          "distance": 20.087710795409
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            -6.484999999999776,
+            0,
+            -26
+          ],
+          "distance": 26.796552483481847
+        },
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            -27.684999999999775,
+            0,
+            -11
+          ],
+          "distance": 29.790253859273967
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            30.315000000000225,
+            0,
+            -17
+          ],
+          "distance": 34.756283244904274
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            30.315000000000225,
+            0.045,
+            -56.5
+          ],
+          "distance": 64.11903968401285
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -85.68499999999977,
+            0,
+            -17
+          ],
+          "distance": 87.35513279138188
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            30.315000000000225,
+            0,
+            -89
+          ],
+          "distance": 94.02127006693759
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -85.68499999999977,
+            0,
+            -89
+          ],
+          "distance": 123.54318769159214
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            -3.684999999999775,
+            0.05,
+            -132
+          ],
+          "distance": 132.05143590661936
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -27.684999999999775,
+            0,
+            -157
+          ],
+          "distance": 159.42226703004818
+        },
+        {
+          "id": "B05",
+          "name": "5号楼 · 学生活动",
+          "position": [
+            58,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            30.315000000000225,
+            0,
+            -157
+          ],
+          "distance": 159.8999663070634
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-against-glass-wall-30",
+        "status": "interrupted",
+        "acceptedAt": 1794639587672,
+        "expiresAt": 1794639588065,
+        "collisionIds": [
+          "B03/wing"
+        ],
+        "startedFrame": 8552,
+        "reason": "stop",
+        "finishedFrame": 8601
+      },
+      "collisions": [
+        {
+          "type": "wall",
+          "id": "B03/wing"
+        },
+        {
+          "type": "wall",
+          "id": "B03/wing"
+        }
+      ]
+    }
+  },
+  {
+    "label": "held-laptop-walk",
+    "t": 23.426,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 8963,
+      "timeMs": 74691.66666666897,
+      "wallTimeMs": 1794639591085,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          21.054999999999282,
+          0,
+          87
+        ],
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": 90,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "third",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 75,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            -13.054999999999282,
+            0.13,
+            4
+          ],
+          "distance": 13.65466678465576
+        },
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            -21.054999999999282,
+            0,
+            -11
+          ],
+          "distance": 23.755273625028394
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            0.14500000000071722,
+            0,
+            -26
+          ],
+          "distance": 26.00040432377928
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            36.94500000000072,
+            0,
+            -17
+          ],
+          "distance": 40.66857539919555
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            36.94500000000072,
+            0.045,
+            -56.5
+          ],
+          "distance": 67.50692594097329
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -79.05499999999928,
+            0,
+            -17
+          ],
+          "distance": 80.86218538352699
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            36.94500000000072,
+            0,
+            -89
+          ],
+          "distance": 96.36354614168188
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -79.05499999999928,
+            0,
+            -89
+          ],
+          "distance": 119.04072002890392
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            2.945000000000718,
+            0.05,
+            -132
+          ],
+          "distance": 132.0328577476077
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -21.054999999999282,
+            0,
+            -157
+          ],
+          "distance": 158.40553344185918
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-held-laptop-walk-36",
+        "status": "completed",
+        "acceptedAt": 1794639590452,
+        "expiresAt": 1794639591073,
+        "collisionIds": [],
+        "startedFrame": 8888,
+        "reason": "duration_elapsed",
+        "finishedFrame": 8959
+      },
+      "collisions": []
+    }
+  },
+  {
+    "label": "return-lawn",
+    "t": 25.993,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 9271,
+      "timeMs": 77258.33333333414,
+      "wallTimeMs": 1794639593653,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          8.054999999999382,
+          0.13,
+          87
+        ],
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": 90,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "third",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 77,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            -0.054999999999381544,
+            0,
+            4
+          ],
+          "distance": 4.000378107129366
+        },
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            -8.054999999999382,
+            -0.13,
+            -11
+          ],
+          "distance": 13.634512275838475
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            13.145000000000618,
+            -0.13,
+            -26
+          ],
+          "distance": 29.134308383759794
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            49.94500000000062,
+            -0.13,
+            -17
+          ],
+          "distance": 52.75907433797585
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -66.05499999999938,
+            -0.13,
+            -17
+          ],
+          "distance": 68.20762365747628
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            49.94500000000062,
+            -0.085,
+            -56.5
+          ],
+          "distance": 75.41061099076218
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            49.94500000000062,
+            -0.13,
+            -89
+          ],
+          "distance": 102.05645459744358
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -66.05499999999938,
+            -0.13,
+            -89
+          ],
+          "distance": 110.83447083376146
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            15.945000000000618,
+            -0.08,
+            -132
+          ],
+          "distance": 132.9595781619362
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -8.054999999999382,
+            -0.13,
+            -157
+          ],
+          "distance": 157.20655178776738
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-return-lawn-40",
+        "status": "completed",
+        "acceptedAt": 1794639593065,
+        "expiresAt": 1794639593642,
+        "collisionIds": [],
+        "startedFrame": 9200,
+        "reason": "duration_elapsed",
+        "finishedFrame": 9267
+      },
+      "collisions": []
+    }
+  },
+  {
+    "label": "lion-east",
+    "t": 30.329,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 9791,
+      "timeMs": 81591.66666666495,
+      "wallTimeMs": 1794639597988,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          7.999967354570416,
+          0.13,
+          75.99347091408828
+        ],
+        "velocity": [
+          -0.012999837502896128,
+          0,
+          -2.5999675006090683
+        ],
+        "yawDeg": 0.28647651027455434,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "third",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 82,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            -7.999967354570416,
+            -0.13,
+            0.006529085911722632
+          ],
+          "distance": 8.001026203128898
+        },
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            0.000032645429583588736,
+            0,
+            15.006529085911723
+          ],
+          "distance": 15.00652908594723
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            13.200032645429584,
+            -0.13,
+            -14.993470914088277
+          ],
+          "distance": 19.97653453159526
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            50.000032645429584,
+            -0.13,
+            -5.993470914088277
+          ],
+          "distance": 50.35813596770681
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -65.99996735457042,
+            -0.13,
+            -5.993470914088277
+          ],
+          "distance": 66.27167030038086
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            50.000032645429584,
+            -0.085,
+            -45.49347091408828
+          ],
+          "distance": 67.59930758044064
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            50.000032645429584,
+            -0.13,
+            -77.99347091408828
+          ],
+          "distance": 92.64449076858676
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -65.99996735457042,
+            -0.13,
+            -77.99347091408828
+          ],
+          "distance": 102.17139568407146
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            16.000032645429584,
+            -0.08,
+            -120.99347091408828
+          ],
+          "distance": 122.0468248193829
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -7.999967354570416,
+            -0.13,
+            -145.99347091408828
+          ],
+          "distance": 146.2125505119753
+        },
+        {
+          "id": "B05",
+          "name": "5号楼 · 学生活动",
+          "position": [
+            58,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            50.000032645429584,
+            -0.13,
+            -145.99347091408828
+          ],
+          "distance": 154.3182222360236
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-lion-east-47",
+        "status": "interrupted",
+        "acceptedAt": 1794639597615,
+        "expiresAt": 1794639597979,
+        "collisionIds": [],
+        "startedFrame": 9748,
+        "reason": "stop",
+        "finishedFrame": 9791
+      },
+      "collisions": []
+    }
+  },
+  {
+    "label": "lion-north",
+    "t": 32.642,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 10069,
+      "timeMs": 83908.33333333027,
+      "wallTimeMs": 1794639600302,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          8.000000162655564,
+          0.13,
+          69.97013758084339
+        ],
+        "velocity": [
+          0.000014161763388642612,
+          0,
+          -2.599999999961824
+        ],
+        "yawDeg": -0.0003120804882989955,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "third",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 84,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            -8.000000162655564,
+            -0.13,
+            6.029862419156615
+          ],
+          "distance": 10.018789517523876
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            13.199999837344436,
+            -0.13,
+            -8.970137580843385
+          ],
+          "distance": 15.959958142963657
+        },
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            -1.6265556368466605e-7,
+            0,
+            21.029862419156615
+          ],
+          "distance": 21.029862419156615
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            49.99999983734443,
+            -0.13,
+            0.029862419156614806
+          ],
+          "distance": 50.000177754669245
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            49.99999983734443,
+            -0.085,
+            -39.470137580843385
+          ],
+          "distance": 63.70164024093217
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -66.00000016265557,
+            -0.13,
+            0.029862419156614806
+          ],
+          "distance": 66.0001349486091
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            49.99999983734443,
+            -0.13,
+            -71.97013758084339
+          ],
+          "distance": 87.63399789545133
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -66.00000016265557,
+            -0.13,
+            -71.97013758084339
+          ],
+          "distance": 97.65099909819693
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            15.999999837344436,
+            -0.08,
+            -114.97013758084339
+          ],
+          "distance": 116.07815871279608
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -8.000000162655564,
+            -0.13,
+            -139.97013758084339
+          ],
+          "distance": 140.19863165167737
+        },
+        {
+          "id": "B05",
+          "name": "5号楼 · 学生活动",
+          "position": [
+            58,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            49.99999983734443,
+            -0.13,
+            -139.97013758084339
+          ],
+          "distance": 148.63262191771585
+        },
+        {
+          "id": "B07",
+          "name": "7号楼 · 西北配套楼",
+          "position": [
+            -58,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -66.00000016265557,
+            -0.13,
+            -139.97013758084339
+          ],
+          "distance": 154.75030318506896
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-lion-north-51",
+        "status": "interrupted",
+        "acceptedAt": 1794639599959,
+        "expiresAt": 1794639600298,
+        "collisionIds": [],
+        "startedFrame": 10028,
+        "reason": "stop",
+        "finishedFrame": 10069
+      },
+      "collisions": []
+    }
+  },
+  {
+    "label": "lion-front",
+    "t": 38.1,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 10721,
+      "timeMs": 89341.66666666044,
+      "wallTimeMs": 1794639605759,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          -5.953301428232072,
+          0.13,
+          69.99990039054947
+        ],
+        "velocity": [
+          -2.599994085258537,
+          0,
+          0.005545865159319874
+        ],
+        "yawDeg": 90.12221342628385,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "third",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 90,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            5.953301428232072,
+            -0.13,
+            6.00009960945053
+          ],
+          "distance": 8.453395366284392
+        },
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            13.953301428232072,
+            0,
+            21.00009960945053
+          ],
+          "distance": 25.213068126547938
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            27.15330142823207,
+            -0.13,
+            -8.99990039054947
+          ],
+          "distance": 28.606238576440667
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -52.04669857176793,
+            -0.13,
+            0.00009960945052966963
+          ],
+          "distance": 52.04686092580793
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            63.95330142823207,
+            -0.13,
+            0.00009960945052966963
+          ],
+          "distance": 63.95343355583211
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            63.95330142823207,
+            -0.085,
+            -39.49990039054947
+          ],
+          "distance": 75.16830528509766
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -52.04669857176793,
+            -0.13,
+            -71.99990039054947
+          ],
+          "distance": 88.84177726987183
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            63.95330142823207,
+            -0.13,
+            -71.99990039054947
+          ],
+          "distance": 96.30175138500523
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            29.953301428232074,
+            -0.08,
+            -114.99990039054947
+          ],
+          "distance": 118.83679462307467
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            5.953301428232072,
+            -0.13,
+            -139.99990039054947
+          ],
+          "distance": 140.1264814632094
+        },
+        {
+          "id": "B07",
+          "name": "7号楼 · 西北配套楼",
+          "position": [
+            -58,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -52.04669857176793,
+            -0.13,
+            -139.99990039054947
+          ],
+          "distance": 149.36146705755218
+        },
+        {
+          "id": "B05",
+          "name": "5号楼 · 学生活动",
+          "position": [
+            58,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            63.95330142823207,
+            -0.13,
+            -139.99990039054947
+          ],
+          "distance": 153.91560600840347
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-lion-front-60",
+        "status": "interrupted",
+        "acceptedAt": 1794639605568,
+        "expiresAt": 1794639605753,
+        "collisionIds": [],
+        "startedFrame": 10702,
+        "reason": "stop",
+        "finishedFrame": 10721
+      },
+      "collisions": []
+    }
+  },
+  {
+    "label": "lion-west",
+    "t": 42.707,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 11275,
+      "timeMs": 93958.33333332442,
+      "wallTimeMs": 1794639610366,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          -5.999674968286278,
+          0.13,
+          81.91647682588706
+        ],
+        "velocity": [
+          -0.010117863284477835,
+          0,
+          2.599980313164565
+        ],
+        "yawDeg": 179.7770337203613,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "third",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 94,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            5.999674968286278,
+            -0.13,
+            -5.9164768258870595
+          ],
+          "distance": 8.427199876372908
+        },
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            13.999674968286278,
+            0,
+            9.08352317411294
+          ],
+          "distance": 16.688357992094616
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            27.199674968286278,
+            -0.13,
+            -20.91647682588706
+          ],
+          "distance": 34.31236251248651
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -52.00032503171372,
+            -0.13,
+            -11.91647682588706
+          ],
+          "distance": 53.34841256631518
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            63.99967496828628,
+            -0.13,
+            -11.91647682588706
+          ],
+          "distance": 65.09975204244785
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            63.99967496828628,
+            -0.085,
+            -51.41647682588706
+          ],
+          "distance": 82.09518688835095
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -52.00032503171372,
+            -0.13,
+            -83.91647682588706
+          ],
+          "distance": 98.72196202605332
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            63.99967496828628,
+            -0.13,
+            -83.91647682588706
+          ],
+          "distance": 105.53648837684494
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            29.99967496828628,
+            -0.08,
+            -126.91647682588706
+          ],
+          "distance": 130.41387574985552
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            5.999674968286278,
+            -0.13,
+            -151.91647682588706
+          ],
+          "distance": 152.03495956823667
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-lion-west-67",
+        "status": "interrupted",
+        "acceptedAt": 1794639609710,
+        "expiresAt": 1794639610360,
+        "collisionIds": [],
+        "startedFrame": 11198,
+        "reason": "stop",
+        "finishedFrame": 11275
+      },
+      "collisions": []
+    }
+  },
+  {
+    "label": "lion-south",
+    "t": 45.059,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 11559,
+      "timeMs": 96324.99999998971,
+      "wallTimeMs": 1794639612718,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          0.055701805766070034,
+          0.13,
+          83.01005957784469
+        ],
+        "velocity": [
+          2.558609904529314,
+          0,
+          0.4620772191356082
+        ],
+        "yawDeg": 259.7628987964618,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "third",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 97,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            -0.055701805766070034,
+            -0.13,
+            -7.010059577844686
+          ],
+          "distance": 7.011486146039056
+        },
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            7.94429819423393,
+            0,
+            7.989940422155314
+          ],
+          "distance": 11.26725440151681
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            21.14429819423393,
+            -0.13,
+            -22.010059577844686
+          ],
+          "distance": 30.52115608470552
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            57.94429819423393,
+            -0.13,
+            -13.010059577844686
+          ],
+          "distance": 59.387037671880634
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -58.05570180576607,
+            -0.13,
+            -13.010059577844686
+          ],
+          "distance": 59.495739867482094
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            57.94429819423393,
+            -0.085,
+            -52.510059577844686
+          ],
+          "distance": 78.19754008337539
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            57.94429819423393,
+            -0.13,
+            -85.01005957784469
+          ],
+          "distance": 102.87987569321322
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -58.05570180576607,
+            -0.13,
+            -85.01005957784469
+          ],
+          "distance": 102.94266191229336
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            23.94429819423393,
+            -0.08,
+            -128.0100595778447
+          ],
+          "distance": 130.23022371607038
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -0.055701805766070034,
+            -0.13,
+            -153.0100595778447
+          ],
+          "distance": 153.0101249418049
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-lion-south-71",
+        "status": "interrupted",
+        "acceptedAt": 1794639612334,
+        "expiresAt": 1794639612712,
+        "collisionIds": [],
+        "startedFrame": 11512,
+        "reason": "stop",
+        "finishedFrame": 11559
+      },
+      "collisions": []
+    }
+  },
+  {
+    "label": "third-person-lion",
+    "t": 46.867,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 11775,
+      "timeMs": 98124.99999998866,
+      "wallTimeMs": 1794639614526,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          0.055701805766070034,
+          0.13,
+          83.01005957784469
+        ],
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": 349.7628987964618,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "third",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 98,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            -0.055701805766070034,
+            -0.13,
+            -7.010059577844686
+          ],
+          "distance": 7.011486146039056
+        },
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            7.94429819423393,
+            0,
+            7.989940422155314
+          ],
+          "distance": 11.26725440151681
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            21.14429819423393,
+            -0.13,
+            -22.010059577844686
+          ],
+          "distance": 30.52115608470552
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            57.94429819423393,
+            -0.13,
+            -13.010059577844686
+          ],
+          "distance": 59.387037671880634
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -58.05570180576607,
+            -0.13,
+            -13.010059577844686
+          ],
+          "distance": 59.495739867482094
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            57.94429819423393,
+            -0.085,
+            -52.510059577844686
+          ],
+          "distance": 78.19754008337539
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            57.94429819423393,
+            -0.13,
+            -85.01005957784469
+          ],
+          "distance": 102.87987569321322
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -58.05570180576607,
+            -0.13,
+            -85.01005957784469
+          ],
+          "distance": 102.94266191229336
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            23.94429819423393,
+            -0.08,
+            -128.0100595778447
+          ],
+          "distance": 130.23022371607038
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -0.055701805766070034,
+            -0.13,
+            -153.0100595778447
+          ],
+          "distance": 153.0101249418049
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-third-person-lion-74",
+        "status": "interrupted",
+        "acceptedAt": 1794639613925,
+        "expiresAt": 1794639614521,
+        "collisionIds": [],
+        "startedFrame": 11702,
+        "reason": "stop",
+        "finishedFrame": 11775
+      },
+      "collisions": []
+    }
+  },
+  {
+    "label": "switch-landing",
+    "t": 47.877,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 11897,
+      "timeMs": 99141.66666665474,
+      "wallTimeMs": 1794639615535,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          0.8232847771248651,
+          0.13,
+          83.14868274358588
+        ],
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": 349.7628987964618,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "third",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 99,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            -0.8232847771248651,
+            -0.13,
+            -7.14868274358588
+          ],
+          "distance": 7.197107946438492
+        },
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            7.176715222875135,
+            0,
+            7.85131725641412
+          ],
+          "distance": 10.637124801896132
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            20.376715222875134,
+            -0.13,
+            -22.14868274358588
+          ],
+          "distance": 30.096371385105055
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            57.17671522287513,
+            -0.13,
+            -13.14868274358588
+          ],
+          "distance": 58.6692553350495
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -58.82328477712487,
+            -0.13,
+            -13.14868274358588
+          ],
+          "distance": 60.27506607098995
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            57.17671522287513,
+            -0.085,
+            -52.64868274358588
+          ],
+          "distance": 77.72430625816173
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            57.17671522287513,
+            -0.13,
+            -85.14868274358588
+          ],
+          "distance": 102.56457398461518
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -58.82328477712487,
+            -0.13,
+            -85.14868274358588
+          ],
+          "distance": 103.49151610126586
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            23.176715222875135,
+            -0.08,
+            -128.14868274358588
+          ],
+          "distance": 130.22769067075743
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -0.8232847771248651,
+            -0.13,
+            -153.14868274358588
+          ],
+          "distance": 153.15095077706755
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-air-switch-back-76",
+        "status": "completed",
+        "acceptedAt": 1794639615032,
+        "expiresAt": 1794639615332,
+        "collisionIds": [],
+        "startedFrame": 11836,
+        "reason": "duration_elapsed",
+        "finishedFrame": 11871
+      },
+      "collisions": []
+    }
+  },
+  {
+    "label": "finished",
+    "t": 47.881,
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 11897,
+      "timeMs": 99141.66666665474,
+      "wallTimeMs": 1794639615540,
+      "mode": "ai",
+      "controlEpoch": 1794639490319,
+      "aiEnabled": true,
+      "owner": "experience-verification",
+      "paused": false,
+      "player": {
+        "position": [
+          0.8232847771248651,
+          0.13,
+          83.14868274358588
+        ],
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": 349.7628987964618,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "third",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 99,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 1,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            -0.8232847771248651,
+            -0.13,
+            -7.14868274358588
+          ],
+          "distance": 7.197107946438492
+        },
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            7.176715222875135,
+            0,
+            7.85131725641412
+          ],
+          "distance": 10.637124801896132
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            20.376715222875134,
+            -0.13,
+            -22.14868274358588
+          ],
+          "distance": 30.096371385105055
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            57.17671522287513,
+            -0.13,
+            -13.14868274358588
+          ],
+          "distance": 58.6692553350495
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -58.82328477712487,
+            -0.13,
+            -13.14868274358588
+          ],
+          "distance": 60.27506607098995
+        },
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            57.17671522287513,
+            -0.085,
+            -52.64868274358588
+          ],
+          "distance": 77.72430625816173
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            57.17671522287513,
+            -0.13,
+            -85.14868274358588
+          ],
+          "distance": 102.56457398461518
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -58.82328477712487,
+            -0.13,
+            -85.14868274358588
+          ],
+          "distance": 103.49151610126586
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            23.176715222875135,
+            -0.08,
+            -128.14868274358588
+          ],
+          "distance": 130.22769067075743
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -0.8232847771248651,
+            -0.13,
+            -153.14868274358588
+          ],
+          "distance": 153.15095077706755
+        }
+      ],
+      "lastCommand": {
+        "commandId": "qa-air-switch-back-76",
+        "status": "completed",
+        "acceptedAt": 1794639615032,
+        "expiresAt": 1794639615332,
+        "collisionIds": [],
+        "startedFrame": 11836,
+        "reason": "duration_elapsed",
+        "finishedFrame": 11871
+      },
+      "collisions": []
+    }
+  },
+  {
+    "release": {
+      "ok": true,
+      "controlEpoch": 1794639490320
+    }
+  }
+]

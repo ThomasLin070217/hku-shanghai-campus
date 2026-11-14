@@ -1,0 +1,1162 @@
+{
+  "log": [
+    {
+      "event": "walk 58,32.6",
+      "wallSeconds": 0.7335999999046325,
+      "position": [
+        58,
+        0.045,
+        32.936666666666625
+      ],
+      "task": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry"
+        ],
+        "archive": null,
+        "elapsedSeconds": 0,
+        "target": {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "actions": [
+            "collect"
+          ],
+          "distance": 2.4602732458904315
+        },
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "paused": false
+    },
+    {
+      "event": "collected CDS and repeated F",
+      "wallSeconds": 0.9588999999761582,
+      "position": [
+        58,
+        0.045,
+        32.936666666666625
+      ],
+      "task": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 1,
+        "total": 3,
+        "collectedClues": [
+          {
+            "id": "clue-learning",
+            "title": "CDS-1 入口",
+            "text": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。"
+          }
+        ],
+        "discovered": [
+          "record-cds-entry"
+        ],
+        "archive": null,
+        "elapsedSeconds": 1,
+        "target": {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "actions": [
+            "view"
+          ],
+          "distance": 2.4602732458904315
+        },
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "paused": false
+    },
+    {
+      "event": "walk 24,38",
+      "wallSeconds": 14.2015,
+      "position": [
+        24.482959663166984,
+        0.035,
+        37.92807777343454
+      ],
+      "task": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 1,
+        "total": 3,
+        "collectedClues": [
+          {
+            "id": "clue-learning",
+            "title": "CDS-1 入口",
+            "text": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。"
+          }
+        ],
+        "discovered": [
+          "record-cds-entry"
+        ],
+        "archive": null,
+        "elapsedSeconds": 14,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "paused": false
+    },
+    {
+      "event": "walk 24,96",
+      "wallSeconds": 84.98769999992848,
+      "position": [
+        24.00294421308192,
+        0.05,
+        95.64608176845091
+      ],
+      "task": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 1,
+        "total": 3,
+        "collectedClues": [
+          {
+            "id": "clue-learning",
+            "title": "CDS-1 入口",
+            "text": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。"
+          }
+        ],
+        "discovered": [
+          "record-cds-entry",
+          "campus-directory"
+        ],
+        "archive": null,
+        "elapsedSeconds": 84,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "paused": false
+    },
+    {
+      "event": "walk 8,96",
+      "wallSeconds": 91.13129999995232,
+      "position": [
+        8.406757875488696,
+        0.05,
+        95.9910045468822
+      ],
+      "task": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 1,
+        "total": 3,
+        "collectedClues": [
+          {
+            "id": "clue-learning",
+            "title": "CDS-1 入口",
+            "text": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。"
+          }
+        ],
+        "discovered": [
+          "record-cds-entry",
+          "campus-directory",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 90,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "paused": false
+    },
+    {
+      "event": "walk 8,93",
+      "wallSeconds": 92.278,
+      "position": [
+        8.050559915811926,
+        0,
+        93.37178059222806
+      ],
+      "task": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 1,
+        "total": 3,
+        "collectedClues": [
+          {
+            "id": "clue-learning",
+            "title": "CDS-1 入口",
+            "text": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。"
+          }
+        ],
+        "discovered": [
+          "record-cds-entry",
+          "campus-directory",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 91,
+        "target": {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "actions": [
+            "collect"
+          ],
+          "distance": 2.3815959948649166
+        },
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "paused": false
+    },
+    {
+      "event": "collected HKU square",
+      "wallSeconds": 92.31219999992848,
+      "position": [
+        8.050559915811926,
+        0,
+        93.37178059222806
+      ],
+      "task": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 2,
+        "total": 3,
+        "collectedClues": [
+          {
+            "id": "clue-learning",
+            "title": "CDS-1 入口",
+            "text": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。"
+          },
+          {
+            "id": "clue-belonging",
+            "title": "HKU 标识广场",
+            "text": "广场记录：不同的来处，在这里成为同路人。档案标记：CONNECT。"
+          }
+        ],
+        "discovered": [
+          "record-cds-entry",
+          "campus-directory",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 91,
+        "target": {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "actions": [
+            "view"
+          ],
+          "distance": 2.3815959948649166
+        },
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "paused": false
+    },
+    {
+      "event": "midway reload continued",
+      "wallSeconds": 93.3625000487566,
+      "position": [
+        8.050559915811926,
+        0,
+        93.37178059222806
+      ],
+      "task": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 2,
+        "total": 3,
+        "collectedClues": [
+          {
+            "id": "clue-learning",
+            "title": "CDS-1 入口",
+            "text": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。"
+          },
+          {
+            "id": "clue-belonging",
+            "title": "HKU 标识广场",
+            "text": "广场记录：不同的来处，在这里成为同路人。档案标记：CONNECT。"
+          }
+        ],
+        "discovered": [
+          "record-cds-entry",
+          "campus-directory",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 91,
+        "target": {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "actions": [
+            "view"
+          ],
+          "distance": 2.3815959948649166
+        },
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "paused": false
+    },
+    {
+      "event": "walk 8,96",
+      "wallSeconds": 166.2102000488043,
+      "position": [
+        8.004719486496361,
+        0.05,
+        95.75467304318265
+      ],
+      "task": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 2,
+        "total": 3,
+        "collectedClues": [
+          {
+            "id": "clue-learning",
+            "title": "CDS-1 入口",
+            "text": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。"
+          },
+          {
+            "id": "clue-belonging",
+            "title": "HKU 标识广场",
+            "text": "广场记录：不同的来处，在这里成为同路人。档案标记：CONNECT。"
+          }
+        ],
+        "discovered": [
+          "record-cds-entry",
+          "campus-directory",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 163,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "paused": false
+    },
+    {
+      "event": "walk 24,96",
+      "wallSeconds": 172.35480004882814,
+      "position": [
+        23.646213189111204,
+        0.05,
+        95.99457412455659
+      ],
+      "task": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 2,
+        "total": 3,
+        "collectedClues": [
+          {
+            "id": "clue-learning",
+            "title": "CDS-1 入口",
+            "text": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。"
+          },
+          {
+            "id": "clue-belonging",
+            "title": "HKU 标识广场",
+            "text": "广场记录：不同的来处，在这里成为同路人。档案标记：CONNECT。"
+          }
+        ],
+        "discovered": [
+          "record-cds-entry",
+          "campus-directory",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 169,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "paused": false
+    },
+    {
+      "event": "walk 24,30",
+      "wallSeconds": 197.77330004882813,
+      "position": [
+        23.998610319401887,
+        0.035,
+        30.25885201923795
+      ],
+      "task": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 2,
+        "total": 3,
+        "collectedClues": [
+          {
+            "id": "clue-learning",
+            "title": "CDS-1 入口",
+            "text": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。"
+          },
+          {
+            "id": "clue-belonging",
+            "title": "HKU 标识广场",
+            "text": "广场记录：不同的来处，在这里成为同路人。档案标记：CONNECT。"
+          }
+        ],
+        "discovered": [
+          "record-cds-entry",
+          "campus-directory",
+          "record-hku-square"
+        ],
+        "archive": null,
+        "elapsedSeconds": 194,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "paused": false
+    },
+    {
+      "event": "walk 24,-43",
+      "wallSeconds": 263.5226000487804,
+      "position": [
+        23.999994342783292,
+        0.05,
+        -42.8011479676534
+      ],
+      "task": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 2,
+        "total": 3,
+        "collectedClues": [
+          {
+            "id": "clue-learning",
+            "title": "CDS-1 入口",
+            "text": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。"
+          },
+          {
+            "id": "clue-belonging",
+            "title": "HKU 标识广场",
+            "text": "广场记录：不同的来处，在这里成为同路人。档案标记：CONNECT。"
+          }
+        ],
+        "discovered": [
+          "record-cds-entry",
+          "campus-directory",
+          "record-hku-square",
+          "record-east-walk"
+        ],
+        "archive": null,
+        "elapsedSeconds": 260,
+        "target": {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "actions": [
+            "collect"
+          ],
+          "distance": 2.2249832044729643
+        },
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "paused": false
+    },
+    {
+      "event": "collected east promenade",
+      "wallSeconds": 263.5610000487566,
+      "position": [
+        23.999994342783292,
+        0.05,
+        -42.8011479676534
+      ],
+      "task": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "ready",
+        "count": 3,
+        "total": 3,
+        "collectedClues": [
+          {
+            "id": "clue-learning",
+            "title": "CDS-1 入口",
+            "text": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。"
+          },
+          {
+            "id": "clue-belonging",
+            "title": "HKU 标识广场",
+            "text": "广场记录：不同的来处，在这里成为同路人。档案标记：CONNECT。"
+          },
+          {
+            "id": "clue-explore",
+            "title": "东侧露天步道",
+            "text": "步道记录：抬头看看没有顶盖的天空，下一段路仍有新的问题。档案标记：EXPLORE。"
+          }
+        ],
+        "discovered": [
+          "record-cds-entry",
+          "campus-directory",
+          "record-hku-square",
+          "record-east-walk"
+        ],
+        "archive": null,
+        "elapsedSeconds": 260,
+        "target": {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "actions": [
+            "view"
+          ],
+          "distance": 2.2249832044729643
+        },
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": true
+          }
+        ]
+      },
+      "paused": false
+    },
+    {
+      "event": "submitted full task",
+      "wallSeconds": 263.7767000488043,
+      "position": [
+        23.999994342783292,
+        0.05,
+        -42.8011479676534
+      ],
+      "task": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "completed",
+        "count": 3,
+        "total": 3,
+        "collectedClues": [
+          {
+            "id": "clue-learning",
+            "title": "CDS-1 入口",
+            "text": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。"
+          },
+          {
+            "id": "clue-belonging",
+            "title": "HKU 标识广场",
+            "text": "广场记录：不同的来处，在这里成为同路人。档案标记：CONNECT。"
+          },
+          {
+            "id": "clue-explore",
+            "title": "东侧露天步道",
+            "text": "步道记录：抬头看看没有顶盖的天空，下一段路仍有新的问题。档案标记：EXPLORE。"
+          }
+        ],
+        "discovered": [
+          "record-cds-entry",
+          "campus-directory",
+          "record-hku-square",
+          "record-east-walk"
+        ],
+        "archive": {
+          "id": "archive-campus-001",
+          "title": "校园数字档案 001 · 未完的地图",
+          "text": "LEARN · CONNECT · EXPLORE。三条记录已归档。同步结束时，档案目录中出现了一条尚未命名的路径：“如果校园也有记忆，谁会记得下一次相遇？”——待后续故事继续。"
+        },
+        "elapsedSeconds": 260,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": true
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": true
+          }
+        ]
+      },
+      "paused": true
+    }
+  ],
+  "elapsedWallSeconds": 265.0738000488281,
+  "gameElapsedSeconds": 260.19166666659436,
+  "audio": {
+    "step-paving": 200,
+    "equip": 1,
+    "collect": 1,
+    "view": 2,
+    "complete": 1
+  },
+  "audioState": "running",
+  "failedAudio": false,
+  "inventory": {
+    "slots": [
+      {
+        "index": 0,
+        "itemId": "macbook-air-13-silver",
+        "instanceId": "student-macbook-001",
+        "count": 1,
+        "empty": false
+      },
+      {
+        "index": 1,
+        "empty": true
+      },
+      {
+        "index": 2,
+        "empty": true
+      },
+      {
+        "index": 3,
+        "empty": true
+      },
+      {
+        "index": 4,
+        "empty": true
+      },
+      {
+        "index": 5,
+        "empty": true
+      },
+      {
+        "index": 6,
+        "empty": true
+      },
+      {
+        "index": 7,
+        "empty": true
+      },
+      {
+        "index": 8,
+        "empty": true
+      },
+      {
+        "index": 9,
+        "empty": true
+      },
+      {
+        "index": 10,
+        "empty": true
+      },
+      {
+        "index": 11,
+        "empty": true
+      },
+      {
+        "index": 12,
+        "empty": true
+      },
+      {
+        "index": 13,
+        "empty": true
+      },
+      {
+        "index": 14,
+        "empty": true
+      },
+      {
+        "index": 15,
+        "empty": true
+      },
+      {
+        "index": 16,
+        "empty": true
+      },
+      {
+        "index": 17,
+        "empty": true
+      },
+      {
+        "index": 18,
+        "empty": true
+      },
+      {
+        "index": 19,
+        "empty": true
+      },
+      {
+        "index": 20,
+        "empty": true
+      },
+      {
+        "index": 21,
+        "empty": true
+      },
+      {
+        "index": 22,
+        "empty": true
+      },
+      {
+        "index": 23,
+        "empty": true
+      },
+      {
+        "index": 24,
+        "empty": true
+      },
+      {
+        "index": 25,
+        "empty": true
+      },
+      {
+        "index": 26,
+        "empty": true
+      },
+      {
+        "index": 27,
+        "empty": true
+      },
+      {
+        "index": 28,
+        "empty": true
+      },
+      {
+        "index": 29,
+        "empty": true
+      },
+      {
+        "index": 30,
+        "empty": true
+      },
+      {
+        "index": 31,
+        "empty": true
+      },
+      {
+        "index": 32,
+        "empty": true
+      },
+      {
+        "index": 33,
+        "empty": true
+      },
+      {
+        "index": 34,
+        "empty": true
+      },
+      {
+        "index": 35,
+        "empty": true
+      }
+    ],
+    "selectedHotbar": 0,
+    "equipped": {
+      "itemId": "macbook-air-13-silver",
+      "instanceId": "student-macbook-001",
+      "count": 1
+    },
+    "revision": 1
+  }
+}

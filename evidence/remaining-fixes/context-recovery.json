@@ -1,0 +1,19 @@
+{
+  "lost": {
+    "paused": true,
+    "audioActive": false,
+    "frames": [
+      0,
+      0
+    ],
+    "captureRejected": true,
+    "enterDisabled": true
+  },
+  "restored": {
+    "paused": true,
+    "night": true,
+    "glassRegenerated": true,
+    "environmentRegenerated": true,
+    "enterDisabled": false
+  }
+}

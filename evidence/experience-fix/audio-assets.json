@@ -1,0 +1,104 @@
+[
+  {
+    "name": "step-paving-0",
+    "seconds": 0.06575,
+    "peak": 0.08793377131223679,
+    "rms": 0.017070353031158447,
+    "sha256": "6da970e97e2dc5cc3c0dded5ab53a481bc9295f2e931d114b0f666f31956bf83",
+    "source": "assets/audio/kenney/footstep_concrete_000.ogg",
+    "treatment": "DC/highpass 90 Hz, lowpass 6.5 kHz, trim, gentle fades; peak/RMS capped"
+  },
+  {
+    "name": "step-paving-1",
+    "seconds": 0.066375,
+    "peak": 0.06146864965558052,
+    "rms": 0.013090425170958042,
+    "sha256": "78c20d9656588529860a953da6f8fc92c3e639b032686938f354bdeb90b5b70b",
+    "source": "assets/audio/kenney/footstep_concrete_001.ogg",
+    "treatment": "DC/highpass 90 Hz, lowpass 6.5 kHz, trim, gentle fades; peak/RMS capped"
+  },
+  {
+    "name": "step-paving-2",
+    "seconds": 0.067375,
+    "peak": 0.048116009682416916,
+    "rms": 0.01330949179828167,
+    "sha256": "34785c141ffd350a2c1bf6c30954613cec375fc74c71a62645f5c29250bfe84f",
+    "source": "assets/audio/kenney/footstep_concrete_002.ogg",
+    "treatment": "DC/highpass 90 Hz, lowpass 6.5 kHz, trim, gentle fades; peak/RMS capped"
+  },
+  {
+    "name": "step-paving-3",
+    "seconds": 0.06254166666666666,
+    "peak": 0.059625621885061264,
+    "rms": 0.014338778331875801,
+    "sha256": "ae5b7225e81ad76c3f6cb9332e18f0400ddf1db531b384a2a6119596d6d2be85",
+    "source": "assets/audio/kenney/footstep_concrete_003.ogg",
+    "treatment": "DC/highpass 90 Hz, lowpass 6.5 kHz, trim, gentle fades; peak/RMS capped"
+  },
+  {
+    "name": "step-paving-4",
+    "seconds": 0.06379166666666666,
+    "peak": 0.0884649008512497,
+    "rms": 0.017047492787241936,
+    "sha256": "af97dabea02b47a9314fb4d9132ae3ec6bbb21e88248c5eaf1a642d78a071592",
+    "source": "assets/audio/kenney/footstep_concrete_004.ogg",
+    "treatment": "DC/highpass 90 Hz, lowpass 6.5 kHz, trim, gentle fades; peak/RMS capped"
+  },
+  {
+    "name": "step-grass-0",
+    "seconds": 0.11520833333333333,
+    "peak": 0.06171795353293419,
+    "rms": 0.012566957622766495,
+    "sha256": "e48191d8bdfa38aad0902de603e09fc2604983e320d6ae3962ab4ce1554d8f32",
+    "source": "assets/audio/kenney/footstep_grass_000.ogg",
+    "treatment": "DC/highpass 90 Hz, lowpass 6.5 kHz, trim, gentle fades; peak/RMS capped"
+  },
+  {
+    "name": "step-grass-1",
+    "seconds": 0.158125,
+    "peak": 0.14133045077323914,
+    "rms": 0.018270766362547874,
+    "sha256": "e2e469d0a7da67fabecaf7ac5d5a7d5240b51acc96e518be84ed3972afe5741f",
+    "source": "assets/audio/kenney/footstep_grass_001.ogg",
+    "treatment": "DC/highpass 90 Hz, lowpass 6.5 kHz, trim, gentle fades; peak/RMS capped"
+  },
+  {
+    "name": "step-grass-2",
+    "seconds": 0.16075,
+    "peak": 0.10645630210638046,
+    "rms": 0.015416111797094345,
+    "sha256": "48be40bcb44b588ca173319752baf1fe88aac12c79935d2c8b54e881b8212503",
+    "source": "assets/audio/kenney/footstep_grass_002.ogg",
+    "treatment": "DC/highpass 90 Hz, lowpass 6.5 kHz, trim, gentle fades; peak/RMS capped"
+  },
+  {
+    "name": "step-grass-3",
+    "seconds": 0.10220833333333333,
+    "peak": 0.059994153678417206,
+    "rms": 0.011768404394388199,
+    "sha256": "dceb587a651f636dd7bb3a6d14e12ec4901709cbfa958606b8119356cd57e9cd",
+    "source": "assets/audio/kenney/footstep_grass_003.ogg",
+    "treatment": "DC/highpass 90 Hz, lowpass 6.5 kHz, trim, gentle fades; peak/RMS capped"
+  },
+  {
+    "name": "step-grass-4",
+    "seconds": 0.11741666666666667,
+    "peak": 0.09931734204292297,
+    "rms": 0.012728153727948666,
+    "sha256": "a614aa2f85ab959629a4c003bf108e8ff59442aa9d3f18b047af1ebc500f03e2",
+    "source": "assets/audio/kenney/footstep_grass_004.ogg",
+    "treatment": "DC/highpass 90 Hz, lowpass 6.5 kHz, trim, gentle fades; peak/RMS capped"
+  },
+  {
+    "name": "campus-breeze",
+    "seconds": 45.0,
+    "peak": 0.18000000715255737,
+    "rms": 0.022475725831825385,
+    "sha256": "1ae9ddbf2366e6428c71cb721c206667ba50076d37c718a671e4fa87bb7956e4",
+    "source": "work/experience-fix/park_ambience_wind.wav",
+    "startSeconds": 45.0,
+    "sourceDurationSeconds": 256.80333333333334,
+    "crossfadeSeconds": 3,
+    "treatment": "220 Hz highpass removes wind rumble, 4.5 kHz lowpass, restrained stereo ambience, quietest window"
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Actual landmark ground is walkable; range, facing, opaque/glass collision occlusion all enforced",
+    "passed": true
+  },
+  {
+    "name": "Free-order collection is idempotent and consumes no inventory; submission requires equipped terminal and all records",
+    "passed": true
+  },
+  {
+    "name": "AI and human share interaction, retries never duplicate; human panels invalidate stale commands",
+    "passed": true
+  },
+  {
+    "name": "Save validation: settings defaults/clamps, no duplicate item IDs, safe recovery preserves task/inventory and revokes authority",
+    "passed": true
+  },
+  {
+    "routeWalkingSeconds": 102.85833333336126,
+    "position": [
+      23.999565068181667,
+      0.05,
+      -42.75674369653686
+    ]
+  },
+  {
+    "name": "Chosen 3-record route traverses real collision world without teleports",
+    "passed": true
+  }
+]

@@ -1,5 +1,5 @@
 // No model, browser automation, keyboard simulation, or coordinate writes.
-const base=process.env.HKU_AGENT_URL||'http://127.0.0.1:8787';
+const base=process.env.HKU_AGENT_URL||'http://127.0.0.1:8788';
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function api(path,data){const response=await fetch(base+path,data===undefined?{}:{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(data)});return response.json();}
 console.log('In the game pause menu, click 开启 AI 控制. Waiting up to 90 seconds…');

@@ -2,7 +2,7 @@
   {
     "name": "Banded promenade continuous",
     "end": [
-      18,
+      24,
       0.035,
       -49.80000000000379
     ],
@@ -11,7 +11,7 @@
   {
     "name": "Hall-side passage to track",
     "end": [
-      19,
+      25,
       0.06,
       -98.39999999999239
     ],
@@ -38,7 +38,7 @@
   {
     "name": "Northern steps climb and closed facade",
     "position": [
-      -52,
+      -58,
       0.51,
       -85.5983333333342
     ]

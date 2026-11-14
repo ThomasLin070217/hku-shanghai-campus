@@ -1,6 +1,6 @@
 {
   "name": "hku-shanghai-whole-campus",
-  "version": "6.0.0",
+  "version": "9.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -19,6 +19,21 @@
     "check:gameplay": "tsx scripts/check-gameplay.ts",
     "check:transport": "node scripts/check-agent-transport.mjs",
     "ai:atlas": "tsx scripts/atlas-campus.ts",
+    "check:v8": "tsx scripts/check-v8.ts",
+    "check:nov13": "tsx scripts/check-nov13.ts",
+    "export:v8": "tsx scripts/export-v8.ts",
+    "check:all": "npm run check:exploration && npm run check:v4 && npm run check:video && npm run check:gameplay && npm run check:v8 && npm run check:nov13 && npm run check:scale && npm run check:glass && npm run check:survey && npm run check:experience && npm run check:nov14 && npm run check:review && npm run check:audio-review && npm run check:remaining && npm run check:sign-roads && npm run build",
+    "check:scale": "tsx scripts/check-scale-calibration.ts",
+    "check:glass": "tsx scripts/check-glass.ts",
+    "check:survey": "tsx scripts/check-survey.ts",
+    "check:experience": "tsx scripts/check-experience-fix.ts",
+    "check:nov14": "tsx scripts/check-nov14-video.ts",
+    "build:review": "tsc --noEmit && vite build --mode review",
+    "check:review": "tsx scripts/check-workbuddy.ts",
+    "typecheck": "tsc --noEmit",
+    "check:audio-review": "tsx scripts/check-audio-review.ts",
+    "check:remaining": "tsx scripts/check-remaining.ts",
+    "check:sign-roads": "tsx scripts/check-sign-roads.ts",
     "ai:depth": "tsx scripts/export-atlas-depth.ts"
   },
   "dependencies": {

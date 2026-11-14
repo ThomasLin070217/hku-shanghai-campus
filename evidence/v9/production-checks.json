@@ -1,0 +1,468 @@
+{
+  "runtime": {
+    "state": {
+      "protocolVersion": "hku-campus/1.2",
+      "frame": 11,
+      "timeMs": 91.66666666666666,
+      "wallTimeMs": 1794633833071,
+      "mode": "human",
+      "controlEpoch": 1794633832310,
+      "aiEnabled": false,
+      "owner": null,
+      "paused": false,
+      "player": {
+        "position": [
+          58,
+          0.045,
+          33.5
+        ],
+        "velocity": [
+          0,
+          0,
+          0
+        ],
+        "yawDeg": 0,
+        "pitchDeg": 0,
+        "grounded": true
+      },
+      "view": "first",
+      "survey": {
+        "id": "campus-digital-survey",
+        "title": "校园数字巡检",
+        "status": "collecting",
+        "count": 0,
+        "total": 3,
+        "collectedClues": [],
+        "discovered": [
+          "record-cds-entry"
+        ],
+        "archive": null,
+        "elapsedSeconds": 0,
+        "target": null,
+        "objectives": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ],
+            "collected": false
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ],
+            "collected": false
+          }
+        ]
+      },
+      "panel": null,
+      "world": {
+        "units": "metres",
+        "revision": "2026-11-14-v8-scale1-glass1",
+        "scaleCalibration": {
+          "id": "amap-2026-11-14",
+          "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+          "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+          "verticalStatus": "estimated-not-measured",
+          "source": "references/scale-calibration/REPORT.md",
+          "imageryDate": "unknown",
+          "worldUnits": "metres",
+          "globalScaleFactor": 1,
+          "columnCentreSpacing": 116,
+          "columnSpacingUncertainty": 3
+        }
+      },
+      "inventory": {
+        "slots": [
+          {
+            "index": 0,
+            "itemId": "macbook-air-13-silver",
+            "instanceId": "student-macbook-001",
+            "count": 1,
+            "empty": false
+          },
+          {
+            "index": 1,
+            "empty": true
+          },
+          {
+            "index": 2,
+            "empty": true
+          },
+          {
+            "index": 3,
+            "empty": true
+          },
+          {
+            "index": 4,
+            "empty": true
+          },
+          {
+            "index": 5,
+            "empty": true
+          },
+          {
+            "index": 6,
+            "empty": true
+          },
+          {
+            "index": 7,
+            "empty": true
+          },
+          {
+            "index": 8,
+            "empty": true
+          },
+          {
+            "index": 9,
+            "empty": true
+          },
+          {
+            "index": 10,
+            "empty": true
+          },
+          {
+            "index": 11,
+            "empty": true
+          },
+          {
+            "index": 12,
+            "empty": true
+          },
+          {
+            "index": 13,
+            "empty": true
+          },
+          {
+            "index": 14,
+            "empty": true
+          },
+          {
+            "index": 15,
+            "empty": true
+          },
+          {
+            "index": 16,
+            "empty": true
+          },
+          {
+            "index": 17,
+            "empty": true
+          },
+          {
+            "index": 18,
+            "empty": true
+          },
+          {
+            "index": 19,
+            "empty": true
+          },
+          {
+            "index": 20,
+            "empty": true
+          },
+          {
+            "index": 21,
+            "empty": true
+          },
+          {
+            "index": 22,
+            "empty": true
+          },
+          {
+            "index": 23,
+            "empty": true
+          },
+          {
+            "index": 24,
+            "empty": true
+          },
+          {
+            "index": 25,
+            "empty": true
+          },
+          {
+            "index": 26,
+            "empty": true
+          },
+          {
+            "index": 27,
+            "empty": true
+          },
+          {
+            "index": 28,
+            "empty": true
+          },
+          {
+            "index": 29,
+            "empty": true
+          },
+          {
+            "index": 30,
+            "empty": true
+          },
+          {
+            "index": 31,
+            "empty": true
+          },
+          {
+            "index": 32,
+            "empty": true
+          },
+          {
+            "index": 33,
+            "empty": true
+          },
+          {
+            "index": 34,
+            "empty": true
+          },
+          {
+            "index": 35,
+            "empty": true
+          }
+        ],
+        "selectedHotbar": 0,
+        "equipped": {
+          "itemId": "macbook-air-13-silver",
+          "instanceId": "student-macbook-001",
+          "count": 1
+        },
+        "revision": 3,
+        "open": false
+      },
+      "landmarks": [
+        {
+          "id": "record-cds-entry",
+          "name": "CDS-1 入口",
+          "position": [
+            58,
+            0.045,
+            30.5
+          ],
+          "relativePosition": [
+            0,
+            0,
+            -3
+          ],
+          "distance": 3
+        },
+        {
+          "id": "B04",
+          "name": "CDS-1 · 4号楼",
+          "position": [
+            58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            0,
+            -0.045,
+            -35.5
+          ],
+          "distance": 35.500028521115304
+        },
+        {
+          "id": "B03",
+          "name": "CDS-2 · 3号楼",
+          "position": [
+            58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            0,
+            -0.045,
+            36.5
+          ],
+          "distance": 36.500027739715485
+        },
+        {
+          "id": "campus-directory",
+          "name": "校园导览牌",
+          "position": [
+            21.2,
+            0,
+            61
+          ],
+          "relativePosition": [
+            -36.8,
+            -0.045,
+            27.5
+          ],
+          "distance": 45.94009169559851
+        },
+        {
+          "id": "entrance-lion",
+          "name": "入口草坪小狮子",
+          "position": [
+            0,
+            0,
+            76
+          ],
+          "relativePosition": [
+            -58,
+            -0.045,
+            42.5
+          ],
+          "distance": 71.90446456931586
+        },
+        {
+          "id": "record-hku-square",
+          "name": "HKU 标识广场",
+          "position": [
+            8,
+            0.13,
+            91
+          ],
+          "relativePosition": [
+            -50,
+            0.085,
+            57.5
+          ],
+          "distance": 76.19880067953825
+        },
+        {
+          "id": "record-east-walk",
+          "name": "东侧露天步道",
+          "position": [
+            24,
+            0.05,
+            -45
+          ],
+          "relativePosition": [
+            -34,
+            0.0050000000000000044,
+            -78.5
+          ],
+          "distance": 85.54677097938881
+        },
+        {
+          "id": "B05",
+          "name": "5号楼 · 学生活动",
+          "position": [
+            58,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            0,
+            -0.045,
+            -103.5
+          ],
+          "distance": 103.50000978260823
+        },
+        {
+          "id": "B06",
+          "name": "6号楼 · 礼堂",
+          "position": [
+            0,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -58,
+            -0.045,
+            -103.5
+          ],
+          "distance": 118.64338171596425
+        },
+        {
+          "id": "B01",
+          "name": "1号楼 · 西侧北塔",
+          "position": [
+            -58,
+            0,
+            -2
+          ],
+          "relativePosition": [
+            -116,
+            -0.045,
+            -35.5
+          ],
+          "distance": 121.31056023693898
+        },
+        {
+          "id": "B02",
+          "name": "2号楼 · 西侧南塔",
+          "position": [
+            -58,
+            0,
+            70
+          ],
+          "relativePosition": [
+            -116,
+            -0.045,
+            36.5
+          ],
+          "distance": 121.60695714061758
+        },
+        {
+          "id": "B07",
+          "name": "7号楼 · 西北配套楼",
+          "position": [
+            -58,
+            0,
+            -70
+          ],
+          "relativePosition": [
+            -116,
+            -0.045,
+            -103.5
+          ],
+          "distance": 155.46141651548143
+        }
+      ],
+      "lastCommand": null,
+      "collisions": [],
+      "yaw": 0,
+      "pitch": 0,
+      "distance": 4.8,
+      "actualDistance": 0,
+      "locked": false,
+      "compat": true,
+      "keys": []
+    },
+    "audioFailed": false,
+    "audioBuffers": 9,
+    "firstVisible": true,
+    "thirdVisible": false,
+    "heldName": "MacBook_Air_13_Silver"
+  },
+  "responses": [
+    {
+      "url": "/evidence/v9/index.html",
+      "status": 200
+    },
+    {
+      "url": "/docs/DIGITAL-SURVEY-V9.md",
+      "status": 200
+    },
+    {
+      "url": "/assets/audio/LICENSE.txt",
+      "status": 200
+    },
+    {
+      "url": "/characters.html",
+      "status": 200
+    }
+  ],
+  "mapPainted": true
+}

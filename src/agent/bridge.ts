@@ -5,14 +5,14 @@ export function connectAgent(getGame:()=>CampusGame,screenshot:()=>string,status
  const revoke=(reason:string)=>{const g=getGame();if(g.owner||g.armed)g.pause(reason);};
  function connect(claim=false){
   if(disposed)return;clearTimeout(retry);lastHeartbeat=0;
-  const previous=socket,ws=new WebSocket('ws://127.0.0.1:8787/game'+(claim?'?claim=1':''));socket=ws;previous?.close();
+  const previous=socket,ws=new WebSocket(`ws://127.0.0.1:${import.meta.env.VITE_AGENT_PORT||8788}/game`+(claim?'?claim=1':''));socket=ws;previous?.close();
   // A closing old socket must never revoke a newer connection or its authority.
-  ws.onopen=()=>{if(socket!==ws)return;lastHeartbeat=Date.now();ws.send(JSON.stringify({type:'ready'}));status('本机 AI 服务：此窗口已连接 · 127.0.0.1:8787');};
+  ws.onopen=()=>{if(socket!==ws)return;lastHeartbeat=Date.now();ws.send(JSON.stringify({type:'ready'}));status('本机 AI 服务：此窗口已连接 · 127.0.0.1:'+ (import.meta.env.VITE_AGENT_PORT||8788));};
   ws.onmessage=e=>{if(socket!==ws)return;let msg;try{msg=JSON.parse(e.data);}catch{return;}
    if(msg.type==='heartbeat'){lastHeartbeat=Date.now();ws.send(JSON.stringify({type:'heartbeat'}));return;}
    if(msg.type!=='rpc')return;const g=getGame(),args=msg.args;let result:unknown;
    try{
-    if(Date.now()>msg.expiresAt)result={ok:false,error:'request_expired'};
+    if(!Number.isFinite(msg.expiresAt)||Date.now()>msg.expiresAt)result={ok:false,error:'request_expired'};
     else if(msg.method==='observe')result={ok:true,state:g.observe()};
     else if(msg.method==='acquireControl')result=typeof args.agentId==='string'&&/^[a-zA-Z0-9_.:-]{1,80}$/.test(args.agentId)?g.acquireControl(args.agentId):{ok:false,error:'invalid_agent_id'};
     else if(msg.method==='act')result=g.act(args);

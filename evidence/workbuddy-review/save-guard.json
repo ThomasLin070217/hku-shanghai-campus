@@ -1,0 +1,8 @@
+{
+  "retained": true,
+  "status": {
+    "message": "存档格式无效，已启动新试玩；旧数据未覆盖",
+    "storageOkay": true,
+    "ownsSave": false
+  }
+}

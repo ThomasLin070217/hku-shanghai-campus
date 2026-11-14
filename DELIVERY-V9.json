@@ -1,0 +1,37 @@
+{
+  "version": "9.0.0",
+  "date": "2026-11-14",
+  "scope": "Campus digital survey on existing satellite-calibrated glass1 campus",
+  "start": "npm ci && npm run play",
+  "url": "http://127.0.0.1:5184/",
+  "protocol": "hku-campus/1.2",
+  "deliverables": {
+    "experience": "src/gameplay/experience.ts",
+    "quest": "src/gameplay/survey.ts",
+    "landmarks": "src/gameplay/landmarks.ts",
+    "save": "src/gameplay/save.ts",
+    "map": "src/gameplay/map.ts",
+    "audio": "src/gameplay/audio.ts",
+    "gallery": "evidence/v9/index.html",
+    "validation": "docs/VALIDATION-V9.md",
+    "guide": "docs/DIGITAL-SURVEY-V9.md",
+    "sourceArchive": "HKU-Shanghai-v9-source.zip"
+  },
+  "measured": {
+    "keyboardPlaythroughSubmissionSeconds": 263.7767,
+    "wallClockIncludingScreenshotsAndToolHandoffs": true,
+    "physicsWalkingRouteSeconds": 102.8583
+  },
+  "limits": [
+    "No continuous v9 video; truthful keyboard operation receipts and screenshots included",
+    "Unassisted first-time student playtest remains to be done",
+    "Physical speaker listening not tested",
+    "Ego Lite used drag compatibility; standard Pointer Lock not independently retested",
+    "Building heights remain estimates; record markers and archive are fictional"
+  ],
+  "checks": {
+    "checkAll": "passed; evidence/v9/final-checks.log",
+    "transport": "passed; evidence/v9/transport-checks.log",
+    "production": "passed; evidence/v9/production-checks.json"
+  }
+}

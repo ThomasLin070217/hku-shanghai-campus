@@ -1,0 +1,153 @@
+
+> hku-shanghai-whole-campus@8.0.0 check:all
+> npm run check:exploration && npm run check:v4 && npm run check:video && npm run check:gameplay && npm run check:v8 && npm run check:nov13 && npm run check:scale && npm run build
+
+
+> hku-shanghai-whole-campus@8.0.0 check:exploration
+> tsx scripts/check-exploration.ts
+
+PASS 30/60/144 FPS movement is equal [
+  [ 89.5, 0.045, 32.19999999999942 ],
+  [ 89.5, 0.045, 32.19999999999942 ],
+  [ 89.5, 0.045, 32.19999999999993 ]
+]
+PASS normalized diagonal matches straight distance [ 85.82304473782995, 0.045, 36.323044737829946 ]
+PASS CDS-1 doors stop motion; no tunnelling in one large update [ [ 58, 0.12, 23.143333333333292 ], [ 58, 0.12, 23.141294838145484 ] ]
+PASS walls block and permit sliding at a corner [ 88.33333333333321, 0, 17.79999999999994 ]
+PASS map boundary blocks travel [ 103.03333333333356, 0, 0 ]
+PASS tree trunk and entrance bed collision true
+PASS 30 small steps ascend and descend without falling [
+  [ 4, 5.1000000000000005, -51.00000000000136 ],
+  [ 4, 0, -22.40000000000002 ]
+]
+PASS high seating risers block direct climb [ 11, 0, -27.383333333333315 ]
+PASS ramp is continuously traversable down and up {
+  lowest: -4.165478612043571,
+  bottom: [ 13.564773903949025, -4.165478612043571, 29.948079185090457 ],
+  top: [ 14, 0, 25 ]
+}
+PASS sunken edge cannot be walked off [ 0, 0, 2.513333333333337 ]
+PASS camera rays hit the below-ground retaining wall { obstacle: 'plaza-stair-guard', distance: 7.930000000670552 }
+
+> hku-shanghai-whole-campus@8.0.0 check:v4
+> tsx scripts/check-v4.ts
+
+PASS walk/run/diagonal; fixed simulation at 30,60,144 render FPS [[89.5,0.045,34.79999999999961],[89.5,0.045,34.79999999999961],[89.5,0.045,34.79999999999961]]
+PASS jump once, air jump ignored, land, stop preserves falling {"max":1.1483333333333325}
+PASS head collision with low ceiling fixture uses same world collider {"hit":true,"max":0.39600000000000013}
+PASS closed CDS doors, wall slide, outer boundary {"door":[58,0.12,23.143333333333292],"slide":[88.31793530742914,0,17.353910524340108],"edge":[103.03333333333356,0,0]}
+PASS stair ascent/descent and high riser rejection {"stairs":[4,0,-22.399999999999807],"high":[11,0,-27.38333333333351]}
+PASS view switch while sprinting airborne preserves physics {"position":[89.5,0.11541666666666667,39.91333333333333],"velocity":[0,6.833333333333333,-5.2000000000003865],"yawDeg":0,"pitchDeg":0,"grounded":false}
+PASS AI lifecycle: deferred one-shot, duplicate, expiry, replacement, takeover stale epoch {"duplicateYaw":0.3490658503988659,"staleRejected":true,"last":{"commandId":"expired-before-frame","status":"expired","acceptedAt":10000,"expiresAt":10300,"collisionIds":[],"reason":"duration_elapsed","finishedFrame":3}}
+
+> hku-shanghai-whole-campus@8.0.0 check:video
+> tsx scripts/check-video-details.ts
+
+[
+  {
+    name: 'Banded promenade continuous',
+    end: [ 24, 0.035, -49.80000000000379 ],
+    distance: 85.80000000000379
+  },
+  {
+    name: 'Hall-side passage to track',
+    end: [ 25, 0.06, -98.39999999999239 ],
+    distance: 49.39999999999239
+  },
+  {
+    name: 'Two-way track length eastbound',
+    end: [ 83.99999999999653, 0.06, -98 ],
+    distance: 168.99999999999653
+  },
+  {
+    name: 'Two-way track length westbound',
+    end: [ -84.99999999999653, 0.06, -98 ],
+    distance: 168.99999999999653
+  },
+  {
+    name: 'Northern steps climb and closed facade',
+    position: [ -58, 0.51, -85.5983333333342 ]
+  }
+]
+
+> hku-shanghai-whole-campus@8.0.0 check:gameplay
+> tsx scripts/check-gameplay.ts
+
+PASS No collection before start; range, visibility, duplicate and early submission guards
+PASS Out of order collections, reload, submit once, reset and replay
+PASS Reject incompatible, corrupt and inconsistent save data
+PASS Default practice markers sit on reachable CDS-1 exterior ground
+
+> hku-shanghai-whole-campus@8.0.0 check:v8
+> tsx scripts/check-v8.ts
+
+PASS Inventory moves and swaps preserve identity/count; actual hotbar slots equip
+PASS Independent pose, material, config, equipment; original Kenney animations update
+PASS MacBook physical dimensions and reusable hinged lid
+PASS AI selects once via epoch-checked act; stale/expired/repeated commands cannot equip
+
+> hku-shanghai-whole-campus@8.0.0 check:nov13
+> tsx scripts/check-nov13.ts
+
+[
+  {
+    name: 'west stairs down/up',
+    bottom: [ -9, -4.2, 23.59999999999826 ],
+    end: [ -9, 0, 47 ]
+  },
+  {
+    name: 'east stairs down/up',
+    bottom: [ 9, -4.2, 23.59999999999826 ],
+    end: [ 9, 0, 47 ]
+  },
+  {
+    name: 'video east promenade south to north',
+    end: [ 24, 0.035, -53.20000000000486 ]
+  },
+  { name: 'removed east deck collision; lion solid', passed: true }
+]
+
+> hku-shanghai-whole-campus@8.0.0 check:scale
+> tsx scripts/check-scale-calibration.ts
+
+{
+  date: '2026-11-14T04:43:41.234Z',
+  measured: [
+    { id: 'SM01', ruler: 60, model: 59.7, withinTolerance: true },
+    { id: 'SM02', ruler: 45, model: 45, withinTolerance: true },
+    { id: 'SM03', ruler: 60, model: 59.7, withinTolerance: true },
+    { id: 'SM04', ruler: 73, model: 72, withinTolerance: true },
+    { id: 'SM05', ruler: 59, model: 59.7, withinTolerance: true },
+    { id: 'SM06', ruler: 116, model: 116, withinTolerance: true },
+    { id: 'SM07', ruler: 61, model: 59.5, withinTolerance: true },
+    { id: 'SM08', ruler: 208, model: 208, withinTolerance: true }
+  ],
+  buildingVisualCollisionSync: true,
+  spawn: [ 58, 0.045, 33.5 ],
+  vacatedStripPassable: true,
+  newWallSolid: true,
+  eastPerimeterLaneEnd: [ 89.5, 0, -27.200000000001666 ],
+  eastPromenadeX: 24,
+  verticalScaleUnverified: true
+}
+
+> hku-shanghai-whole-campus@8.0.0 build
+> tsc --noEmit && vite build
+
+vite v7.3.8 building client environment for production...
+transforming...
+✓ 63 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                          0.69 kB │ gzip:   0.39 kB
+dist/assessment.html                     0.72 kB │ gzip:   0.45 kB
+dist/characters.html                     2.27 kB │ gzip:   1.26 kB
+dist/assets/main-BSNzndkn.css           18.00 kB │ gzip:   4.98 kB
+dist/assets/characters-BWkTdncB.js       2.88 kB │ gzip:   1.54 kB
+dist/assets/studentLegacy-CYWHs0o8.js    3.79 kB │ gzip:   2.03 kB
+dist/assets/assessment-UtpbD6s4.js      13.84 kB │ gzip:   3.48 kB
+dist/assets/quests-Bf1jI-V_.js          39.28 kB │ gzip:  12.82 kB
+dist/assets/character-DRcX9Qkb.js       81.54 kB │ gzip:  14.31 kB
+dist/assets/main-C2ZxRqqW.js           120.64 kB │ gzip:  50.50 kB
+dist/assets/three-DDwJOTSk.js          764.28 kB │ gzip: 207.80 kB
+✓ built in 936ms

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "HKU Campus Action v1",
+  "title": "HKU Campus Action v1.2",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -70,6 +70,23 @@
     },
     "switchView": {
       "type": "boolean"
+    },
+    "selectHotbar": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 8
+    },
+    "interact": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]{1,80}$"
+    },
+    "computer": {
+      "enum": [
+        "map",
+        "tasks",
+        "clues",
+        "submit"
+      ]
     }
   }
 }

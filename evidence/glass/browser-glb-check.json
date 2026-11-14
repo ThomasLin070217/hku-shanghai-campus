@@ -1,0 +1,14 @@
+{
+  "date": "2026-11-14T05:14:23.170Z",
+  "method": "Clicked page GLB export; downloaded artifact; loaded it through page file input",
+  "glassMeshes": 162,
+  "opaqueMeshes": 587,
+  "errors": [],
+  "profiles": {
+    "clear": 0.26,
+    "office": 0.43,
+    "reflective": 0.68,
+    "guard": 0.18
+  },
+  "webglError": 0
+}
