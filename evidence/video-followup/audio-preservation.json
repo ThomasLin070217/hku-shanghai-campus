@@ -1,0 +1,17 @@
+[
+  {
+    "id": "U06",
+    "adtsSHA256": "85b95f8dab339ccfc2d9418ca8d0a1cb10f72d6df291f9e1822913004ad3576d",
+    "originalAudioIdentical": true
+  },
+  {
+    "id": "U07",
+    "adtsSHA256": "851eaad46ef4e6ca9c317b098c660aef2c9a99e43ea578f5c79b7d193df385f8",
+    "originalAudioIdentical": true
+  },
+  {
+    "id": "U08",
+    "adtsSHA256": "fe6f8514da0e847d33de3c37d71423afbb8b61a8ffab9584d257a27ce7439e97",
+    "originalAudioIdentical": true
+  }
+]

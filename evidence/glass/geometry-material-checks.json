@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-14T15:20:58.890Z",
+  "date": "2026-11-14T16:12:30.780Z",
   "profiles": {
     "clear": {
       "color": 10008753,
@@ -27,8 +27,8 @@
     }
   },
   "glassMeshes": 447,
-  "opaqueMeshes": 615,
-  "materialCount": 436,
+  "opaqueMeshes": 633,
+  "materialCount": 440,
   "gaps": [
     {
       "name": "entrance flank",

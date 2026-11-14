@@ -1,0 +1,149 @@
+{
+  "beforeCount": 17606,
+  "afterCount": 18289,
+  "removedIds": [],
+  "newIds": 683,
+  "beforeHKU": {
+    "id": "A003-P-02a9ff952ed5",
+    "name": "HKU",
+    "kind": "part",
+    "parentId": "A003",
+    "buildingId": null,
+    "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Landscape#1/HKU#1",
+    "bounds": {
+      "min": [
+        -4.1872,
+        0.12,
+        91
+      ],
+      "max": [
+        4.1872,
+        3.4416,
+        91.06
+      ]
+    },
+    "center": [
+      0,
+      1.7808,
+      91.03
+    ],
+    "size": [
+      8.3744,
+      3.3216,
+      0.06
+    ],
+    "sourceFile": "src/model/buildSite.ts",
+    "sourceAnchor": "HKU",
+    "reference": "C02,R05",
+    "confidence": "simplified-current-state",
+    "editMode": "source",
+    "material": "Ivory signage"
+  },
+  "afterHKU": {
+    "id": "A003-P-02a9ff952ed5",
+    "name": "HKU",
+    "kind": "part",
+    "parentId": "A003",
+    "buildingId": null,
+    "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Landscape#1/HKU#1",
+    "bounds": {
+      "min": [
+        -0.6518,
+        0.13,
+        91
+      ],
+      "max": [
+        0.6518,
+        0.6471,
+        91.08
+      ]
+    },
+    "center": [
+      0,
+      0.3885,
+      91.04
+    ],
+    "size": [
+      1.3036,
+      0.5171,
+      0.08
+    ],
+    "sourceFile": "src/model/videoFollowup.ts",
+    "sourceAnchor": "HKU",
+    "reference": "U08 IMG_4349.MOV 00:09–00:27; estimated H width 0.30–0.40m",
+    "confidence": "simplified-current-state",
+    "editMode": "source",
+    "material": "Ivory signage"
+  },
+  "oculusBefore": {
+    "id": "A006",
+    "name": "圆形天窗连廊",
+    "kind": "area",
+    "parentId": "SITE-G-3104754a5c99",
+    "buildingId": null,
+    "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Oculus_Pavilion#1",
+    "bounds": {
+      "min": [
+        -33.5,
+        0,
+        27.5
+      ],
+      "max": [
+        -18.5,
+        6.7793,
+        42.5
+      ]
+    },
+    "center": [
+      -26,
+      3.3896,
+      35
+    ],
+    "size": [
+      15,
+      6.7793,
+      15
+    ],
+    "sourceFile": "src/model/buildSite.ts",
+    "sourceAnchor": "Oculus_Pavilion",
+    "reference": "A08,N08,N09",
+    "confidence": "confirmed-feature_position-estimated",
+    "editMode": "source"
+  },
+  "oculusAfter": {
+    "id": "A006",
+    "name": "圆形天窗连廊",
+    "kind": "area",
+    "parentId": "SITE-G-3104754a5c99",
+    "buildingId": null,
+    "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Oculus_Pavilion#1",
+    "bounds": {
+      "min": [
+        -65.5,
+        0,
+        20.5
+      ],
+      "max": [
+        -50.5,
+        6.7793,
+        52.25
+      ]
+    },
+    "center": [
+      -58,
+      3.3896,
+      36.375
+    ],
+    "size": [
+      15,
+      6.7793,
+      31.75
+    ],
+    "sourceFile": "src/model/buildSite.ts",
+    "sourceAnchor": "Oculus_Pavilion",
+    "reference": "U07 IMG_4348.MOV 00:57–01:12; between west pair, not over the roadside",
+    "confidence": "confirmed-feature_position-estimated",
+    "editMode": "source"
+  },
+  "afterRevision": "8361d64e7b72"
+}

@@ -1,0 +1,29 @@
+{
+  "checks": [
+    {
+      "id": "U06",
+      "time": 90.398156,
+      "duration": 300.161667,
+      "paused": false,
+      "error": null,
+      "otherAudioStopped": true
+    },
+    {
+      "id": "U07",
+      "time": 66.386011,
+      "duration": 74.91,
+      "paused": false,
+      "error": null,
+      "otherAudioStopped": true
+    },
+    {
+      "id": "U08",
+      "time": 21.392697,
+      "duration": 35.643333,
+      "paused": false,
+      "error": null,
+      "otherAudioStopped": true
+    }
+  ],
+  "note": "Verified browser decode/playback/timestamp navigation; not a manual audio-quality listening claim."
+}

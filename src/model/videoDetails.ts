@@ -59,6 +59,7 @@ export function addVideoDetails(environment:T.Group,circulation:T.Group,sports:T
  for(let i=0;i<7;i++)box(root,'Entrance_flush_ground_light',.10,.012,.10,cds.x-7+i*2.3,.091,cds.z+cds.depth/2+5.8,warm);
  // Visible low-level interior light bands are scenic facades, not navigable rooms.
  // Removed Night_side_glazing/Night_northern_glazing opaque surface patches; recessed lamps supply night depth.
+ purple.userData={...purple.userData,dayColor:0x8b9491,nightColor:0xa99aff};purple.color.setHex(0x8b9491);
  for(const id of ['B01','B02']){const b=specs.find(s=>s.id===id)!,g=buildings.get(id)!;for(let z=-b.depth/2+.8;z<b.depth/2;z+=1.6)box(g,'Observed_vertical_LED',.035,b.height-8,.055,b.width/2+.53,(b.height+4)/2,z,purple);}
  root.userData.note='Video shows physical details. Layout and light intensity are adjustable approximations, not photometric survey.';
 }

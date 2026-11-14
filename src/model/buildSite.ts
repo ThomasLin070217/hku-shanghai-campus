@@ -1,3 +1,4 @@
+import {LAWN_SIGN,lawnLetterGeometry,OCULUS,oculusDeckGeometry,addVideoFollowup} from './videoFollowup';
 import {campusFont as font} from './fonts';
 import {sceneRegistry} from '../scene/registry';
 import {driveSections,centralWalkLayout,subtractRects} from './groundLayout';
@@ -99,7 +100,7 @@ function landscape(root:T.Group,circulation:T.Group,s:SiteParameters,m:M){
  for(let x=-85;x<90;x+=10)box(paths,'Lane_dash',3.5,.012,.12,x,.056,98,m.yellow);
  // Lawn now occupies south central forecourt; no obsolete planned fountain is invented.
  box(green,'South_lawn',28,.16,40,0,.05,73,m.grass);
- text(green,'HKU',3.2,0,.2,91,m.white);
+ const letters=mesh(green,'HKU',lawnLetterGeometry(),m.white);letters.position.set(LAWN_SIGN.x,LAWN_SIGN.bottom,LAWN_SIGN.z);letters.userData={source:LAWN_SIGN.source,sourceFile:'src/model/videoFollowup.ts'};
  for(const [i,r] of centralWalkLayout(s).entries()){const section=group(paths,`R00${i+7}`,'M01,A03','inferred-layout');section.userData.sceneId=section.name;section.userData.label=i?'南草坪东侧步道':'南草坪西侧步道';box(section,'Central_walk',r.width,.07,r.depth,r.x,.035,r.z,m.concrete);}
  for(const z of [-94,-27,92])for(const x of [-COLUMN_X,COLUMN_X])box(green,'Planting_bed',55,.14,3.5,x,.1,z,m.grass);
  function tree(x:number,z:number,h=s.treeHeight){box(green,'Block_tree_trunk',.44,h*.70,.44,x,h*.35,z,m.bark);for(const [dx,dy,dz,w,ht] of [[0,.77,0,.65,.35],[-.18,.66,.10,.42,.28],[.19,.69,-.09,.38,.28],[0,1.00,0,.42,.22]])box(green,'Block_leaf_cluster',h*w,h*ht,h*w,x+dx*h,h*dy,z+dz*h,m.leaf);}
@@ -136,15 +137,15 @@ export function buildSite(specs:BuildingSpec[]=BUILDINGS.map(b=>({...b})),site:S
  // R01 shows no bridge over the CDS-1 entrance: remove unsupported tower-pair spans.
 
  for(const [i,x] of [-23,23].entries()){const link=group(circulation,`R01${i+3}`,'A06','inferred-connection');link.userData={...link.userData,sceneId:link.name,label:i?'礼堂东侧连接平台（高架）':'礼堂西侧连接平台（高架）'};box(link,'Auditorium_link',12,.45,5,x,9,-70,m.silver);}
- const oculus=group(circulation,'Oculus_Pavilion','A08,N08,N09','confirmed-feature_position-estimated');oculus.position.set(CL.westWalkX,0,35);
- ribbon(oculus,'Open_oculus_canopy',6,6,3,0,0,0,Math.PI*2,site.bridgeHeight+.2,site.bridgeHeight+.2,m.silver,.4);
+ const oculus=group(circulation,'Oculus_Pavilion','A08,N08,N09','confirmed-feature_position-estimated');oculus.position.set(OCULUS.x,0,OCULUS.z);oculus.userData.source=OCULUS.source;
+ mesh(oculus,'Open_oculus_canopy',oculusDeckGeometry(specs,site.bridgeHeight),m.silver).userData.sourceFile='src/model/videoFollowup.ts';
  for(const [x,z]of [[-5,-5],[5,-5],[-5,5],[5,5]])box(oculus,'Oculus_column',.6,site.bridgeHeight,.6,x,site.bridgeHeight/2,z,m.silver);
  const og=new T.Group();og.name='Oculus_glass_guard';oculus.add(og);
  for(let i=0;i<32;i++){const a=i/32*Math.PI*2,b=(i+1)/32*Math.PI*2,mid=(a+b)/2,r=3.12,len=2*r*Math.sin(Math.PI/32);pane(og,'Oculus_guard_pane',len-.035,1.0,r*Math.sin(mid),site.bridgeHeight+.9,r*Math.cos(mid),m.guard,mid);beam(og,new T.Vector3(r*Math.sin(a),site.bridgeHeight+1.43,r*Math.cos(a)),new T.Vector3(r*Math.sin(b),site.bridgeHeight+1.43,r*Math.cos(b)),.035,m.frame);box(og,'Oculus_guard_post',.05,1.05,.05,r*Math.sin(a),site.bridgeHeight+.9,r*Math.cos(a),m.frame);}
 
  buildEntranceExterior(environment,specs.find(b=>b.id==='B04')!,m);
  const edge=group(environment,'Exploration_boundary','prototype','provisional-limit_not-campus-fence-survey');for(const k of [-1,1]){box(edge,'Boundary_kerb',.3,.3,site.depth,k*(site.width/2-.5),.15,site.centerZ,m.silver);box(edge,'Boundary_kerb',site.width,.3,.3,0,.15,site.centerZ+k*(site.depth/2-.5),m.silver);}for(let x=-site.width/2+2;x<site.width/2;x+=8)for(const k of [-1,1])box(edge,'Boundary_post',.14,1.1,.14,x,.55,site.centerZ+k*(site.depth/2-.5),m.frame);
- addLandscapeDetails(environment,specs,site);buildSports(sports,site,m);addVideoDetails(environment,circulation,sports,byId,specs);addNov13Details(environment,circulation,site);addNov14Details(environment,circulation,specs,site);compact(root);voxelizeMaterials(root);sceneRegistry(root);return{root,buildings,environment,circulation,sports,byId,parameters:specs.map(b=>({...b})),site:{...site}};
+ addLandscapeDetails(environment,specs,site);buildSports(sports,site,m);addVideoDetails(environment,circulation,sports,byId,specs);addNov13Details(environment,circulation,site);addNov14Details(environment,circulation,specs,site);addVideoFollowup(environment,site);compact(root);voxelizeMaterials(root);sceneRegistry(root);return{root,buildings,environment,circulation,sports,byId,parameters:specs.map(b=>({...b})),site:{...site}};
 }
 function buildSports(g:T.Group,s:SiteParameters,m:M){const z=s.sportsZ;g.userData={...g.userData,warning:'Court sequence, dimensions and hall location provisional; current facilities C03, planning R02'};
  box(g,'Sports_strip',s.sportsWidth,.12,s.sportsDepth,0,.08,z,m.blue);

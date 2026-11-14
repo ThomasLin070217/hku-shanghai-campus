@@ -1,3 +1,4 @@
+import {OCULUS} from '../src/model/videoFollowup';
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {BUILDINGS,SITE} from '../src/model/campusParameters';
@@ -14,8 +15,8 @@ const values=[b('B04').width,b('B04').depth,b('B03').width,b('B03').z-b('B04').z
 const measured=readings.map((r:any,i:number)=>{assert.ok(Math.abs(values[i]-r.metres)<=r.practicalUncertaintyMetres,`${r.id} exceeds measurement tolerance`);return {id:r.id,ruler:r.metres,model:values[i],withinTolerance:true};});
 const nav=createNavigation(BUILDINGS,SITE),asset=buildSite(),game=new CampusGame(nav,BUILDINGS);
 for(const spec of BUILDINGS){assert.equal(asset.byId.get(spec.id)!.position.x,spec.x);assert.ok(nav.contacts(spec.x,spec.z,0).some(o=>o.name.startsWith(spec.id+'/')));}
-assert.equal(asset.root.getObjectByName('Oculus_Pavilion')!.position.x,CL.westWalkX);
-assert.ok(nav.obstacles.some(o=>o.name==='oculus-column'&&o.x===CL.westWalkX-5));
+assert.equal(asset.root.getObjectByName('Oculus_Pavilion')!.position.x,OCULUS.x);
+assert.ok(nav.obstacles.some(o=>o.name==='oculus-column'&&o.x===OCULUS.x-5));
 assert.ok(!nav.blocked(game.body.position.x,game.body.position.z,game.body.position.y));
 assert.equal(game.body.position.x,b('B04').x);
 // The moved west wall blocks at its new location; the vacated strip is now usable.

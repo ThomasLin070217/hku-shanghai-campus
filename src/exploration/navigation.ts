@@ -1,3 +1,4 @@
+import {LAWN_SIGN,LAWN_SIZE,OCULUS,oculusDeck} from '../model/videoFollowup';
 import {driveLayout,centralWalkLayout,promenadeLayout,contains} from '../model/groundLayout';
 import {linkLayout} from '../model/nov14Details';
 import {COURTYARD,courtyardHeight,courtyardGate,stairPoint} from '../model/courtyard';
@@ -36,14 +37,17 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters){
  // Structural supports are solid; the space under raised walks stays accessible.
  for(const x of [CL.westWalkX]){for(let z=-52;z<=55;z+=12)if(z<27.5||z>42.5)box('walkway-column',x,z,.6,.6,s.bridgeHeight);for(const [start,end] of [[-57.5,27.5],[42.5,57.5]]){box('walkway-deck',x,(start+end)/2,4.4,end-start,s.bridgeHeight+.2,s.bridgeHeight-.2);for(const side of [-1,1])box('walkway-glass-guard',x+side*2.2,(start+end)/2,.08,end-start,s.bridgeHeight+1.27,s.bridgeHeight+.2);}}
 
- for(const x of [CL.westWalkX-5,CL.westWalkX+5])for(const z of [30,40])box('oculus-column',x,z,.6,.6,s.bridgeHeight);
- for(let i=0;i<32;i++){const a=i/32*Math.PI*2,b=(i+1)/32*Math.PI*2,mid=(a+b)/2;box('oculus-glass-guard',CL.westWalkX+3.12*Math.sin(mid),35+3.12*Math.cos(mid),2*3.12*Math.sin(Math.PI/32),.06,s.bridgeHeight+1.46,s.bridgeHeight+.38,mid);}
+ const od=oculusDeck(specs),r=od.holeRadius;
+ for(const side of [-1,1])box('oculus-overhead-side',OCULUS.x+side*(od.width/2+r)/2,(od.north+od.south)/2,od.width/2-r,od.south-od.north,s.bridgeHeight+.2,s.bridgeHeight-.2);
+ for(const [a,b] of [[od.north,OCULUS.z-r],[OCULUS.z+r,od.south]])box('oculus-overhead-end',OCULUS.x,(a+b)/2,r*2,b-a,s.bridgeHeight+.2,s.bridgeHeight-.2);
+ for(const x of [OCULUS.x-5,OCULUS.x+5])for(const z of [30,40])box('oculus-column',x,z,.6,.6,s.bridgeHeight);
+ for(let i=0;i<32;i++){const a=i/32*Math.PI*2,b=(i+1)/32*Math.PI*2,mid=(a+b)/2;box('oculus-glass-guard',OCULUS.x+3.12*Math.sin(mid),35+3.12*Math.cos(mid),2*3.12*Math.sin(Math.PI/32),.06,s.bridgeHeight+1.46,s.bridgeHeight+.38,mid);}
  for(let z=-94;z<=94;z+=13)for(const x of [-101,101])circle('tree',x,z,.23,3.8);
 
  for(let x=-82;x<=84;x+=14){circle('tree',x,-92.5,.23,3.8);circle('tree',x,108,.23,3.8);}
  for(const x of [-18])for(const z of [-25,-12])circle('tree',x,z,.23,3.8);
  for(const z of [-94,-27,92])for(const x of [-COLUMN_X,COLUMN_X])box('planting-bed',x,z,55,3.5,.5);
- box('HKU-lawn-letters',0,91,9,.8,3.6);
+ box('HKU-lawn-letters',LAWN_SIGN.x,LAWN_SIGN.z+LAWN_SIGN.depth/2,LAWN_SIZE.x,LAWN_SIZE.z,LAWN_SIGN.bottom+LAWN_SIZE.y,LAWN_SIGN.bottom);
  box('sports-hall-closed',-68,s.sportsZ,39,26,10.5);
  for(const [x,w]of [[-5,44],[53,51]])for(const side of [-1,1])box('court-fence',x,s.sportsZ+side*13,w,.12,4);
  for(const x of [-15.5,5.5])box('tennis-net',x,s.sportsZ,19,.1,1.3);

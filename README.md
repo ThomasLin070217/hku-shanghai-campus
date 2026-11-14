@@ -2,6 +2,8 @@
 
 **场景编号与 AI 接手：** 右上角“场景编号”可搜索、点选细部、定位和复制修改任务。楼栋 B01–B07、道路 R001…、学院牌 S001。团队及 Agent 先读 [AI 最短接手指南](docs/AI-START.md)，工程约定见 [AGENTS.md](AGENTS.md)。支持离线源码索引、HTTP 与 MCP。
 
+**三段实录补充（2026-11-15）：** 缩小草坪 HKU、补地灯和外围低绿篱、修正圆孔连廊位置与顶板、灯带昼夜分离。[素材与保留的原声](references/video-followup/index.html) · [修改前后](evidence/video-followup/index.html) · [依据及待确认项](references/video-followup/REPORT.md)。
+
 **最近修复（2026-11-14）：** 学院石牌新增黑色三维字并修复贴图空白；修整道路与步道重叠、入口铺装及地面碰撞。包含近期 WorkBuddy 反馈复核、界面与音频恢复、存档和资源生命周期修复。详见 [石牌与道路修复](docs/SIGN-ROADS-FIX.md)、[评审逐项处理](docs/WORKBUDDY-REVIEW.md)、[后续修复及验证](docs/REMAINING-FIXES.md)。
 
 **最新：11 月 14 日实录更新。** 双弧形下沉楼梯、北侧绿地、教学楼—5号楼连接体、连续绿篱与实拍石牌；按新视频目测将狮子本体暂定为 4.8 m。新增门厅及 13 层公共区的独立参考模型。查看 [修改说明](docs/NOV14-VIDEO-UPDATE.md)、[前后对照与实际通行录像](evidence/nov14-video/index.html)。室内预览 <http://127.0.0.1:5184/interiors.html>，校园关闭门碰撞保留。

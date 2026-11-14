@@ -5,6 +5,7 @@ export type EntityKind='campus'|'building'|'road'|'area'|'group'|'part';
 export interface SceneEntity {id:string;name:string;kind:EntityKind;parentId:string|null;buildingId:string|null;authorKey:string;bounds:{min:number[];max:number[]};center:number[];size:number[];sourceFile:string;sourceAnchor:string;reference:string;confidence:string;material?:string;editMode:'source';}
 export interface EntityQuery {q?:string;kind?:EntityKind;parentId?:string;offset?:number;limit?:number;near?:number[];radius?:number}
 const aliases:Record<string,[string,string,string]>={
+ U08_Perimeter_and_lawn_lights:['A015','外围绿化与 HKU 草坪地灯','src/model/videoFollowup.ts'],
  Ground:['A001','校园地面','src/model/buildSite.ts'],Roads_and_Paving:['A002','道路与铺装','src/model/buildSite.ts'],Landscape:['A003','基础绿化','src/model/buildSite.ts'],
  Sunken_Plaza_and_Ramp:['A004','下沉庭院','src/model/buildSite.ts'],Auditorium_Grand_Stair:['A005','礼堂大阶梯','src/model/buildSite.ts'],Oculus_Pavilion:['A006','圆形天窗连廊','src/model/buildSite.ts'],
  CDS1_Entrance_Forecourt:['A007','CDS-1 入口广场','src/model/buildSite.ts'],CDS_Landscape_Monument:['S001','计算与数据科学学院石牌','src/model/videoDetails.ts'],CDS_Monument_Lettering:['S001-TEXT','学院石牌黑字与校徽','src/model/monumentFace.ts'],
