@@ -1,0 +1,22 @@
+{
+  "schemaStatus": "draft-awaiting-runtime-schema",
+  "schemaVersion": 1,
+  "id": "robot.helper.unitree",
+  "displayName": "宇树机器人助手",
+  "workingNickname": "阿树",
+  "nameStatus": "temporary",
+  "brandStatus": "team-proposal-pending-confirmation",
+  "role": "未感染的四足机器人助手",
+  "verbalDialogue": false,
+  "commands": [
+    "follow",
+    "scan",
+    "distract"
+  ],
+  "feedback": {
+    "accepted": "一声短提示音并执行动作",
+    "rejected": "两声短提示音并在界面显示原因",
+    "unavailable": "指令当前不可用"
+  }
+}
+

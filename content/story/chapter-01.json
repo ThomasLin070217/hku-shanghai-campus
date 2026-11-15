@@ -1,0 +1,139 @@
+{
+  "schemaStatus": "draft-awaiting-runtime-schema",
+  "schemaVersion": 1,
+  "chapterId": "chapter.01",
+  "title": "失控的开学典礼",
+  "year": 2040,
+  "estimatedMinutes": {
+    "min": 8,
+    "max": 12
+  },
+  "structure": "linear",
+  "locations": [
+    {
+      "id": "location.building.05.high-table",
+      "label": "五号楼高桌晚宴区",
+      "status": "placement-pending"
+    },
+    {
+      "id": "location.building.03.central",
+      "label": "三号楼（中央楼）",
+      "status": "placement-pending"
+    },
+    {
+      "id": "location.building.04.cds1-control",
+      "label": "四号楼（CDS-1）控制中心",
+      "status": "fictional-layout-pending"
+    },
+    {
+      "id": "location.campus.lawn",
+      "label": "校园草坪",
+      "status": "placement-pending"
+    }
+  ],
+  "puzzles": [
+    {
+      "id": "puzzle.control-restore",
+      "type": "ordered-steps",
+      "promptKey": "control.restore.prompt",
+      "options": [
+        "power-on",
+        "isolate-external-network",
+        "restore-local-control"
+      ],
+      "correctOrder": [
+        "power-on",
+        "isolate-external-network",
+        "restore-local-control"
+      ],
+      "retryable": true,
+      "locksOnFailure": false
+    }
+  ],
+  "stages": [
+    {
+      "id": "dinner.duty",
+      "objective": "完成高桌晚宴值勤",
+      "locationId": "location.building.05.high-table",
+      "completion": "event.dinner-checkin-complete",
+      "next": "attack.assignment"
+    },
+    {
+      "id": "attack.assignment",
+      "objective": "接受前往控制中心的任务",
+      "locationId": "location.building.05.high-table",
+      "completion": "dialogue.assignment-acknowledged",
+      "next": "route.central-building"
+    },
+    {
+      "id": "route.central-building",
+      "objective": "经过中央楼前往四号楼",
+      "locationId": "location.building.03.central",
+      "completion": "trigger.control-room-arrival",
+      "next": "control.inspect"
+    },
+    {
+      "id": "control.inspect",
+      "objective": "阅读应急说明并启动离线程序",
+      "locationId": "location.building.04.cds1-control",
+      "completion": "interaction.control-console-opened",
+      "next": "control.decrypt"
+    },
+    {
+      "id": "control.decrypt",
+      "objective": "恢复本地机器人控制",
+      "locationId": "location.building.04.cds1-control",
+      "puzzleId": "puzzle.control-restore",
+      "completion": "puzzle.control-restore.solved",
+      "next": "helper.tutorial"
+    },
+    {
+      "id": "helper.tutorial",
+      "objective": "启动宇树助手并完成牵制教学",
+      "locationId": "location.building.04.cds1-control",
+      "completion": "event.helper-tutorial-complete",
+      "next": "boss.device.01"
+    },
+    {
+      "id": "boss.device.01",
+      "objective": "启动第一处紧急关闭装置",
+      "locationId": "location.campus.lawn",
+      "completion": "device.shutdown.01.active",
+      "next": "boss.device.02"
+    },
+    {
+      "id": "boss.device.02",
+      "objective": "启动第二处紧急关闭装置",
+      "locationId": "location.campus.lawn",
+      "completion": "device.shutdown.02.active",
+      "next": "boss.device.03"
+    },
+    {
+      "id": "boss.device.03",
+      "objective": "启动第三处紧急关闭装置",
+      "locationId": "location.campus.lawn",
+      "completion": "device.shutdown.03.active",
+      "next": "chapter.complete"
+    },
+    {
+      "id": "chapter.complete",
+      "objective": "观看结尾",
+      "locationId": "location.campus.lawn",
+      "completion": "event.chapter-01-complete",
+      "next": null
+    }
+  ],
+  "castIds": [
+    "npc.student.guide",
+    "npc.campus.tech",
+    "npc.terminal.echo",
+    "robot.helper.unitree",
+    "boss.robot.lion"
+  ],
+  "ending": {
+    "id": "ending.lion-safe-shutdown",
+    "summary": "三处关闭装置启动，巨型狮子机器人完成行礼后安全关机。",
+    "finalHook": "入侵来源：未知。"
+  }
+}
+

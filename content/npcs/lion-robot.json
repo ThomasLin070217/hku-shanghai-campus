@@ -1,0 +1,19 @@
+{
+  "schemaStatus": "draft-awaiting-runtime-schema",
+  "schemaVersion": 1,
+  "id": "boss.robot.lion",
+  "displayName": "巨型狮子机器人",
+  "officialName": null,
+  "role": "开学典礼表演机器人与本章 Boss",
+  "verbalDialogue": false,
+  "attacks": [
+    "forward-charge",
+    "close-swipe"
+  ],
+  "shutdownRequirement": {
+    "type": "activate-devices",
+    "count": 3,
+    "progressPersistsAfterHit": true
+  },
+  "defeatResult": "完成行礼动作后安全关机"
+}
