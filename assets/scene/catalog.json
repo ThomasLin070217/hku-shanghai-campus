@@ -1,6 +1,6 @@
 {
   "schema": "hku-scene/1",
-  "revision": "8361d64e7b72",
+  "revision": "9b095734b4d0",
   "units": "metres",
   "axes": "+X east-ish, -Z north-ish, +Y up; not georeferenced",
   "entities": [
@@ -47516,6 +47516,41 @@
       "editMode": "source"
     },
     {
+      "id": "A008-G-e25994826e05",
+      "name": "CDS_front_paving_lights",
+      "kind": "group",
+      "parentId": "A008",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/CDS_front_paving_lights#1",
+      "bounds": {
+        "min": [
+          54.0525,
+          0.085,
+          24.3525
+        ],
+        "max": [
+          61.2475,
+          0.095,
+          27.6975
+        ]
+      },
+      "center": [
+        57.65,
+        0.09,
+        26.025
+      ],
+      "size": [
+        7.195,
+        0.01,
+        3.345
+      ],
+      "sourceFile": "src/model/videoDetails.ts",
+      "sourceAnchor": "CDS_front_paving_lights",
+      "reference": "20261116-P04, staggered layout estimated from the photographed forecourt",
+      "confidence": "observed-components; estimated dimensions and route placement",
+      "editMode": "source"
+    },
+    {
       "id": "A008-P-039aff4809b7",
       "name": "Landscape_uplight_lens",
       "kind": "part",
@@ -47812,25 +47847,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/Entrance_flush_ground_light#3",
       "bounds": {
         "min": [
-          55.55,
+          55.7525,
           0.085,
-          26.25
+          25.8525
         ],
         "max": [
-          55.65,
-          0.097,
-          26.35
+          55.8475,
+          0.095,
+          25.9475
         ]
       },
       "center": [
-        55.6,
-        0.091,
-        26.3
+        55.8,
+        0.09,
+        25.9
       ],
       "size": [
-        0.1,
-        0.012,
-        0.1
+        0.095,
+        0.01,
+        0.095
       ],
       "sourceFile": "src/model/videoDetails.ts",
       "sourceAnchor": "Entrance_flush_ground_light",
@@ -47848,25 +47883,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/Entrance_flush_ground_light#2",
       "bounds": {
         "min": [
-          53.25,
+          53.1525,
           0.085,
-          26.25
+          25.8525
         ],
         "max": [
-          53.35,
-          0.097,
-          26.35
+          53.2475,
+          0.095,
+          25.9475
         ]
       },
       "center": [
-        53.3,
-        0.091,
-        26.3
+        53.2,
+        0.09,
+        25.9
       ],
       "size": [
-        0.1,
-        0.012,
-        0.1
+        0.095,
+        0.01,
+        0.095
       ],
       "sourceFile": "src/model/videoDetails.ts",
       "sourceAnchor": "Entrance_flush_ground_light",
@@ -47884,25 +47919,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/Entrance_flush_ground_light#1",
       "bounds": {
         "min": [
-          50.95,
+          51.1525,
           0.085,
-          26.25
+          25.8525
         ],
         "max": [
-          51.05,
-          0.097,
-          26.35
+          51.2475,
+          0.095,
+          25.9475
         ]
       },
       "center": [
-        51,
-        0.091,
-        26.3
+        51.2,
+        0.09,
+        25.9
       ],
       "size": [
-        0.1,
-        0.012,
-        0.1
+        0.095,
+        0.01,
+        0.095
       ],
       "sourceFile": "src/model/videoDetails.ts",
       "sourceAnchor": "Entrance_flush_ground_light",
@@ -47920,25 +47955,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/Entrance_flush_ground_light#7",
       "bounds": {
         "min": [
-          64.75,
+          64.8525,
           0.085,
-          26.25
+          25.8525
         ],
         "max": [
-          64.85,
-          0.097,
-          26.35
+          64.9475,
+          0.095,
+          25.9475
         ]
       },
       "center": [
-        64.8,
-        0.091,
-        26.3
+        64.9,
+        0.09,
+        25.9
       ],
       "size": [
-        0.1,
-        0.012,
-        0.1
+        0.095,
+        0.01,
+        0.095
       ],
       "sourceFile": "src/model/videoDetails.ts",
       "sourceAnchor": "Entrance_flush_ground_light",
@@ -47956,25 +47991,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/Entrance_flush_ground_light#6",
       "bounds": {
         "min": [
-          62.45,
+          62.7525,
           0.085,
-          26.25
+          25.8525
         ],
         "max": [
-          62.55,
-          0.097,
-          26.35
+          62.8475,
+          0.095,
+          25.9475
         ]
       },
       "center": [
-        62.5,
-        0.091,
-        26.3
+        62.8,
+        0.09,
+        25.9
       ],
       "size": [
-        0.1,
-        0.012,
-        0.1
+        0.095,
+        0.01,
+        0.095
       ],
       "sourceFile": "src/model/videoDetails.ts",
       "sourceAnchor": "Entrance_flush_ground_light",
@@ -47992,25 +48027,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/Entrance_flush_ground_light#5",
       "bounds": {
         "min": [
-          60.15,
+          60.4025,
           0.085,
-          26.25
+          25.8525
         ],
         "max": [
-          60.25,
-          0.097,
-          26.35
+          60.4975,
+          0.095,
+          25.9475
         ]
       },
       "center": [
-        60.2,
-        0.091,
-        26.3
+        60.45,
+        0.09,
+        25.9
       ],
       "size": [
-        0.1,
-        0.012,
-        0.1
+        0.095,
+        0.01,
+        0.095
       ],
       "sourceFile": "src/model/videoDetails.ts",
       "sourceAnchor": "Entrance_flush_ground_light",
@@ -48028,25 +48063,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/Entrance_flush_ground_light#4",
       "bounds": {
         "min": [
-          57.85,
+          58.0525,
           0.085,
-          26.25
+          25.8525
         ],
         "max": [
-          57.95,
-          0.097,
-          26.35
+          58.1475,
+          0.095,
+          25.9475
         ]
       },
       "center": [
-        57.9,
-        0.091,
-        26.3
+        58.1,
+        0.09,
+        25.9
       ],
       "size": [
-        0.1,
-        0.012,
-        0.1
+        0.095,
+        0.01,
+        0.095
       ],
       "sourceFile": "src/model/videoDetails.ts",
       "sourceAnchor": "Entrance_flush_ground_light",
@@ -50072,6 +50107,114 @@
       "material": "Video tree bark and supports"
     },
     {
+      "id": "A008-P-8beb8ef047e7",
+      "name": "Entrance_flush_ground_light",
+      "kind": "part",
+      "parentId": "A008-G-e25994826e05",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/CDS_front_paving_lights#1/Entrance_flush_ground_light#2",
+      "bounds": {
+        "min": [
+          56.5525,
+          0.085,
+          27.6025
+        ],
+        "max": [
+          56.6475,
+          0.095,
+          27.6975
+        ]
+      },
+      "center": [
+        56.6,
+        0.09,
+        27.65
+      ],
+      "size": [
+        0.095,
+        0.01,
+        0.095
+      ],
+      "sourceFile": "src/model/videoDetails.ts",
+      "sourceAnchor": "Entrance_flush_ground_light",
+      "reference": "20261116-P04, staggered layout estimated from the photographed forecourt",
+      "confidence": "observed-components; estimated dimensions and route placement",
+      "editMode": "source",
+      "material": "Night_warm lamps"
+    },
+    {
+      "id": "A008-P-8ceb9083cdd3",
+      "name": "Entrance_flush_ground_light",
+      "kind": "part",
+      "parentId": "A008-G-e25994826e05",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/CDS_front_paving_lights#1/Entrance_flush_ground_light#3",
+      "bounds": {
+        "min": [
+          55.9525,
+          0.085,
+          24.3525
+        ],
+        "max": [
+          56.0475,
+          0.095,
+          24.4475
+        ]
+      },
+      "center": [
+        56,
+        0.09,
+        24.4
+      ],
+      "size": [
+        0.095,
+        0.01,
+        0.095
+      ],
+      "sourceFile": "src/model/videoDetails.ts",
+      "sourceAnchor": "Entrance_flush_ground_light",
+      "reference": "20261116-P04, staggered layout estimated from the photographed forecourt",
+      "confidence": "observed-components; estimated dimensions and route placement",
+      "editMode": "source",
+      "material": "Night_warm lamps"
+    },
+    {
+      "id": "A008-P-8eeb93a9d9ab",
+      "name": "Entrance_flush_ground_light",
+      "kind": "part",
+      "parentId": "A008-G-e25994826e05",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/CDS_front_paving_lights#1/Entrance_flush_ground_light#1",
+      "bounds": {
+        "min": [
+          54.0525,
+          0.085,
+          27.6025
+        ],
+        "max": [
+          54.1475,
+          0.095,
+          27.6975
+        ]
+      },
+      "center": [
+        54.1,
+        0.09,
+        27.65
+      ],
+      "size": [
+        0.095,
+        0.01,
+        0.095
+      ],
+      "sourceFile": "src/model/videoDetails.ts",
+      "sourceAnchor": "Entrance_flush_ground_light",
+      "reference": "20261116-P04, staggered layout estimated from the photographed forecourt",
+      "confidence": "observed-components; estimated dimensions and route placement",
+      "editMode": "source",
+      "material": "Night_warm lamps"
+    },
+    {
       "id": "A008-P-9191ed527bd2",
       "name": "Young_tree_support",
       "kind": "part",
@@ -50108,6 +50251,42 @@
       "material": "Video tree bark and supports"
     },
     {
+      "id": "A008-P-91eb98626b6e",
+      "name": "Entrance_flush_ground_light",
+      "kind": "part",
+      "parentId": "A008-G-e25994826e05",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/CDS_front_paving_lights#1/Entrance_flush_ground_light#4",
+      "bounds": {
+        "min": [
+          58.5525,
+          0.085,
+          24.3525
+        ],
+        "max": [
+          58.6475,
+          0.095,
+          24.4475
+        ]
+      },
+      "center": [
+        58.6,
+        0.09,
+        24.4
+      ],
+      "size": [
+        0.095,
+        0.01,
+        0.095
+      ],
+      "sourceFile": "src/model/videoDetails.ts",
+      "sourceAnchor": "Entrance_flush_ground_light",
+      "reference": "20261116-P04, staggered layout estimated from the photographed forecourt",
+      "confidence": "observed-components; estimated dimensions and route placement",
+      "editMode": "source",
+      "material": "Night_warm lamps"
+    },
+    {
       "id": "A008-P-9291eee501be",
       "name": "Young_tree_support",
       "kind": "part",
@@ -50142,6 +50321,42 @@
       "confidence": "observed-components; estimated dimensions and route placement",
       "editMode": "source",
       "material": "Video tree bark and supports"
+    },
+    {
+      "id": "A008-P-92eb99f5f15a",
+      "name": "Entrance_flush_ground_light",
+      "kind": "part",
+      "parentId": "A008-G-e25994826e05",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/CDS_front_paving_lights#1/Entrance_flush_ground_light#5",
+      "bounds": {
+        "min": [
+          61.1525,
+          0.085,
+          24.3525
+        ],
+        "max": [
+          61.2475,
+          0.095,
+          24.4475
+        ]
+      },
+      "center": [
+        61.2,
+        0.09,
+        24.4
+      ],
+      "size": [
+        0.095,
+        0.01,
+        0.095
+      ],
+      "sourceFile": "src/model/videoDetails.ts",
+      "sourceAnchor": "Entrance_flush_ground_light",
+      "reference": "20261116-P04, staggered layout estimated from the photographed forecourt",
+      "confidence": "observed-components; estimated dimensions and route placement",
+      "editMode": "source",
+      "material": "Night_warm lamps"
     },
     {
       "id": "A008-P-9391f078b708",
@@ -413205,6 +413420,76 @@
       "editMode": "source"
     },
     {
+      "id": "B04-G-62122fc3e3f9",
+      "name": "CDS_entrance_night_photo_detail",
+      "kind": "group",
+      "parentId": "B04-G-55db244b9496",
+      "buildingId": "B04",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Lobby_visual_recess_PROVISIONAL#1/CDS_entrance_night_photo_detail#1",
+      "bounds": {
+        "min": [
+          57.225,
+          0.18,
+          18.6875
+        ],
+        "max": [
+          58.775,
+          3.33,
+          18.7655
+        ]
+      },
+      "center": [
+        58,
+        1.755,
+        18.7265
+      ],
+      "size": [
+        1.55,
+        3.15,
+        0.078
+      ],
+      "sourceFile": "src/model/observedInteriors.ts",
+      "sourceAnchor": "CDS_entrance_night_photo_detail",
+      "reference": "20261116-P04 / 20261116-P05",
+      "confidence": "confirmed-form_estimated-dimensions",
+      "editMode": "source"
+    },
+    {
+      "id": "B04-G-6ce488213f47",
+      "name": "Observed_blue_vertical_display",
+      "kind": "group",
+      "parentId": "B04-G-62122fc3e3f9",
+      "buildingId": "B04",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Lobby_visual_recess_PROVISIONAL#1/CDS_entrance_night_photo_detail#1/Observed_blue_vertical_display#1",
+      "bounds": {
+        "min": [
+          57.225,
+          0.18,
+          18.6875
+        ],
+        "max": [
+          58.775,
+          3.33,
+          18.7655
+        ]
+      },
+      "center": [
+        58,
+        1.755,
+        18.7265
+      ],
+      "size": [
+        1.55,
+        3.15,
+        0.078
+      ],
+      "sourceFile": "src/model/observedInteriors.ts",
+      "sourceAnchor": "Observed_blue_vertical_display",
+      "reference": "20261116-P04 / 20261116-P05",
+      "confidence": "confirmed-form_estimated-dimensions",
+      "editMode": "source"
+    },
+    {
       "id": "B04-G-753de7f2e1b4",
       "name": "Side_-1_wing_1_Glass_plane",
       "kind": "group",
@@ -478305,6 +478590,42 @@
       "material": "Glazing_clear"
     },
     {
+      "id": "B04-P-6fd92e1b375f",
+      "name": "Display_cool_upper_band",
+      "kind": "part",
+      "parentId": "B04-G-6ce488213f47",
+      "buildingId": "B04",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Lobby_visual_recess_PROVISIONAL#1/CDS_entrance_night_photo_detail#1/Observed_blue_vertical_display#1/Display_cool_upper_band#1",
+      "bounds": {
+        "min": [
+          57.3413,
+          2.1173,
+          18.7205
+        ],
+        "max": [
+          58.6587,
+          2.9677,
+          18.7655
+        ]
+      },
+      "center": [
+        58,
+        2.5425,
+        18.743
+      ],
+      "size": [
+        1.3175,
+        0.8505,
+        0.045
+      ],
+      "sourceFile": "src/model/observedInteriors.ts",
+      "sourceAnchor": "Display_cool_upper_band",
+      "reference": "20261116-P04 / 20261116-P05",
+      "confidence": "confirmed-form_estimated-dimensions",
+      "editMode": "source",
+      "material": "Night_Display_cool_upper_band"
+    },
+    {
       "id": "B04-P-70022b8944d6",
       "name": "Side_1_wing_1_window_11_5",
       "kind": "part",
@@ -487197,6 +487518,42 @@
       "material": "Opaque facade backing"
     },
     {
+      "id": "B04-P-7d528410cf96",
+      "name": "Observed_warm_portal_upright",
+      "kind": "part",
+      "parentId": "B04-G-55db244b9496",
+      "buildingId": "B04",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Lobby_visual_recess_PROVISIONAL#1/Observed_warm_portal_upright#2",
+      "bounds": {
+        "min": [
+          59.8475,
+          0.265,
+          18.7125
+        ],
+        "max": [
+          59.9125,
+          3.915,
+          18.7675
+        ]
+      },
+      "center": [
+        59.88,
+        2.09,
+        18.74
+      ],
+      "size": [
+        0.065,
+        3.65,
+        0.055
+      ],
+      "sourceFile": "src/model/observedInteriors.ts",
+      "sourceAnchor": "Observed_warm_portal_upright",
+      "reference": "R01",
+      "confidence": "confirmed-form_estimated-dimensions",
+      "editMode": "source",
+      "material": "Night_CDS_portal_warm_outline"
+    },
+    {
       "id": "B04-P-7d74bdbae046",
       "name": "Side_-1_wing_1_fin_3_0",
       "kind": "part",
@@ -489067,6 +489424,42 @@
       "confidence": "visible-glass_material-inferred",
       "editMode": "source",
       "material": "Glazing_office"
+    },
+    {
+      "id": "B04-P-805288c9615a",
+      "name": "Observed_warm_portal_upright",
+      "kind": "part",
+      "parentId": "B04-G-55db244b9496",
+      "buildingId": "B04",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Lobby_visual_recess_PROVISIONAL#1/Observed_warm_portal_upright#1",
+      "bounds": {
+        "min": [
+          56.0875,
+          0.265,
+          18.7125
+        ],
+        "max": [
+          56.1525,
+          3.915,
+          18.7675
+        ]
+      },
+      "center": [
+        56.12,
+        2.09,
+        18.74
+      ],
+      "size": [
+        0.065,
+        3.65,
+        0.055
+      ],
+      "sourceFile": "src/model/observedInteriors.ts",
+      "sourceAnchor": "Observed_warm_portal_upright",
+      "reference": "R01",
+      "confidence": "confirmed-form_estimated-dimensions",
+      "editMode": "source",
+      "material": "Night_CDS_portal_warm_outline"
     },
     {
       "id": "B04-P-805aaccf8b88",
@@ -526977,6 +527370,42 @@
       "material": "Opaque facade backing"
     },
     {
+      "id": "B04-P-c615cccee5b8",
+      "name": "Display_blue_field",
+      "kind": "part",
+      "parentId": "B04-G-6ce488213f47",
+      "buildingId": "B04",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Lobby_visual_recess_PROVISIONAL#1/CDS_entrance_night_photo_detail#1/Observed_blue_vertical_display#1/Display_blue_field#1",
+      "bounds": {
+        "min": [
+          57.225,
+          0.18,
+          18.6875
+        ],
+        "max": [
+          58.775,
+          3.33,
+          18.7325
+        ]
+      },
+      "center": [
+        58,
+        1.755,
+        18.71
+      ],
+      "size": [
+        1.55,
+        3.15,
+        0.045
+      ],
+      "sourceFile": "src/model/observedInteriors.ts",
+      "sourceAnchor": "Display_blue_field",
+      "reference": "20261116-P04 / 20261116-P05",
+      "confidence": "confirmed-form_estimated-dimensions",
+      "editMode": "source",
+      "material": "Night_Display_blue_field"
+    },
+    {
       "id": "B04-P-c63e839c3f54",
       "name": "Scenic_shadow_panel_PROVISIONAL",
       "kind": "part",
@@ -553005,6 +553434,42 @@
       "material": "Glazing_reflective"
     },
     {
+      "id": "B04-P-f7fb2b81d8e9",
+      "name": "Observed_warm_portal_header",
+      "kind": "part",
+      "parentId": "B04-G-55db244b9496",
+      "buildingId": "B04",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Lobby_visual_recess_PROVISIONAL#1/Observed_warm_portal_header#1",
+      "bounds": {
+        "min": [
+          56.085,
+          3.8775,
+          18.7125
+        ],
+        "max": [
+          59.915,
+          3.9425,
+          18.7675
+        ]
+      },
+      "center": [
+        58,
+        3.91,
+        18.74
+      ],
+      "size": [
+        3.83,
+        0.065,
+        0.055
+      ],
+      "sourceFile": "src/model/observedInteriors.ts",
+      "sourceAnchor": "Observed_warm_portal_header",
+      "reference": "R01",
+      "confidence": "confirmed-form_estimated-dimensions",
+      "editMode": "source",
+      "material": "Night_CDS_portal_warm_outline"
+    },
+    {
       "id": "B04-P-f80c971b1e7c",
       "name": "Side_-1_recess_spandrel_2_3",
       "kind": "part",
@@ -553867,6 +554332,42 @@
       "confidence": "visible-glass_material-inferred",
       "editMode": "source",
       "material": "Glazing_clear"
+    },
+    {
+      "id": "B04-P-f9ceaa0cdf60",
+      "name": "Display_cool_lower_band",
+      "kind": "part",
+      "parentId": "B04-G-6ce488213f47",
+      "buildingId": "B04",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Lobby_visual_recess_PROVISIONAL#1/CDS_entrance_night_photo_detail#1/Observed_blue_vertical_display#1/Display_cool_lower_band#1",
+      "bounds": {
+        "min": [
+          57.4653,
+          0.5895,
+          18.7205
+        ],
+        "max": [
+          58.5347,
+          0.9675,
+          18.7655
+        ]
+      },
+      "center": [
+        58,
+        0.7785,
+        18.743
+      ],
+      "size": [
+        1.0695,
+        0.378,
+        0.045
+      ],
+      "sourceFile": "src/model/observedInteriors.ts",
+      "sourceAnchor": "Display_cool_lower_band",
+      "reference": "20261116-P04 / 20261116-P05",
+      "confidence": "confirmed-form_estimated-dimensions",
+      "editMode": "source",
+      "material": "Night_Display_cool_lower_band"
     },
     {
       "id": "B04-P-f9d22e09f332",
@@ -657624,31 +658125,67 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/CDS_Landscape_Monument#1",
       "bounds": {
         "min": [
-          28.2206,
+          28.2011,
           0,
           27.2763
         ],
         "max": [
           34.0749,
-          2.05,
+          4.8975,
           31.679
         ]
       },
       "center": [
-        31.1478,
-        1.025,
+        31.138,
+        2.4488,
         29.4777
       ],
       "size": [
-        5.8543,
-        2.05,
+        5.8739,
+        4.8975,
         4.4027
       ],
       "sourceFile": "src/model/videoDetails.ts",
       "sourceAnchor": "CDS_Landscape_Monument",
-      "reference": "U03 00:17 + U06 02:55 panel close-up",
+      "reference": "U03 00:17 + U06 02:55 panel close-up + 20261116-P03 night lighting",
       "confidence": "observed-components; estimated dimensions and route placement",
       "editMode": "source"
+    },
+    {
+      "id": "S001-P-5b539a225244",
+      "name": "Monument_lamp_pole",
+      "kind": "part",
+      "parentId": "S001",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/CDS_Landscape_Monument#1/Monument_lamp_pole#1",
+      "bounds": {
+        "min": [
+          28.2158,
+          0,
+          30.7387
+        ],
+        "max": [
+          28.3784,
+          4.85,
+          30.9013
+        ]
+      },
+      "center": [
+        28.2971,
+        2.425,
+        30.82
+      ],
+      "size": [
+        0.1626,
+        4.85,
+        0.1626
+      ],
+      "sourceFile": "src/model/videoDetails.ts",
+      "sourceAnchor": "Monument_lamp_pole",
+      "reference": "U03 00:17 + U06 02:55 panel close-up + 20261116-P03 night lighting",
+      "confidence": "observed-components; estimated dimensions and route placement",
+      "editMode": "source",
+      "material": "Video dark fence steel"
     },
     {
       "id": "S001-P-6654dbace733",
@@ -657681,10 +658218,46 @@
       ],
       "sourceFile": "src/model/videoDetails.ts",
       "sourceAnchor": "Monument_grass_patch",
-      "reference": "U03 00:17 + U06 02:55 panel close-up",
+      "reference": "U03 00:17 + U06 02:55 panel close-up + 20261116-P03 night lighting",
       "confidence": "observed-components; estimated dimensions and route placement",
       "editMode": "source",
       "material": "U06 monument lawn"
+    },
+    {
+      "id": "S001-P-8e649ef0075d",
+      "name": "Monument_lamp_lens",
+      "kind": "part",
+      "parentId": "S001",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/CDS_Landscape_Monument#1/Monument_lamp_lens#1",
+      "bounds": {
+        "min": [
+          28.2798,
+          4.7855,
+          30.6789
+        ],
+        "max": [
+          28.5438,
+          4.8105,
+          30.8902
+        ]
+      },
+      "center": [
+        28.4118,
+        4.798,
+        30.7846
+      ],
+      "size": [
+        0.2641,
+        0.025,
+        0.2113
+      ],
+      "sourceFile": "src/model/videoDetails.ts",
+      "sourceAnchor": "Monument_lamp_lens",
+      "reference": "U03 00:17 + U06 02:55 panel close-up + 20261116-P03 night lighting",
+      "confidence": "observed-components; estimated dimensions and route placement",
+      "editMode": "source",
+      "material": "Night_warm lamps"
     },
     {
       "id": "S001-P-9b751db9c6ec",
@@ -657717,10 +658290,46 @@
       ],
       "sourceFile": "src/model/videoDetails.ts",
       "sourceAnchor": "Pale_stone_sign",
-      "reference": "U03 00:17 + U06 02:55 panel close-up",
+      "reference": "U03 00:17 + U06 02:55 panel close-up + 20261116-P03 night lighting",
       "confidence": "observed-components; estimated dimensions and route placement",
       "editMode": "source",
       "material": "Video pale stone"
+    },
+    {
+      "id": "S001-P-b2260daad6a5",
+      "name": "Monument_lamp_head",
+      "kind": "part",
+      "parentId": "S001",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/CDS_Landscape_Monument#1/Monument_lamp_head#1",
+      "bounds": {
+        "min": [
+          28.2249,
+          4.8025,
+          30.6274
+        ],
+        "max": [
+          28.5986,
+          4.8975,
+          30.9417
+        ]
+      },
+      "center": [
+        28.4118,
+        4.85,
+        30.7846
+      ],
+      "size": [
+        0.3737,
+        0.095,
+        0.3143
+      ],
+      "sourceFile": "src/model/videoDetails.ts",
+      "sourceAnchor": "Monument_lamp_head",
+      "reference": "U03 00:17 + U06 02:55 panel close-up + 20261116-P03 night lighting",
+      "confidence": "observed-components; estimated dimensions and route placement",
+      "editMode": "source",
+      "material": "Video dark fence steel"
     },
     {
       "id": "S001-TEXT",

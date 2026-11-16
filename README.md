@@ -2,6 +2,12 @@
 
 **场景编号与 AI 接手：** 右上角“场景编号”可搜索、点选细部、定位和复制修改任务。楼栋 B01–B07、道路 R001…、学院牌 S001。团队及 Agent 先读 [AI 最短接手指南](docs/AI-START.md)，工程约定见 [AGENTS.md](AGENTS.md)。支持离线源码索引、HTTP 与 MCP。
 
+**11 月 16 日照片更新：** 学院石牌夜间侧灯、CDS-1 正门错排地灯与门厅细节已更新。室内预览补了键盘墙前的弧形沙发、进门走廊和环形屏公共区。[照片与建模说明](references/campus-media/UPDATE-20261116.md)。
+
+**校园实拍素材库：** [原片、原图和关键帧索引](references/campus-media/index.html) · [下一轮补拍清单](references/campus-media/CAPTURE.md)。
+
+**室内实拍补充（2026-11-16）：** “实录室内”新增键盘墙休闲区和 HKU 翻板墙走廊，可旋转、看正面、导出 GLB。两处楼栋和楼层待确认。[取景与建模依据](docs/NOV14-VIDEO-UPDATE.md#11-月-15-日新素材键盘墙与翻板墙)。
+
 **三段实录补充（2026-11-15）：** 缩小草坪 HKU、补地灯和外围低绿篱、修正圆孔连廊位置与顶板、灯带昼夜分离。[素材与保留的原声](references/video-followup/index.html) · [修改前后](evidence/video-followup/index.html) · [依据及待确认项](references/video-followup/REPORT.md)。
 
 **最近修复（2026-11-14）：** 学院石牌新增黑色三维字并修复贴图空白；修整道路与步道重叠、入口铺装及地面碰撞。包含近期 WorkBuddy 反馈复核、界面与音频恢复、存档和资源生命周期修复。详见 [石牌与道路修复](docs/SIGN-ROADS-FIX.md)、[评审逐项处理](docs/WORKBUDDY-REVIEW.md)、[后续修复及验证](docs/REMAINING-FIXES.md)。

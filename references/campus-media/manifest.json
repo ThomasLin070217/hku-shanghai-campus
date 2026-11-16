@@ -1,0 +1,578 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "20261115-V01",
+      "kind": "video",
+      "title": "HKU 翻板墙走廊",
+      "tags": [
+        "翻板墙",
+        "走廊",
+        "室内",
+        "可动构件"
+      ],
+      "original": "2026-11-15/originals/V01-hku-flip-wall.mp4",
+      "sourceFilename": "c2f30ae164433b4a517b2ed5d80b7460.mp4",
+      "bytes": 1760847,
+      "sha256": "9f44d52cf17b0ea86fbf68cd487a9f129f485ec27cde9b57fd7f53c3c114dc4d",
+      "location": {
+        "status": "unverified"
+      },
+      "evidence": "实拍展示两色板阵列、墙框、走廊和单板翻动。",
+      "limitations": "楼栋、楼层、墙宽高、转轴尺寸和走廊端点待核。",
+      "sceneIds": [],
+      "modelRefs": [
+        "Observed_HKU_Flip_Wall_Corridor"
+      ],
+      "durationSeconds": 17.6,
+      "encodedPixels": [
+        960,
+        720
+      ],
+      "hasOriginalAudio": true,
+      "audioReviewed": false,
+      "frames": [
+        {
+          "seconds": 1.0,
+          "label": "斜向全墙，图案与顶槽",
+          "path": "2026-11-15/frames/V01-001000.jpg"
+        },
+        {
+          "seconds": 5.2,
+          "label": "手翻单块板，供转轴动作参考",
+          "path": "2026-11-15/frames/V01-005200.jpg"
+        },
+        {
+          "seconds": 16.2,
+          "label": "墙端附近的门和导视",
+          "path": "2026-11-15/frames/V01-016200.jpg"
+        }
+      ],
+      "preview": "2026-11-15/previews/V01.jpg",
+      "featuredFrame": "2026-11-15/frames/V01-005200.jpg"
+    },
+    {
+      "id": "20261115-V02",
+      "kind": "video",
+      "title": "夜间室内走拍与接待角",
+      "tags": [
+        "室内",
+        "走廊",
+        "夜景",
+        "墙面"
+      ],
+      "original": "2026-11-15/originals/V02-night-interior-walk.mp4",
+      "sourceFilename": "1c4628a9ab62a09e054507dddcabd0ec.mp4",
+      "bytes": 22914634,
+      "sha256": "1a11d72870b34c2c3a74025c5d1130ad8113ad6f1e86fa35181753cc3391b9d9",
+      "location": {
+        "status": "unverified"
+      },
+      "evidence": "可辨认玻璃、地毯、木门、柜体和局部墙面。",
+      "limitations": "暗光和运动模糊较多，仅作装潢参考；楼层和路线未核对。",
+      "sceneIds": [],
+      "modelRefs": [],
+      "durationSeconds": 98.04,
+      "encodedPixels": [
+        960,
+        720
+      ],
+      "hasOriginalAudio": true,
+      "audioReviewed": false,
+      "frames": [
+        {
+          "seconds": 14.7,
+          "label": "玻璃侧和地毯",
+          "path": "2026-11-15/frames/V02-014700.jpg"
+        },
+        {
+          "seconds": 44.1,
+          "label": "木门、门框与门牌",
+          "path": "2026-11-15/frames/V02-044100.jpg"
+        },
+        {
+          "seconds": 74.5,
+          "label": "木饰面及画框一角",
+          "path": "2026-11-15/frames/V02-074500.jpg"
+        }
+      ],
+      "preview": "2026-11-15/previews/V02.jpg",
+      "featuredFrame": "2026-11-15/frames/V02-014700.jpg"
+    },
+    {
+      "id": "20261115-V03",
+      "kind": "video",
+      "title": "305／309 指示与夜间走廊",
+      "tags": [
+        "室内",
+        "走廊",
+        "导视",
+        "305",
+        "309"
+      ],
+      "original": "2026-11-15/originals/V03-room-305-309-corridor.mp4",
+      "sourceFilename": "1801b5dde7d6a247353da902631c21e7.mp4",
+      "bytes": 2586729,
+      "sha256": "7c04190363686e98e5096d0f46aafea5b726d34e17b188279ac7ec2e32779fcc",
+      "location": {
+        "status": "unverified"
+      },
+      "evidence": "画面可读 305 会客室、309 纪念品商店与洗手间指示，提供局部门位关系。",
+      "limitations": "门牌可见，楼栋、路线起终点和相邻空间未核对。",
+      "sceneIds": [],
+      "modelRefs": [],
+      "durationSeconds": 58.58,
+      "encodedPixels": [
+        960,
+        720
+      ],
+      "hasOriginalAudio": true,
+      "audioReviewed": false,
+      "frames": [
+        {
+          "seconds": 8.8,
+          "label": "305 会客室与 309 纪念品商店导视",
+          "path": "2026-11-15/frames/V03-008800.jpg"
+        },
+        {
+          "seconds": 26.4,
+          "label": "玻璃门把手与走廊方向",
+          "path": "2026-11-15/frames/V03-026400.jpg"
+        },
+        {
+          "seconds": 44.5,
+          "label": "地毯、连续门位和顶灯",
+          "path": "2026-11-15/frames/V03-044500.jpg"
+        }
+      ],
+      "preview": "2026-11-15/previews/V03.jpg",
+      "featuredFrame": "2026-11-15/frames/V03-008800.jpg"
+    },
+    {
+      "id": "20261115-V04",
+      "kind": "video",
+      "title": "植物与建筑主题墙画",
+      "tags": [
+        "室内",
+        "装饰",
+        "挂画"
+      ],
+      "original": "2026-11-15/originals/V04-botanical-artwork.mp4",
+      "sourceFilename": "955fa2f784425abaa5429ab6d7cb769d.mp4",
+      "bytes": 736203,
+      "sha256": "53da8ea3e5f8badf511c1515c37679e27415a326bccd9bc3333b06755a59d19f",
+      "location": {
+        "status": "unverified"
+      },
+      "evidence": "拍到木饰面上的画框、植物和建筑图案，可作为装饰造型参考。",
+      "limitations": "画作作者、使用权限、尺寸及所在空间待核。",
+      "sceneIds": [],
+      "modelRefs": [],
+      "durationSeconds": 4.47,
+      "encodedPixels": [
+        720,
+        960
+      ],
+      "hasOriginalAudio": true,
+      "audioReviewed": false,
+      "frames": [
+        {
+          "seconds": 0.7,
+          "label": "墙画和外框全貌",
+          "path": "2026-11-15/frames/V04-000700.jpg"
+        },
+        {
+          "seconds": 2.4,
+          "label": "植物与建筑细节",
+          "path": "2026-11-15/frames/V04-002400.jpg"
+        }
+      ],
+      "preview": "2026-11-15/previews/V04.jpg",
+      "featuredFrame": "2026-11-15/frames/V04-000700.jpg"
+    },
+    {
+      "id": "20261115-V05",
+      "kind": "video",
+      "title": "木门与叶形装饰",
+      "tags": [
+        "室内",
+        "门",
+        "装饰"
+      ],
+      "original": "2026-11-15/originals/V05-door-and-leaf-panel.mp4",
+      "sourceFilename": "63c3d480d02ae41669896124bacd891a.mp4",
+      "bytes": 370854,
+      "sha256": "049593658cd221b01bfccf14de5ede7ffbc36fe96d79a96f46294cd70e39e53d",
+      "location": {
+        "status": "unverified"
+      },
+      "evidence": "画面可辨认浅木门和竖向叶形装饰。",
+      "limitations": "暗部细节有限，镜面材质、楼层、走廊连通及完整装饰尺寸待核。",
+      "sceneIds": [],
+      "modelRefs": [],
+      "durationSeconds": 11.12,
+      "encodedPixels": [
+        960,
+        720
+      ],
+      "hasOriginalAudio": true,
+      "audioReviewed": false,
+      "frames": [
+        {
+          "seconds": 3.3,
+          "label": "叶形装饰与木门并列",
+          "path": "2026-11-15/frames/V05-003300.jpg"
+        },
+        {
+          "seconds": 6.7,
+          "label": "门板与把手",
+          "path": "2026-11-15/frames/V05-006700.jpg"
+        }
+      ],
+      "preview": "2026-11-15/previews/V05.jpg",
+      "featuredFrame": "2026-11-15/frames/V05-003300.jpg"
+    },
+    {
+      "id": "20261115-V06",
+      "kind": "video",
+      "title": "球场夜景、栏杆与邻侧休息区",
+      "tags": [
+        "室外",
+        "室内",
+        "球场",
+        "栏杆",
+        "夜景"
+      ],
+      "original": "2026-11-15/originals/V06-court-balcony-walk.mp4",
+      "sourceFilename": "81095c7c2bfa1e004717ae8cb79be3ab.mp4",
+      "bytes": 1974529,
+      "sha256": "1f5dd9d1339fb7b23f4819af6fd35272d8347994afa628ae86e93fc44bd1f89e",
+      "location": {
+        "status": "unverified"
+      },
+      "evidence": "拍到高处栏杆、球场照明、玻璃和回到室内后的休息座椅。",
+      "limitations": "球场对应编号、取景楼层、实际路线和标高待核。",
+      "sceneIds": [],
+      "modelRefs": [],
+      "durationSeconds": 29.71,
+      "encodedPixels": [
+        960,
+        720
+      ],
+      "hasOriginalAudio": true,
+      "audioReviewed": false,
+      "frames": [
+        {
+          "seconds": 0.7,
+          "label": "高处栏杆与玻璃外墙",
+          "path": "2026-11-15/frames/V06-000700.jpg"
+        },
+        {
+          "seconds": 8.9,
+          "label": "两块场地及围网、灯的位置关系",
+          "path": "2026-11-15/frames/V06-008900.jpg"
+        },
+        {
+          "seconds": 17.8,
+          "label": "室内座椅和落地窗",
+          "path": "2026-11-15/frames/V06-017800.jpg"
+        }
+      ],
+      "preview": "2026-11-15/previews/V06.jpg",
+      "featuredFrame": "2026-11-15/frames/V06-008900.jpg"
+    },
+    {
+      "id": "20261115-P01",
+      "kind": "photo",
+      "title": "键盘墙休闲区全景",
+      "tags": [
+        "键盘墙",
+        "室内",
+        "弧形台阶"
+      ],
+      "original": "2026-11-15/originals/P01-keyboard-room-wide.jpg",
+      "sourceFilename": "9ecfb9c815e6043358e792f11ef5e314.jpg",
+      "bytes": 6411198,
+      "sha256": "9758f8bac9bfa71de0391bf84541920fd061a1eb6606c7a676ef7bebfca890f0",
+      "location": {
+        "status": "unverified"
+      },
+      "evidence": "四排键帽、木墙、弧形阶梯、左侧楼梯、栏杆及周边座椅。画面水印为 21:37。",
+      "limitations": "楼栋、楼层、空间跨度与阶梯尺度待核。",
+      "sceneIds": [],
+      "modelRefs": [
+        "Observed_Keyboard_Wall_Lounge"
+      ],
+      "displayPixels": [
+        4520,
+        3072
+      ],
+      "preview": "2026-11-15/previews/P01.jpg"
+    },
+    {
+      "id": "20261115-P02",
+      "kind": "photo",
+      "title": "键帽近照与取下的 K 键",
+      "tags": [
+        "键盘墙",
+        "构件",
+        "键帽"
+      ],
+      "original": "2026-11-15/originals/P02-keyboard-keycap-detail.jpg",
+      "sourceFilename": "7bfa0c3f5913b0e9f45fa329ac990f09.jpg",
+      "bytes": 6576897,
+      "sha256": "f1f7c78a081eaf4a7031e927f1044e55f1f676c345fa7716f326ebd115ddb819",
+      "location": {
+        "status": "unverified"
+      },
+      "evidence": "可见圆形键面、蓝底、底部空槽及取下的 K 键。画面水印为 21:37。",
+      "limitations": "安装深度和固定方式待核；全景与近照是不同装配状态。",
+      "sceneIds": [],
+      "modelRefs": [
+        "Observed_Keyboard_Wall_Lounge"
+      ],
+      "displayPixels": [
+        4520,
+        3072
+      ],
+      "preview": "2026-11-15/previews/P02.jpg"
+    },
+    {
+      "id": "20261115-P03",
+      "kind": "photo",
+      "title": "HKU 翻板墙斜侧全景",
+      "tags": [
+        "翻板墙",
+        "室内",
+        "走廊"
+      ],
+      "original": "2026-11-15/originals/P03-flip-wall-oblique.jpg",
+      "sourceFilename": "e30ce47d6ec1f4aed33ebc240a942858.jpg",
+      "bytes": 8744093,
+      "sha256": "40419d5571ffbbf3dd19c49b7f00df75c25f8b9b4e760d724cd66d6ef7f9e3f9",
+      "location": {
+        "status": "unverified"
+      },
+      "evidence": "木面和深灰绿翻板、板缝及灯槽；与 V01 可交叉核对。画面水印为 21:51。",
+      "limitations": "近端边缘部分出画，整面网格数量和真实间距待核。",
+      "sceneIds": [],
+      "modelRefs": [
+        "Observed_HKU_Flip_Wall_Corridor"
+      ],
+      "displayPixels": [
+        4520,
+        3072
+      ],
+      "preview": "2026-11-15/previews/P03.jpg"
+    },
+    {
+      "id": "20261115-C01",
+      "kind": "context",
+      "title": "Campus Break 暂停提示截图",
+      "tags": [
+        "讨论背景"
+      ],
+      "original": "2026-11-15/originals/C01-campus-break-context.jpg",
+      "sourceFilename": "0048d74992ea809c87fabeaa674b5ba1.jpg",
+      "bytes": 634768,
+      "sha256": "4128b5873f60d3cc82ac0d7be39d27df9075f3b8d6b0cb6f5c50474f78f56639",
+      "location": {
+        "status": "not-applicable"
+      },
+      "evidence": "页面提示 Campus Break 暂停。",
+      "limitations": "画面没有给出暂停原因或赛题限制。",
+      "sceneIds": [],
+      "modelRefs": [],
+      "displayPixels": [
+        1264,
+        2780
+      ],
+      "preview": "2026-11-15/previews/C01.jpg"
+    },
+    {
+      "id": "20261116-P01",
+      "title": "键盘墙休闲区补拍全景",
+      "kind": "photo",
+      "tags": [
+        "键盘墙",
+        "弧形沙发",
+        "弧形木阶",
+        "室内"
+      ],
+      "original": "2026-11-16/originals/P01-keyboard-lounge-wide.jpg",
+      "sourceFilename": "codex-clipboard-4fbc6216-d743-41f0-8fa8-529fc37cf7a2.jpg",
+      "bytes": 148716,
+      "sha256": "3f10a363d07e975cf8b5855ba6239f139c978c093b71fb738cce2fd1024abf24",
+      "location": {
+        "status": "unverified"
+      },
+      "evidence": "前景弧形沙发、圆形地毯、盆栽和上方包边。",
+      "limitations": "独立预览，楼栋、楼层及尺寸尚未核对。",
+      "sceneIds": [],
+      "modelRefs": [
+        "Observed_Keyboard_Wall_Lounge"
+      ],
+      "displayPixels": [
+        1707,
+        1280
+      ],
+      "preview": "2026-11-16/previews/P01.jpg"
+    },
+    {
+      "id": "20261116-P02",
+      "title": "环形屏公共区",
+      "kind": "photo",
+      "tags": [
+        "环形屏",
+        "电梯",
+        "桌椅",
+        "室内"
+      ],
+      "original": "2026-11-16/originals/P02-ring-display-room.jpg",
+      "sourceFilename": "codex-clipboard-c0f95048-8403-474b-a0a2-fd155ae63007.jpg",
+      "bytes": 174281,
+      "sha256": "00eb168bb3b0c7bed85922f841e42262b8d70f12ae6b4eaa9dbf8a4414f0bf0c",
+      "location": {
+        "status": "unverified"
+      },
+      "evidence": "内倾环形屏、中央顶板、浅色地面红色嵌砖、电梯及后排高凳。",
+      "limitations": "照片展示部分环面及家具布置，楼栋、楼层和环径待核。",
+      "sceneIds": [],
+      "modelRefs": [
+        "Observed_Ring_Display_Room"
+      ],
+      "displayPixels": [
+        1707,
+        1280
+      ],
+      "preview": "2026-11-16/previews/P02.jpg"
+    },
+    {
+      "id": "20261116-P03",
+      "title": "学院石牌与草坪夜景",
+      "kind": "photo",
+      "tags": [
+        "学院石牌",
+        "草坪",
+        "路灯",
+        "夜景"
+      ],
+      "original": "2026-11-16/originals/P03-monument-night.jpg",
+      "sourceFilename": "codex-clipboard-6ec2c8e1-9f34-40fb-8977-46ab56480fc3.jpg",
+      "bytes": 145933,
+      "sha256": "0dca1cbe7d96592c376a46a8c5fb7f6c84603d3e7baee184e4feda7021a65234",
+      "location": {
+        "status": "identified",
+        "label": "CDS-1 学院石牌"
+      },
+      "evidence": "招牌左前高杆灯形成明显侧光，牌前有一只低位灯，草坪有弧形路缘。",
+      "limitations": "夜景透视仅用于观察光向和构件，不能量取道路位置、灯距或照度。",
+      "sceneIds": [
+        "S001",
+        "S001-TEXT"
+      ],
+      "modelRefs": [],
+      "displayPixels": [
+        1702,
+        1276
+      ],
+      "preview": "2026-11-16/previews/P03.jpg"
+    },
+    {
+      "id": "20261116-P04",
+      "title": "CDS-1 正门与地灯夜景",
+      "kind": "photo",
+      "tags": [
+        "正门",
+        "夜景",
+        "旋转门",
+        "地灯"
+      ],
+      "original": "2026-11-16/originals/P04-cds-entry-night.jpg",
+      "sourceFilename": "codex-clipboard-3b3aa3cf-7695-47b0-b542-5e1e9d11a5e4.jpg",
+      "bytes": 126774,
+      "sha256": "62231fbdcef52219c3bc262ea9a2895fc4f72e5918864d1de61d5a3af6ac1259",
+      "location": {
+        "status": "identified",
+        "label": "B04 CDS-1 正门及门厅"
+      },
+      "evidence": "中心旋转门、冷色竖屏、暖色门厅，门前可见错排地灯。",
+      "limitations": "照片中的灯距、色温和亮度只能估计。",
+      "sceneIds": [
+        "B04-ENTRY",
+        "A007"
+      ],
+      "modelRefs": [
+        "CDS1_Observed_Lobby"
+      ],
+      "displayPixels": [
+        1280,
+        1707
+      ],
+      "preview": "2026-11-16/previews/P04.jpg"
+    },
+    {
+      "id": "20261116-P05",
+      "title": "CDS-1 门厅闸机与灯框",
+      "kind": "photo",
+      "tags": [
+        "门厅",
+        "闸机",
+        "灯框",
+        "校徽",
+        "室内"
+      ],
+      "original": "2026-11-16/originals/P05-cds-lobby-gates.jpg",
+      "sourceFilename": "codex-clipboard-339467aa-a9d3-4917-be24-6433243a887a.jpg",
+      "bytes": 176751,
+      "sha256": "21ca05d7a24ae3612dff24e28171f3f91e5909fc8ad32dd176b226c9f386d174",
+      "location": {
+        "status": "identified",
+        "label": "B04 CDS-1 正门及门厅"
+      },
+      "evidence": "细长闸机、立式终端、玻璃挡片，后方有暖白门框灯及冷色屏。",
+      "limitations": "闸机与门框间距暂估。原图保留屏幕内容，模型使用通用图形。",
+      "sceneIds": [
+        "B04-ENTRY"
+      ],
+      "modelRefs": [
+        "CDS1_Observed_Lobby"
+      ],
+      "displayPixels": [
+        1280,
+        1707
+      ],
+      "preview": "2026-11-16/previews/P05.jpg"
+    },
+    {
+      "id": "20261116-P06",
+      "title": "通向键盘墙的走廊",
+      "kind": "photo",
+      "tags": [
+        "键盘墙",
+        "走廊",
+        "格栅",
+        "门框",
+        "室内"
+      ],
+      "original": "2026-11-16/originals/P06-keyboard-approach-corridor.jpg",
+      "sourceFilename": "codex-clipboard-50025ab9-5bb5-41a9-8ad5-80385ad1616e.jpg",
+      "bytes": 68977,
+      "sha256": "a8ba3d870e2368b86730bc38638402d93c3dc9822b5040d73f810e7f944f4e0c",
+      "location": {
+        "status": "unverified"
+      },
+      "evidence": "从窄走廊穿过门框可见键盘墙的一侧，左侧竖格栅、右侧连续墙面。",
+      "limitations": "确认视线关系，走廊长度、接入角度和所在楼层尚未核对。",
+      "sceneIds": [],
+      "modelRefs": [
+        "Observed_Keyboard_Wall_Lounge"
+      ],
+      "displayPixels": [
+        960,
+        1280
+      ],
+      "preview": "2026-11-16/previews/P06.jpg"
+    }
+  ]
+}

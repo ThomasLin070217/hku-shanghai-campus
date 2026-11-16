@@ -6,7 +6,7 @@ import {CALIBRATED_LAYOUT as CL} from './scaleCalibration';
 
 import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
 
-import {VIDEO_DETAILS as V} from './videoDetailsParameters';
+import {MONUMENT_NIGHT_POLE, VIDEO_DETAILS as V} from './videoDetailsParameters';
 import type {BuildingSpec} from './campusParameters';
 
 export function addVideoDetails(environment:T.Group,circulation:T.Group,sports:T.Group,buildings:Map<string,T.Group>,specs:BuildingSpec[]){
@@ -45,18 +45,28 @@ export function addVideoDetails(environment:T.Group,circulation:T.Group,sports:T
  for(const x of [-78,-40,0,40,78]){box(root,'Court_light_pole',.13,6.1,.13,x,3.05,-102.5,steel);box(root,'Court_light_head',.6,.12,.35,x,6.12,-102.5,warm);}
  const steps=V.northernSteps,b=specs.find(b=>b.id===steps.building)!;
  for(let i=0;i<steps.count;i++){const y=(i+1)*steps.rise,z=b.z-b.depth/2-steps.run*(steps.count-i-.5);box(root,'Northern_door_step',steps.width,y,steps.run,b.x,y/2,z,stone);for(const side of [-1,1])box(root,'Recessed_step_light',.12,.07,.018,b.x+side*(steps.width/2-.2),y-.08,z-steps.run/2-.01,warm);}
- const sign=new T.Group();sign.name='CDS_Landscape_Monument';sign.userData={source:'U03 00:17 + U06 02:55 panel close-up',dimensions:'estimated',placement:'approximate southwest of CDS-1'};sign.position.set(V.monument.x,0,V.monument.z);sign.rotation.y=V.monument.rotation;root.add(sign);
+ const sign=new T.Group();sign.name='CDS_Landscape_Monument';sign.userData={source:'U03 00:17 + U06 02:55 panel close-up + 20261116-P03 night lighting',dimensions:'estimated',placement:'approximate southwest of CDS-1'};sign.position.set(V.monument.x,0,V.monument.z);sign.rotation.y=V.monument.rotation;root.add(sign);
  box(sign,'Pale_stone_sign',V.monument.width,V.monument.height,V.monument.depth,0,V.monument.height/2,0,stone);
  box(sign,'Monument_grass_patch',5.2,.14,3.0,0,.07,.5,mat('U06 monument lawn',0x69964a));
  addMonumentFace(sign,V.monument);uplight(V.monument.x,V.monument.z+.8);
+ const pole=MONUMENT_NIGHT_POLE;
+ box(sign,'Monument_lamp_pole',pole.radius*2,pole.height,pole.radius*2,pole.localX,pole.height/2,pole.localZ,steel);
+ box(sign,'Monument_lamp_head',.32,.095,.23,pole.localX+.12,pole.height,pole.localZ,steel);
+ box(sign,'Monument_lamp_lens',.23,.025,.15,pole.localX+.12,pole.height-.052,pole.localZ,warm);
  const q=V.hallSign;box(root,'Building_6_wayfinding',q.width,q.height,q.depth,q.x,q.height/2,q.z,stone);box(root,'Building_6_number_panel',q.width-.10,.80,.025,q.x,q.height-.50,q.z+.125,steel);label(root,'Observed_building_6_number','6',.53,q.x,q.height-.75,q.z+.15,white);
  // A few observed path luminaires; no guessed fixtures spread across unseen streets.
  for(const z of [-42,-19,48]){box(root,'Walk_light_pole',.10,4.8,.10,CL.eastLampX,2.4,z,steel);box(root,'Walk_light_lamp',.35,.10,.42,CL.eastLampX,4.82,z,warm);}
  // Warm vestibule glazing preserves the existing frame and door rhythm.
  const cds=specs.find(b=>b.id==='B04')!,bd=buildings.get('B04')!;
- const vestibule=new T.Group();vestibule.name='Observed_Entrance_Light_And_Inlay';vestibule.userData={source:'U03 00:00–00:09',confidence:'lit-vestibule observed; panes simplified'};bd.add(vestibule);
+ const vestibule=new T.Group();vestibule.name='Observed_Entrance_Light_And_Inlay';vestibule.userData={source:'U03 00:00–00:09 + 20261116-P04–P05',confidence:'lit-vestibule observed; panes simplified'};bd.add(vestibule);
  // Lighting now lives behind real clear glazing in the shallow lobby recess. No opaque facade overlay.
- for(let i=0;i<7;i++)box(root,'Entrance_flush_ground_light',.10,.012,.10,cds.x-7+i*2.3,.091,cds.z+cds.depth/2+5.8,warm);
+ const entranceLights = new T.Group();
+ entranceLights.name='CDS_front_paving_lights';
+ entranceLights.userData.source='20261116-P04, staggered layout estimated from the photographed forecourt';
+ root.add(entranceLights);
+ const points=[[-6.8,5.4],[-4.8,5.4],[-2.2,5.4],[.1,5.4],[2.45,5.4],[4.8,5.4],[6.9,5.4],[-3.9,7.15],[-1.4,7.15],[-2.0,3.9],[.6,3.9],[3.2,3.9]];
+ // Retain the seven existing part keys. Add the other observed lights under a separate group.
+ for(const [i,[x,z]] of points.entries())box(i<7?root:entranceLights,'Entrance_flush_ground_light',.095,.010,.095,cds.x+x,.090,cds.z+cds.depth/2+z,warm);
  // Visible low-level interior light bands are scenic facades, not navigable rooms.
  // Removed Night_side_glazing/Night_northern_glazing opaque surface patches; recessed lamps supply night depth.
  purple.userData={...purple.userData,dayColor:0x8b9491,nightColor:0xa99aff};purple.color.setHex(0x8b9491);

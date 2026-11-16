@@ -8,7 +8,7 @@ import {COLUMN_X,CALIBRATED_LAYOUT as CL} from '../model/scaleCalibration';
 
 import {LION,lionBodySize} from '../model/lionParameters';
 import {NOV13 as N} from '../model/nov13Parameters';
-import {VIDEO_DETAILS as V} from '../model/videoDetailsParameters';
+import {MONUMENT_NIGHT_POLE, monumentPolePosition, VIDEO_DETAILS as V} from '../model/videoDetailsParameters';
 import type {BuildingSpec,SiteParameters} from '../model/campusParameters';
 import {EXPLORATION as C,LANDSCAPE as L} from './config';
 export interface Obstacle {name:string;x:number;z:number;w:number;d:number;bottom:number;top:number;angle:number;radius?:number}
@@ -65,6 +65,7 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters){
  for(const p of V.hedgeCenters){box('video-hedge',p.x,p.z,1.65,V.hedgeLength,.65);circle('video-sapling',p.x,p.z+2.3,.16,3.7);}
  for(const p of V.northernBeds)box('northern-hedge',p.x,-90.5,p.width,2.6,.76);
  const mon=V.monument;box('CDS-landscape-monument',mon.x,mon.z,mon.width,mon.depth,mon.height,0,mon.rotation);
+ const pole=monumentPolePosition();circle('CDS-monument-lamp-pole',pole.x,pole.z,MONUMENT_NIGHT_POLE.radius,MONUMENT_NIGHT_POLE.height);
  const hs=V.hallSign;box('building-6-sign',hs.x,hs.z,hs.width,hs.depth,hs.height);
  for(const z of [-42,-19,48])circle('walk-lamp',CL.eastLampX,z,.10,4.8);
  for(const x of [-78,-40,0,40,78])circle('court-light',x,-102.5,.10,6.1);

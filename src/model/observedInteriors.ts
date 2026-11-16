@@ -5,9 +5,10 @@ import {glassMaterial,pane} from './glazing';import {compact}from './buildCampus
 
 export const INTERIORS={lobby:{width:18,depth:14,height:7.6},floor13:{width:18,depth:15,height:3.2},source:'User IMG_4347.MOV 03:14–04:05 / 04:49–05:00',scale:'All dimensions approximate; only photographed areas represented'};
 export function buildObservedInterior(kind:'lobby'|'floor13'){
- const root=new T.Group();root.name=kind==='lobby'?'CDS1_Observed_Lobby':'CDS1_13F_Public_Area';root.userData={source:INTERIORS.source,kind,parameters:INTERIORS[kind],confidence:INTERIORS.scale,scope:'Independent cutaway; not a full floor plan or functional elevator'};
+ const root=new T.Group();root.name=kind==='lobby'?'CDS1_Observed_Lobby':'CDS1_13F_Public_Area';root.userData={source:INTERIORS.source,kind,parameters:INTERIORS[kind],confidence:INTERIORS.scale,...(kind==='lobby'?{photos:['20261116-P04','20261116-P05']}:{}),scope:'Independent cutaway; not a full floor plan or functional elevator'};
  const group=(n:string)=>{const g=new T.Group();g.name=n;root.add(g);return g;},shell=group('Structure'),furniture=group('Observed_furniture'),lights=group('Ceiling_and_lights'),doors=group('Doors_and_elevators'),signs=group('Signage');
  const mat=(name:string,color:number)=>new T.MeshStandardMaterial({name,color,roughness:.82});const cream=mat('Interior limestone',0xd5cdb5),white=mat('Interior ivory wall',0xe1ded0),timber=mat('Interior warm timber',0xae885c),stone=mat('Interior grey stone',0x898b84),metal=mat('Interior aluminium',0x9baba8),dark=mat('Interior dark mat',0x313b39),black=mat('Interior appliance',0x303b3b),green=mat('Interior foliage',0x59774e),glass=glassMaterial('clear');
+ const satin=mat('Interior satin portal metal',0xdfd7c3),gate=mat('Interior dark gate body',0x303a41);
  const lamp=mat('Night_interior_LED',0xffedc5);lamp.emissive.setHex(0xffe6b3);lamp.emissiveIntensity=.7;
  function box(g:T.Object3D,n:string,w:number,h:number,d:number,x:number,y:number,z:number,m:T.Material){const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.name=n;o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;g.add(o);return o;}
  function text(label:string,size:number,x:number,y:number,z:number,m:T.Material){const geo=new TextGeometry(label,{font,size,depth:.015,curveSegments:1});const o=new T.Mesh(geo,m);o.name='Observed_label_'+label;o.position.set(x,y,z);signs.add(o);return o;}
@@ -16,9 +17,18 @@ export function buildObservedInterior(kind:'lobby'|'floor13'){
   const p=INTERIORS.lobby;box(shell,'Lobby_floor',p.width,.18,p.depth,0,-.09,0,cream);box(shell,'Lobby_back_wall',p.width,p.height,.18,0,p.height/2,-7,white);box(shell,'Lobby_left_wall',.18,p.height,14,-9,p.height/2,0,white);box(shell,'Lobby_right_wall',.18,p.height,14,9,p.height/2,0,white);
   // A black entrance mat continues to the access-control gates; each gate is a distinct object.
   box(furniture,'Entrance_black_mat',5,.025,8,0,.013,2.7,dark);
-  for(const x of [-3.8,-1.9,0,1.9,3.8]){box(doors,'Turnstile_body',.25,.92,1.2,x,.46,-2.4,metal);pane(doors,'Turnstile_glass_flap',.72,.66,x+.48,.68,-2.4,glass);box(doors,'Turnstile_reader',.17,.05,.22,x,.96,-2.15,black);}
+  for(const x of [-3.05,-1.53,0,1.53,3.05]){
+   box(doors,'Turnstile_body',.22,.91,1.88,x,.455,-2.05,gate);
+   box(doors,'Turnstile_steel_cap',.24,.046,1.91,x,.923,-2.05,metal);
+   box(doors,'Turnstile_reader_stand',.058,.25,.065,x,1.055,-1.46,gate);
+   box(doors,'Turnstile_reader',.21,.29,.065,x,1.262,-1.46,black);
+  }
+  for(const x of [-2.29,-.765,.765,2.29])pane(doors,'Turnstile_glass_flap',1.28,.58,x,.64,-2.09,glass);
   // Stone wall and lit portal lead to the elevator corridor seen at 03:35 and 04:00.
   box(shell,'Stone_portal_left',3.6,5.1,.28,-4.6,2.55,-4.5,timber);box(shell,'Stone_portal_right',3.6,5.1,.28,4.6,2.55,-4.5,timber);box(shell,'Stone_portal_header',12.8,1.5,.28,0,4.35,-4.5,timber);text('SCHOOL OF',.25,-2.0,4.60,-4.31,dark);text('COMPUTING & DATA SCIENCE',.23,-2.05,4.18,-4.31,dark);
+  box(shell,'Portal_satin_soffit',5.22,.14,2.55,0,3.37,-5.5,satin);
+  for(const side of [-1,1])box(shell,'Portal_satin_lining',.16,3.4,2.55,side*2.68,1.7,-5.5,satin);
+  addPortalDisplay(furniture,0,-6.61,1.20,2.72);
   for(const z of [-4.25,-5.5,-6.7]){for(const side of [-1,1])box(lights,'Portal_LED_return',.045,3.3,.045,side*2.6,1.65,z,lamp);box(lights,'Portal_LED_header',5.2,.045,.045,0,3.3,z,lamp);}
   elevator(-5.3,-6.85,'1');elevator(5.3,-6.85,'1');
   // Side reception: curved counter translated to stepped blocks, no speculative rooms behind it.
@@ -50,11 +60,32 @@ export function buildObservedInterior(kind:'lobby'|'floor13'){
  }
  compact(root);voxelizeMaterials(root);return root;
 }
+/** Generic shapes convey the blue display's colour and scale. */
+function addPortalDisplay(parent:T.Object3D,x:number,z:number,width:number,height:number){
+ const display=new T.Group();display.name='Observed_blue_vertical_display';display.position.set(x,0,z);
+ display.userData.source='20261116-P04 / 20261116-P05';
+ parent.add(display);
+ const panel=(name:string,w:number,h:number,y:number,depth:number,color:number,intensity:number)=>{
+  const mat=new T.MeshStandardMaterial({name:'Night_'+name,color,roughness:.65,emissive:color,emissiveIntensity:intensity});
+  mat.userData.nightIntensity=intensity;
+  const mesh=new T.Mesh(new T.BoxGeometry(w,h,.045),mat);mesh.name=name;mesh.position.set(0,y,depth);display.add(mesh);
+ };
+ panel('Display_blue_field',width,height,height/2,0,0x33699b,1.6);
+ panel('Display_cool_upper_band',width*.85,height*.27,height*.75,.033,0x84c9e7,1.3);
+ panel('Display_cool_lower_band',width*.69,height*.12,height*.19,.033,0x62aee7,1.15);
+}
+
 /** A shallow, closed scenic version behind the campus portal; full room stays a separate editable asset. */
 export function decorateCampusLobby(building:T.Group){
  const g=building.getObjectByName('Lobby_visual_recess_PROVISIONAL');if(!g)return;const existing=new Set(g.children);const m=new T.MeshStandardMaterial({name:'Night_U06_foyer_warm_detail',color:0xe1cfaa,roughness:.8});m.emissive.setHex(0xffd6a0);m.emissiveIntensity=.12;
  const dark=new T.MeshStandardMaterial({name:'U06 interior entry mat',color:0x303a38,roughness:1});const make=(n:string,w:number,h:number,d:number,x:number,y:number,z:number,mat:T.Material)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),mat);o.name=n;o.position.set(x,y,z);g.add(o);};
  make('Observed_foyer_warm_rear',15,7.7,.08,0,3.85,-2.30,m);make('Observed_foyer_black_mat',4.5,.02,2.2,0,.12,-1.1,dark);
  for(const x of [-3,-1,1,3]){make('Observed_gate_body',.2,.95,.45,x,.6,-1.6,m);pane(g,'Observed_gate_glass',.65,.65,x+.43,.8,-1.5,glassMaterial('clear'));}
+ const portal=new T.Group();portal.name='CDS_entrance_night_photo_detail';portal.userData.source='20261116-P04 / 20261116-P05';g.add(portal);
+ addPortalDisplay(portal,0,-2.02,1.55,3.15);
+ const warm=new T.MeshStandardMaterial({name:'Night_CDS_portal_warm_outline',color:0xd6bb87,emissive:0xffdfab,roughness:.65});
+ warm.userData.nightIntensity=1.42;
+ for(const side of [-1,1])make('Observed_warm_portal_upright',.065,3.65,.055,side*1.88,1.91,-1.99,warm);
+ make('Observed_warm_portal_header',3.83,.065,.055,0,3.73,-1.99,warm);
  for(const child of g.children)if(!existing.has(child))child.userData.sourceFile='src/model/observedInteriors.ts';
 }

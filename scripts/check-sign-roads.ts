@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import * as T from 'three';
+import {monumentPolePosition} from '../src/model/videoDetailsParameters';
+import {sceneRegistry} from '../src/scene/registry';
 import {buildSite} from '../src/model/buildSite';
 import {disposeAsset} from '../src/model/buildCampus';
 import {driveLayout,promenadeLayout,centralWalkLayout,subtractRects,type GroundRect} from '../src/model/groundLayout';
@@ -35,7 +37,10 @@ for(const [x,z,seconds,yaw] of [[24,-38,5,0],[94,-38,5,0],[16.8,90,4,Math.PI]]){
  assert.ok(Math.abs(Math.hypot(body.position.x-x,body.position.z-z)-seconds*C.speed)<.05);assert.ok(minY>=0);
 }
 const mon=asset.root.getObjectByName('CDS_Landscape_Monument')!;assert.ok(world.contacts(mon.position.x,mon.position.z,.14).some(o=>o.name==='CDS-landscape-monument'));
-console.log('PASS raycast/render/support agreement; continuous crossings; monument remains solid');
+const pole=monumentPolePosition(),polePart=sceneRegistry(asset.root).entities.find(part=>part.name==='Monument_lamp_pole');
+assert.ok(polePart&&Math.hypot(polePart.center[0]-pole.x,polePart.center[2]-pole.z)<.0001);
+assert.ok(world.contacts(pole.x,pole.z,.14).some(o=>o.name==='CDS-monument-lamp-pole'));
+console.log('PASS raycast/render/support agreement; continuous crossings; monument and lamp pole remain solid');
 
 let releases=0,loads=0;const tex=deferredTexture(async()=>{loads++;return{width:4,height:2,data:new Uint8Array(32)};});tex.addEventListener('dispose',()=>releases++);
 const tmp=new T.Mesh(new T.PlaneGeometry(),new T.MeshBasicMaterial({map:tex}));await prepareModelTextures(tmp);assert.equal(releases,1);assert.equal(tex.image.width,4);await prepareModelTextures(tmp);assert.equal(loads,1);disposeAsset(tmp);assert.equal(releases,2);

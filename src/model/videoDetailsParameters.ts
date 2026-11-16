@@ -12,3 +12,11 @@ export const VIDEO_DETAILS={
  pathHeight:.035,
 };
 export const LOUNGE_PARAMETERS={width:13.4,depth:14.8,rows:6,rowRun:1.65,rowRise:.40,sideStairWidth:1.25,ceilingHeight:5.6,floor:4,building:'B05'};
+
+/** 20261116-P03: a slim pole on the camera-left side of the stone sign. */
+export const MONUMENT_NIGHT_POLE = {localX:-3.12,localZ:.94,radius:.065,height:4.85};
+export function monumentPolePosition(){
+ const {x,z,rotation}=VIDEO_DETAILS.monument;
+ const {localX,localZ}=MONUMENT_NIGHT_POLE;
+ return {x:x+localX*Math.cos(rotation)+localZ*Math.sin(rotation),z:z-localX*Math.sin(rotation)+localZ*Math.cos(rotation)};
+}
