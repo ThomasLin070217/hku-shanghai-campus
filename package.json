@@ -14,6 +14,7 @@
     "play": "node scripts/start.mjs",
     "agent:server": "node scripts/agent-server.mjs",
     "agent:demo": "node scripts/agent-demo.mjs",
+    "agent:native": "node scripts/agent-native-demo.mjs",
     "check:v4": "tsx scripts/check-v4.ts",
     "check:video": "tsx scripts/check-video-details.ts",
     "check:gameplay": "npm run check:survey",
@@ -22,7 +23,7 @@
     "check:v8": "tsx scripts/check-v8.ts",
     "check:nov13": "tsx scripts/check-nov13.ts",
     "export:v8": "tsx scripts/export-v8.ts",
-    "check:all": "npm run check:exploration && npm run check:v4 && npm run check:video && npm run check:v8 && npm run check:nov13 && npm run check:scale && npm run check:glass && npm run check:survey && npm run check:experience && npm run check:nov14 && npm run check:review && npm run check:audio-review && npm run check:remaining && npm run check:sign-roads && npm run check:scene && npm run check:agent-tools && npm run check:video-followup && npm run build",
+    "check:all": "npm run check:exploration && npm run check:v4 && npm run check:video && npm run check:v8 && npm run check:nov13 && npm run check:scale && npm run check:glass && npm run check:survey && npm run check:experience && npm run check:nov14 && npm run check:review && npm run check:audio-review && npm run check:remaining && npm run check:sign-roads && npm run check:scene && npm run check:agent-tools && npm run check:ai-runtime && npm run check:video-followup && npm run build",
     "check:scale": "tsx scripts/check-scale-calibration.ts",
     "check:glass": "tsx scripts/check-glass.ts",
     "check:survey": "tsx scripts/check-survey.ts",
@@ -41,9 +42,12 @@
     "agent:mcp": "node scripts/agent-mcp.mjs",
     "check:scene": "tsx scripts/check-scene.ts",
     "check:agent-tools": "node scripts/check-agent-tools.mjs",
+    "check:ai-runtime": "tsx scripts/check-ai-runtime.ts",
     "check:agent-live": "node scripts/check-agent-live.mjs",
     "test": "npm run check:all",
-    "check:video-followup": "tsx scripts/check-video-followup.ts"
+    "check:video-followup": "tsx scripts/check-video-followup.ts",
+    "scene:opening": "tsx scripts/scene-catalog.ts --opening",
+    "check:opening": "tsx scripts/check-opening-state.ts && tsx scripts/check-opening-robot.ts && tsx scripts/check-opening-world.ts && tsx scripts/check-opening-integration.ts"
   },
   "dependencies": {
     "@sparkjsdev/spark": "2.4.0",

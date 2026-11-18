@@ -1,0 +1,27 @@
+{
+  "ready": true,
+  "paused": true,
+  "aiEnabled": false,
+  "owner": null,
+  "position": [
+    32.424402794031664,
+    0.045,
+    35.80013008135084
+  ],
+  "panel": null,
+  "render": {
+    "frame": 896,
+    "calls": 725,
+    "triangles": 125526,
+    "points": 0,
+    "lines": 0
+  },
+  "contextLost": false,
+  "canvas": {
+    "width": 3396,
+    "height": 1824
+  },
+  "inventoryItemCount": 1,
+  "mode": "existing-survey",
+  "title": "HKU Shanghai · 校园数字巡检"
+}

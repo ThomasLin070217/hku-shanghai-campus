@@ -1,0 +1,363 @@
+{
+  "scope": "Offline Agent C acceptance for src/opening/robot.ts against the real opening Navigation and CharacterPhysics",
+  "date": "2026-11-18",
+  "harness": "scripts/check-opening-robot.ts",
+  "dependencies": "Navigation created with opening=true; the robot is driven only through update(dt, player, active, paused)",
+  "parameters": {
+    "patrolSpeed": 1.25,
+    "chaseSpeed": 1.35,
+    "searchSpeed": 1.2,
+    "range": 9,
+    "halfAngle": 0.6108652381980153,
+    "confirm": 0.7,
+    "capture": 0.65,
+    "captureRise": 0.9,
+    "eyeHeight": 1.05,
+    "chestHeight": 1.15,
+    "sweep": 0.8726646259971648,
+    "sweepRate": 0.7330382858376184,
+    "spinRate": 1.2,
+    "reach": 0.5,
+    "patrolReach": 0.55,
+    "stall": 1.2,
+    "replan": 0.35,
+    "maxReplans": 3,
+    "searchSeconds": 3,
+    "turnRate": 4.2,
+    "captureGrace": 0.25,
+    "patrolDwell": 1.2,
+    "waypointRadius": 0.45,
+    "scanVisualRange": 9,
+    "scanSamples": 11,
+    "scanVisualHeight": 0.3,
+    "scanProbeHeight": 0.3
+  },
+  "patrolPoints": [
+    [
+      63,
+      0,
+      -48
+    ],
+    [
+      58,
+      0,
+      -48
+    ],
+    [
+      58,
+      0,
+      -59
+    ],
+    [
+      63,
+      0,
+      -59
+    ]
+  ],
+  "doorOpening": [
+    56.8,
+    59.2
+  ],
+  "checks": [
+    {
+      "name": "eye-to-chest line matches the door opening and the closed walls",
+      "passed": true,
+      "detail": {
+        "throughDoor": true,
+        "throughFrontWall": false,
+        "throughSideWall": false
+      }
+    },
+    {
+      "name": "confirmed detection enters chase with a louder warning and no instant failure",
+      "passed": true,
+      "detail": {
+        "transitions": [
+          "0.02s patrol->scanning",
+          "0.25s scanning->chase"
+        ],
+        "gapToPlayer": 4.12
+      }
+    },
+    {
+      "name": "target astern but inside range stays undetected",
+      "passed": true,
+      "detail": {
+        "states": {
+          "patrol": 180
+        }
+      }
+    },
+    {
+      "name": "target beyond the detection range stays undetected",
+      "passed": true,
+      "detail": {
+        "startDistance": 13
+      }
+    },
+    {
+      "name": "target in sector and range but behind the Building 5 wall is neither tracked nor caught",
+      "passed": true,
+      "detail": {
+        "ticksOfOutsideApproach": 602,
+        "sectorAndRange": true,
+        "occluded": true
+      }
+    },
+    {
+      "name": "hidden player freezes lastSeen; the robot searches that point then resumes patrol",
+      "passed": true,
+      "detail": {
+        "transitions": [
+          "0.02s chase->search",
+          "4.00s search->patrol"
+        ],
+        "lastSeen": [
+          58,
+          0,
+          -48
+        ],
+        "searchSeconds": 3.02,
+        "distanceToHiddenLiveTarget": 14.1
+      }
+    },
+    {
+      "name": "capture requires physical reach and the encounter holds afterwards",
+      "passed": true,
+      "detail": {
+        "caughtAtSecond": 3.3,
+        "gapAtCapture": 0.61
+      }
+    },
+    {
+      "name": "height rule blocks capture even while standing on the target",
+      "passed": true,
+      "detail": {
+        "minHorizontalGap": 0.48,
+        "states": {
+          "scanning": 41,
+          "chase": 1459
+        }
+      }
+    },
+    {
+      "name": "reset restores the initial patrol and the encounter can happen again",
+      "passed": true,
+      "detail": {
+        "firstCaughtAt": 3.3,
+        "secondCaughtAt": 3.3
+      }
+    },
+    {
+      "name": "patrol cycle routes through the Building 5 door, never through a wall, never grinding the wall",
+      "passed": true,
+      "detail": {
+        "doorCrossings": [
+          {
+            "x": 58.1,
+            "at": "10.37s patrol"
+          },
+          {
+            "x": 58.03,
+            "at": "26.83s patrol"
+          },
+          {
+            "x": 58.1,
+            "at": "45.18s patrol"
+          },
+          {
+            "x": 58.03,
+            "at": "61.65s patrol"
+          },
+          {
+            "x": 58.1,
+            "at": "80.00s patrol"
+          },
+          {
+            "x": 58.03,
+            "at": "96.47s patrol"
+          },
+          {
+            "x": 58.1,
+            "at": "114.82s patrol"
+          },
+          {
+            "x": 58.03,
+            "at": "131.28s patrol"
+          },
+          {
+            "x": 58.1,
+            "at": "149.63s patrol"
+          },
+          {
+            "x": 58.03,
+            "at": "166.10s patrol"
+          },
+          {
+            "x": 58.1,
+            "at": "184.45s patrol"
+          },
+          {
+            "x": 58.03,
+            "at": "200.92s patrol"
+          },
+          {
+            "x": 58.1,
+            "at": "219.27s patrol"
+          }
+        ],
+        "longestNoProgressContactSeconds": 0,
+        "states": {
+          "patrol": 13200
+        },
+        "rejectedEdges": [
+          {
+            "from": [
+              63,
+              -59,
+              "patrol"
+            ],
+            "to": [
+              63,
+              -48,
+              "patrol"
+            ],
+            "seconds": 4.33
+          }
+        ],
+        "verifiedEdges": [
+          {
+            "from": "patrol",
+            "to": "patrol",
+            "seconds": 3.38
+          },
+          {
+            "from": "patrol",
+            "to": "patrol",
+            "seconds": 7.82
+          },
+          {
+            "from": "patrol",
+            "to": "patrol",
+            "seconds": 3.38
+          },
+          {
+            "from": "b5-door-out",
+            "to": "b5-door-in",
+            "seconds": 2.78
+          },
+          {
+            "from": "b5-door-out",
+            "to": "patrol",
+            "seconds": 2.93
+          },
+          {
+            "from": "b5-door-out",
+            "to": "patrol",
+            "seconds": 4.62
+          },
+          {
+            "from": "b5-door-in",
+            "to": "patrol",
+            "seconds": 1.45
+          },
+          {
+            "from": "b5-door-in",
+            "to": "b5-staff",
+            "seconds": 5.18
+          },
+          {
+            "from": "b5-staff",
+            "to": "patrol",
+            "seconds": 1.33
+          }
+        ]
+      }
+    },
+    {
+      "name": "paused, dt=0 and inactive calls are read-only and never reset the chase",
+      "passed": true,
+      "detail": {
+        "frozenResult": {
+          "caught": false,
+          "state": "chase",
+          "warning": 0.8625555555555587
+        },
+        "state": "chase",
+        "resumedState": "chase"
+      }
+    },
+    {
+      "name": "blocky red-eye model with a polygon scan wedge; dispose releases geometry and material",
+      "passed": true,
+      "detail": {
+        "meshes": 13,
+        "heightMeters": 1.05,
+        "footprint": [
+          0.52,
+          0.76
+        ],
+        "wedgeVertices": 12,
+        "disposedGeometries": 13,
+        "disposedMaterials": 7
+      }
+    },
+    {
+      "name": "tuning stays inside the task book window and positions come from the shared layout",
+      "passed": true,
+      "detail": {
+        "patrolSpeed": 1.25,
+        "chaseSpeed": 1.35,
+        "searchSpeed": 1.2,
+        "range": 9,
+        "halfAngle": 0.6108652381980153,
+        "confirm": 0.7,
+        "capture": 0.65,
+        "captureRise": 0.9,
+        "eyeHeight": 1.05,
+        "chestHeight": 1.15,
+        "sweep": 0.8726646259971648,
+        "sweepRate": 0.7330382858376184,
+        "spinRate": 1.2,
+        "reach": 0.5,
+        "patrolReach": 0.55,
+        "stall": 1.2,
+        "replan": 0.35,
+        "maxReplans": 3,
+        "searchSeconds": 3,
+        "turnRate": 4.2,
+        "captureGrace": 0.25,
+        "patrolDwell": 1.2,
+        "waypointRadius": 0.45,
+        "scanVisualRange": 9,
+        "scanSamples": 11,
+        "scanVisualHeight": 0.3,
+        "scanProbeHeight": 0.3,
+        "patrolPoints": [
+          [
+            63,
+            -48
+          ],
+          [
+            58,
+            -48
+          ],
+          [
+            58,
+            -59
+          ],
+          [
+            63,
+            -59
+          ]
+        ],
+        "slowerThanPlayerWalk": true
+      }
+    }
+  ],
+  "notCovered": [
+    "browser visual quality of the model and the drawn scan wedge",
+    "difficulty and pacing against a human player",
+    "interaction with other members’ levels, UI copy and audio"
+  ]
+}

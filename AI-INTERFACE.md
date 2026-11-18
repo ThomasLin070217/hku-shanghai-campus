@@ -1,4 +1,4 @@
-# HKU Campus native Agent API · v1.3
+# HKU Campus native Agent API · v2.0（兼容 v1.3）
 
 该接口直接连接正在运行的浏览器游戏。无模型、API Key、浏览器自动化或模拟键盘依赖。
 
@@ -57,7 +57,7 @@ await post('/act',{
 
 ## observe
 
-包含协议版本 `hku-campus/1.3`、逻辑 frame、累计运行 timeMs、墙钟 wallTimeMs、mode、controlEpoch、aiEnabled、owner、paused、player.position/velocity/yawDeg/pitchDeg/grounded、view、160 m 内地标、lastCommand 与当前碰撞。
+v1.3 起包含协议版本、逻辑 frame、累计运行 timeMs、墙钟 wallTimeMs、mode、controlEpoch、aiEnabled、owner、paused、player.position/velocity/yawDeg/pitchDeg/grounded、view、160 m 内地标、lastCommand 与当前碰撞；v2 追加 `perception`、`eventSeq/events`、`directive`、`pausedReason`（见文末 v2 章节）。
 
 地标 ID 稳定为 B01–B07，CDS-1 为 **B04**。relativePosition 是世界坐标的“地标中心减角色位置”，不随镜头旋转；distance 为该向量长度。建筑 ID 与地图对应仍遵循项目参考档案的证据等级，不能视作校方楼栋 GIS。
 
@@ -119,3 +119,25 @@ AI 页面读取为无界面业务动作，不自动打开玩家暂停面板；�
 - 玩家 state.player.id 为 `PLAYER`；schema 为 `hku-scene/1`。
 
 命令行、MCP 配置和本地示例见 [AI-START](docs/AI-START.md)。类型：`src/scene/registry.ts`；HTTP/MCP 工具 Schema：`scripts/agent-tools.mjs`。
+
+
+## v2 AI-native 升级（2026-11）
+
+v2 的目标是让外部 AI **完全不读屏幕、不截图** 也能观察和操控：结构化状态 + 实时事件流 + 语义动作。完整说明、设计理由和实测见 [docs/AI-NATIVE-V2.md](docs/AI-NATIVE-V2.md)，接口契约见 [docs/plans/AI-NATIVE-V2-CONTRACT.md](docs/plans/AI-NATIVE-V2-CONTRACT.md)。v1.3 全部端点与动作保持可用。
+
+新增内容：
+
+- `observe` 增加 `perception`（眼睛朝向、视线遮挡、可交互物、探针、附近碰撞体、HUD 文本等价物）、`eventSeq`/`events`（带 `afterSeq` 只返回增量）、`directive`、`pausedReason`。
+- 事件流：`GET /events?afterSeq=` 与 `GET /events/stream?afterSeq=`（SSE 补发 + 实时 + 心跳）。事件含命令状态、跳跃/落地/碰撞、巡检、发现、控制权与暂停。
+- 语义动作：`/act` 新增 `directive`（`walkTo` / `approach` / `lookAt` / `followPath`），允许 `durationMs` 1–30000，`entityId` 使用 `observe.landmarks` 的稳定 ID；仍走 `CharacterPhysics`，不写坐标。
+- `GET /path?from&to`：1 m 栅格 A*，返回折线路径或 `partial` 最近可达点。
+- `GET /world`：建筑/道路/区域/地标/可行走范围/规则摘要。
+- MCP 15 个工具（新增 `campus_events`、`campus_path`、`campus_world`、`campus_walk_to`、`campus_look_at`），并新增 3 个文档 resources 与 `campus-patrol` prompt。
+
+不截图完成任务：
+
+```bash
+npm run play
+# 页面点「开启 AI 控制」后：
+node scripts/agent-native-demo.mjs --control
+```

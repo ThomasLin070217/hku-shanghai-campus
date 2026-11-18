@@ -17,4 +17,4 @@ export const LANDSCAPE = {
 };
 
 export const keyLabel=(code:string)=>code.startsWith('Key')?code.slice(3):({Space:'空格',ShiftLeft:'Shift',Escape:'Esc',BracketLeft:'[',BracketRight:']'}[code]??code);
-export const CONTROL_GUIDE=()=>`${keyLabel(KEYS.forward)}${keyLabel(KEYS.left)}${keyLabel(KEYS.back)}${keyLabel(KEYS.right)} 行走 · ${keyLabel(KEYS.sprint)} 奔跑 · ${keyLabel(KEYS.jump)} 跳跃 · ${keyLabel(KEYS.interact)} 交互 · ${keyLabel(KEYS.inventory)} 背包 · ${keyLabel(KEYS.computer)} 电脑 · ${keyLabel(KEYS.view)} 视角 · 1–9 / 滚轮物品`;
+export const CONTROL_GUIDE=(english=false)=>english?`WASD move · Shift run · Space jump · F interact · E backpack · C MacBook · V view · 1–9 / scroll items`:`${keyLabel(KEYS.forward)}${keyLabel(KEYS.left)}${keyLabel(KEYS.back)}${keyLabel(KEYS.right)} 行走 · ${keyLabel(KEYS.sprint)} 奔跑 · ${keyLabel(KEYS.jump)} 跳跃 · ${keyLabel(KEYS.interact)} 交互 · ${keyLabel(KEYS.inventory)} 背包 · ${keyLabel(KEYS.computer)} 电脑 · ${keyLabel(KEYS.view)} 视角 · 1–9 / 滚轮物品`;

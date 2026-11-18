@@ -37,9 +37,23 @@ node scripts/agent-scene-demo.mjs
 
 ```sh
 node scripts/agent-scene-demo.mjs --control
+node scripts/agent-native-demo.mjs --control   # v2：感知 + 事件流 + walkTo/lookAt，全程不截图
 ```
 
 示例实际查询道路和牌子 → 获取控制 → 按 ID 高亮 → 转向并短距离行走 → 查询执行结果 → 停止 → 释放。不需要 API Key。人物移动仍走同一套碰撞和重力。
+
+## v2 声明式动作与实时事件
+
+v2 的 AI 不必逐帧发 `move`，可以发语义目标；这些动作和人类共用物理与碰撞：
+
+```sh
+npm run agent -- walkto '{"commandId":"w1","controlEpoch":EPOCH,"entityId":"S001","toleranceM":2.2}'
+npm run agent -- lookat '{"commandId":"l1","controlEpoch":EPOCH,"entityId":"S001"}'
+npm run agent -- path '{"from":[0,0,0],"to":[-12,0,40]}'
+node scripts/agent-native-demo.mjs --control
+```
+
+实时数据走 `GET /events/stream`（SSE）或 `GET /events?afterSeq=`，`observe` 也可带 `afterSeq` 只取增量；状态载荷见 [AI-NATIVE-V2](AI-NATIVE-V2.md)。
 
 ## MCP：直接给支持 MCP 的 Agent 当工具
 
@@ -56,7 +70,7 @@ node scripts/agent-scene-demo.mjs --control
 }
 ```
 
-提供 10 个工具：`campus_observe`、`campus_entities`、`campus_entity`、`campus_acquire_control`、`campus_act`、`campus_command`、`campus_select_entity`、`campus_stop`、`campus_release_control`、`campus_screenshot`。工具描述和输入 JSON Schema 会由 `tools/list` 返回。
+v2 提供 15 个工具：`campus_observe`、`campus_entities`、`campus_entity`、`campus_acquire_control`、`campus_act`、`campus_command`、`campus_select_entity`、`campus_stop`、`campus_release_control`、`campus_screenshot`、`campus_events`、`campus_path`、`campus_world`、`campus_walk_to`、`campus_look_at`。工具描述和输入 JSON Schema 会由 `tools/list` 返回；另有 3 个文档 resources 与 `campus-patrol` prompt。
 
 MCP 使用 stdio JSON-RPC，初始化协议版本为 2024-11-05；底层仍调用同一个本机 HTTP/WebSocket 服务。仅接 MCP 不会自动启动校园或开启 AI 权限。浏览器未连时返回 `not_ready`。
 

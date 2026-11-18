@@ -1,0 +1,42 @@
+{
+  "scope": "Offline baseline behavior diagnostics, not new opening tests",
+  "results": [
+    {
+      "check": "existing-default-save-accepted",
+      "pass": true
+    },
+    {
+      "check": "pre-laptop-save-currently-rejected",
+      "confirmed": true
+    },
+    {
+      "check": "RPC-computer-only-survey-operation-no-modal-or-takeover",
+      "confirmed": true
+    },
+    {
+      "check": "RPC-interact-hyphen-id-accepted-dot-id-rejected",
+      "confirmed": true
+    },
+    {
+      "check": "existing-modal-pauses-and-invalidates-control",
+      "pass": true
+    },
+    {
+      "check": "existing-unsafe-position-recovery-retains-inventory",
+      "pass": true,
+      "spawn": [
+        58,
+        0.045,
+        33.5
+      ]
+    },
+    {
+      "check": "existing-parser-allows-two-laptops-if-instance-ids-differ",
+      "confirmed": true
+    },
+    {
+      "check": "existing-parser-strips-unrecognized-opening-field",
+      "confirmed": true
+    }
+  ]
+}

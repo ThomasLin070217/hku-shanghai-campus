@@ -27,6 +27,8 @@ export class SceneRegistry {
    const e:SceneEntity={id,name,kind,parentId,buildingId,authorKey:key,bounds:{min:box.min.toArray().map(round),max:box.max.toArray().map(round)},center:box.getCenter(new T.Vector3()).toArray().map(round),size:box.getSize(new T.Vector3()).toArray().map(round),sourceFile:file,sourceAnchor:anchor,reference:ref||'references/CAMPUS_BASIS.md',confidence,editMode:'source',...(material?{material}: {})};this.entities.push(e);this.byId.set(id,e);this.nodes.set(id,node);return e;
   };
   const visit=(node:T.Object3D,parentId:string|null,path:string,building:string|null,file:string,scope:string)=>{
+   // Animated gameplay props have their own stable interaction IDs, outside the static geometry revision.
+   if(node.userData.dynamicGameplay===true)return;
    const isBuilding=/^B0[1-7]$/.test(node.name);if(isBuilding){building=node.name;scope=node.name;file=node.userData.kind==='bandTower'?'src/model/buildCampus.ts':'src/model/buildSite.ts';}
    const key=path+'/'+(isBuilding?node.name:node.userData.authorKey||node.name||node.type);
    const alias=aliases[node.name],bg=building?buildingGroups[node.name]:undefined;

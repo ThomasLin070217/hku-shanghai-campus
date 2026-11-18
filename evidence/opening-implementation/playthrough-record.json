@@ -1,0 +1,62 @@
+{
+  "scope": "Thomas opening manual acceptance run, driven through real inputs only (WASD/Shift to walk and sprint, raw CDP mouse drag to look, F to interact, C for the computer). No position, yaw, pitch, flag or inventory value was ever written directly.",
+  "date": "2026-11-19",
+  "session": "http://127.0.0.1:5199/ (port 5184 is held by an unrelated WorkBuddy broker; the project Vite server was started on 5199 for this run)",
+  "input_mode": "drag-compat (pointer lock is unavailable in this browser, so the game's own drag fallback was used)",
+  "beats": [
+    {
+      "beat": "read_invitation",
+      "event": "invitation_read",
+      "result": "pass",
+      "detail": "Pressed F at the spawn; the 'High Table Dinner' invitation opened with focus on Continue; clicking Continue logged invitation_read and the save reported 'Saved on this device.'"
+    },
+    {
+      "beat": "exit_bus",
+      "event": "opening.bus_exited",
+      "result": "pass",
+      "detail": "The door leaf swung to its open angle 4 s after the invitation was read and the closed-door collision was removed. Walking west moved the player from x=65 to x=49.27, descending the three steps from y=0.54 to y=0.05, and the stage advanced bus -> to_b5."
+    },
+    {
+      "beat": "accept_errand",
+      "event": "opening.laptop_requested",
+      "result": "pass",
+      "detail": "Walked the verified route to Building 5 (0 skipped steps) and aimed at the coordinator's interaction point, which made the target 'opening-staff' available. The 'Dinner coordinator' dialogue opened and 'I'll collect it' advanced the stage to to_b6."
+    },
+    {
+      "beat": "take_laptop",
+      "event": "laptop_acquired",
+      "result": "pass",
+      "detail": "Walked the verified Building 6 route including the ascent to the 5.1 m platform (0 skipped steps, 31 s). Aiming at the office table made the target 'opening-laptop' available; F collected the MacBook and the stage advanced to return_b5."
+    },
+    {
+      "beat": "return_b5",
+      "event": "campus_alert_triggered",
+      "result": "pass",
+      "detail": "Walked back to the return trigger; the stage advanced to incident and the security robot started patrolling."
+    },
+    {
+      "beat": "read_alert",
+      "event": "opening.alert_acknowledged",
+      "result": "pass",
+      "detail": "Pressed C; the computer opened straight into the 'Campus network alert' screen with the four required facts. 'Enable emergency assistance' advanced the stage to to_b4."
+    },
+    {
+      "beat": "caught_and_retry",
+      "event": null,
+      "result": "pass",
+      "detail": "The robot caught the player on the run to Building 4. The 'Caught by campus security' screen offered Retry as the only way forward. Retry restored the safe checkpoint at encounterSafe (58, -53.8), kept the MacBook and kept every earlier event, and the stage stayed to_b4."
+    },
+    {
+      "beat": "reach_b4",
+      "event": "opening.building4_reached",
+      "result": "not-reached",
+      "detail": "The run to Building 4 was interrupted when a concurrent agent's in-flight changes to src/agent and src/exploration broke the Vite module graph. The stage was to_b4 with the MacBook in the backpack when the page stopped serving; the save in localStorage still holds that state."
+    }
+  ],
+  "observations": [
+    "The robot encounter is genuinely reachable on the way to Building 4 and the capture, failure screen and checkpoint restore all work.",
+    "The robot is slower than the player (1.35 m/s chase against a 5.2 m/s sprint), so the escape is a matter of keeping the corridor.",
+    "After reading the alert the computer panel stays open, which pauses the game; the player must close it before moving on.",
+    "Every beat came from the game's own handlers; the reducer, the save writer and the interaction checks were exercised, not stubbed."
+  ]
+}

@@ -1,0 +1,530 @@
+{
+  "scope": "Temporary offline spatial proof, production code unchanged; no browser playthrough or survey claim",
+  "units": "metres",
+  "fixedStep": 0.008333333333333333,
+  "playerSpeed": 2.6,
+  "baselineBlocks": {
+    "B05": true,
+    "B06": true
+  },
+  "prototypeRooms": [
+    {
+      "x0": 54,
+      "x1": 66,
+      "z0": -64,
+      "door": 58,
+      "doorWidth": 2.4,
+      "floor": 0,
+      "z1": -54.7,
+      "removed": "B05/closed-exterior",
+      "pieces": [
+        "B05/prototype-left-mass",
+        "B05/prototype-right-mass",
+        "B05/prototype-back-mass",
+        "B05/prototype-front-left",
+        "B05/prototype-front-right",
+        "B05/prototype-lintel"
+      ],
+      "roomArea": 111.59999999999997,
+      "doorClearance": 2.4
+    },
+    {
+      "x0": 1,
+      "x1": 9,
+      "z0": -61,
+      "door": 4,
+      "doorWidth": 2.4,
+      "floor": 5.1,
+      "z1": -52.625,
+      "removed": "B06/closed-exterior",
+      "pieces": [
+        "B06/prototype-left-mass",
+        "B06/prototype-right-mass",
+        "B06/prototype-back-mass",
+        "B06/prototype-front-left",
+        "B06/prototype-front-right",
+        "B06/prototype-lintel",
+        "B06/prototype-raised-floor"
+      ],
+      "roomArea": 67,
+      "doorClearance": 2.4
+    }
+  ],
+  "retainedWalls": {
+    "B05left": true,
+    "B05right": true,
+    "B05north": true,
+    "B06left": true,
+    "B06right": true,
+    "B06north": true,
+    "B05doorOpen": true,
+    "B06doorOpen": true,
+    "B06interiorSupport": 5.1
+  },
+  "reports": [
+    {
+      "name": "Existing B04 to B05 exterior",
+      "passed": true,
+      "segments": [
+        {
+          "point": [
+            24,
+            33.5
+          ],
+          "ok": true,
+          "position": [
+            24.02666666666414,
+            0.035,
+            33.5
+          ],
+          "seconds": 13.066666666666666,
+          "minY": 0,
+          "maxY": 0.045,
+          "contacts": []
+        },
+        {
+          "point": [
+            24,
+            -48
+          ],
+          "ok": true,
+          "position": [
+            24.000010908039,
+            0.035,
+            -47.96666230580703
+          ],
+          "seconds": 31.333333333333332,
+          "minY": 0.035,
+          "maxY": 0.05,
+          "contacts": []
+        },
+        {
+          "point": [
+            58,
+            -48
+          ],
+          "ok": true,
+          "position": [
+            57.97332791005126,
+            0,
+            -47.99997384746284
+          ],
+          "seconds": 13.066666666666666,
+          "minY": 0,
+          "maxY": 0.035,
+          "contacts": []
+        },
+        {
+          "point": [
+            58,
+            -53.8
+          ],
+          "ok": true,
+          "position": [
+            57.99983098360197,
+            0,
+            -53.76324624239582
+          ],
+          "seconds": 2.216666666666667,
+          "minY": 0,
+          "maxY": 0,
+          "contacts": []
+        }
+      ],
+      "groundedFrames": 7162,
+      "totalFrames": 7162
+    },
+    {
+      "name": "Existing B05 exterior to B04 handoff",
+      "passed": true,
+      "segments": [
+        {
+          "point": [
+            58,
+            -48
+          ],
+          "ok": true,
+          "position": [
+            58,
+            0,
+            -48.036666666666235
+          ],
+          "seconds": 2.216666666666667,
+          "minY": 0,
+          "maxY": 0,
+          "contacts": []
+        },
+        {
+          "point": [
+            24,
+            -48
+          ],
+          "ok": true,
+          "position": [
+            24.026686422380806,
+            0.035,
+            -48.000028779475116
+          ],
+          "seconds": 13.066666666666666,
+          "minY": 0,
+          "maxY": 0.035,
+          "contacts": []
+        },
+        {
+          "point": [
+            24,
+            33.5
+          ],
+          "ok": true,
+          "position": [
+            24.000010925541936,
+            0.035,
+            33.46663351986859
+          ],
+          "seconds": 31.333333333333332,
+          "minY": 0.035,
+          "maxY": 0.05,
+          "contacts": []
+        },
+        {
+          "point": [
+            58,
+            33.5
+          ],
+          "ok": true,
+          "position": [
+            57.97332789933457,
+            0.045,
+            33.4999738248705
+          ],
+          "seconds": 13.066666666666666,
+          "minY": 0,
+          "maxY": 0.045,
+          "contacts": []
+        },
+        {
+          "point": [
+            58,
+            25
+          ],
+          "ok": true,
+          "position": [
+            57.99991104398468,
+            0.08,
+            25.02834886577739
+          ],
+          "seconds": 3.2583333333333333,
+          "minY": 0,
+          "maxY": 0.08,
+          "contacts": []
+        }
+      ],
+      "groundedFrames": 7553,
+      "totalFrames": 7553
+    },
+    {
+      "name": "Existing B06 grand stair reachability",
+      "passed": true,
+      "segments": [
+        {
+          "point": [
+            24,
+            -48
+          ],
+          "ok": true,
+          "position": [
+            24.02666666666414,
+            0.035,
+            -48
+          ],
+          "seconds": 13.066666666666666,
+          "minY": 0,
+          "maxY": 0.035,
+          "contacts": []
+        },
+        {
+          "point": [
+            18,
+            -48
+          ],
+          "ok": true,
+          "position": [
+            18.02499999999703,
+            0,
+            -48
+          ],
+          "seconds": 2.308333333333333,
+          "minY": 0,
+          "maxY": 0.035,
+          "contacts": []
+        },
+        {
+          "point": [
+            18,
+            -26
+          ],
+          "ok": true,
+          "position": [
+            18.00003410702859,
+            0,
+            -26.030014185163367
+          ],
+          "seconds": 8.45,
+          "minY": 0,
+          "maxY": 0.05,
+          "contacts": []
+        },
+        {
+          "point": [
+            4,
+            -26
+          ],
+          "ok": true,
+          "position": [
+            4.025066222570382,
+            0,
+            -26.000053738600908
+          ],
+          "seconds": 5.375,
+          "minY": 0,
+          "maxY": 0,
+          "contacts": []
+        },
+        {
+          "point": [
+            4,
+            -52.2
+          ],
+          "ok": true,
+          "position": [
+            4.000025472794082,
+            5.1,
+            -52.17337509334656
+          ],
+          "seconds": 10.066666666666666,
+          "minY": 0,
+          "maxY": 5.1000000000000005,
+          "contacts": []
+        }
+      ],
+      "groundedFrames": 4712,
+      "totalFrames": 4712
+    },
+    {
+      "name": "B05 narrow doorway, right-turn room and return",
+      "passed": true,
+      "segments": [
+        {
+          "point": [
+            58,
+            -59
+          ],
+          "ok": true,
+          "position": [
+            58,
+            0,
+            -58.95666666666705
+          ],
+          "seconds": 1.9833333333333334,
+          "minY": 0,
+          "maxY": 0,
+          "contacts": []
+        },
+        {
+          "point": [
+            63,
+            -59
+          ],
+          "ok": true,
+          "position": [
+            62.96148033901481,
+            0,
+            -58.99966616293813
+          ],
+          "seconds": 1.9083333333333334,
+          "minY": 0,
+          "maxY": 0,
+          "contacts": []
+        },
+        {
+          "point": [
+            58,
+            -59
+          ],
+          "ok": true,
+          "position": [
+            58.04314701681518,
+            0,
+            -58.999997096819435
+          ],
+          "seconds": 1.8916666666666666,
+          "minY": 0,
+          "maxY": 0,
+          "contacts": []
+        },
+        {
+          "point": [
+            58,
+            -53.8
+          ],
+          "ok": true,
+          "position": [
+            58.000361007438904,
+            0,
+            -53.843507935722364
+          ],
+          "seconds": 1.9833333333333334,
+          "minY": 0,
+          "maxY": 0,
+          "contacts": []
+        }
+      ],
+      "groundedFrames": 932,
+      "totalFrames": 932
+    },
+    {
+      "name": "B06 grand stair, narrow doorway, pickup room and return",
+      "passed": true,
+      "segments": [
+        {
+          "point": [
+            4,
+            -52.2
+          ],
+          "ok": true,
+          "position": [
+            4,
+            5.1,
+            -52.17333333333528
+          ],
+          "seconds": 10.066666666666666,
+          "minY": 0,
+          "maxY": 5.1000000000000005,
+          "contacts": []
+        },
+        {
+          "point": [
+            4,
+            -56
+          ],
+          "ok": true,
+          "position": [
+            4,
+            5.1,
+            -55.96500000000223
+          ],
+          "seconds": 1.4583333333333333,
+          "minY": 5.1,
+          "maxY": 5.1,
+          "contacts": []
+        },
+        {
+          "point": [
+            7,
+            -56
+          ],
+          "ok": true,
+          "position": [
+            6.968131342378917,
+            5.1,
+            -55.99962819899445
+          ],
+          "seconds": 1.1416666666666666,
+          "minY": 5.1,
+          "maxY": 5.1,
+          "contacts": []
+        },
+        {
+          "point": [
+            4,
+            -56
+          ],
+          "ok": true,
+          "position": [
+            4.0431313653272625,
+            5.1,
+            -55.99999459717811
+          ],
+          "seconds": 1.125,
+          "minY": 5.1,
+          "maxY": 5.1,
+          "contacts": []
+        },
+        {
+          "point": [
+            4,
+            -52.2
+          ],
+          "ok": true,
+          "position": [
+            4.000343206071372,
+            5.1,
+            -52.23023742019388
+          ],
+          "seconds": 1.45,
+          "minY": 5.1,
+          "maxY": 5.1,
+          "contacts": []
+        },
+        {
+          "point": [
+            4,
+            -26
+          ],
+          "ok": true,
+          "position": [
+            4.000000461059392,
+            0,
+            -26.035237422434044
+          ],
+          "seconds": 10.075,
+          "minY": 0,
+          "maxY": 5.1000000000000005,
+          "contacts": []
+        }
+      ],
+      "groundedFrames": 3038,
+      "totalFrames": 3038
+    },
+    {
+      "name": "Three 18cm bus steps ascend and descend",
+      "passed": true,
+      "segments": [
+        {
+          "point": [
+            58,
+            34.2
+          ],
+          "ok": true,
+          "position": [
+            58,
+            0.54,
+            34.22999999999972
+          ],
+          "seconds": 1.45,
+          "minY": 0,
+          "maxY": 0.54,
+          "contacts": []
+        },
+        {
+          "point": [
+            58,
+            38
+          ],
+          "ok": true,
+          "position": [
+            58,
+            0,
+            37.95666666666666
+          ],
+          "seconds": 1.4333333333333333,
+          "minY": 0,
+          "maxY": 0.54,
+          "contacts": []
+        }
+      ],
+      "groundedFrames": 346,
+      "totalFrames": 346
+    }
+  ]
+}

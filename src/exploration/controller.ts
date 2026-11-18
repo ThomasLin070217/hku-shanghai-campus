@@ -7,8 +7,8 @@ import {createFirstPersonArms} from '../characters/character';
 import {createInventoryUI} from '../items/inventoryUI';
 import {CampusGame} from './game';
 import type {BuildingSpec,SiteParameters} from '../model/campusParameters';
-export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:BuildingSpec[],site:SiteParameters){
- let world=createNavigation(specs,site),game=new CampusGame(world,specs,site),enabled=false,accumulator=0,turn=0,compat=false,dragging=false,lastX=0,lastY=0;
+export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:BuildingSpec[],site:SiteParameters,opening=false){
+ let world=createNavigation(specs,site,opening),game=new CampusGame(world,specs,site),enabled=false,accumulator=0,turn=0,compat=false,dragging=false,lastX=0,lastY=0;
  const events=new AbortController(),interactions=new Set<()=>void>(),computers=new Set<()=>void>();let disposed=false;
  const listenWindow=<K extends keyof WindowEventMap>(type:K,fn:(e:WindowEventMap[K])=>void,options:AddEventListenerOptions={})=>window.addEventListener(type,fn,{...options,signal:events.signal});
  const listenDocument=<K extends keyof DocumentEventMap>(type:K,fn:(e:DocumentEventMap[K])=>void,options:AddEventListenerOptions={})=>document.addEventListener(type,fn,{...options,signal:events.signal});
@@ -23,13 +23,13 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  const clear=()=>{dragging=false;keys.clear();game.human={forward:0,right:0,sprint:false};game.humanJump=false;accumulator=0;};
  function openInventory(){if(!enabled||game.panel)return;clear();compat=false;game.openInventory();if(locked())document.exitPointerLock();}
  function closeInventory(){clear();game.closeInventory();}
- const inventoryUI=createInventoryUI(()=>game,openInventory,closeInventory);
+ const inventoryUI=createInventoryUI(()=>game,openInventory,closeInventory,opening);
  function pause(reason:string){clear();compat=false;game.pause(reason);if(locked())document.exitPointerLock();}
  listenWindow('blur',()=>pause('window_blur'));
  listenDocument('visibilitychange',()=>{if(document.hidden)pause('page_hidden');});
  listenDocument('focusin',e=>{if(editable(e.target))clear();});
- listenDocument('pointerlockchange',()=>{clear();if(locked()){game.takeover('human_pointer_lock');game.paused=false;}else if(!game.armed)game.pause('pointer_unlock');});
- listenDocument('pointerlockerror',()=>{pause('pointer_lock_failed');document.dispatchEvent(new CustomEvent('game-notice',{detail:'此浏览器无法锁定鼠标。请用 Chrome 打开，或选择拖动兼容模式。'}));});
+ listenDocument('pointerlockchange',()=>{clear();if(locked()&&!game.panel&&!game.inventoryOpen){game.takeover('human_pointer_lock');game.paused=false;}else if(locked()){document.exitPointerLock();}else if(!game.armed)game.pause('pointer_unlock');});
+ listenDocument('pointerlockerror',()=>{pause('pointer_lock_failed');document.dispatchEvent(new CustomEvent('game-notice',{detail:opening?'Pointer lock unavailable. Use drag mode to continue.':'此浏览器无法锁定鼠标。请用 Chrome 打开，或选择拖动兼容模式。'}));});
  listenWindow('keydown',e=>{
   if(!enabled||e.metaKey||e.ctrlKey||e.altKey)return;
   if(e.code===KEYS.inventory&&!e.repeat&&!((e.target as HTMLElement)?.matches('input,textarea,select'))){e.preventDefault();game.inventoryOpen?closeInventory():openInventory();return;}
@@ -81,5 +81,5 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
   setEnabled(v:boolean){game.inventoryOpen=false;enabled=v;pause('mode_change');student.root.visible=v&&game.view==='third';arms.visible=v&&game.view==='first';if(v)updateCamera(1);},
   inspectAt(x:number,y:number,z:number,heading=0){pause('qa_inspection');student.gait.reset();student.animate(.02,0,true,0);game.body.position.set(x,y,z);game.body.velocity.set(0,0,0);game.yaw=heading;game.pitch=0;turn=heading;student.root.position.copy(game.body.position);updateCamera(1);},
   resize(w:number,h:number){if(w<=0||h<=0||!Number.isFinite(w/h)||camera.aspect===w/h)return;camera.aspect=w/h;camera.updateProjectionMatrix();},
-  rebuild(next:BuildingSpec[],s:SiteParameters){pause('rebuild');world.dispose();specs=next;site=s;world=createNavigation(specs,site);game.replaceWorld(world,specs,site);reset();},dispose(){if(disposed)return;disposed=true;enabled=false;events.abort();pause('dispose');interactions.clear();computers.clear();world.dispose();student.root.removeFromParent();camera.removeFromParent();student.dispose();inventoryUI.dispose();firstPerson.dispose();firstPerson.root.removeFromParent();disposeAsset(camera);}};
+  rebuild(next:BuildingSpec[],s:SiteParameters){pause('rebuild');world.dispose();specs=next;site=s;world=createNavigation(specs,site,opening);game.replaceWorld(world,specs,site);reset();},dispose(){if(disposed)return;disposed=true;enabled=false;events.abort();pause('dispose');interactions.clear();computers.clear();world.dispose();student.root.removeFromParent();camera.removeFromParent();student.dispose();inventoryUI.dispose();firstPerson.dispose();firstPerson.root.removeFromParent();disposeAsset(camera);}};
 }

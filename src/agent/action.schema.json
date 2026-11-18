@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "HKU Campus Action v1.3",
+  "title": "HKU Campus Action v2.0",
+  "description": "Legacy camera-relative input (1-1000 ms) or a semantic directive executed over fixed steps (1-30000 ms). Both run through the same character physics; no coordinate writes.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -20,7 +21,8 @@
     "durationMs": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 1000
+      "maximum": 30000,
+      "description": "1-1000 without directive; 1-30000 with directive"
     },
     "move": {
       "type": "object",
@@ -87,6 +89,67 @@
         "clues",
         "submit"
       ]
+    },
+    "directive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "walkTo",
+            "approach",
+            "lookAt",
+            "followPath"
+          ]
+        },
+        "position": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 3
+        },
+        "entityId": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_.:-]{1,100}$",
+          "description": "Stable ID from observation.landmarks (B01-B07, survey records, signs)"
+        },
+        "toleranceM": {
+          "type": "number",
+          "minimum": 0.05,
+          "maximum": 10
+        },
+        "stopDistanceM": {
+          "type": "number",
+          "minimum": 0.3,
+          "maximum": 20
+        },
+        "toleranceDeg": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 90
+        },
+        "sprint": {
+          "type": "boolean"
+        },
+        "path": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 64,
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 3
+          }
+        }
+      }
     }
   }
 }

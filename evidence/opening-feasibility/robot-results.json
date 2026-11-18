@@ -1,0 +1,1144 @@
+{
+  "scope": "Isolated offline feasibility fixture only, not production robot AI or playthrough",
+  "dependencies": "Current Navigation meshes and CharacterPhysics",
+  "parameters": {
+    "range": 12,
+    "halfConeDegrees": 35,
+    "searchSeconds": 1,
+    "captureRadius": 0.65,
+    "intentForward": 0.5
+  },
+  "checks": [
+    {
+      "name": "unoccluded player inside cone detected",
+      "passed": true
+    },
+    {
+      "name": "player behind robot not detected",
+      "passed": true
+    },
+    {
+      "name": "B05 closed-exterior blocks sight ray",
+      "passed": true
+    },
+    {
+      "name": "patrol to chase on sight, movement uses CharacterPhysics and no failure on detection",
+      "passed": true
+    },
+    {
+      "name": "paused tick advances neither actor nor clocks",
+      "passed": true
+    },
+    {
+      "name": "hidden player movement never updates lastSeen; reach remembered position, search then patrol",
+      "passed": true
+    },
+    {
+      "name": "close capture causes failure",
+      "passed": true
+    }
+  ],
+  "trace": [
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -48.13000000000001
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 0.1,
+      "captured": false,
+      "visible": true
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -48.26000000000002
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 0.2,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -48.39000000000003
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 0.30000000000000004,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -48.52000000000004
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 0.4,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -48.65000000000005
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 0.5,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -48.78000000000006
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 0.6,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -48.91000000000007
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 0.7,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -49.04000000000008
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 0.7999999999999999,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -49.17000000000009
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 0.8999999999999999,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -49.3000000000001
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 0.9999999999999999,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -49.430000000000106
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 1.0999999999999999,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -49.560000000000116
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 1.2,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -49.690000000000126
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 1.3,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -49.820000000000135
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 1.4000000000000001,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -49.950000000000145
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 1.5000000000000002,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -50.080000000000155
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 1.6000000000000003,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -50.210000000000164
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 1.7000000000000004,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -50.340000000000174
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 1.8000000000000005,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -50.470000000000184
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 1.9000000000000006,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -50.60000000000019
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 2.0000000000000004,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -50.7300000000002
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 2.1000000000000005,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -50.86000000000021
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 2.2000000000000006,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -50.99000000000022
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 2.3000000000000007,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -51.12000000000023
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 2.400000000000001,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -51.25000000000024
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 2.500000000000001,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -51.38000000000025
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 2.600000000000001,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -51.51000000000026
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 2.700000000000001,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -51.64000000000027
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 2.800000000000001,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -51.77000000000028
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 2.9000000000000012,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -51.90000000000029
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 3.0000000000000013,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -52.0300000000003
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 3.1000000000000014,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -52.16000000000031
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 3.2000000000000015,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -52.29000000000032
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 3.3000000000000016,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -52.42000000000033
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 3.4000000000000017,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -52.55000000000034
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 3.5000000000000018,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -52.68000000000035
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 3.600000000000002,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -52.81000000000036
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 3.700000000000002,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -52.94000000000037
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 3.800000000000002,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -53.07000000000038
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 3.900000000000002,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -53.20000000000039
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 4.000000000000002,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -53.330000000000396
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 4.100000000000001,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -53.460000000000406
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 4.200000000000001,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -53.590000000000416
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 4.300000000000001,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -53.720000000000425
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 4.4,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -53.850000000000435
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 4.5,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -53.980000000000445
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 4.6,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -54.110000000000454
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 4.699999999999999,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -54.240000000000464
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 4.799999999999999,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -54.37000000000047
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 4.899999999999999,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -54.50000000000048
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 4.999999999999998,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -54.63000000000049
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 5.099999999999998,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -54.7600000000005
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 5.1999999999999975,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "chase",
+      "position": [
+        24,
+        0.035,
+        -54.89000000000051
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 5.299999999999997,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "search",
+      "position": [
+        24,
+        0.035,
+        -54.89000000000051
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0,
+      "clock": 5.399999999999997,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "search",
+      "position": [
+        24,
+        0.035,
+        -54.89000000000051
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0.1,
+      "clock": 5.4999999999999964,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "search",
+      "position": [
+        24,
+        0.035,
+        -54.89000000000051
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0.2,
+      "clock": 5.599999999999996,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "search",
+      "position": [
+        24,
+        0.035,
+        -54.89000000000051
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0.30000000000000004,
+      "clock": 5.699999999999996,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "search",
+      "position": [
+        24,
+        0.035,
+        -54.89000000000051
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0.4,
+      "clock": 5.799999999999995,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "search",
+      "position": [
+        24,
+        0.035,
+        -54.89000000000051
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0.5,
+      "clock": 5.899999999999995,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "search",
+      "position": [
+        24,
+        0.035,
+        -54.89000000000051
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0.6,
+      "clock": 5.999999999999995,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "search",
+      "position": [
+        24,
+        0.035,
+        -54.89000000000051
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0.7,
+      "clock": 6.099999999999994,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "search",
+      "position": [
+        24,
+        0.035,
+        -54.89000000000051
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0.7999999999999999,
+      "clock": 6.199999999999994,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "search",
+      "position": [
+        24,
+        0.035,
+        -54.89000000000051
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0.8999999999999999,
+      "clock": 6.299999999999994,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "search",
+      "position": [
+        24,
+        0.035,
+        -54.89000000000051
+      ],
+      "lastSeen": [
+        24,
+        0,
+        -55
+      ],
+      "searchSeconds": 0.9999999999999999,
+      "clock": 6.399999999999993,
+      "captured": false,
+      "visible": false
+    },
+    {
+      "state": "patrol",
+      "position": [
+        24,
+        0.035,
+        -54.89000000000051
+      ],
+      "lastSeen": null,
+      "searchSeconds": 1.0999999999999999,
+      "clock": 6.499999999999993,
+      "captured": false,
+      "visible": false
+    }
+  ]
+}

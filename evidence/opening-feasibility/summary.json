@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-18",
+  "baseline": "f157e29",
+  "status": "approach_feasible_with_required_integration",
+  "productionSourceChanged": false,
+  "completeOpeningPlaythroughPerformed": false,
+  "baselineCheckAll": {
+    "exitCode": 0,
+    "existingChecks": 17,
+    "productionBuild": "passed",
+    "log": "check-all.log"
+  },
+  "probes": {
+    "baselineBehaviorAssertions": 8,
+    "dispatchPrototypeTests": 5,
+    "spatialSimulations": 6,
+    "robotPrototypeAssertions": 7,
+    "characterTemplates": 2,
+    "audioPauseLimitationReproduced": true
+  },
+  "browser": {
+    "loaded": true,
+    "contextLost": false,
+    "aiEnabled": false,
+    "playerMovedByAgent": false
+  },
+  "limitations": [
+    "Real B05/B06 entrances and public interiors await field reference calibration.",
+    "Doorway and bus fixtures are not production geometry.",
+    "Final DOM focus, storage integration, rendering performance and complete opening playthrough remain implementation acceptance gates."
+  ]
+}

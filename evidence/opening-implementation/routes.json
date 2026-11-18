@@ -1,0 +1,55 @@
+[
+  {
+    "name": "Bus inside to exit",
+    "seconds": 1.4333333333333333,
+    "end": [
+      61.276750772878145,
+      0.045,
+      32.60013388712002
+    ]
+  },
+  {
+    "name": "Building4 to Building5 then turn right",
+    "seconds": 65.075,
+    "end": [
+      63.93756201899362,
+      0,
+      -60.96798189663755
+    ]
+  },
+  {
+    "name": "Building5 to Building6 pickup space",
+    "seconds": 49.3,
+    "end": [
+      7.239724631152755,
+      5.1,
+      -58.195195088819794
+    ]
+  },
+  {
+    "name": "Building6 back to Building5",
+    "seconds": 49.3,
+    "end": [
+      63.942936922516026,
+      0,
+      -60.98042333029787
+    ]
+  },
+  {
+    "name": "Building5 to Building4 handoff",
+    "seconds": 67.275,
+    "end": [
+      57.99940857085135,
+      0.08,
+      25.071794346254237
+    ]
+  },
+  {
+    "name": "Shared RPC route, modal same-frame stop and epoch invalidation",
+    "passed": true
+  },
+  {
+    "name": "Visual doorway rays match collision openings",
+    "passed": true
+  }
+]

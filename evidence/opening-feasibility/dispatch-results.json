@@ -1,0 +1,54 @@
+{
+  "scope": "isolated source-copy prototype; not production implementation or browser playthrough",
+  "baseline": "src/exploration/game.ts",
+  "fixture": "/var/folders/xb/wbhc565s2xgbv6cj84fp81rm0000gn/T/thomas-opening-dispatch-0oWNLj/CampusGame.fixture.ts",
+  "productionFilesChanged": false,
+  "rpcSchemaChanged": false,
+  "tests": [
+    {
+      "name": "human-intent-uses-shared-dispatch",
+      "pass": true
+    },
+    {
+      "name": "rpc-modal-same-route-revokes-control-and-stops-same-frame-movement",
+      "pass": true,
+      "positionBefore": [
+        58,
+        0.045,
+        33.5
+      ],
+      "positionAfter": [
+        58,
+        0.045,
+        33.5
+      ]
+    },
+    {
+      "name": "human-and-rpc-repeated-pickup-exactly-one-instance-and-one-acquisition",
+      "pass": true
+    },
+    {
+      "name": "existing-computer-tasks-field-maps-to-alert-without-new-RPC-fields",
+      "pass": true
+    },
+    {
+      "name": "human-retry-restores-checkpoint-retains-one-laptop-and-requires-explicit-resume",
+      "pass": true
+    }
+  ],
+  "calls": [
+    "interact:opening-invitation",
+    "interact:opening-invitation",
+    "interact:opening-laptop",
+    "interact:opening-laptop",
+    "interact:opening-laptop",
+    "computer:tasks",
+    "interact:opening-retry"
+  ],
+  "limitations": [
+    "Range and line-of-sight authorization remain future production work.",
+    "DOM focus, pointer lock and scene-specific panel rendering are not browser-tested.",
+    "Retry uses the authorized checkpoint-restore path, not a public coordinate-write RPC.",
+    "AI authorization here applies only to an offline test instance; no browser control enabled."
+  ]
+}

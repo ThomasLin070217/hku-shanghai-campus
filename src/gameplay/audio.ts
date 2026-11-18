@@ -94,6 +94,17 @@ export class CampusAudio {
   if(preview){const duration=Math.min(source.buffer.duration/rate,2.5),t=c.currentTime;volume.gain.value=0;volume.gain.setTargetAtTime(gain,t,.012);volume.gain.setTargetAtTime(0,t+Math.max(.02,duration-.08),.012);source.start();source.stop(t+duration);}else source.start();
   this.counts[name]=(this.counts[name]??0)+1;
  }
+ /** Local opening cues share the existing context, mixer and voice budget. */
+ openingCue(kind:'bus'|'door'|'disturbance'|'scan'|'alert'){
+  const c=this.context;if(!c||!this.active)return;
+  if(!this.groups.opening){this.groups.opening=c.createGain();this.groups.opening.connect(this.groups.ambient);}
+  const name='opening-'+kind;if(!this.buffers.has(name)){
+   const seconds=kind==='disturbance'?2.3:kind==='bus'?1.6:.32,buffer=c.createBuffer(1,Math.round(c.sampleRate*seconds),c.sampleRate),data=buffer.getChannelData(0);
+   for(let i=0;i<data.length;i++){const t=i/c.sampleRate,fade=Math.sin(Math.PI*i/data.length),freq=kind==='scan'?680:kind==='alert'?210:kind==='door'?115:75;const noise=kind==='disturbance'||kind==='bus'?(Math.random()-.5)*.16:0;data[i]=(Math.sin(t*freq*Math.PI*2)*.10+noise)*fade*(kind==='disturbance'?(Math.sin(t*19)>0?.9:.15):1);}
+   this.buffers.set(name,buffer);
+  }this.play(name,'opening');
+ }
+ stopOpeningCues(){this.stopShots('opening',true);}
  update(gait:Gait,paused:boolean,surface:'grass'|'paving',position:Point,listener:Point,yaw:number){
   this.setActive(!paused);const c=this.context,pose=[listener.x,listener.y,listener.z,yaw];if(c&&pose.some((v,i)=>v!==this.listenerPose[i])){this.listenerPose=pose;const l=c.listener,t=c.currentTime;l.positionX.setValueAtTime(listener.x,t);l.positionY.setValueAtTime(listener.y,t);l.positionZ.setValueAtTime(listener.z,t);l.forwardX.setValueAtTime(-Math.sin(yaw),t);l.forwardY.setValueAtTime(0,t);l.forwardZ.setValueAtTime(-Math.cos(yaw),t);l.upX.value=0;l.upY.value=1;l.upZ.value=0;}
   if(this.previousGait!==gait){this.previousGait=gait;this.seenSteps=gait.steps;this.seenLand=gait.landings;return;}

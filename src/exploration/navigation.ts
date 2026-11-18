@@ -1,3 +1,4 @@
+import {openingObstacles,openingSupport} from '../opening/navigation';
 import {LAWN_SIGN,LAWN_SIZE,OCULUS,oculusDeck} from '../model/videoFollowup';
 import {driveLayout,centralWalkLayout,promenadeLayout,contains} from '../model/groundLayout';
 import {linkLayout} from '../model/nov14Details';
@@ -13,7 +14,7 @@ import type {BuildingSpec,SiteParameters} from '../model/campusParameters';
 import {EXPLORATION as C,LANDSCAPE as L} from './config';
 export interface Obstacle {name:string;x:number;z:number;w:number;d:number;bottom:number;top:number;angle:number;radius?:number}
 /** Stable cylinder against oriented boxes. No render-mesh ownership; works after geometry merging. */
-export function createNavigation(specs:BuildingSpec[],s:SiteParameters){
+export function createNavigation(specs:BuildingSpec[],s:SiteParameters,opening=false){
  const obstacles:Obstacle[]=[];
  const drives=driveLayout(),walks=centralWalkLayout(s),promenades=promenadeLayout();
  const box=(name:string,x:number,z:number,w:number,d:number,top:number,bottom=0,angle=0)=>obstacles.push({name,x,z,w,d,bottom,top,angle});
@@ -82,6 +83,7 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters){
  const planted=landscapeLayout(specs,s);for(const bed of planted.beds)if(bed.kerb)box(bed.id,bed.x,bed.z,bed.w,bed.d,bed.y+bed.kerb,bed.y);for(const tree of planted.trees)circle(tree.id,tree.x,tree.z,.13,tree.y+tree.height*.8);
  const link=linkLayout(specs);box('B04-B05-link-slab',link.x,link.z,link.width,link.length,link.bottom+.14,link.bottom-.14);
  for(const side of [-1,1]){for(const z of [-link.length*.33,link.length*.33])box('B04-B05-link-column',link.x+side*(link.width/2-.5),link.z+z,.55,.55,link.bottom);box('side-passage-planter',link.x+side*(link.width/2+1.6),link.z,1.2,3.4,.65);for(const z of [-20,-6])circle('north-green-link-tree',side*10.5,z,.12,4.2);}
+ if(opening)openingObstacles(obstacles);
  const meshes=obstacles.map(o=>{const mesh=new T.Mesh(new T.BoxGeometry(o.w,o.top-o.bottom,o.d));mesh.name=o.name;mesh.position.set(o.x,(o.top+o.bottom)/2,o.z);mesh.rotation.y=o.angle;mesh.updateMatrixWorld();return mesh;});
  function support(x:number,z:number,y:number):number|null{
   if(Math.abs(x)>s.width/2-.75||Math.abs(z-s.centerZ)>s.depth/2-.75)return null;
@@ -116,7 +118,7 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters){
   if(Math.abs(bx)<b.width/2+2&&bz>b.depth/2+9.75&&bz<b.depth/2+16.25)h=Math.max(h,.045);
   if(Math.abs(bx)<5.7&&bz>b.depth/2&&bz<b.depth/2+3.03)h=Math.max(h,.12);
 
-  return h;
+  return opening?openingSupport(x,z,y,h):h;
  }
  function overlaps(o:Obstacle,x:number,z:number,r=C.radius){
   const dx=x-o.x,dz=z-o.z;if(o.radius)return dx*dx+dz*dz<(o.radius+r)**2;
@@ -135,6 +137,8 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters){
   for(let i=0;i<n;i++){const x=position.x+dx/n,z=position.z+dz/n;if(!valid(x,z)){valid(x,position.z);valid(position.x,z);}}
  }
  function surface(x:number,z:number,y:number):'grass'|'paving'{return (Math.abs(x)<14&&z>53&&z<93&&Math.abs(y-.13)<.12)||(Math.abs(x)>2&&Math.abs(x)<13&&z> -24.5&&z<.5&&Math.abs(y-.09)<.1)?'grass':'paving';}
- return{surface,obstacles,meshes,support,blocked,contacts,overlaps,step,dispose(){meshes.forEach(m=>{m.geometry.dispose();(m.material as T.Material).dispose();});}};
+ // Coarse walkable rectangle for grid pathfinding; same margins as support().
+ const bounds={minX:-(s.width/2-.75),maxX:s.width/2-.75,minZ:s.centerZ-(s.depth/2-.75),maxZ:s.centerZ+(s.depth/2-.75)};
+ return{surface,obstacles,meshes,support,blocked,contacts,overlaps,step,bounds,dispose(){meshes.forEach(m=>{m.geometry.dispose();(m.material as T.Material).dispose();});}};
 }
 export type Navigation=ReturnType<typeof createNavigation>;

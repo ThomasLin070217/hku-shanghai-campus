@@ -1,0 +1,146 @@
+/**
+ * English player-visible copy for Thomas's opening UI.
+ *
+ * Copy only: no stage rules, flags, coordinates or action names live here.
+ * The HUD objective / detail / interaction prompt are authored in
+ * `src/opening/experience.ts` and rendered as-is by `src/opening/ui.ts`.
+ */
+export const OPENING_UI = {
+  hud: {
+    objectiveLabel: 'Current objective',
+    details: 'Details',
+    mapLabel: 'Map',
+    mapAria: 'Open the campus map in the presentation MacBook',
+    minimapAria: 'Campus minimap. North is up.',
+  },
+  robot: {
+    label: 'Security robot',
+    unknown: 'Active',
+    /** Keys match OpeningRobotState: patrol | scanning | chase | search | caught. */
+    states: {
+      patrol: 'Patrolling nearby',
+      scanning: 'Scanning the area',
+      chase: 'Pursuit detected — run',
+      search: 'Searching your last position',
+      caught: 'Detected',
+    } as Record<string, string>,
+  },
+  common: {
+    close: 'Close',
+    notNow: 'Not now',
+  },
+  invitation: {
+    eyebrow: 'HKU Shanghai · 2030',
+    title: 'High Table Dinner',
+    forLabel: 'For',
+    forValue: 'Student Ambassador',
+    venueLabel: 'Venue',
+    venueValue: 'Building 5 · Ground Floor',
+    directionsLabel: 'Directions',
+    directionsValue: 'Turn right after entering',
+    yearLabel: 'Year',
+    yearValue: '2030',
+    body: 'You are invited to High Table Dinner. Present this invitation at the ground-floor entrance of Building 5, then turn right after entering.',
+    continue: 'Continue',
+    reread: 'You can read your invitation again from the main interaction prompt.',
+  },
+  staff: {
+    eyebrow: 'Building 5 · Dining hall',
+    title: 'Dinner coordinator',
+    speaker: 'Staff · Dinner coordinator',
+    line1: "You're one of our Student Ambassadors, right?",
+    line2: 'We need the presentation MacBook from Building 6 for tonight’s dinner. Could you collect it and bring it back here?',
+    line3: 'The device is waiting on the office table in Building 6.',
+    accept: "I'll collect it",
+    later: 'Not now',
+  },
+  alert: {
+    eyebrow: 'Local AI · Emergency mode',
+    title: 'Campus network alert',
+    intro: 'The local AI on this MacBook detected an attack on the campus network. This alert was generated on the device itself.',
+    items: [
+      ['Robots compromised', 'Campus security robots are no longer responding to campus control.'],
+      ['Perimeter barrier active', 'External connections are blocked. No messages can leave campus.'],
+      ['Students and staff may have been detained', 'This is unconfirmed. Treat the campus as unsafe.'],
+      ['Building 4 emergency control is available', 'Reach the main entrance of Building 4 to hand over the MacBook.'],
+    ] as [string, string][],
+    note: 'Detected locally · no outside connection used',
+    confirm: 'Enable emergency assistance',
+    later: 'Not now',
+  },
+  computer: {
+    eyebrow: 'Device',
+    title: 'MacBook Air',
+    subtitle: 'Presentation device · Student Ambassador',
+    tabs: {
+      map: 'Map',
+      tasks: 'Tasks',
+    },
+    objectiveLabel: 'Current objective',
+    normalTitle: 'Prepared for High Table Dinner',
+    normalLines: [
+      'Presentation files are stored locally on this device.',
+      'No presentations are open.',
+    ],
+    emergencyTitle: 'Emergency assistance enabled',
+    emergencyBody: 'Head to the main entrance of Building 4. Keep the MacBook in your backpack.',
+    stepsTitle: 'Opening steps',
+    steps: [
+      {label: 'Read the High Table Dinner invitation'},
+      {label: 'Collect the MacBook from Building 6'},
+      {label: 'Read the local AI alert'},
+      {label: 'Reach the Building 4 main entrance'},
+    ],
+    stepDone: 'Done',
+    stepNext: 'Next',
+    stepPending: 'Later',
+  },
+  map: {
+    title: 'Campus map',
+    legend: 'North is up. Blue arrow: you. Orange marker: current target.',
+    note: 'The route shows the main walking surface, not indoor navigation.',
+    back: 'Back to tasks',
+    aria: 'Campus map with the current opening route.',
+  },
+  caught: {
+    eyebrow: 'Opening paused',
+    title: 'Caught by campus security',
+    body: 'A security robot caught you before you reached Building 4.',
+    note: 'Retry restores the last safe checkpoint. Your MacBook and earlier progress are kept.',
+    retry: 'Retry',
+    onlyWay: 'Retry is the only way to continue.',
+  },
+  complete: {
+    eyebrow: 'Opening handoff',
+    title: 'Building 4 reached',
+    body: 'You reached the main entrance of Building 4 with the presentation MacBook.',
+    facts: [
+      ['MacBook', 'Kept in your backpack'],
+      ['Handoff point', 'Building 4 main entrance'],
+      ['Progress', 'Opening complete'],
+    ] as [string, string][],
+    note: 'The opening ends here. Later chapters continue inside Building 4.',
+    close: 'Close',
+  },
+  settings: {
+    eyebrow: 'Preferences',
+    title: 'Settings',
+    sensitivity: 'Mouse sensitivity',
+    fov: 'Field of view',
+    ambient: 'Ambient volume',
+    steps: 'Footstep volume',
+    ui: 'Interface volume',
+    muted: 'Mute all sound',
+    bob: 'Head bob while walking',
+    save: 'Save progress',
+    safe: 'Safe checkpoint',
+    restart: 'Restart opening…',
+    restartTitle: 'Restart the opening?',
+    restartBody: 'The current save is backed up first, then the shuttle sequence begins again. Your settings are kept.',
+    restartConfirm: 'Restart opening',
+    restartCancel: 'Keep current progress',
+    done: 'Done',
+    note: 'Changes apply immediately. Closing this screen returns you to the pause menu.',
+  },
+};
+export type OpeningUIText = typeof OPENING_UI;

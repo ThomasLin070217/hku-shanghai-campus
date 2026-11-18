@@ -1,0 +1,41 @@
+{
+  "scope": "Node character construction/animation and mocked audio graph; no WebGL rendering, browser focus or listening verification",
+  "characters": [
+    {
+      "id": "navy-student",
+      "configuredHeight": 1.74,
+      "idleBounds": [
+        0.9692444516658781,
+        1.7452431831532247,
+        0.5232888815138076
+      ],
+      "motion": "walk",
+      "finite": true,
+      "sockets": [
+        "leftHand",
+        "rightHand",
+        "back"
+      ]
+    },
+    {
+      "id": "sand-student",
+      "configuredHeight": 1.86,
+      "idleBounds": [
+        1.1352888973474502,
+        1.8656047819913784,
+        0.5593777698940702
+      ],
+      "motion": "walk",
+      "finite": true,
+      "sockets": [
+        "leftHand",
+        "rightHand",
+        "back"
+      ]
+    }
+  ],
+  "audio": {
+    "pausedAmbientCueStillStarts": true,
+    "activeShots": 1
+  }
+}

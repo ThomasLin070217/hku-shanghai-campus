@@ -1,0 +1,2901 @@
+{
+  "summary": {
+    "startedAt": "2026-11-18T16:42:26.831Z",
+    "control": true,
+    "screenshotsTaken": 0,
+    "domAutomation": false,
+    "steps": [
+      {
+        "step": "world",
+        "protocol": "hku-campus/2.0",
+        "revision": "9b095734b4d0",
+        "bounds": {
+          "minX": -103.25,
+          "maxX": 103.25,
+          "minZ": -141.25,
+          "maxZ": 113.25
+        }
+      },
+      {
+        "step": "observe",
+        "eventSeq": 47,
+        "aiEnabled": true,
+        "paused": false,
+        "perception": {
+          "ground": "paving",
+          "hud": [
+            "交互：按 F 查看记录",
+            "巡检：1/3 条记录"
+          ],
+          "interactables": 4
+        }
+      },
+      {
+        "step": "events",
+        "count": 20,
+        "kinds": [
+          "command_finished",
+          "command_accepted",
+          "ai_disabled",
+          "control_revoked",
+          "control_released",
+          "ai_enabled",
+          "control_acquired",
+          "command_running",
+          "survey"
+        ]
+      },
+      {
+        "step": "path",
+        "reachable": true,
+        "partial": false,
+        "length": 24.694,
+        "visited": 26
+      },
+      {
+        "step": "walkTo",
+        "status": "completed",
+        "directive": {
+          "commandId": "native-walk-1795020147009",
+          "type": "walkTo",
+          "reached": true,
+          "distanceRemaining": 2.183,
+          "lookErrorDeg": 0,
+          "waypoints": 2,
+          "progress": 0.9115989795824109,
+          "reason": "goal_reached"
+        }
+      },
+      {
+        "step": "lookAt",
+        "status": "completed",
+        "directive": {
+          "commandId": "native-look-1795020158522",
+          "type": "lookAt",
+          "reached": true,
+          "distanceRemaining": 2.183,
+          "lookErrorDeg": 0,
+          "waypoints": 0,
+          "progress": 0,
+          "reason": "goal_reached"
+        }
+      },
+      {
+        "step": "approach",
+        "status": "completed",
+        "directive": {
+          "commandId": "native-approach-1795020158819",
+          "type": "walkTo",
+          "reached": true,
+          "distanceRemaining": 2.187,
+          "lookErrorDeg": 0,
+          "waypoints": 2,
+          "progress": 0.911453288854745,
+          "reason": "goal_reached"
+        }
+      },
+      {
+        "step": "lookAtRecord",
+        "status": "completed",
+        "lookErrorDeg": 0
+      },
+      {
+        "step": "interact",
+        "status": "completed",
+        "operation": {
+          "ok": true,
+          "code": "viewed",
+          "message": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。",
+          "id": "record-cds-entry"
+        }
+      },
+      {
+        "step": "observeAfter",
+        "events": 18
+      }
+    ],
+    "sseEvents": 18,
+    "elapsedMs": 25717,
+    "result": "control_ok",
+    "sseKinds": [
+      "control_acquired",
+      "command_accepted",
+      "command_running",
+      "command_finished",
+      "survey"
+    ]
+  },
+  "log": [
+    {
+      "tool": "campus_world",
+      "args": {},
+      "ok": true,
+      "result": {
+        "ok": true,
+        "schema": "hku-scene/1",
+        "revision": "9b095734b4d0",
+        "protocolVersion": "hku-campus/2.0",
+        "units": "metres",
+        "axes": "+Y up; yaw=0 faces -Z; positive yaw turns left",
+        "bounds": {
+          "minX": -103.25,
+          "maxX": 103.25,
+          "minZ": -141.25,
+          "maxZ": 113.25
+        },
+        "buildings": [
+          {
+            "id": "B01",
+            "name": "1号楼 · 西侧北塔",
+            "kind": "building",
+            "center": [
+              -57.9762,
+              40.52,
+              -1.9
+            ],
+            "size": [
+              60.5475,
+              81.16,
+              50.8
+            ],
+            "buildingId": "B01",
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "B02",
+            "name": "2号楼 · 西侧南塔",
+            "kind": "building",
+            "center": [
+              -57.9762,
+              40.52,
+              70.1
+            ],
+            "size": [
+              60.5475,
+              81.16,
+              41.3
+            ],
+            "buildingId": "B02",
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "B03",
+            "name": "CDS-2 · 3号楼",
+            "kind": "building",
+            "center": [
+              58,
+              33.59,
+              71.13
+            ],
+            "size": [
+              60.78,
+              67.18,
+              40.64
+            ],
+            "buildingId": "B03",
+            "sourceFile": "src/model/buildCampus.ts"
+          },
+          {
+            "id": "B04",
+            "name": "CDS-1 · 4号楼",
+            "kind": "building",
+            "center": [
+              58,
+              33.59,
+              0.8675
+            ],
+            "size": [
+              60.78,
+              67.18,
+              51.815
+            ],
+            "buildingId": "B04",
+            "sourceFile": "src/model/buildCampus.ts"
+          },
+          {
+            "id": "B05",
+            "name": "5号楼 · 学生活动",
+            "kind": "building",
+            "center": [
+              58,
+              12.695,
+              -71
+            ],
+            "size": [
+              60.4,
+              25.51,
+              32.9
+            ],
+            "buildingId": "B05",
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "B06",
+            "name": "6号楼 · 礼堂",
+            "kind": "building",
+            "center": [
+              0,
+              12.47,
+              -69.325
+            ],
+            "size": [
+              34.45,
+              25.06,
+              37.8
+            ],
+            "buildingId": "B06",
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "B07",
+            "name": "7号楼 · 西北配套楼",
+            "kind": "building",
+            "center": [
+              -58,
+              12.695,
+              -71
+            ],
+            "size": [
+              60.2,
+              25.51,
+              32.9
+            ],
+            "buildingId": "B07",
+            "sourceFile": "src/model/buildSite.ts"
+          }
+        ],
+        "roads": [
+          {
+            "id": "R001",
+            "name": "西侧车道",
+            "kind": "road",
+            "center": [
+              -94,
+              0.025,
+              0
+            ],
+            "size": [
+              7,
+              0.05,
+              193
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "R002",
+            "name": "东侧车道",
+            "kind": "road",
+            "center": [
+              94,
+              0.025,
+              0
+            ],
+            "size": [
+              7,
+              0.05,
+              193
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "R003",
+            "name": "北侧横向车道",
+            "kind": "road",
+            "center": [
+              0,
+              0.025,
+              -44
+            ],
+            "size": [
+              181,
+              0.05,
+              7
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "R004",
+            "name": "南侧横向车道",
+            "kind": "road",
+            "center": [
+              0,
+              0.025,
+              98
+            ],
+            "size": [
+              188,
+              0.05,
+              7
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "R005",
+            "name": "东侧带状步道",
+            "kind": "road",
+            "center": [
+              24,
+              0.0235,
+              -4
+            ],
+            "size": [
+              4.2,
+              0.047,
+              88
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/videoDetails.ts"
+          },
+          {
+            "id": "R006",
+            "name": "北侧带状步道",
+            "kind": "road",
+            "center": [
+              25,
+              0.0235,
+              -70.25
+            ],
+            "size": [
+              4.2,
+              0.047,
+              45.5
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/videoDetails.ts"
+          },
+          {
+            "id": "R007",
+            "name": "南草坪西侧步道",
+            "kind": "road",
+            "center": [
+              -16.8,
+              0.035,
+              71.75
+            ],
+            "size": [
+              3,
+              0.07,
+              45.5
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "R008",
+            "name": "南草坪东侧步道",
+            "kind": "road",
+            "center": [
+              16.8,
+              0.035,
+              71.75
+            ],
+            "size": [
+              3,
+              0.07,
+              45.5
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "R009",
+            "name": "CDS-1 门前到达车道",
+            "kind": "road",
+            "center": [
+              58,
+              0.025,
+              33.5
+            ],
+            "size": [
+              63.7,
+              0.04,
+              6.5
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "R010",
+            "name": "北侧蓝色跑道",
+            "kind": "road",
+            "center": [
+              0,
+              0.04,
+              -97.92
+            ],
+            "size": [
+              174,
+              0.08,
+              3.36
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/videoDetails.ts"
+          },
+          {
+            "id": "R011",
+            "name": "庭院北侧中央步道",
+            "kind": "road",
+            "center": [
+              0,
+              0.02,
+              -12.5
+            ],
+            "size": [
+              4,
+              0.04,
+              29
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/nov14Details.ts"
+          },
+          {
+            "id": "R012",
+            "name": "西侧架空步道（高架）",
+            "kind": "road",
+            "center": [
+              -26,
+              3.2812,
+              0
+            ],
+            "size": [
+              4.475,
+              6.5625,
+              115.065
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "R013",
+            "name": "礼堂西侧连接平台（高架）",
+            "kind": "road",
+            "center": [
+              -23,
+              9,
+              -70
+            ],
+            "size": [
+              12,
+              0.45,
+              5
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "R014",
+            "name": "礼堂东侧连接平台（高架）",
+            "kind": "road",
+            "center": [
+              23,
+              9,
+              -70
+            ],
+            "size": [
+              12,
+              0.45,
+              5
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          }
+        ],
+        "areas": [
+          {
+            "id": "A001",
+            "name": "校园地面",
+            "kind": "area",
+            "center": [
+              0,
+              -0.3,
+              -14
+            ],
+            "size": [
+              208,
+              0.6,
+              256
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "A002",
+            "name": "道路与铺装",
+            "kind": "area",
+            "center": [
+              0,
+              0.035,
+              2.5
+            ],
+            "size": [
+              195,
+              0.07,
+              198
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "A003",
+            "name": "基础绿化",
+            "kind": "area",
+            "center": [
+              -0.027,
+              2.982,
+              6.935
+            ],
+            "size": [
+              206.158,
+              6.024,
+              205.38
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "A004",
+            "name": "下沉庭院",
+            "kind": "area",
+            "center": [
+              -0.0682,
+              -1.6923,
+              25
+            ],
+            "size": [
+              32.2135,
+              5.6154,
+              44.8
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "A005",
+            "name": "礼堂大阶梯",
+            "kind": "area",
+            "center": [
+              0,
+              3.1342,
+              -39.8428
+            ],
+            "size": [
+              30.94,
+              6.2685,
+              25.7144
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "A006",
+            "name": "圆形天窗连廊",
+            "kind": "area",
+            "center": [
+              -58,
+              3.3896,
+              36.375
+            ],
+            "size": [
+              15,
+              6.7793,
+              31.75
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "A007",
+            "name": "CDS-1 入口广场",
+            "kind": "area",
+            "center": [
+              58,
+              2.56,
+              28.675
+            ],
+            "size": [
+              63.7,
+              5.12,
+              16.15
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "A008",
+            "name": "视频确认的室外细节",
+            "kind": "area",
+            "center": [
+              0,
+              3.09,
+              -27.2325
+            ],
+            "size": [
+              165,
+              6.18,
+              150.885
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/videoDetails.ts"
+          },
+          {
+            "id": "A009",
+            "name": "11月13日实景细节",
+            "kind": "area",
+            "center": [
+              13.505,
+              2.525,
+              25.0804
+            ],
+            "size": [
+              30.51,
+              5.05,
+              104.1609
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/nov13Details.ts"
+          },
+          {
+            "id": "A010",
+            "name": "11月14日实景细节",
+            "kind": "area",
+            "center": [
+              24.7587,
+              2.485,
+              3.4751
+            ],
+            "size": [
+              84.8826,
+              5.03,
+              89.8502
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/nov14Details.ts"
+          },
+          {
+            "id": "A011",
+            "name": "庭院双弧楼梯与玻璃围护",
+            "kind": "area",
+            "center": [
+              0,
+              -1.6323,
+              25
+            ],
+            "size": [
+              32.0512,
+              5.4954,
+              44.8
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/courtyard.ts"
+          },
+          {
+            "id": "A012",
+            "name": "4号楼—5号楼连接体",
+            "kind": "area",
+            "center": [
+              58,
+              6.37,
+              -39.87
+            ],
+            "size": [
+              14.5,
+              12.74,
+              31.34
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/nov14Details.ts"
+          },
+          {
+            "id": "A013",
+            "name": "探索边界",
+            "kind": "area",
+            "center": [
+              0,
+              0.55,
+              -14
+            ],
+            "size": [
+              208,
+              1.1,
+              256
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "A014",
+            "name": "北侧运动区",
+            "kind": "area",
+            "center": [
+              0,
+              5.3247,
+              -114.37
+            ],
+            "size": [
+              190,
+              10.6494,
+              36.26
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/buildSite.ts"
+          },
+          {
+            "id": "A015",
+            "name": "外围绿化与 HKU 草坪地灯",
+            "kind": "area",
+            "center": [
+              0,
+              0.3075,
+              -14
+            ],
+            "size": [
+              206.2,
+              0.615,
+              254.2
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/videoFollowup.ts"
+          },
+          {
+            "id": "L001",
+            "name": "入口狮子与底座",
+            "kind": "area",
+            "center": [
+              0,
+              2.59,
+              76.1404
+            ],
+            "size": [
+              3.5,
+              4.92,
+              2.0409
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/nov13Details.ts"
+          },
+          {
+            "id": "L002",
+            "name": "实景补充绿化",
+            "kind": "area",
+            "center": [
+              34.5999,
+              3.0233,
+              54.7517
+            ],
+            "size": [
+              98.0157,
+              5.7865,
+              65.0833
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/landscapeDetails.ts"
+          },
+          {
+            "id": "S001",
+            "name": "计算与数据科学学院石牌",
+            "kind": "area",
+            "center": [
+              31.138,
+              2.4488,
+              29.4777
+            ],
+            "size": [
+              5.8739,
+              4.8975,
+              4.4027
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/videoDetails.ts"
+          },
+          {
+            "id": "S001-TEXT",
+            "name": "学院石牌黑字与校徽",
+            "kind": "area",
+            "center": [
+              31.0514,
+              1.025,
+              29.1662
+            ],
+            "size": [
+              3.5956,
+              2.01,
+              1.1226
+            ],
+            "buildingId": null,
+            "sourceFile": "src/model/monumentFace.ts"
+          }
+        ],
+        "landmarks": [
+          {
+            "id": "record-cds-entry",
+            "name": "CDS-1 入口",
+            "position": [
+              58,
+              0.045,
+              30.5
+            ]
+          },
+          {
+            "id": "B04",
+            "name": "CDS-1 · 4号楼",
+            "position": [
+              58,
+              0,
+              -2
+            ]
+          },
+          {
+            "id": "B03",
+            "name": "CDS-2 · 3号楼",
+            "position": [
+              58,
+              0,
+              70
+            ]
+          },
+          {
+            "id": "campus-directory",
+            "name": "校园导览牌",
+            "position": [
+              21.2,
+              0,
+              61
+            ]
+          },
+          {
+            "id": "entrance-lion",
+            "name": "入口草坪小狮子",
+            "position": [
+              0,
+              0,
+              76
+            ]
+          },
+          {
+            "id": "record-hku-square",
+            "name": "HKU 标识广场",
+            "position": [
+              8,
+              0.13,
+              91
+            ]
+          },
+          {
+            "id": "record-east-walk",
+            "name": "东侧露天步道",
+            "position": [
+              24,
+              0.05,
+              -45
+            ]
+          },
+          {
+            "id": "B05",
+            "name": "5号楼 · 学生活动",
+            "position": [
+              58,
+              0,
+              -70
+            ]
+          },
+          {
+            "id": "B06",
+            "name": "6号楼 · 礼堂",
+            "position": [
+              0,
+              0,
+              -70
+            ]
+          },
+          {
+            "id": "B01",
+            "name": "1号楼 · 西侧北塔",
+            "position": [
+              -58,
+              0,
+              -2
+            ]
+          },
+          {
+            "id": "B02",
+            "name": "2号楼 · 西侧南塔",
+            "position": [
+              -58,
+              0,
+              70
+            ]
+          },
+          {
+            "id": "B07",
+            "name": "7号楼 · 西北配套楼",
+            "position": [
+              -58,
+              0,
+              -70
+            ]
+          }
+        ],
+        "survey": {
+          "id": "campus-digital-survey",
+          "title": "校园数字巡检",
+          "status": "collecting",
+          "count": 1,
+          "total": 3,
+          "targets": [
+            {
+              "id": "record-cds-entry",
+              "name": "CDS-1 入口",
+              "position": [
+                58,
+                0.045,
+                30.5
+              ],
+              "collected": true
+            },
+            {
+              "id": "record-hku-square",
+              "name": "HKU 标识广场",
+              "position": [
+                8,
+                0.13,
+                91
+              ],
+              "collected": false
+            },
+            {
+              "id": "record-east-walk",
+              "name": "东侧露天步道",
+              "position": [
+                24,
+                0.05,
+                -45
+              ],
+              "collected": false
+            }
+          ]
+        },
+        "rules": {
+          "control": "explicit user enable; per-agent controlEpoch",
+          "maxActionMs": 1000,
+          "maxDirectiveMs": 30000,
+          "maxQueryLimit": 100,
+          "actions": [
+            "move/lookDelta/jump (legacy)",
+            "walkTo",
+            "approach",
+            "lookAt",
+            "followPath"
+          ],
+          "stopDistanceM": 2.4,
+          "note": "Movement always passes CharacterPhysics; no coordinate writes, no teleport, no AI self-enable."
+        }
+      }
+    },
+    {
+      "tool": "campus_observe",
+      "args": {},
+      "ok": true,
+      "result": {
+        "ok": true,
+        "state": {
+          "protocolVersion": "hku-campus/2.0",
+          "frame": 4644,
+          "timeMs": 38699.99999999982,
+          "wallTimeMs": 1795020146976,
+          "mode": "human",
+          "controlEpoch": 1795020095970,
+          "aiEnabled": true,
+          "owner": null,
+          "paused": false,
+          "pausedReason": null,
+          "player": {
+            "id": "PLAYER",
+            "position": [
+              55.81502901537341,
+              0.045,
+              30.40071399525247
+            ],
+            "velocity": [
+              0,
+              0,
+              0
+            ],
+            "yawDeg": 267.39824531382135,
+            "pitchDeg": 8.83580145808043,
+            "grounded": true
+          },
+          "view": "first",
+          "survey": {
+            "id": "campus-digital-survey",
+            "title": "校园数字巡检",
+            "status": "collecting",
+            "count": 1,
+            "total": 3,
+            "collectedClues": [
+              {
+                "id": "clue-learning",
+                "title": "CDS-1 入口",
+                "text": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。"
+              }
+            ],
+            "discovered": [
+              "record-cds-entry",
+              "record-hku-square",
+              "record-east-walk"
+            ],
+            "archive": null,
+            "elapsedSeconds": 728,
+            "target": {
+              "id": "record-cds-entry",
+              "name": "CDS-1 入口",
+              "actions": [
+                "view"
+              ],
+              "distance": 2.2134940511324643
+            },
+            "objectives": [
+              {
+                "id": "record-cds-entry",
+                "name": "CDS-1 入口",
+                "position": [
+                  58,
+                  0.045,
+                  30.5
+                ],
+                "collected": true
+              },
+              {
+                "id": "record-hku-square",
+                "name": "HKU 标识广场",
+                "position": [
+                  8,
+                  0.13,
+                  91
+                ],
+                "collected": false
+              },
+              {
+                "id": "record-east-walk",
+                "name": "东侧露天步道",
+                "position": [
+                  24,
+                  0.05,
+                  -45
+                ],
+                "collected": false
+              }
+            ]
+          },
+          "panel": null,
+          "world": {
+            "units": "metres",
+            "revision": "2026-11-14-v9-scale1-glass1-experience1-U06",
+            "scaleCalibration": {
+              "id": "amap-2026-11-14",
+              "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+              "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+              "verticalStatus": "estimated-not-measured",
+              "source": "references/scale-calibration/REPORT.md",
+              "imageryDate": "unknown",
+              "worldUnits": "metres",
+              "globalScaleFactor": 1,
+              "columnCentreSpacing": 116,
+              "columnSpacingUncertainty": 3
+            }
+          },
+          "inventory": {
+            "slots": [
+              {
+                "index": 0,
+                "itemId": "macbook-air-13-silver",
+                "instanceId": "student-macbook-001",
+                "count": 1,
+                "empty": false
+              },
+              {
+                "index": 1,
+                "empty": true
+              },
+              {
+                "index": 2,
+                "empty": true
+              },
+              {
+                "index": 3,
+                "empty": true
+              },
+              {
+                "index": 4,
+                "empty": true
+              },
+              {
+                "index": 5,
+                "empty": true
+              },
+              {
+                "index": 6,
+                "empty": true
+              },
+              {
+                "index": 7,
+                "empty": true
+              },
+              {
+                "index": 8,
+                "empty": true
+              },
+              {
+                "index": 9,
+                "empty": true
+              },
+              {
+                "index": 10,
+                "empty": true
+              },
+              {
+                "index": 11,
+                "empty": true
+              },
+              {
+                "index": 12,
+                "empty": true
+              },
+              {
+                "index": 13,
+                "empty": true
+              },
+              {
+                "index": 14,
+                "empty": true
+              },
+              {
+                "index": 15,
+                "empty": true
+              },
+              {
+                "index": 16,
+                "empty": true
+              },
+              {
+                "index": 17,
+                "empty": true
+              },
+              {
+                "index": 18,
+                "empty": true
+              },
+              {
+                "index": 19,
+                "empty": true
+              },
+              {
+                "index": 20,
+                "empty": true
+              },
+              {
+                "index": 21,
+                "empty": true
+              },
+              {
+                "index": 22,
+                "empty": true
+              },
+              {
+                "index": 23,
+                "empty": true
+              },
+              {
+                "index": 24,
+                "empty": true
+              },
+              {
+                "index": 25,
+                "empty": true
+              },
+              {
+                "index": 26,
+                "empty": true
+              },
+              {
+                "index": 27,
+                "empty": true
+              },
+              {
+                "index": 28,
+                "empty": true
+              },
+              {
+                "index": 29,
+                "empty": true
+              },
+              {
+                "index": 30,
+                "empty": true
+              },
+              {
+                "index": 31,
+                "empty": true
+              },
+              {
+                "index": 32,
+                "empty": true
+              },
+              {
+                "index": 33,
+                "empty": true
+              },
+              {
+                "index": 34,
+                "empty": true
+              },
+              {
+                "index": 35,
+                "empty": true
+              }
+            ],
+            "selectedHotbar": 1,
+            "equipped": null,
+            "revision": 1,
+            "open": false
+          },
+          "landmarks": [
+            {
+              "id": "record-cds-entry",
+              "name": "CDS-1 入口",
+              "position": [
+                58,
+                0.045,
+                30.5
+              ],
+              "relativePosition": [
+                2.184970984626588,
+                0,
+                0.09928600474752969
+              ],
+              "distance": 2.1872256203690577
+            },
+            {
+              "id": "B04",
+              "name": "CDS-1 · 4号楼",
+              "position": [
+                58,
+                0,
+                -2
+              ],
+              "relativePosition": [
+                2.184970984626588,
+                -0.045,
+                -32.400713995252474
+              ],
+              "distance": 32.47433433660819
+            },
+            {
+              "id": "B03",
+              "name": "CDS-2 · 3号楼",
+              "position": [
+                58,
+                0,
+                70
+              ],
+              "relativePosition": [
+                2.184970984626588,
+                -0.045,
+                39.599286004747526
+              ],
+              "distance": 39.659545828078436
+            },
+            {
+              "id": "campus-directory",
+              "name": "校园导览牌",
+              "position": [
+                21.2,
+                0,
+                61
+              ],
+              "relativePosition": [
+                -34.61502901537341,
+                -0.045,
+                30.59928600474753
+              ],
+              "distance": 46.20085023823135
+            },
+            {
+              "id": "entrance-lion",
+              "name": "入口草坪小狮子",
+              "position": [
+                0,
+                0,
+                76
+              ],
+              "relativePosition": [
+                -55.81502901537341,
+                -0.045,
+                45.599286004747526
+              ],
+              "distance": 72.07367323183784
+            },
+            {
+              "id": "record-hku-square",
+              "name": "HKU 标识广场",
+              "position": [
+                8,
+                0.13,
+                91
+              ],
+              "relativePosition": [
+                -47.81502901537341,
+                0.085,
+                60.599286004747526
+              ],
+              "distance": 77.19169443033486
+            },
+            {
+              "id": "record-east-walk",
+              "name": "东侧露天步道",
+              "position": [
+                24,
+                0.05,
+                -45
+              ],
+              "relativePosition": [
+                -31.815029015373412,
+                0.0050000000000000044,
+                -75.40071399525247
+              ],
+              "distance": 81.8380337449704
+            },
+            {
+              "id": "B05",
+              "name": "5号楼 · 学生活动",
+              "position": [
+                58,
+                0,
+                -70
+              ],
+              "relativePosition": [
+                2.184970984626588,
+                -0.045,
+                -100.40071399525247
+              ],
+              "distance": 100.42449648347831
+            },
+            {
+              "id": "B06",
+              "name": "6号楼 · 礼堂",
+              "position": [
+                0,
+                0,
+                -70
+              ],
+              "relativePosition": [
+                -55.81502901537341,
+                -0.045,
+                -100.40071399525247
+              ],
+              "distance": 114.87220229343329
+            },
+            {
+              "id": "B01",
+              "name": "1号楼 · 西侧北塔",
+              "position": [
+                -58,
+                0,
+                -2
+              ],
+              "relativePosition": [
+                -113.81502901537341,
+                -0.045,
+                -32.400713995252474
+              ],
+              "distance": 118.33709951732145
+            },
+            {
+              "id": "B02",
+              "name": "2号楼 · 西侧南塔",
+              "position": [
+                -58,
+                0,
+                70
+              ],
+              "relativePosition": [
+                -113.81502901537341,
+                -0.045,
+                39.599286004747526
+              ],
+              "distance": 120.50712139477935
+            },
+            {
+              "id": "B07",
+              "name": "7号楼 · 西北配套楼",
+              "position": [
+                -58,
+                0,
+                -70
+              ],
+              "relativePosition": [
+                -113.81502901537341,
+                -0.045,
+                -100.40071399525247
+              ],
+              "distance": 151.7701097895326
+            }
+          ],
+          "lastCommand": {
+            "commandId": "di1",
+            "status": "completed",
+            "acceptedAt": 1795020136959,
+            "expiresAt": 1795020137559,
+            "collisionIds": [],
+            "startedFrame": 3554,
+            "operation": {
+              "ok": true,
+              "code": "collected",
+              "message": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。",
+              "id": "record-cds-entry"
+            },
+            "reason": "duration_elapsed",
+            "finishedFrame": 3621
+          },
+          "collisions": [],
+          "eventSeq": 47,
+          "perception": {
+            "eye": [
+              55.81502901537341,
+              1.6849999999999998,
+              30.40071399525247
+            ],
+            "forward": [
+              0.987114008058308,
+              -0.1536033041634106,
+              0.04485487760707266
+            ],
+            "ground": "paving",
+            "underfootY": 0.045,
+            "probes": [
+              {
+                "distance": 0.6,
+                "supportY": 0.045,
+                "blocked": false,
+                "stepUp": 0,
+                "drop": 0
+              },
+              {
+                "distance": 1.5,
+                "supportY": 0.045,
+                "blocked": false,
+                "stepUp": 0,
+                "drop": 0
+              },
+              {
+                "distance": 3,
+                "supportY": 0.045,
+                "blocked": false,
+                "stepUp": 0,
+                "drop": 0
+              }
+            ],
+            "interactables": [
+              {
+                "id": "record-cds-entry",
+                "name": "CDS-1 入口",
+                "verb": "view",
+                "distance": 2.213,
+                "bearingDeg": 0,
+                "inView": true,
+                "lineOfSight": true,
+                "reachable": true,
+                "requiredDistance": 2.7
+              },
+              {
+                "id": "campus-directory",
+                "name": "校园导览牌",
+                "verb": "view",
+                "distance": 46.202,
+                "bearingDeg": -135.922,
+                "inView": false,
+                "lineOfSight": false,
+                "reachable": false,
+                "requiredDistance": 2.7
+              },
+              {
+                "id": "record-hku-square",
+                "name": "HKU 标识广场",
+                "verb": "collect",
+                "distance": 77.192,
+                "bearingDeg": -125.673,
+                "inView": false,
+                "lineOfSight": false,
+                "reachable": false,
+                "requiredDistance": 2.7
+              },
+              {
+                "id": "record-east-walk",
+                "name": "东侧露天步道",
+                "verb": "collect",
+                "distance": 81.839,
+                "bearingDeg": 115.479,
+                "inView": false,
+                "lineOfSight": false,
+                "reachable": false,
+                "requiredDistance": 2.7
+              }
+            ],
+            "nearby": [
+              {
+                "name": "B04/closed-doors",
+                "distance": 7.551,
+                "bearingDeg": 92.602,
+                "top": 4
+              },
+              {
+                "name": "B04/security-pole",
+                "distance": 8.592,
+                "bearingDeg": 147.049,
+                "top": 5.1
+              },
+              {
+                "name": "B04/entrance-planter",
+                "distance": 8.78,
+                "bearingDeg": 155.493,
+                "top": 1
+              },
+              {
+                "name": "B04/wing",
+                "distance": 9.801,
+                "bearingDeg": 92.602,
+                "top": 66.15
+              }
+            ],
+            "hud": [
+              "交互：按 F 查看记录",
+              "巡检：1/3 条记录"
+            ],
+            "target": {
+              "id": "record-cds-entry",
+              "name": "CDS-1 入口",
+              "actions": [
+                "view"
+              ],
+              "distance": 2.213
+            }
+          },
+          "directive": null
+        }
+      }
+    },
+    {
+      "tool": "campus_events",
+      "args": {
+        "afterSeq": 27,
+        "limit": 20
+      },
+      "ok": true,
+      "result": {
+        "ok": true,
+        "ready": true,
+        "afterSeq": 27,
+        "eventSeq": 47,
+        "limit": 20,
+        "count": 20,
+        "events": [
+          {
+            "seq": 28,
+            "frame": 2467,
+            "timeMs": 20558,
+            "kind": "command_finished",
+            "message": "goal_reached",
+            "data": {
+              "commandId": "native-aim-1795020126328",
+              "status": "completed",
+              "reason": "goal_reached"
+            }
+          },
+          {
+            "seq": 29,
+            "frame": 2474,
+            "timeMs": 20617,
+            "kind": "command_accepted",
+            "message": "动作已接收",
+            "data": {
+              "commandId": "native-interact-1795020126823",
+              "directive": null
+            }
+          },
+          {
+            "seq": 30,
+            "frame": 2474,
+            "timeMs": 20617,
+            "kind": "command_finished",
+            "message": "duration_elapsed",
+            "data": {
+              "commandId": "native-interact-1795020126823",
+              "status": "expired",
+              "reason": "duration_elapsed"
+            }
+          },
+          {
+            "seq": 31,
+            "frame": 2570,
+            "timeMs": 21417,
+            "kind": "ai_disabled",
+            "message": "AI 控制已撤销",
+            "data": {
+              "reason": "released"
+            }
+          },
+          {
+            "seq": 32,
+            "frame": 2570,
+            "timeMs": 21417,
+            "kind": "control_revoked",
+            "message": "控制权已收回",
+            "data": {
+              "reason": "released"
+            }
+          },
+          {
+            "seq": 33,
+            "frame": 2570,
+            "timeMs": 21417,
+            "kind": "control_released",
+            "message": "控制权已释放",
+            "data": {}
+          },
+          {
+            "seq": 34,
+            "frame": 3412,
+            "timeMs": 28433,
+            "kind": "ai_enabled",
+            "message": "用户已开启 AI 控制",
+            "data": {}
+          },
+          {
+            "seq": 35,
+            "frame": 3529,
+            "timeMs": 29408,
+            "kind": "control_acquired",
+            "message": "AI 已取得控制权",
+            "data": {
+              "agentId": "diag",
+              "controlEpoch": 1795020095968
+            }
+          },
+          {
+            "seq": 36,
+            "frame": 3529,
+            "timeMs": 29408,
+            "kind": "command_accepted",
+            "message": "动作已接收",
+            "data": {
+              "commandId": "dl1",
+              "directive": "lookAt"
+            }
+          },
+          {
+            "seq": 37,
+            "frame": 3529,
+            "timeMs": 29408,
+            "kind": "command_running",
+            "message": "动作开始执行",
+            "data": {
+              "commandId": "dl1"
+            }
+          },
+          {
+            "seq": 38,
+            "frame": 3529,
+            "timeMs": 29408,
+            "kind": "command_finished",
+            "message": "goal_reached",
+            "data": {
+              "commandId": "dl1",
+              "status": "completed",
+              "reason": "goal_reached"
+            }
+          },
+          {
+            "seq": 39,
+            "frame": 3553,
+            "timeMs": 29608,
+            "kind": "command_accepted",
+            "message": "动作已接收",
+            "data": {
+              "commandId": "di1",
+              "directive": null
+            }
+          },
+          {
+            "seq": 40,
+            "frame": 3553,
+            "timeMs": 29608,
+            "kind": "command_running",
+            "message": "动作开始执行",
+            "data": {
+              "commandId": "di1"
+            }
+          },
+          {
+            "seq": 41,
+            "frame": 3553,
+            "timeMs": 29608,
+            "kind": "survey",
+            "message": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。",
+            "data": {
+              "kind": "collect"
+            }
+          },
+          {
+            "seq": 42,
+            "frame": 3553,
+            "timeMs": 29608,
+            "kind": "survey",
+            "message": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。",
+            "data": {
+              "code": "collected",
+              "id": "record-cds-entry"
+            }
+          },
+          {
+            "seq": 43,
+            "frame": 3621,
+            "timeMs": 30175,
+            "kind": "command_finished",
+            "message": "duration_elapsed",
+            "data": {
+              "commandId": "di1",
+              "status": "completed",
+              "reason": "duration_elapsed"
+            }
+          },
+          {
+            "seq": 44,
+            "frame": 3633,
+            "timeMs": 30275,
+            "kind": "ai_disabled",
+            "message": "AI 控制已撤销",
+            "data": {
+              "reason": "released"
+            }
+          },
+          {
+            "seq": 45,
+            "frame": 3633,
+            "timeMs": 30275,
+            "kind": "control_revoked",
+            "message": "控制权已收回",
+            "data": {
+              "reason": "released"
+            }
+          },
+          {
+            "seq": 46,
+            "frame": 3633,
+            "timeMs": 30275,
+            "kind": "control_released",
+            "message": "控制权已释放",
+            "data": {}
+          },
+          {
+            "seq": 47,
+            "frame": 4519,
+            "timeMs": 37658,
+            "kind": "ai_enabled",
+            "message": "用户已开启 AI 控制",
+            "data": {}
+          }
+        ]
+      }
+    },
+    {
+      "tool": "campus_acquire_control",
+      "args": {
+        "agentId": "native-demo"
+      },
+      "ok": true,
+      "result": {
+        "ok": true,
+        "controlEpoch": 1795020095971,
+        "protocolVersion": "hku-campus/2.0"
+      }
+    },
+    {
+      "tool": "campus_entity",
+      "args": {
+        "id": "S001"
+      },
+      "ok": true,
+      "result": {
+        "ok": true,
+        "revision": "9b095734b4d0",
+        "entity": {
+          "id": "S001",
+          "name": "计算与数据科学学院石牌",
+          "kind": "area",
+          "parentId": "A008",
+          "buildingId": null,
+          "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Video_Observed_Exterior_Details#1/CDS_Landscape_Monument#1",
+          "bounds": {
+            "min": [
+              28.2011,
+              0,
+              27.2763
+            ],
+            "max": [
+              34.0749,
+              4.8975,
+              31.679
+            ]
+          },
+          "center": [
+            31.138,
+            2.4488,
+            29.4777
+          ],
+          "size": [
+            5.8739,
+            4.8975,
+            4.4027
+          ],
+          "sourceFile": "src/model/videoDetails.ts",
+          "sourceAnchor": "CDS_Landscape_Monument",
+          "reference": "U03 00:17 + U06 02:55 panel close-up + 20261116-P03 night lighting",
+          "confidence": "observed-components; estimated dimensions and route placement",
+          "editMode": "source"
+        },
+        "relativePosition": [
+          -24.67702901537341,
+          2.4038,
+          -0.9230139952524716
+        ],
+        "children": [
+          {
+            "id": "S001-P-5b539a225244",
+            "name": "Monument_lamp_pole",
+            "kind": "part"
+          },
+          {
+            "id": "S001-P-6654dbace733",
+            "name": "Monument_grass_patch",
+            "kind": "part"
+          },
+          {
+            "id": "S001-P-8e649ef0075d",
+            "name": "Monument_lamp_lens",
+            "kind": "part"
+          },
+          {
+            "id": "S001-P-9b751db9c6ec",
+            "name": "Pale_stone_sign",
+            "kind": "part"
+          },
+          {
+            "id": "S001-P-b2260daad6a5",
+            "name": "Monument_lamp_head",
+            "kind": "part"
+          },
+          {
+            "id": "S001-TEXT",
+            "name": "学院石牌黑字与校徽",
+            "kind": "area"
+          }
+        ],
+        "editGuide": {
+          "mode": "source",
+          "file": "src/model/videoDetails.ts",
+          "anchor": "CDS_Landscape_Monument",
+          "checks": [
+            "npm run check:scene",
+            "npm run check:all"
+          ],
+          "note": "Edit authoring parameters/code, not the merged mesh. Keep navigation consistent. No runtime coordinate-write endpoint."
+        }
+      }
+    },
+    {
+      "tool": "campus_path",
+      "args": {
+        "from": [
+          55.81502901537341,
+          0.045,
+          30.40071399525247
+        ],
+        "to": [
+          31.138,
+          2.4488,
+          29.4777
+        ]
+      },
+      "ok": true,
+      "result": {
+        "ok": true,
+        "path": [
+          [
+            55.81502901537341,
+            0.045,
+            30.40071399525247
+          ],
+          [
+            31.138,
+            0.14,
+            29.4777
+          ]
+        ],
+        "length": 24.694,
+        "reachable": true,
+        "partial": false,
+        "visited": 26
+      }
+    },
+    {
+      "tool": "campus_walk_to",
+      "args": {
+        "commandId": "native-walk-1795020147009",
+        "controlEpoch": 1795020095971,
+        "entityId": "S001",
+        "toleranceM": 2.2,
+        "durationMs": 20000
+      },
+      "ok": true,
+      "result": {
+        "ok": true,
+        "command": {
+          "commandId": "native-walk-1795020147009",
+          "status": "accepted",
+          "acceptedAt": 1795020147065,
+          "expiresAt": 1795020167065,
+          "collisionIds": [],
+          "directive": {
+            "commandId": "native-walk-1795020147009",
+            "type": "walkTo",
+            "reached": false,
+            "distanceRemaining": 24.694285085035627,
+            "lookErrorDeg": 0,
+            "waypoints": 0,
+            "progress": 0
+          }
+        }
+      }
+    },
+    {
+      "tool": "campus_look_at",
+      "args": {
+        "commandId": "native-look-1795020158522",
+        "controlEpoch": 1795020095971,
+        "entityId": "S001"
+      },
+      "ok": true,
+      "result": {
+        "ok": true,
+        "command": {
+          "commandId": "native-look-1795020158522",
+          "status": "accepted",
+          "acceptedAt": 1795020158525,
+          "expiresAt": 1795020161525,
+          "collisionIds": [],
+          "directive": {
+            "commandId": "native-look-1795020158522",
+            "type": "lookAt",
+            "reached": false,
+            "distanceRemaining": 2.1826184183701303,
+            "lookErrorDeg": 0,
+            "waypoints": 0,
+            "progress": 0
+          }
+        }
+      }
+    },
+    {
+      "tool": "campus_walk_to",
+      "args": {
+        "commandId": "native-approach-1795020158819",
+        "controlEpoch": 1795020095971,
+        "entityId": "record-cds-entry",
+        "toleranceM": 2.2,
+        "durationMs": 15000
+      },
+      "ok": true,
+      "result": {
+        "ok": true,
+        "command": {
+          "commandId": "native-approach-1795020158819",
+          "status": "accepted",
+          "acceptedAt": 1795020158821,
+          "expiresAt": 1795020173821,
+          "collisionIds": [],
+          "directive": {
+            "commandId": "native-approach-1795020158819",
+            "type": "walkTo",
+            "reached": false,
+            "distanceRemaining": 24.69882812939681,
+            "lookErrorDeg": 0,
+            "waypoints": 0,
+            "progress": 0
+          }
+        }
+      }
+    },
+    {
+      "tool": "campus_look_at",
+      "args": {
+        "commandId": "native-aim-1795020170393",
+        "controlEpoch": 1795020095971,
+        "entityId": "record-cds-entry"
+      },
+      "ok": true,
+      "result": {
+        "ok": true,
+        "command": {
+          "commandId": "native-aim-1795020170393",
+          "status": "accepted",
+          "acceptedAt": 1795020170395,
+          "expiresAt": 1795020173395,
+          "collisionIds": [],
+          "directive": {
+            "commandId": "native-aim-1795020170393",
+            "type": "lookAt",
+            "reached": false,
+            "distanceRemaining": 2.1871614627299754,
+            "lookErrorDeg": 0,
+            "waypoints": 0,
+            "progress": 0
+          }
+        }
+      }
+    },
+    {
+      "tool": "campus_act",
+      "args": {
+        "commandId": "native-interact-1795020170650-0",
+        "controlEpoch": 1795020095971,
+        "durationMs": 1000,
+        "interact": "record-cds-entry"
+      },
+      "ok": true,
+      "result": {
+        "ok": true,
+        "command": {
+          "commandId": "native-interact-1795020170650-0",
+          "status": "accepted",
+          "acceptedAt": 1795020170652,
+          "expiresAt": 1795020171652,
+          "collisionIds": []
+        }
+      }
+    },
+    {
+      "tool": "campus_stop",
+      "args": {
+        "controlEpoch": 1795020095971
+      },
+      "ok": true,
+      "result": {
+        "ok": true
+      }
+    },
+    {
+      "tool": "campus_observe",
+      "args": {
+        "afterSeq": 47
+      },
+      "ok": true,
+      "result": {
+        "ok": true,
+        "state": {
+          "protocolVersion": "hku-campus/2.0",
+          "frame": 6942,
+          "timeMs": 57850.00000000539,
+          "wallTimeMs": 1795020171931,
+          "mode": "ai",
+          "controlEpoch": 1795020095971,
+          "aiEnabled": true,
+          "owner": "native-demo",
+          "paused": false,
+          "pausedReason": null,
+          "player": {
+            "id": "PLAYER",
+            "position": [
+              55.81442553193561,
+              0.045,
+              30.416696287020365
+            ],
+            "velocity": [
+              0,
+              0,
+              0
+            ],
+            "yawDeg": 267.81721377284975,
+            "pitchDeg": 8.8360565552524,
+            "grounded": true
+          },
+          "view": "first",
+          "survey": {
+            "id": "campus-digital-survey",
+            "title": "校园数字巡检",
+            "status": "collecting",
+            "count": 1,
+            "total": 3,
+            "collectedClues": [
+              {
+                "id": "clue-learning",
+                "title": "CDS-1 入口",
+                "text": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。"
+              }
+            ],
+            "discovered": [
+              "record-cds-entry",
+              "record-hku-square",
+              "record-east-walk"
+            ],
+            "archive": null,
+            "elapsedSeconds": 747,
+            "target": {
+              "id": "record-cds-entry",
+              "name": "CDS-1 入口",
+              "actions": [
+                "view"
+              ],
+              "distance": 2.213430654900019
+            },
+            "objectives": [
+              {
+                "id": "record-cds-entry",
+                "name": "CDS-1 入口",
+                "position": [
+                  58,
+                  0.045,
+                  30.5
+                ],
+                "collected": true
+              },
+              {
+                "id": "record-hku-square",
+                "name": "HKU 标识广场",
+                "position": [
+                  8,
+                  0.13,
+                  91
+                ],
+                "collected": false
+              },
+              {
+                "id": "record-east-walk",
+                "name": "东侧露天步道",
+                "position": [
+                  24,
+                  0.05,
+                  -45
+                ],
+                "collected": false
+              }
+            ]
+          },
+          "panel": null,
+          "world": {
+            "units": "metres",
+            "revision": "2026-11-14-v9-scale1-glass1-experience1-U06",
+            "scaleCalibration": {
+              "id": "amap-2026-11-14",
+              "appliesTo": "default layout; edited parameters require rechecking against measurements.json",
+              "horizontalStatus": "satellite-ruler-checked-local-layout-adjusted",
+              "verticalStatus": "estimated-not-measured",
+              "source": "references/scale-calibration/REPORT.md",
+              "imageryDate": "unknown",
+              "worldUnits": "metres",
+              "globalScaleFactor": 1,
+              "columnCentreSpacing": 116,
+              "columnSpacingUncertainty": 3
+            }
+          },
+          "inventory": {
+            "slots": [
+              {
+                "index": 0,
+                "itemId": "macbook-air-13-silver",
+                "instanceId": "student-macbook-001",
+                "count": 1,
+                "empty": false
+              },
+              {
+                "index": 1,
+                "empty": true
+              },
+              {
+                "index": 2,
+                "empty": true
+              },
+              {
+                "index": 3,
+                "empty": true
+              },
+              {
+                "index": 4,
+                "empty": true
+              },
+              {
+                "index": 5,
+                "empty": true
+              },
+              {
+                "index": 6,
+                "empty": true
+              },
+              {
+                "index": 7,
+                "empty": true
+              },
+              {
+                "index": 8,
+                "empty": true
+              },
+              {
+                "index": 9,
+                "empty": true
+              },
+              {
+                "index": 10,
+                "empty": true
+              },
+              {
+                "index": 11,
+                "empty": true
+              },
+              {
+                "index": 12,
+                "empty": true
+              },
+              {
+                "index": 13,
+                "empty": true
+              },
+              {
+                "index": 14,
+                "empty": true
+              },
+              {
+                "index": 15,
+                "empty": true
+              },
+              {
+                "index": 16,
+                "empty": true
+              },
+              {
+                "index": 17,
+                "empty": true
+              },
+              {
+                "index": 18,
+                "empty": true
+              },
+              {
+                "index": 19,
+                "empty": true
+              },
+              {
+                "index": 20,
+                "empty": true
+              },
+              {
+                "index": 21,
+                "empty": true
+              },
+              {
+                "index": 22,
+                "empty": true
+              },
+              {
+                "index": 23,
+                "empty": true
+              },
+              {
+                "index": 24,
+                "empty": true
+              },
+              {
+                "index": 25,
+                "empty": true
+              },
+              {
+                "index": 26,
+                "empty": true
+              },
+              {
+                "index": 27,
+                "empty": true
+              },
+              {
+                "index": 28,
+                "empty": true
+              },
+              {
+                "index": 29,
+                "empty": true
+              },
+              {
+                "index": 30,
+                "empty": true
+              },
+              {
+                "index": 31,
+                "empty": true
+              },
+              {
+                "index": 32,
+                "empty": true
+              },
+              {
+                "index": 33,
+                "empty": true
+              },
+              {
+                "index": 34,
+                "empty": true
+              },
+              {
+                "index": 35,
+                "empty": true
+              }
+            ],
+            "selectedHotbar": 1,
+            "equipped": null,
+            "revision": 1,
+            "open": false
+          },
+          "landmarks": [
+            {
+              "id": "record-cds-entry",
+              "name": "CDS-1 入口",
+              "position": [
+                58,
+                0.045,
+                30.5
+              ],
+              "relativePosition": [
+                2.185574468064388,
+                0,
+                0.08330371297963524
+              ],
+              "distance": 2.187161462729976
+            },
+            {
+              "id": "B04",
+              "name": "CDS-1 · 4号楼",
+              "position": [
+                58,
+                0,
+                -2
+              ],
+              "relativePosition": [
+                2.185574468064388,
+                -0.045,
+                -32.416696287020365
+              ],
+              "distance": 32.490321003652376
+            },
+            {
+              "id": "B03",
+              "name": "CDS-2 · 3号楼",
+              "position": [
+                58,
+                0,
+                70
+              ],
+              "relativePosition": [
+                2.185574468064388,
+                -0.045,
+                39.583303712979635
+              ],
+              "distance": 39.643621095826276
+            },
+            {
+              "id": "campus-directory",
+              "name": "校园导览牌",
+              "position": [
+                21.2,
+                0,
+                61
+              ],
+              "relativePosition": [
+                -34.61442553193561,
+                -0.045,
+                30.583303712979635
+              ],
+              "distance": 46.18981430906894
+            },
+            {
+              "id": "entrance-lion",
+              "name": "入口草坪小狮子",
+              "position": [
+                0,
+                0,
+                76
+              ],
+              "relativePosition": [
+                -55.81442553193561,
+                -0.045,
+                45.583303712979635
+              ],
+              "distance": 72.06309526969909
+            },
+            {
+              "id": "record-hku-square",
+              "name": "HKU 标识广场",
+              "position": [
+                8,
+                0.13,
+                91
+              ],
+              "relativePosition": [
+                -47.81442553193561,
+                0.085,
+                60.583303712979635
+              ],
+              "distance": 77.17877430179976
+            },
+            {
+              "id": "record-east-walk",
+              "name": "东侧露天步道",
+              "position": [
+                24,
+                0.05,
+                -45
+              ],
+              "relativePosition": [
+                -31.814425531935612,
+                0.0050000000000000044,
+                -75.41669628702036
+              ],
+              "distance": 81.85252455346595
+            },
+            {
+              "id": "B05",
+              "name": "5号楼 · 学生活动",
+              "position": [
+                58,
+                0,
+                -70
+              ],
+              "relativePosition": [
+                2.185574468064388,
+                -0.045,
+                -100.41669628702036
+              ],
+              "distance": 100.44048812085265
+            },
+            {
+              "id": "B06",
+              "name": "6号楼 · 礼堂",
+              "position": [
+                0,
+                0,
+                -70
+              ],
+              "relativePosition": [
+                -55.81442553193561,
+                -0.045,
+                -100.41669628702036
+              ],
+              "distance": 114.8858782255664
+            },
+            {
+              "id": "B01",
+              "name": "1号楼 · 西侧北塔",
+              "position": [
+                -58,
+                0,
+                -2
+              ],
+              "relativePosition": [
+                -113.81442553193561,
+                -0.045,
+                -32.416696287020365
+              ],
+              "distance": 118.34089606864332
+            },
+            {
+              "id": "B02",
+              "name": "2号楼 · 西侧南塔",
+              "position": [
+                -58,
+                0,
+                70
+              ],
+              "relativePosition": [
+                -113.81442553193561,
+                -0.045,
+                39.583303712979635
+              ],
+              "distance": 120.50130047845336
+            },
+            {
+              "id": "B07",
+              "name": "7号楼 · 西北配套楼",
+              "position": [
+                -58,
+                0,
+                -70
+              ],
+              "relativePosition": [
+                -113.81442553193561,
+                -0.045,
+                -100.41669628702036
+              ],
+              "distance": 151.78023052217375
+            }
+          ],
+          "lastCommand": {
+            "commandId": "native-interact-1795020170650-0",
+            "status": "completed",
+            "acceptedAt": 1795020170652,
+            "expiresAt": 1795020171652,
+            "collisionIds": [],
+            "startedFrame": 6823,
+            "operation": {
+              "ok": true,
+              "code": "viewed",
+              "message": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。",
+              "id": "record-cds-entry"
+            },
+            "reason": "duration_elapsed",
+            "finishedFrame": 6918
+          },
+          "collisions": [],
+          "eventSeq": 65,
+          "events": [
+            {
+              "seq": 48,
+              "frame": 4644,
+              "timeMs": 38700,
+              "kind": "control_acquired",
+              "message": "AI 已取得控制权",
+              "data": {
+                "agentId": "native-demo",
+                "controlEpoch": 1795020095971
+              }
+            },
+            {
+              "seq": 49,
+              "frame": 4654,
+              "timeMs": 38783,
+              "kind": "command_accepted",
+              "message": "动作已接收",
+              "data": {
+                "commandId": "native-walk-1795020147009",
+                "directive": "walkTo"
+              }
+            },
+            {
+              "seq": 50,
+              "frame": 4654,
+              "timeMs": 38783,
+              "kind": "command_running",
+              "message": "动作开始执行",
+              "data": {
+                "commandId": "native-walk-1795020147009"
+              }
+            },
+            {
+              "seq": 51,
+              "frame": 5693,
+              "timeMs": 47442,
+              "kind": "command_finished",
+              "message": "goal_reached",
+              "data": {
+                "commandId": "native-walk-1795020147009",
+                "status": "completed",
+                "reason": "goal_reached"
+              }
+            },
+            {
+              "seq": 52,
+              "frame": 5704,
+              "timeMs": 47533,
+              "kind": "command_accepted",
+              "message": "动作已接收",
+              "data": {
+                "commandId": "native-look-1795020158522",
+                "directive": "lookAt"
+              }
+            },
+            {
+              "seq": 53,
+              "frame": 5704,
+              "timeMs": 47533,
+              "kind": "command_running",
+              "message": "动作开始执行",
+              "data": {
+                "commandId": "native-look-1795020158522"
+              }
+            },
+            {
+              "seq": 54,
+              "frame": 5709,
+              "timeMs": 47575,
+              "kind": "command_finished",
+              "message": "goal_reached",
+              "data": {
+                "commandId": "native-look-1795020158522",
+                "status": "completed",
+                "reason": "goal_reached"
+              }
+            },
+            {
+              "seq": 55,
+              "frame": 5728,
+              "timeMs": 47733,
+              "kind": "command_accepted",
+              "message": "动作已接收",
+              "data": {
+                "commandId": "native-approach-1795020158819",
+                "directive": "walkTo"
+              }
+            },
+            {
+              "seq": 56,
+              "frame": 5728,
+              "timeMs": 47733,
+              "kind": "command_running",
+              "message": "动作开始执行",
+              "data": {
+                "commandId": "native-approach-1795020158819"
+              }
+            },
+            {
+              "seq": 57,
+              "frame": 6767,
+              "timeMs": 56392,
+              "kind": "command_finished",
+              "message": "goal_reached",
+              "data": {
+                "commandId": "native-approach-1795020158819",
+                "status": "completed",
+                "reason": "goal_reached"
+              }
+            },
+            {
+              "seq": 58,
+              "frame": 6798,
+              "timeMs": 56650,
+              "kind": "command_accepted",
+              "message": "动作已接收",
+              "data": {
+                "commandId": "native-aim-1795020170393",
+                "directive": "lookAt"
+              }
+            },
+            {
+              "seq": 59,
+              "frame": 6798,
+              "timeMs": 56650,
+              "kind": "command_running",
+              "message": "动作开始执行",
+              "data": {
+                "commandId": "native-aim-1795020170393"
+              }
+            },
+            {
+              "seq": 60,
+              "frame": 6803,
+              "timeMs": 56692,
+              "kind": "command_finished",
+              "message": "goal_reached",
+              "data": {
+                "commandId": "native-aim-1795020170393",
+                "status": "completed",
+                "reason": "goal_reached"
+              }
+            },
+            {
+              "seq": 61,
+              "frame": 6822,
+              "timeMs": 56850,
+              "kind": "command_accepted",
+              "message": "动作已接收",
+              "data": {
+                "commandId": "native-interact-1795020170650-0",
+                "directive": null
+              }
+            },
+            {
+              "seq": 62,
+              "frame": 6822,
+              "timeMs": 56850,
+              "kind": "command_running",
+              "message": "动作开始执行",
+              "data": {
+                "commandId": "native-interact-1795020170650-0"
+              }
+            },
+            {
+              "seq": 63,
+              "frame": 6822,
+              "timeMs": 56850,
+              "kind": "survey",
+              "message": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。",
+              "data": {
+                "kind": "view"
+              }
+            },
+            {
+              "seq": 64,
+              "frame": 6822,
+              "timeMs": 56850,
+              "kind": "survey",
+              "message": "入口记录：学习从提出一个好问题开始。档案标记：LEARN。",
+              "data": {
+                "code": "viewed",
+                "id": "record-cds-entry"
+              }
+            },
+            {
+              "seq": 65,
+              "frame": 6918,
+              "timeMs": 57650,
+              "kind": "command_finished",
+              "message": "duration_elapsed",
+              "data": {
+                "commandId": "native-interact-1795020170650-0",
+                "status": "completed",
+                "reason": "duration_elapsed"
+              }
+            }
+          ],
+          "perception": {
+            "eye": [
+              55.81442553193561,
+              1.6849999999999998,
+              30.416696287020365
+            ],
+            "forward": [
+              0.9874149267906976,
+              -0.1536077036103748,
+              0.037635564861822825
+            ],
+            "ground": "paving",
+            "underfootY": 0.045,
+            "probes": [
+              {
+                "distance": 0.6,
+                "supportY": 0.045,
+                "blocked": false,
+                "stepUp": 0,
+                "drop": 0
+              },
+              {
+                "distance": 1.5,
+                "supportY": 0.045,
+                "blocked": false,
+                "stepUp": 0,
+                "drop": 0
+              },
+              {
+                "distance": 3,
+                "supportY": 0.045,
+                "blocked": false,
+                "stepUp": 0,
+                "drop": 0
+              }
+            ],
+            "interactables": [
+              {
+                "id": "record-cds-entry",
+                "name": "CDS-1 入口",
+                "verb": "view",
+                "distance": 2.213,
+                "bearingDeg": 0,
+                "inView": true,
+                "lineOfSight": true,
+                "reachable": true,
+                "requiredDistance": 2.7
+              },
+              {
+                "id": "campus-directory",
+                "name": "校园导览牌",
+                "verb": "view",
+                "distance": 46.191,
+                "bearingDeg": -136.355,
+                "inView": false,
+                "lineOfSight": false,
+                "reachable": false,
+                "requiredDistance": 2.7
+              },
+              {
+                "id": "record-hku-square",
+                "name": "HKU 标识广场",
+                "verb": "collect",
+                "distance": 77.179,
+                "bearingDeg": -126.099,
+                "inView": false,
+                "lineOfSight": false,
+                "reachable": false,
+                "requiredDistance": 2.7
+              },
+              {
+                "id": "record-east-walk",
+                "name": "东侧露天步道",
+                "verb": "collect",
+                "distance": 81.853,
+                "bearingDeg": 115.055,
+                "inView": false,
+                "lineOfSight": false,
+                "reachable": false,
+                "requiredDistance": 2.7
+              }
+            ],
+            "nearby": [
+              {
+                "name": "B04/closed-doors",
+                "distance": 7.567,
+                "bearingDeg": 92.183,
+                "top": 4
+              },
+              {
+                "name": "B04/security-pole",
+                "distance": 8.601,
+                "bearingDeg": 146.541,
+                "top": 5.1
+              },
+              {
+                "name": "B04/entrance-planter",
+                "distance": 8.786,
+                "bearingDeg": 154.979,
+                "top": 1
+              },
+              {
+                "name": "B04/wing",
+                "distance": 9.817,
+                "bearingDeg": 92.183,
+                "top": 66.15
+              }
+            ],
+            "hud": [
+              "交互：按 F 查看记录",
+              "巡检：1/3 条记录",
+              "AI 控制：native-demo"
+            ],
+            "target": {
+              "id": "record-cds-entry",
+              "name": "CDS-1 入口",
+              "actions": [
+                "view"
+              ],
+              "distance": 2.213
+            }
+          },
+          "directive": null
+        }
+      }
+    },
+    {
+      "tool": "campus_release_control",
+      "result": {
+        "ok": true,
+        "controlEpoch": 1795020095972
+      }
+    }
+  ]
+}

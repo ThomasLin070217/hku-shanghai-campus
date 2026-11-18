@@ -16,7 +16,7 @@ export class Survey {
  invalidateLandmarks(){this.cachedLandmarks=null;}
  get landmarks(){return this.cachedLandmarks??=campusLandmarks(this.game.buildings,this.game.site??SITE).map(l=>({...l,position:[l.position[0],this.game.body.world.support(l.position[0],l.position[2],0)??0,l.position[2]] as [number,number,number]}));}
  get equipped(){return this.game.inventory.equipped?.itemId==='macbook-air-13-silver';}
- emit(kind:string,message:string){this.events.push({kind,message});if(this.events.length>20)this.events.shift();}
+ emit(kind:string,message:string){this.events.push({kind,message});if(this.events.length>20)this.events.shift();this.game.event('survey',message,{kind});}
  target(){
   const g=this.game,from=g.body.position.clone().add(new T.Vector3(0,EXPLORATION.eyeHeight,0));
   const facing=new T.Vector3(-Math.sin(g.yaw)*Math.cos(g.pitch),-Math.sin(g.pitch),-Math.cos(g.yaw)*Math.cos(g.pitch));
@@ -27,7 +27,7 @@ export class Survey {
   }return best;
  }
  tick(dt:number){if(this.game.paused)return;if(!this.progress.completed)this.progress.elapsedSeconds+=dt;
-  for(const l of this.landmarks)if(Math.hypot(l.position[0]-this.game.body.position.x,l.position[2]-this.game.body.position.z)<13&&!this.progress.discovered.includes(l.id)){this.progress.discovered.push(l.id);this.revision++;}}
+  for(const l of this.landmarks)if(Math.hypot(l.position[0]-this.game.body.position.x,l.position[2]-this.game.body.position.z)<13&&!this.progress.discovered.includes(l.id)){this.progress.discovered.push(l.id);this.revision++;this.game.event('discovery','发现记录点：'+l.name,{id:l.id});}}
  interact(expectedId?:string):Outcome{
   if(this.game.paused||this.game.inventoryOpen||this.game.panel)return this.finish(false,'paused','请先继续游玩。');
   const t=this.target();if(!t||expectedId&&t.landmark.id!==expectedId)return this.finish(false,'no_target','靠近记录点，对准它，并确认中间没有障碍。');

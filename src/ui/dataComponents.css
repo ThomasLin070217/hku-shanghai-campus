@@ -1,0 +1,140 @@
+/* Data components: stat tiles, bars, tables.
+   Same paper/pixel language as experience.css (--survey-* variables live there),
+   with local fallbacks so the components also work outside the game shell. */
+:root{
+  --data-ink:#183f30;
+  --data-paper:#f3f2e5;
+  --data-green:#2d634c;
+  --data-line:#92a58e;
+  --data-sand:#b4812f;
+  --data-warn:#8c3b2f;
+  --data-shadow:3px 3px 0 #123c3147;
+}
+
+/* ---------------------------------------------------------------- Stat tiles */
+.stat-tiles{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(112px,1fr));
+  gap:8px;
+  font-variant-numeric:tabular-nums;
+}
+.stat-tile{
+  position:relative;
+  padding:9px 11px;
+  background:var(--data-paper);
+  border:1px solid var(--data-line);
+  box-shadow:var(--data-shadow);
+  color:var(--data-ink);
+}
+.stat-tile[data-tone="green"]{border-color:var(--data-green)}
+.stat-tile[data-tone="sand"]{border-color:var(--data-sand)}
+.stat-tile[data-tone="warn"]{border-color:var(--data-warn)}
+.stat-tile-label{
+  display:block;
+  font-size:9px;
+  letter-spacing:1.1px;
+  text-transform:uppercase;
+  color:#5d7360;
+}
+.stat-tile-value{
+  display:inline-block;
+  font:700 22px/1.15 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:-.5px;
+}
+.stat-tile-unit{margin-left:4px;font-size:10px;color:#5d7360}
+.stat-tile-note{margin:4px 0 0;font-size:10px;line-height:1.5;color:#5d7360}
+
+/* Key/value list ------------------------------------------------------------ */
+.kv-list{margin:0;font-variant-numeric:tabular-nums}
+.kv-row{display:flex;gap:10px;align-items:baseline;padding:5px 0;border-bottom:1px dotted #c4cdb7}
+.kv-row:last-child{border-bottom:0}
+.kv-row dt{flex:0 0 auto;font-size:10px;color:#5d7360;letter-spacing:.4px}
+.kv-row dd{margin:0 0 0 auto;font:600 12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;text-align:right;color:var(--data-ink)}
+
+/* Bars ---------------------------------------------------------------------- */
+.bar-list{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.bar-row{display:grid;gap:3px}
+.bar-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:11px;color:var(--data-ink)}
+.bar-head b{font-weight:600;letter-spacing:.3px}
+.bar-value{font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:#3f5a4a}
+.bar-track{display:block;position:relative;height:8px;background:#dfe5d6;border:1px solid #c2ccb9;overflow:hidden}
+.bar-fill{display:block;height:100%;width:0;background:var(--data-green);transition:width .18s linear}
+.bar-row[data-tone="sand"] .bar-fill{background:var(--data-sand)}
+.bar-row[data-tone="warn"] .bar-fill{background:var(--data-warn)}
+.bar-row[data-tone="ink"] .bar-fill{background:#4a6355}
+
+/* Progress line ------------------------------------------------------------- */
+.progress-line{display:flex;align-items:center;gap:8px;font-size:11px;font-variant-numeric:tabular-nums}
+.progress-line .bar-track{flex:1 1 auto;height:7px}
+.progress-label{color:#4f6a58}
+.progress-text{font:600 11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--data-ink);min-width:44px;text-align:right}
+
+/* Data table ---------------------------------------------------------------- */
+.data-table{font-variant-numeric:tabular-nums;color:var(--data-ink)}
+.data-table table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table-caption{caption-side:top;text-align:left;font-size:10px;letter-spacing:1.1px;text-transform:uppercase;color:#5d7360;padding:0 0 6px}
+.data-table thead th{
+  text-align:left;
+  padding:6px 8px;
+  font-size:10px;
+  letter-spacing:.7px;
+  text-transform:uppercase;
+  color:#4c6453;
+  border-bottom:2px solid var(--data-line);
+  white-space:nowrap;
+}
+.data-table thead th.is-numeric{text-align:right}
+.data-table thead th button{
+  padding:0;
+  border:0;
+  background:none;
+  color:inherit;
+  font:inherit;
+  letter-spacing:inherit;
+  text-transform:inherit;
+  cursor:pointer;
+  border-bottom:1px dotted currentColor;
+}
+.data-table thead th button[data-sorted="ascending"]::after{content:" ▲";font-size:8px}
+.data-table thead th button[data-sorted="descending"]::after{content:" ▼";font-size:8px}
+.data-table tbody td{padding:6px 8px;border-bottom:1px solid #d5ddcc;vertical-align:top}
+.data-table tbody td.is-numeric{text-align:right;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.data-table tbody tr:hover{background:#e9edde}
+.data-table-empty{color:#6b7d6b;padding:14px 8px!important}
+.data-table-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:8px}
+.data-table-status{font-size:10px;color:#5d7360;letter-spacing:.4px}
+.data-table-pager{display:flex;gap:6px}
+.data-table-pager button{
+  padding:4px 10px;
+  font-size:11px;
+  border:1px solid var(--data-line);
+  background:var(--data-paper);
+  color:var(--data-ink);
+  cursor:pointer;
+}
+.data-table-pager button:disabled{opacity:.45;cursor:default}
+
+/* Inside the game shell the panels are translucent paper; keep contrast. */
+body.exploring .stat-tile,
+body.exploring .data-table-pager button{background:rgba(243,242,229,.97)}
+
+@media (prefers-reduced-motion:reduce){
+  .bar-fill{transition:none}
+}
+@media (prefers-contrast:more){
+  .stat-tile{border-color:var(--data-ink)}
+  .bar-track{border-color:var(--data-ink);background:#fffdf0}
+}
+
+/* Clickable / selected rows (scene inspector table view). */
+.data-table tbody tr.is-clickable{cursor:pointer}
+.data-table tbody tr.is-clickable:focus-visible{outline:3px solid #855815;outline-offset:-3px}
+.data-table tbody tr.is-selected{background:#dbe7ce}
+.data-table tbody tr[aria-selected="true"] td{font-weight:600}
+
+/* Narrow hosts (the 320 px scene inspector) scroll the table instead of clipping it. */
+.data-table{overflow-x:auto}
+.data-table table{min-width:100%}
+.data-table thead th{white-space:nowrap}
+.data-table tbody td{white-space:normal;overflow-wrap:anywhere}
+.data-table tbody td.is-numeric{white-space:nowrap}
