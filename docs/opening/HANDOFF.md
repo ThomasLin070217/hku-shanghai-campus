@@ -1,5 +1,8 @@
 # Thomas opening integration
 
+> 四路 Agent（A 状态/存档、B 场景布景、C 机器人、D UI）的交付与验证结果已汇总在
+> [DELIVERY-SUMMARY.md](DELIVERY-SUMMARY.md)。
+
 **Development snapshot, 2026-11-18:** the interfaces below describe target integration behavior. The opening is not yet runnable: world/robot/UI modules and their tests are outstanding, and typecheck currently fails. For the exact current state and external-agent file ownership, read `agent-manual/00-START-HERE.md` first.
 
 2030 opening scope: Building 4 shuttle → Building 5 ground-floor dinner reception (turn right) → Building 6 presentation MacBook → Building 5 incident → Building 4 main entrance **outside**.

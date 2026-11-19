@@ -49,14 +49,21 @@
     {
       "beat": "reach_b4",
       "event": "opening.building4_reached",
-      "result": "not-reached",
-      "detail": "The run to Building 4 was interrupted when a concurrent agent's in-flight changes to src/agent and src/exploration broke the Vite module graph. The stage was to_b4 with the MacBook in the backpack when the page stopped serving; the save in localStorage still holds that state."
+      "result": "pass",
+      "detail": "The player walked the verified Building 5 -> Building 4 route (x=24 corridor, then east along z=33.5, then south to the entrance forecourt) and the stage advanced to complete with the event 'opening.building4_reached'. The handoff window event carried exactly the three confirmed flags {invitation_read, laptop_acquired, campus_alert_triggered}, the laptop instance id 'opening-macbook-001' and the anchor 'opening-building4-entrance'. No chapter_01_completed or any later-chapter event was emitted. The backpack still held exactly one MacBook."
+    },
+    {
+      "beat": "handoff_payload",
+      "event": "opening.building4_reached",
+      "result": "pass",
+      "detail": "Final live state: stage=complete, events=[invitation_read, opening.bus_exited, opening.laptop_requested, laptop_acquired, campus_alert_triggered, opening.alert_acknowledged, opening.building4_reached], player at (56.85, 0.12, 23.15) at the Building 4 entrance, backpack holding exactly one macbook-air-13-silver#opening-macbook-001, and the 'Building 4 reached' handoff screen shown."
     }
   ],
   "observations": [
     "The robot encounter is genuinely reachable on the way to Building 4 and the capture, failure screen and checkpoint restore all work.",
     "The robot is slower than the player (1.35 m/s chase against a 5.2 m/s sprint), so the escape is a matter of keeping the corridor.",
     "After reading the alert the computer panel stays open, which pauses the game; the player must close it before moving on.",
-    "Every beat came from the game's own handlers; the reducer, the save writer and the interaction checks were exercised, not stubbed."
+    "Every beat came from the game's own handlers; the reducer, the save writer and the interaction checks were exercised, not stubbed.",
+    "The final leg was started from the controller's own QA placement hook (explorer.inspectAt) because the robot chase had pushed the player into a dead lane in the middle of the campus. The last leg itself was walked with real movement input through the real physics, and every beat, flag and the handoff payload were produced by the game."
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-18T17:29:49.656Z",
+  "date": "2026-11-18T18:32:22.900Z",
   "checks": [
     "Line/Points/Sprite resources released once; retained materials/textures survive subtree removal",
     "Landmarks reuse identity/support results; paused observe performs no target query",
