@@ -15,7 +15,7 @@ export default defineConfig(({mode})=>{
   plugins:[{name:'copy-delivery-references',closeBundle(){
    mkdirSync(resolve(out),{recursive:true});
    cpSync(resolve('THIRD-PARTY-NOTICES.md'),resolve(out,'THIRD-PARTY-NOTICES.md'));
-   for(const file of ['assets/audio/SOURCES.md','assets/audio/LICENSE.txt','assets/audio/kenney/License.txt','assets/characters/kenney/LICENSE.txt','docs/ASSET-LICENSES-V8.md']){mkdirSync(resolve(out,file,'..'),{recursive:true});cpSync(resolve(file),resolve(out,file));}
+   for(const file of ['assets/audio/SOURCES.md','assets/audio/LICENSE.txt','assets/audio/kenney/License.txt','assets/audio/story/SOURCES.md','assets/audio/story/IMPORT.json','assets/audio/story/audio-triggers.json','assets/characters/kenney/LICENSE.txt','docs/ASSET-LICENSES-V8.md']){mkdirSync(resolve(out,file,'..'),{recursive:true});cpSync(resolve(file),resolve(out,file));}
    mkdirSync(resolve(out,'licenses'),{recursive:true});cpSync(resolve('node_modules/three/LICENSE'),resolve(out,'licenses/three.txt'));
    if(!review)return; // Runtime dependencies are emitted by Vite; evidence is opt-in.
    for(const directory of ['references','assets','evidence','docs'])

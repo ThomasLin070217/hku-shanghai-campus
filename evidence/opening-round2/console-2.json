@@ -1,0 +1,86 @@
+[
+  {
+    "type": "console",
+    "level": "debug",
+    "args": [
+      "[vite] connecting..."
+    ]
+  },
+  {
+    "type": "console",
+    "level": "debug",
+    "args": [
+      "[vite] connected."
+    ]
+  },
+  {
+    "type": "log",
+    "level": "warning",
+    "text": "[.WebGL-0x10400635600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+  },
+  {
+    "type": "log",
+    "level": "warning",
+    "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio"
+  },
+  {
+    "type": "log",
+    "level": "warning",
+    "text": "[.WebGL-0x10400635600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+  },
+  {
+    "type": "log",
+    "level": "error",
+    "text": "WebSocket connection to 'ws://127.0.0.1:8788/game' failed: Error during WebSocket handshake: Unexpected response code: 409"
+  },
+  {
+    "type": "log",
+    "level": "warning",
+    "text": "[.WebGL-0x10400635600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+  },
+  {
+    "type": "log",
+    "level": "warning",
+    "text": "[.WebGL-0x10400635600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+  },
+  {
+    "type": "log",
+    "level": "warning",
+    "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio"
+  },
+  {
+    "type": "log",
+    "level": "warning",
+    "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio"
+  },
+  {
+    "type": "log",
+    "level": "warning",
+    "text": "The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio"
+  },
+  {
+    "type": "log",
+    "level": "error",
+    "text": "WebSocket connection to 'ws://127.0.0.1:8788/game' failed: Error during WebSocket handshake: Unexpected response code: 409"
+  },
+  {
+    "type": "log",
+    "level": "error",
+    "text": "WebSocket connection to 'ws://127.0.0.1:8788/game' failed: Error during WebSocket handshake: Unexpected response code: 409"
+  },
+  {
+    "type": "log",
+    "level": "error",
+    "text": "WebSocket connection to 'ws://127.0.0.1:8788/game' failed: Error during WebSocket handshake: Unexpected response code: 409"
+  },
+  {
+    "type": "log",
+    "level": "error",
+    "text": "WebSocket connection to 'ws://127.0.0.1:8788/game' failed: Error during WebSocket handshake: Unexpected response code: 409"
+  },
+  {
+    "type": "log",
+    "level": "error",
+    "text": "WebSocket connection to 'ws://127.0.0.1:8788/game' failed: Error during WebSocket handshake: Unexpected response code: 409"
+  }
+]

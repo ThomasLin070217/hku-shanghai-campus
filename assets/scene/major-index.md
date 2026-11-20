@@ -15,7 +15,6 @@
 | A009 | 11月13日实景细节 | src/model/nov13Details.ts |
 | A010 | 11月14日实景细节 | src/model/nov14Details.ts |
 | A011 | 庭院双弧楼梯与玻璃围护 | src/model/courtyard.ts |
-| A012 | 4号楼—5号楼连接体 | src/model/nov14Details.ts |
 | A013 | 探索边界 | src/model/buildSite.ts |
 | A014 | 北侧运动区 | src/model/buildSite.ts |
 | A015 | 外围绿化与 HKU 草坪地灯 | src/model/videoFollowup.ts |

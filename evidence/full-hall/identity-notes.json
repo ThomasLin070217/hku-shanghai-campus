@@ -1,0 +1,237 @@
+{
+  "catalogs": [
+    {
+      "mode": "opening",
+      "fromRevision": "21c0ba2972e3",
+      "toRevision": "21c0ba2972e3",
+      "staticIdsChanged": false
+    },
+    {
+      "mode": "normal",
+      "fromRevision": "7747e3f3885d",
+      "toRevision": "7747e3f3885d",
+      "staticIdsChanged": false
+    }
+  ],
+  "dynamicAuthorKeyRetirements": [
+    {
+      "oldAuthorKey": "opening-b5-east-wall",
+      "newAuthorKey": null,
+      "reason": "Internal partition retired; formerly empty side strip is now part of the hall"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-0",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-1",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-2",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-3",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-4",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-5",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-6",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-7",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-8",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-9",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-10",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-11",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-12",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-13",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-14",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-15",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-16",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-17",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-18",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-19",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-20",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-21",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-22",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-23",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-24",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-25",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-26",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-27",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-28",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-29",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-30",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-31",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-32",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-33",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-34",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-35",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-36",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-37",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-38",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-39",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-40",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    },
+    {
+      "oldAuthorKey": "opening-b5-curtain-fold-41",
+      "newAuthorKey": null,
+      "reason": "Internal separating curtain/vertical strip retired"
+    }
+  ],
+  "appendedTableKeys": [
+    "opening-b5-table-6",
+    "opening-b5-table-7"
+  ]
+}

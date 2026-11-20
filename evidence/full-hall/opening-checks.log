@@ -1,0 +1,63 @@
+
+> hku-shanghai-whole-campus@9.0.0 check:opening
+> tsx scripts/check-opening-state.ts && tsx scripts/check-opening-robot.ts && tsx scripts/check-opening-fleet.ts && tsx scripts/check-opening-runtime.ts && tsx scripts/check-opening-atmosphere.ts && tsx scripts/check-opening-world.ts && tsx scripts/check-opening-integration.ts && tsx scripts/check-opening-reference.ts && tsx scripts/check-opening-npcs.ts
+
+== opening state / persistence behaviour checks ==
+  ok   初始状态是 bus 阶段的空状态
+  ok   完整七拍按顺序推进并产生规范事件日志
+  ok   不得发出后续关卡事件
+  ok   乱序 / 越级事件返回原对象引用
+  ok   重复事件幂等且不改动 events / flags
+  ok   每个中间前缀都是合法状态
+  ok   坏 flags 的状态被拒绝
+  ok   坏 events 的状态被拒绝（乱序 / 缺项 / 多余 / 重复）
+  ok   NaN / Infinity / 负数时间被拒绝
+  ok   初始档（空背包）与已读请柬未下车档合法
+  ok   电脑数量严格：恰好一台 / 缺失 / 两台 / 提前持有
+  ok   重复 instanceId / 非法物品 / 越界 count 被拒绝
+  ok   36 格背包与 0..8 快捷栏校验
+  ok   坐标 / 朝向 / 时间的 NaN 与 Infinity 被拒绝
+  ok   未知 version / mode 被拒绝，开档使用独立命名空间
+  ok   坏故事、坏设置与输入不被改写
+  ok   worldRevision 不匹配：保留故事与物品，由调用方安全落点恢复
+  ok   capture 不改动传入的游戏 / 故事 / 设置
+  ok   capture 的内容正确且只丢弃已记录的种子电脑
+  ok   capture → parse 往返完整一致
+PASS 20 opening state/persistence behaviour groups
+PASS  eye-to-chest line matches the door opening and the closed walls  {"throughDoor":true,"throughFrontWall":false,"throughSideWall":false}
+PASS  confirmed detection enters chase with a louder warning and no instant failure  {"transitions":["0.02s patrol->scanning","0.25s scanning->chase"],"gapToPlayer":4.12}
+PASS  target astern but inside range stays undetected  {"states":{"patrol":180}}
+PASS  target beyond the detection range stays undetected  {"startDistance":13}
+PASS  target in sector and range but behind the Building 5 wall is neither tracked nor caught  {"ticksOfOutsideApproach":602,"sectorAndRange":true,"occluded":true}
+PASS  hidden player freezes lastSeen; the robot searches that point then resumes patrol  {"transitions":["0.02s chase->search","4.00s search->patrol"],"lastSeen":[58,0,-48],"searchSeconds":3.02,"distanceToHiddenLiveTarget":14.1}
+PASS  capture requires physical reach and the encounter holds afterwards  {"caughtAtSecond":3.3,"gapAtCapture":0.61}
+PASS  height rule blocks capture even while standing on the target  {"minHorizontalGap":0.48,"states":{"scanning":41,"chase":1459}}
+PASS  reset restores the initial patrol and the encounter can happen again  {"firstCaughtAt":3.3,"secondCaughtAt":3.3}
+PASS  patrol cycle routes through the Building 5 door, never through a wall, never grinding the wall  {"doorCrossings":[{"x":58.1,"at":"10.37s patrol"},{"x":58.03,"at":"26.83s patrol"},{"x":58.1,"at":"45.18s patrol"},{"x":58.03,"at":"61.65s patrol"},{"x":58.1,"at":"80.00s patrol"},{"x":58.03,"at":"96.47s patrol"},{"x":58.1,"at":"114.82s patrol"},{"x":58.03,"at":"131.28s patrol"},{"x":58.1,"at":"149.63s patrol"},{"x":58.03,"at":"166.10s patrol"},{"x":58.1,"at":"184.45s patrol"},{"x":58.03,"at":"200.92s patrol"},{"x":58.1,"at":"219.27s patrol"}],"longestNoProgressContactSeconds":0,"states":{"patrol":13200},"rejectedEdges":[{"from":[63,-59,"patrol"],"to":[63,-48,"patrol"],"seconds":4.33}],"verifiedEdges":[{"from":"patrol","to":"patrol","seconds":3.38},{"from":"patrol","to":"patrol","seconds":7.82},{"from":"patrol","to":"patrol","seconds":3.38},{"from":"b5-door-out","to":"b5-door-in","seconds":2.78},{"from":"b5-door-out","to":"patrol","seconds":2.93},{"from":"b5-door-out","to":"patrol","seconds":4.62},{"from":"b5-door-in","to":"patrol","seconds":1.45},{"from":"b5-door-in","to":"b5-staff","seconds":5.47},{"from":"b5-staff","to":"patrol","seconds":2.03}]}
+PASS  paused, dt=0 and inactive calls are read-only and never reset the chase  {"frozenResult":{"caught":false,"state":"chase","warning":0.8625555555555587},"state":"chase","resumedState":"chase"}
+PASS  blocky red-eye model with a polygon scan wedge; dispose releases geometry and material  {"meshes":13,"heightMeters":1.05,"footprint":[0.52,0.76],"wedgeVertices":12,"disposedGeometries":13,"disposedMaterials":7}
+PASS  tuning stays inside the task book window and positions come from the shared layout  {"patrolSpeed":1.25,"chaseSpeed":1.35,"searchSpeed":1.2,"range":9,"halfAngle":0.6108652381980153,"confirm":0.7,"capture":0.65,"captureRise":0.9,"eyeHeight":1.05,"chestHeight":1.15,"sweep":0.8726646259971648,"sweepRate":0.7330382858376184,"spinRate":1.2,"reach":0.5,"patrolReach":0.55,"stall":1.2,"replan":0.35,"maxReplans":3,"searchSeconds":3,"turnRate":4.2,"captureGrace":0.25,"patrolDwell":1.2,"waypointRadius":0.45,"scanVisualRange":9,"scanSamples":11,"scanVisualHeight":0.3,"scanProbeHeight":0.3,"patrolPoints":[[63,-48],[58,-48],[58,-59],[63,-59]],"slowerThanPlayerWalk":true}
+
+PASS  13 opening robot checks (evidence/opening-implementation/robot-checks.json)
+PASS 8-unit opening fleet: visible 4+4 entrance posts, peaceful standby, continuous deployment, every patrol waypoint visited, no solids, reset and freeze
+PASS opening survival runtime: 10 hearts, −2 per capture, zero-heart failure, heal, story sync and strict validation
+PASS atmosphere: animated curtain deployment, night lighting, red beacons, pause freeze and day reset
+== 1. The world builds in Node with finite geometry ==
+  ok world builds headless with 639 finite meshes
+== 2. The shuttle matches the shared layout ==
+  ok bus floor, parallel body, north doorway and wheels match the shared layout
+== 3. The door leaf opens, and only when time passes ==
+  ok the door leaf animates only with time and never blocks the exit
+== 4. The world laptop follows the pickup state ==
+  ok the world laptop is shown, hidden and restored by the pickup state
+== 5. The dinner area switches between the tidy and the abandoned state ==
+  ok the dinner area toggles cleanly and both floors match the support heights
+== 6. The furniture leaves the walking routes open ==
+  ok tables, counters and desks do not block the walking routes
+== 7. Dispose releases the world ==
+  ok dispose detaches the root and releases its resources
+
+PASS 7 opening world geometry groups
+PASS 7 opening integration checks; explicit removed-part migrations: 14
+PASS B5 observed hall: long tables, cavity clearance, solid partitions, right-turn portal interior/exit walk, lower stair passage walk and visible shell clearance
+PASS 12 opening NPCs: unique IDs, clear placements, existing eye pixels, face-toward-player, pause freeze and incident disappearance

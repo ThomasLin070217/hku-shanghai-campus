@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-19",
+  "checks": {
+    "check:all": "passed",
+    "check:opening": "passed",
+    "scene:catalog": "passed",
+    "final check:audio-review": "passed",
+    "final build": "passed",
+    "git diff --check": "passed"
+  },
+  "browser": {
+    "decoded": 64,
+    "decodeFailures": [],
+    "runtimeLoaded": 48,
+    "runtimeTotal": 48,
+    "mixPeak": 0.8321541547775269,
+    "clippedSamples": 0,
+    "pauseLoopVoices": 0,
+    "stoppedLoopVoices": 0
+  },
+  "scope": "Objective checks and isolated audio mix; subjective timbre and a full movement playthrough are not claimed."
+}

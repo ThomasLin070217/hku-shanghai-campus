@@ -1,0 +1,653 @@
+{
+  "scope": "objective only — no listening test possible (agent tool has no audio input)",
+  "scanned": [
+    "synth",
+    "cc0/processed"
+  ],
+  "excluded": "cc0/raw/ (unprocessed originals: 24/32-bit and OGG zips)",
+  "total_files": 63,
+  "total_seconds": 269.4,
+  "sample_rates": [
+    22050,
+    44000,
+    44100,
+    48000
+  ],
+  "peak_ceiling": "synth <= 0.891 (-1.0 dBFS); cc0/processed <= 0.90 (-0.9 dBFS)",
+  "issues": [
+    "INFO: mixed sample rates across deliverables [22050, 44000, 44100, 48000] — Codex must resample on import (own audio.ts expects single rate)"
+  ],
+  "pass": true,
+  "files": [
+    {
+      "file": "synth/music/mus_boss.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 26.617,
+      "peak": 0.891,
+      "rms": 0.1425,
+      "clipped": 0
+    },
+    {
+      "file": "synth/music/mus_chase.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 26.617,
+      "peak": 0.891,
+      "rms": 0.1581,
+      "clipped": 0
+    },
+    {
+      "file": "synth/music/mus_hope.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 26.617,
+      "peak": 0.891,
+      "rms": 0.1525,
+      "clipped": 0
+    },
+    {
+      "file": "synth/music/mus_safe.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 26.617,
+      "peak": 0.891,
+      "rms": 0.1625,
+      "clipped": 0
+    },
+    {
+      "file": "synth/music/mus_tension.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 26.617,
+      "peak": 0.891,
+      "rms": 0.1902,
+      "clipped": 0
+    },
+    {
+      "file": "synth/music/mus_unease.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 26.617,
+      "peak": 0.891,
+      "rms": 0.1943,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/agent_status.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.1,
+      "peak": 0.804,
+      "rms": 0.2351,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/amb_dark_hum.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 11.95,
+      "peak": 0.891,
+      "rms": 0.516,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/boss_attack_hit.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.3,
+      "peak": 0.891,
+      "rms": 0.4119,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/boss_attack_windup.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.7,
+      "peak": 0.891,
+      "rms": 0.6179,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/boss_damage.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.3,
+      "peak": 0.891,
+      "rms": 0.2384,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/boss_defeat.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 2.5,
+      "peak": 0.891,
+      "rms": 0.4853,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/boss_footstep.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.4,
+      "peak": 0.891,
+      "rms": 0.4212,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/boss_roar.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 1.8,
+      "peak": 0.891,
+      "rms": 0.3981,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/boss_servo.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 1.95,
+      "peak": 0.891,
+      "rms": 0.4086,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/bounce_ball.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.18,
+      "peak": 0.8867,
+      "rms": 0.4374,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/decrypt_fail.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.2,
+      "peak": 0.8571,
+      "rms": 0.2934,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/decrypt_success.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.4,
+      "peak": 0.8487,
+      "rms": 0.1432,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/decrypt_tick.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.05,
+      "peak": 0.6877,
+      "rms": 0.2516,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/gym_ambience.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 7.95,
+      "peak": 0.891,
+      "rms": 0.4855,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/invitation_close.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.18,
+      "peak": 0.891,
+      "rms": 0.2638,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/invitation_open.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.2,
+      "peak": 0.891,
+      "rms": 0.278,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/invitation_page.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.14,
+      "peak": 0.8414,
+      "rms": 0.2802,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/macbook_close.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.2,
+      "peak": 0.891,
+      "rms": 0.5204,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/macbook_open.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.25,
+      "peak": 0.891,
+      "rms": 0.4668,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/macbook_type.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.04,
+      "peak": 0.6006,
+      "rms": 0.178,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/power_surge.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.8,
+      "peak": 0.891,
+      "rms": 0.4544,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/power_switch.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.1,
+      "peak": 0.7953,
+      "rms": 0.3112,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/robot_capture.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.5,
+      "peak": 0.891,
+      "rms": 0.3766,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/robot_chase_loop.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 1.95,
+      "peak": 0.891,
+      "rms": 0.2587,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/robot_lockon.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.8,
+      "peak": 0.8902,
+      "rms": 0.2867,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/robot_near_danger.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 1.2,
+      "peak": 0.891,
+      "rms": 0.2616,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/robot_patrol_step.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.25,
+      "peak": 0.891,
+      "rms": 0.451,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/robot_scan.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.6,
+      "peak": 0.891,
+      "rms": 0.4431,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/robot_servo_loop.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 1.95,
+      "peak": 0.891,
+      "rms": 0.4344,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/sfx_ai_boot.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 3.0,
+      "peak": 0.891,
+      "rms": 0.3326,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/sfx_anomaly_low.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 4.0,
+      "peak": 0.891,
+      "rms": 0.3244,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/sfx_blackout.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 1.8,
+      "peak": 0.891,
+      "rms": 0.5086,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/sfx_crowd_cheer.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 3.0,
+      "peak": 0.891,
+      "rms": 0.2857,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/sfx_disturbance_spread.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 5.0,
+      "peak": 0.891,
+      "rms": 0.2616,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/sfx_glitch_burst.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 1.2,
+      "peak": 0.7907,
+      "rms": 0.1538,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/sfx_lightshow_sweep.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 2.0,
+      "peak": 0.891,
+      "rms": 0.5595,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/sfx_safe_restore.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 1.5,
+      "peak": 0.891,
+      "rms": 0.3904,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/sfx_veil_descend.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 6.0,
+      "peak": 0.891,
+      "rms": 0.3688,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/sfx_veil_seal.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 1.5,
+      "peak": 0.7945,
+      "rms": 0.1535,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/step_jump.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.13,
+      "peak": 0.891,
+      "rms": 0.5038,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/step_land.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.18,
+      "peak": 0.891,
+      "rms": 0.4704,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/step_stair_down.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.13,
+      "peak": 0.8585,
+      "rms": 0.4688,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/step_stair_up.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.12,
+      "peak": 0.891,
+      "rms": 0.5021,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/student_free.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.5,
+      "peak": 0.891,
+      "rms": 0.174,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/supercomputer_hum.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 3.95,
+      "peak": 0.891,
+      "rms": 0.4737,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/ui_cancel.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.14,
+      "peak": 0.8192,
+      "rms": 0.2233,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/ui_confirm.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.14,
+      "peak": 0.8498,
+      "rms": 0.2275,
+      "clipped": 0
+    },
+    {
+      "file": "synth/sfx/ui_error.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 22050,
+      "sec": 0.15,
+      "peak": 0.8483,
+      "rms": 0.3073,
+      "clipped": 0
+    },
+    {
+      "file": "cc0/processed/alert_beep.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 48000,
+      "sec": 0.096,
+      "peak": 0.9,
+      "rms": 0.3482,
+      "clipped": 0
+    },
+    {
+      "file": "cc0/processed/amb_birds_loop.wav",
+      "ch": 2,
+      "bit": 16,
+      "rate": 44000,
+      "sec": 3.0,
+      "peak": 0.8499,
+      "rms": 0.0668,
+      "clipped": 0
+    },
+    {
+      "file": "cc0/processed/amb_rain_loop.wav",
+      "ch": 2,
+      "bit": 16,
+      "rate": 44100,
+      "sec": 8.0,
+      "peak": 0.8372,
+      "rms": 0.1022,
+      "clipped": 0
+    },
+    {
+      "file": "cc0/processed/amb_wind_loop.wav",
+      "ch": 2,
+      "bit": 16,
+      "rate": 44100,
+      "sec": 4.235,
+      "peak": 0.8,
+      "rms": 0.0874,
+      "clipped": 0
+    },
+    {
+      "file": "cc0/processed/bus_engine_idle.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 44100,
+      "sec": 0.864,
+      "peak": 0.8,
+      "rms": 0.4367,
+      "clipped": 0
+    },
+    {
+      "file": "cc0/processed/celebration_applause_loop.wav",
+      "ch": 2,
+      "bit": 16,
+      "rate": 44100,
+      "sec": 12.0,
+      "peak": 0.9,
+      "rms": 0.0578,
+      "clipped": 0
+    },
+    {
+      "file": "cc0/processed/impact_metal_hit.wav",
+      "ch": 1,
+      "bit": 16,
+      "rate": 44100,
+      "sec": 2.113,
+      "peak": 0.9,
+      "rms": 0.0948,
+      "clipped": 0
+    },
+    {
+      "file": "cc0/processed/mechanical_motor_hum.wav",
+      "ch": 2,
+      "bit": 16,
+      "rate": 44100,
+      "sec": 3.011,
+      "peak": 0.783,
+      "rms": 0.1637,
+      "clipped": 0
+    },
+    {
+      "file": "cc0/processed/scifi_engine_hum.wav",
+      "ch": 2,
+      "bit": 16,
+      "rate": 44100,
+      "sec": 4.0,
+      "peak": 0.8,
+      "rms": 0.2245,
+      "clipped": 0
+    }
+  ]
+}

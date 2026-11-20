@@ -1,0 +1,456 @@
+{
+  "engine": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+  "contextSampleRate": 48000,
+  "decoded": 64,
+  "failed": [],
+  "files": [
+    {
+      "id": "sfx_anomaly_low",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 4
+    },
+    {
+      "id": "sfx_glitch_burst",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 1.2
+    },
+    {
+      "id": "sfx_ai_boot",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 3
+    },
+    {
+      "id": "sfx_disturbance_spread",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 5
+    },
+    {
+      "id": "sfx_veil_descend",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 6
+    },
+    {
+      "id": "sfx_veil_seal",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 1.5
+    },
+    {
+      "id": "amb_dark_hum",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 11.950020833333333
+    },
+    {
+      "id": "robot_servo_loop",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 1.9500208333333333
+    },
+    {
+      "id": "robot_patrol_step",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.24995833333333334
+    },
+    {
+      "id": "robot_scan",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.6
+    },
+    {
+      "id": "robot_lockon",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.8
+    },
+    {
+      "id": "robot_chase_loop",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 1.9500208333333333
+    },
+    {
+      "id": "robot_near_danger",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 1.2
+    },
+    {
+      "id": "robot_capture",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.5
+    },
+    {
+      "id": "sfx_blackout",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 1.8
+    },
+    {
+      "id": "sfx_safe_restore",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 1.5
+    },
+    {
+      "id": "step_jump",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.12995833333333334
+    },
+    {
+      "id": "step_land",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.18
+    },
+    {
+      "id": "step_stair_up",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.12
+    },
+    {
+      "id": "step_stair_down",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.12995833333333334
+    },
+    {
+      "id": "ui_confirm",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.14
+    },
+    {
+      "id": "ui_cancel",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.14
+    },
+    {
+      "id": "ui_error",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.14995833333333333
+    },
+    {
+      "id": "invitation_open",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.2
+    },
+    {
+      "id": "invitation_page",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.14
+    },
+    {
+      "id": "invitation_close",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.18
+    },
+    {
+      "id": "macbook_open",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.24995833333333334
+    },
+    {
+      "id": "macbook_close",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.2
+    },
+    {
+      "id": "macbook_type",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.04
+    },
+    {
+      "id": "agent_status",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.1
+    },
+    {
+      "id": "decrypt_tick",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.049958333333333334
+    },
+    {
+      "id": "decrypt_success",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.4
+    },
+    {
+      "id": "decrypt_fail",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.2
+    },
+    {
+      "id": "power_switch",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.1
+    },
+    {
+      "id": "power_surge",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.8
+    },
+    {
+      "id": "supercomputer_hum",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 3.9500208333333333
+    },
+    {
+      "id": "boss_roar",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 1.8
+    },
+    {
+      "id": "boss_servo",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 1.9500208333333333
+    },
+    {
+      "id": "boss_footstep",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.4
+    },
+    {
+      "id": "boss_attack_windup",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.6999375
+    },
+    {
+      "id": "boss_attack_hit",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.3
+    },
+    {
+      "id": "boss_damage",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.3
+    },
+    {
+      "id": "boss_defeat",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 2.5
+    },
+    {
+      "id": "gym_ambience",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 7.950020833333333
+    },
+    {
+      "id": "bounce_ball",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.18
+    },
+    {
+      "id": "student_free",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.5
+    },
+    {
+      "id": "sfx_lightshow_sweep",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 2
+    },
+    {
+      "id": "sfx_crowd_cheer",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 3
+    },
+    {
+      "id": "cc0_amb_birds_loop",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 2,
+      "duration": 2.9997708333333333
+    },
+    {
+      "id": "cc0_amb_wind_loop",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 2,
+      "duration": 4.235291666666667
+    },
+    {
+      "id": "cc0_amb_rain_loop",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 2,
+      "duration": 8
+    },
+    {
+      "id": "cc0_bus_engine_idle",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.8640625
+    },
+    {
+      "id": "cc0_celebration_applause_loop",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 2,
+      "duration": 12
+    },
+    {
+      "id": "cc0_impact_metal_hit",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 2.113
+    },
+    {
+      "id": "cc0_mechanical_motor_hum",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 2,
+      "duration": 3.0107291666666667
+    },
+    {
+      "id": "cc0_scifi_engine_hum",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 2,
+      "duration": 4
+    },
+    {
+      "id": "cc0_alert_beep",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 0.09552083333333333
+    },
+    {
+      "id": "mus_safe",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 26.6166875
+    },
+    {
+      "id": "mus_unease",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 26.6166875
+    },
+    {
+      "id": "mus_tension",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 26.6166875
+    },
+    {
+      "id": "mus_chase",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 26.6166875
+    },
+    {
+      "id": "mus_boss",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 26.6166875
+    },
+    {
+      "id": "mus_hope",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 1,
+      "duration": 26.6166875
+    },
+    {
+      "id": "bus_door",
+      "ok": true,
+      "sampleRate": 48000,
+      "channels": 2,
+      "duration": 0.7894583333333334
+    }
+  ]
+}

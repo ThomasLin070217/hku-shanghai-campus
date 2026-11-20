@@ -4,6 +4,7 @@ import{ITEMS}from'../items/definitions';
 import type{ItemStack}from'../items/inventory';
 import type{OpeningSave,OpeningState}from'./contracts';
 import{validOpeningState}from'./state';
+import{createOpeningRuntime,validOpeningRuntime,type OpeningRuntime}from'./runtime';
 import{OPENING_WORLD_REVISION}from'./spatialLayout';
 
 /** Opening saves live in their own namespace; the survey save (hku.digital-survey.v1) is untouched. */
@@ -46,6 +47,9 @@ export function parseOpeningSave(raw:unknown):OpeningSave|null{
  if(!finite(savedAt)||savedAt<0)return null;
  const story=validOpeningState(r.story);
  if(!story)return null;
+ // Older saves predate the survival runtime; the default is a full 10-heart run.
+ const runtime=r.runtime===undefined?createOpeningRuntime():validOpeningRuntime(r.runtime);
+ if(!runtime)return null;
  const rawPosition=r.position;
  if(!Array.isArray(rawPosition)||rawPosition.length!==3)return null;
  const px=rawPosition[0],py=rawPosition[1],pz=rawPosition[2];
@@ -85,7 +89,7 @@ export function parseOpeningSave(raw:unknown):OpeningSave|null{
  // Exactly one MacBook iff the laptop beat fired; a fully empty backpack is a legitimate
  // pre-laptop bus save. Two MacBooks (different instance ids) are always illegal.
  if(story.laptop_acquired?mac!==1:mac!==0)return null;
- return{version:1,mode:'opening',worldRevision,savedAt,position:[px,py,pz],yaw,pitch,view,slots,selectedHotbar:hotbar,story,settings:readSettings(r.settings)};
+ return{version:1,mode:'opening',worldRevision,savedAt,position:[px,py,pz],yaw,pitch,view,slots,selectedHotbar:hotbar,story,runtime,settings:readSettings(r.settings)};
 }
 /**
  * Snapshot the opening into a save. Every input is cloned, nothing is mutated and
@@ -96,7 +100,7 @@ export function parseOpeningSave(raw:unknown):OpeningSave|null{
  * illegal item combination is kept as-is, so the next parse rejects the save and the
  * runtime error surfaces instead of being silently filtered away.
  */
-export function captureOpeningSave(g:CampusGame,story:OpeningState,settings:Settings,position?:[number,number,number]):OpeningSave{
+export function captureOpeningSave(g:CampusGame,story:OpeningState,settings:Settings,position?:[number,number,number],runtime:OpeningRuntime=createOpeningRuntime()):OpeningSave{
  const slots:(ItemStack|null)[]=g.inventory.slots.map(stack=>{
   if(!stack)return null;
   const itemId=stack.itemId,instanceId=stack.instanceId,count=stack.count;
@@ -105,5 +109,5 @@ export function captureOpeningSave(g:CampusGame,story:OpeningState,settings:Sett
  });
  const body=g.body.position;
  const pose:[number,number,number]=position?[position[0],position[1],position[2]]:[body.x,body.y,body.z];
- return{version:1,mode:'opening',worldRevision:OPENING_WORLD_REVISION,savedAt:Date.now(),position:pose,yaw:g.yaw,pitch:g.pitch,view:g.view,slots,selectedHotbar:g.inventory.selectedHotbar,story:{...story,events:[...story.events]},settings:{...settings}};
+ return{version:1,mode:'opening',worldRevision:OPENING_WORLD_REVISION,savedAt:Date.now(),position:pose,yaw:g.yaw,pitch:g.pitch,view:g.view,slots,selectedHotbar:g.inventory.selectedHotbar,story:{...story,events:[...story.events]},runtime:{...runtime},settings:{...settings}};
 }

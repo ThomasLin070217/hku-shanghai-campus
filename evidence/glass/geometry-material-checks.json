@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-18T18:32:17.960Z",
+  "date": "2026-11-20T02:04:20.205Z",
   "profiles": {
     "clear": {
       "color": 10008753,
@@ -26,9 +26,9 @@
       "envMapIntensity": 1.05
     }
   },
-  "glassMeshes": 447,
-  "opaqueMeshes": 640,
-  "materialCount": 444,
+  "glassMeshes": 446,
+  "opaqueMeshes": 639,
+  "materialCount": 443,
   "gaps": [
     {
       "name": "entrance flank",

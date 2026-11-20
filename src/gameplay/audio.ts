@@ -1,5 +1,8 @@
+import {OPENING_FOLEY} from '../opening/audioAssets';
 import type {Settings} from './save';
 import type {Gait} from '../characters/gait';
+import {STORY_AUDIO_URLS} from './storyAudioAssets';
+import {StoryAudio,OPENING_AUDIO_NAMES} from './storyAudio';
 type Point={x:number;y:number;z:number};
 const audioUrls:Record<string,URL>={
  'select':new URL('../../assets/audio/select.wav',import.meta.url),
@@ -25,27 +28,36 @@ export class CampusAudio {
  context:AudioContext|null=null;buffers=new Map<string,AudioBuffer>();ambient:AudioBufferSourceNode|null=null;master:GainNode|null=null;groups:Record<string,GainNode>={};loading:Promise<void>|null=null;
  settings:Settings;counts:Record<string,number>={};failed=false;failedFiles:string[]=[];active=false;ambientStarts=0;events:{kind:string;surface:string;serial:number;time:number;position:number[]}[]=[];
  private disposed=false;private pending=new Map<string,AbortController>();private previewEpoch=0;private resumeError='';private listenerPose:number[]=[];private stepGate:GainNode|null=null;private ambientGate:GainNode|null=null;private seenSteps=0;private seenLand=0;private previousGait:Gait|null=null;private variant=0;private capture:MediaStreamAudioDestinationNode|null=null;
+ private openingAmbienceGain:GainNode|null=null;
+ private openingAmbienceNodes:{osc:OscillatorNode[];noise:AudioBufferSourceNode|null;filter:BiquadFilterNode|null}|null=null;
+ private openingAmbienceMode:'off'|'day'|'dark'='off';
+ story:StoryAudio|null=null;
+ private urls={...audioUrls};private seenGrounded=true;private seenY=0;
  private shots=new Map<AudioBufferSourceNode,{group:string;gain:GainNode;panner?:PannerNode;preview:boolean}>();
  private visibility=()=>{if(document.hidden){this.setActive(false);this.stopPreviews();this.stopShots(undefined,true);void this.context?.suspend().catch(()=>{});}};
  constructor(settings:Settings){this.settings={...settings};document.addEventListener('visibilitychange',this.visibility);}
+ enableStory(){if(this.story)return;this.story=new StoryAudio(this);for(const name of OPENING_AUDIO_NAMES)this.urls[name]=STORY_AUDIO_URLS[name];Object.assign(this.urls,OPENING_FOLEY);}
+ get voiceCount(){return this.shots.size+(this.story?.voices??0);}
  /** Call from a user gesture. Loading failure never blocks movement or throws an unhandled rejection. */
  async start(retryFailed=false){
   if(this.disposed)return;
   try{
    if(!this.context){
     this.context=new AudioContext({latencyHint:'interactive'});this.master=this.context.createGain();this.master.connect(this.context.destination);
-    for(const n of ['ambient','steps','ui','music']){const g=this.context.createGain();g.connect(this.master);this.groups[n]=g;}
+    for(const n of ['ambient','steps','ui','music','sfx']){const g=this.context.createGain();g.connect(this.master);this.groups[n]=g;}
+    this.groups.feedback=this.context.createGain();this.groups.feedback.connect(this.groups.sfx);
     this.stepGate=this.context.createGain();this.stepGate.gain.value=0;this.stepGate.connect(this.groups.steps);
     this.ambientGate=this.context.createGain();this.ambientGate.gain.value=0;this.ambientGate.connect(this.groups.ambient);this.apply(this.settings);
    }
    // Invoke resume synchronously within the click, before fetching/decoding.
    const resume=document.hidden?Promise.resolve():this.context.resume().then(()=>{this.resumeError='';},()=>{this.resumeError='浏览器尚未启用声音，请点击重试';});
    if(!this.loading){
-    const names=Object.keys(audioUrls).filter(n=>!this.buffers.has(n)&&(retryFailed||!this.failedFiles.includes(n)));
+    const names=Object.keys(this.urls).filter(n=>!this.buffers.has(n)&&(retryFailed||!this.failedFiles.includes(n)));
     this.loading=Promise.all(names.map(n=>this.load(n))).then(()=>{}).finally(()=>{this.loading=null;});
    }
    await Promise.all([resume,this.loading]);
    this.setActive(this.active,true);
+   if(this.openingAmbienceMode!=='off')this.openingAmbience(this.openingAmbienceMode);
   }catch{this.resumeError='声音启动失败，请点击重试';}
  }
  private async load(name:string){
@@ -53,19 +65,19 @@ export class CampusAudio {
   let timer:ReturnType<typeof setTimeout>|undefined;
   try{
    const buffer=await Promise.race([
-    (async()=>{const response=await fetch(audioUrls[name],{signal:abort.signal});if(!response.ok)throw Error('HTTP '+response.status);return context.decodeAudioData(await response.arrayBuffer());})(),
+    (async()=>{const response=await fetch(this.urls[name],{signal:abort.signal});if(!response.ok)throw Error('HTTP '+response.status);return context.decodeAudioData(await response.arrayBuffer());})(),
     new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('audio_timeout'));},10000);})
    ]);
    if(this.disposed)return;
    this.buffers.set(name,buffer);this.failedFiles=this.failedFiles.filter(n=>n!==name);
-   if(name==='campus-breeze'&&!this.ambient){const a=context.createBufferSource();a.buffer=buffer;a.loop=true;a.connect(this.ambientGate!);a.start();this.ambient=a;this.ambientStarts++;this.setActive(this.active,true);}
+   if(name==='campus-breeze'&&!this.ambient&&!this.story){const a=context.createBufferSource();a.buffer=buffer;a.loop=true;a.connect(this.ambientGate!);a.start();this.ambient=a;this.ambientStarts++;this.setActive(this.active,true);}
   }catch{if(!this.disposed&&!this.failedFiles.includes(name))this.failedFiles.push(name);}
   finally{clearTimeout(timer);this.pending.delete(name);this.failed=this.failedFiles.length>0;}
  }
- async preview(group:'ambient'|'steps'|'ui'){
+ async preview(group:'ambient'|'steps'|'ui'|'music'|'sfx'){
   this.stopPreviews();const epoch=this.previewEpoch;
   await this.start();if(epoch!==this.previewEpoch||this.disposed||document.hidden)return;
-  this.play(group==='ambient'?'campus-breeze':group==='steps'?'step-paving-0':'collect',group,undefined,group==='ambient'?.48:group==='steps'?.82:1,1,true);
+  this.play(group==='ambient'?'campus-breeze':group==='steps'?'step-paving-0':group==='music'?'mus_safe':group==='sfx'?'robot_scan':'collect',group,undefined,group==='ambient'?.48:group==='steps'?.82:group==='music'?.5:1,1,true);
  }
  stopPreviews(){this.previewEpoch++;for(const [source,node]of this.shots)if(node.preview)this.releaseShot(source);}
  private releaseShot(source:AudioBufferSourceNode){
@@ -73,10 +85,11 @@ export class CampusAudio {
   this.shots.delete(source);source.onended=null;try{source.stop();}catch{}source.disconnect();node.gain.disconnect();node.panner?.disconnect();
  }
  apply(settings:Settings){this.settings={...settings};if(!this.context)return;const t=this.context.currentTime;
-  const gain=(p:AudioParam,value:number)=>{if(this.context!.state!=='running'){p.cancelScheduledValues(t);p.setValueAtTime(value,t);}else{if(typeof p.cancelAndHoldAtTime==='function')p.cancelAndHoldAtTime(t);else{const current=p.value;p.cancelScheduledValues(t);p.setValueAtTime(current,t);}p.setTargetAtTime(value,t,.02);}};
-  gain(this.master!.gain,settings.muted?0:1);for(const n of ['ambient','steps','ui','music']as const)gain(this.groups[n].gain,settings[n]);
+  const gain=(p:AudioParam,value:number)=>{if(this.context!.state!=='running'){p.cancelScheduledValues(t);p.value=value;}else{if(typeof p.cancelAndHoldAtTime==='function')p.cancelAndHoldAtTime(t);else{const current=p.value;p.cancelScheduledValues(t);p.setValueAtTime(current,t);}p.setTargetAtTime(value,t,.02);}};
+  if(settings.muted){this.master!.gain.cancelScheduledValues(t);this.master!.gain.value=0;}else gain(this.master!.gain,1);
+  for(const n of ['ambient','steps','ui','music','sfx']as const)if(this.groups[n])gain(this.groups[n].gain,settings[n]);
  }
- setActive(value:boolean,force=false){value=value&&!document.hidden&&!this.disposed;if(value===this.active&&!force)return;this.active=value;if(!this.context)return;if(value&&this.context.state==='suspended')void this.context.resume().then(()=>{this.resumeError='';},()=>{this.resumeError='浏览器尚未启用声音，请点击重试';});const t=this.context.currentTime;this.ambientGate?.gain.setTargetAtTime(value?.48:0,t,.12);this.stepGate?.gain.setTargetAtTime(value?1:0,t,.006);if(!value)this.stopShots('steps');}
+ setActive(value:boolean,force=false){value=value&&!document.hidden&&!this.disposed;if(value===this.active&&!force)return;this.active=value;if(!this.context)return;if(value&&this.context.state==='suspended')void this.context.resume().then(()=>{this.resumeError='';},()=>{this.resumeError='浏览器尚未启用声音，请点击重试';});const t=this.context.currentTime;this.ambientGate?.gain.setTargetAtTime(value&&!this.story ? .48:0,t,.12);this.stepGate?.gain.setTargetAtTime(value?1:0,t,.006);if(!value){this.stopShots('steps');this.stopShots('sfx',true);this.story?.pause();}}
  private stopShots(group?:string,immediate=false){
   for(const [source,node]of this.shots)if(!group||node.group===group){
    if(immediate||this.context?.state!=='running'){this.releaseShot(source);continue;}
@@ -86,7 +99,7 @@ export class CampusAudio {
  }
  play(name:string,group='ui',position?:Point,gain=1,rate=1,preview=false){
   const c=this.context;if(!c||this.disposed||c.state!=='running'||document.hidden||!this.buffers.has(name)||!this.groups[group]||group==='steps'&&!this.active&&!preview)return;
-  if(this.shots.size>=16){const oldest=this.shots.keys().next().value;if(oldest)this.releaseShot(oldest);}
+  if(this.voiceCount>=16){const oldest=this.shots.keys().next().value;if(oldest)this.releaseShot(oldest);else return;}
   const source=c.createBufferSource(),volume=c.createGain();source.buffer=this.buffers.get(name)!;source.playbackRate.value=rate;volume.gain.value=gain;source.connect(volume);let panner:PannerNode|undefined;
   const bus=preview?this.groups[group]:group==='steps'?this.stepGate!:this.groups[group];
   if(position){panner=c.createPanner();panner.panningModel='equalpower';panner.distanceModel='inverse';panner.refDistance=2;panner.rolloffFactor=.6;panner.positionX.value=position.x;panner.positionY.value=position.y;panner.positionZ.value=position.z;volume.connect(panner);panner.connect(bus);}else volume.connect(bus);
@@ -95,23 +108,72 @@ export class CampusAudio {
   this.counts[name]=(this.counts[name]??0)+1;
  }
  /** Local opening cues share the existing context, mixer and voice budget. */
- openingCue(kind:'bus'|'door'|'disturbance'|'scan'|'alert'){
+ openingCue(kind:'bus'|'door'|'disturbance'|'scan'|'alert'|'curtain'|'caught'|'heartbeat'|'unlock'|'chase'){
   const c=this.context;if(!c||!this.active)return;
-  if(!this.groups.opening){this.groups.opening=c.createGain();this.groups.opening.connect(this.groups.ambient);}
+  if(this.story){
+   if(kind==='disturbance')this.story.disturbance();
+   else if(kind==='curtain')this.story.curtain();
+   else if(kind==='caught')this.story.cue('robot_capture',undefined,true);
+   else if(kind==='door')this.story.cue('bus_door');
+   else if(kind==='unlock')this.story.cue('agent_status',undefined,true);
+   else if(kind==='alert')this.story.cue('ui_error');
+   if(kind!=='heartbeat')return;
+  }
+  if(!this.groups.opening){this.groups.opening=c.createGain();this.groups.opening.connect(this.story?this.groups.sfx:this.groups.ambient);}
   const name='opening-'+kind;if(!this.buffers.has(name)){
-   const seconds=kind==='disturbance'?2.3:kind==='bus'?1.6:.32,buffer=c.createBuffer(1,Math.round(c.sampleRate*seconds),c.sampleRate),data=buffer.getChannelData(0);
-   for(let i=0;i<data.length;i++){const t=i/c.sampleRate,fade=Math.sin(Math.PI*i/data.length),freq=kind==='scan'?680:kind==='alert'?210:kind==='door'?115:75;const noise=kind==='disturbance'||kind==='bus'?(Math.random()-.5)*.16:0;data[i]=(Math.sin(t*freq*Math.PI*2)*.10+noise)*fade*(kind==='disturbance'?(Math.sin(t*19)>0?.9:.15):1);}
+   const seconds=kind==='curtain'?4.6:kind==='disturbance'?2.3:kind==='bus'?1.6:kind==='caught'?.9:kind==='heartbeat'?.55:kind==='unlock'?.7:.32;
+   const buffer=c.createBuffer(1,Math.round(c.sampleRate*seconds),c.sampleRate),data=buffer.getChannelData(0);
+   for(let i=0;i<data.length;i++){
+    const t=i/c.sampleRate,u=i/data.length,fade=Math.sin(Math.PI*u);
+    let sample=0;
+    if(kind==='heartbeat'){const beat=(t%.34)<.09?Math.exp(-((t%.34)*26))*Math.sin(t*54*Math.PI*2):0;sample=beat*.55;}
+    else if(kind==='caught'){sample=(Math.sin(t*44*Math.PI*2)*.32+(Math.random()-.5)*.22)*Math.exp(-t*3.4);}
+    else if(kind==='unlock'){sample=Math.sin(t*(420+t*520)*Math.PI*2)*.12*fade;}
+    else if(kind==='chase'){sample=(Math.sin(t*880*Math.PI*2)>0?.10:-.10)*fade;}
+    else if(kind==='curtain'){const sweep=58-t*10;sample=(Math.sin(t*sweep*Math.PI*2)*.18+(Math.random()-.5)*.20)*Math.min(1,t/1.2)*(1-t/seconds);}
+    else{const freq=kind==='scan'?680:kind==='alert'?210:kind==='door'?115:75;const noise=kind==='disturbance'||kind==='bus'?(Math.random()-.5)*.16:0;sample=(Math.sin(t*freq*Math.PI*2)*.10+noise)*fade*(kind==='disturbance'?(Math.sin(t*19)>0?.9:.15):1);}
+    data[i]=sample;
+   }
    this.buffers.set(name,buffer);
   }this.play(name,'opening');
  }
- stopOpeningCues(){this.stopShots('opening',true);}
+ /**
+  * A low, electrical bed for the AI takeover. Day uses the existing campus breeze;
+  * dark adds detuned sub oscillators and filtered noise. All voices are owned by
+  * this mixer, so the global mute and ambient slider still apply.
+  */
+ openingAmbience(mode:'off'|'day'|'dark'){
+  this.openingAmbienceMode=mode;
+  if(this.story)return;
+  const c=this.context;if(!c||this.disposed)return;
+  if(!this.openingAmbienceGain){
+   this.openingAmbienceGain=c.createGain();this.openingAmbienceGain.gain.value=0;
+   this.openingAmbienceGain.connect(this.groups.ambient);
+   const osc:OscillatorNode[]=[];
+   for(const [freq,type,level] of [[46,'sine',.55],[69,'triangle',.22],[103,'sine',.10]] as const){
+    const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=freq;g.gain.value=level;o.connect(g);g.connect(this.openingAmbienceGain);o.start();osc.push(o);
+   }
+   const seconds=2,buffer=c.createBuffer(1,Math.round(c.sampleRate*seconds),c.sampleRate),data=buffer.getChannelData(0);
+   let last=0;for(let i=0;i<data.length;i++){const white=Math.random()*2-1;last=(last+.02*white)/1.02;data[i]=last*3.2;}
+   const noise=c.createBufferSource();noise.buffer=buffer;noise.loop=true;
+   const filter=c.createBiquadFilter();filter.type='lowpass';filter.frequency.value=210;filter.Q.value=.7;
+   noise.connect(filter);filter.connect(this.openingAmbienceGain);noise.start();
+   this.openingAmbienceNodes={osc,noise,filter};
+  }
+  const t=c.currentTime,level=mode==='dark'?.16:0;
+  this.openingAmbienceGain.gain.cancelScheduledValues(t);
+  this.openingAmbienceGain.gain.setTargetAtTime(level,t,.8);
+ }
+ stopOpeningCues(){this.stopShots('opening',true);this.stopShots('sfx',true);}
  update(gait:Gait,paused:boolean,surface:'grass'|'paving',position:Point,listener:Point,yaw:number){
   this.setActive(!paused);const c=this.context,pose=[listener.x,listener.y,listener.z,yaw];if(c&&pose.some((v,i)=>v!==this.listenerPose[i])){this.listenerPose=pose;const l=c.listener,t=c.currentTime;l.positionX.setValueAtTime(listener.x,t);l.positionY.setValueAtTime(listener.y,t);l.positionZ.setValueAtTime(listener.z,t);l.forwardX.setValueAtTime(-Math.sin(yaw),t);l.forwardY.setValueAtTime(0,t);l.forwardZ.setValueAtTime(-Math.cos(yaw),t);l.upX.value=0;l.upY.value=1;l.upZ.value=0;}
-  if(this.previousGait!==gait){this.previousGait=gait;this.seenSteps=gait.steps;this.seenLand=gait.landings;return;}
+  if(this.previousGait!==gait){this.previousGait=gait;this.seenSteps=gait.steps;this.seenLand=gait.landings;this.seenGrounded=gait.grounded;this.seenY=position.y;return;}
+  const jump=this.seenGrounded&&!gait.grounded&&position.y>this.seenY+.001;this.seenGrounded=gait.grounded;this.seenY=position.y;
   const step=gait.steps>this.seenSteps,land=gait.landings>this.seenLand;this.seenSteps=gait.steps;this.seenLand=gait.landings;
+  if(!paused&&jump&&this.story){this.story.cue('step_jump');this.events.push({kind:'jump',surface,serial:gait.steps,time:c?.currentTime??0,position:[position.x,position.y,position.z]});}
   if(paused||!gait.grounded)return;
   if(land||step&&gait.speed>.04){const kind=land?'landing':'footstep',serial=land?gait.landings:gait.steps;const index=[0,3,1,4,2][this.variant++%5],rate=[.98,1.02,1,.96,1.03][this.variant%5];
-   this.play(`step-${surface}-${index}`,'steps',undefined,land ? .75+gait.impact*.4 : gait.motion==='run'?1.08:.82,land ? .88 : rate);
+   this.play(land&&this.story&&this.buffers.has('step_land')?'step_land':this.story&&gait.motion==='run'&&this.buffers.has(`run-${surface}-${index}`)?`run-${surface}-${index}`:`step-${surface}-${index}`,'steps',undefined,land ? (this.story ? .6+gait.impact*.35 : .75+gait.impact*.4) : gait.motion==='run'?(this.story?.78:1.08):.82,land ? .88 : rate);
    this.events.push({kind,surface,serial,time:c?.currentTime??0,position:[position.x,position.y,position.z]});if(this.events.length>1200)this.events.shift();
   }
  }
@@ -121,11 +183,11 @@ export class CampusAudio {
   const running=this.context?.state==='running',gains=Object.fromEntries(Object.entries(this.groups).map(([k,v])=>[k,v.gain.value]));
   return{state:this.context?.state??'uninitialized',active:this.active,running,muted:this.settings.muted,resumeError:this.resumeError,
    masterGain:this.master?.gain.value??0,gates:{steps:this.stepGate?.gain.value??0,ambient:this.ambientGate?.gain.value??0},
-   ambientEligible:running&&this.active&&!this.settings.muted&&this.settings.ambient>0&&!!this.ambient,
-   ambientVoices:this.ambient?1:0,ambientStarts:this.ambientStarts,activeShots:this.shots.size,previewShots:[...this.shots.values()].filter(n=>n.preview).length,
-   counts:{...this.counts},failed:this.failed,failedFiles:[...this.failedFiles],loading:[...this.pending.keys()],loaded:this.buffers.size,total:Object.keys(audioUrls).length,
+   ambientEligible:running&&this.active&&!this.settings.muted&&this.settings.ambient>0&&(!!this.ambient||!!this.story?.diagnostics.loops.some(k=>k.startsWith('ambient:'))),
+   ambientVoices:(this.ambient?1:0)+(this.story?.diagnostics.loops.filter(k=>k.startsWith('ambient:')).length??0),ambientStarts:this.ambientStarts,activeShots:this.shots.size,previewShots:[...this.shots.values()].filter(n=>n.preview).length,
+   counts:{...this.counts},failed:this.failed,failedFiles:[...this.failedFiles],loading:[...this.pending.keys()],loaded:this.buffers.size,total:Object.keys(this.urls).length,voiceCount:this.voiceCount,story:this.story?.diagnostics??null,
    buffers:[...this.buffers].map(([name,b])=>({name,duration:b.duration,channels:b.numberOfChannels,sampleRate:b.sampleRate,decodedBytes:b.length*b.numberOfChannels*4})),gains};
  }
- dispose(){if(this.disposed)return;this.disposed=true;document.removeEventListener('visibilitychange',this.visibility);this.stopPreviews();this.stopShots(undefined,true);for(const abort of this.pending.values())abort.abort();try{this.ambient?.stop();}catch{}this.ambient?.disconnect();this.ambient=null;this.capture?.stream.getTracks().forEach(t=>t.stop());this.capture?.disconnect();this.master?.disconnect();this.stepGate?.disconnect();this.ambientGate?.disconnect();Object.values(this.groups).forEach(g=>g.disconnect());this.buffers.clear();void this.context?.close();}
+ dispose(){if(this.disposed)return;this.disposed=true;document.removeEventListener('visibilitychange',this.visibility);this.stopPreviews();this.stopShots(undefined,true);this.story?.dispose();for(const abort of this.pending.values())abort.abort();try{this.ambient?.stop();}catch{}this.ambient?.disconnect();this.ambient=null;if(this.openingAmbienceNodes){for(const o of this.openingAmbienceNodes.osc){try{o.stop();}catch{}o.disconnect();}try{this.openingAmbienceNodes.noise?.stop();}catch{}this.openingAmbienceNodes.noise?.disconnect();this.openingAmbienceNodes.filter?.disconnect();this.openingAmbienceNodes=null;}this.openingAmbienceGain?.disconnect();this.openingAmbienceGain=null;this.capture?.stream.getTracks().forEach(t=>t.stop());this.capture?.disconnect();this.master?.disconnect();this.stepGate?.disconnect();this.ambientGate?.disconnect();Object.values(this.groups).forEach(g=>g.disconnect());this.buffers.clear();void this.context?.close();}
 
 }

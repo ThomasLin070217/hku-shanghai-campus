@@ -4,7 +4,7 @@ import {tagChildren} from '../scene/authoring';
 import {LAWN_SIGN,lawnLetterGeometry,OCULUS,oculusDeckGeometry,addVideoFollowup} from './videoFollowup';
 import {campusFont as font} from './fonts';
 import {sceneRegistry} from '../scene/registry';
-import {driveSections,centralWalkLayout,subtractRects} from './groundLayout';
+import {driveSections,centralWalkLayout,subtractRects,OPENING_STAIR_PASSAGE as SP,stairPassageSlabBottom} from './groundLayout';
 import {decorateCampusLobby} from './observedInteriors';
 import {addNov14Details} from './nov14Details';
 import {addObservedCourtyard} from './courtyard';
@@ -93,7 +93,7 @@ function ribbon(g:T.Object3D,name:string,rx:number,rz:number,width:number,cx:num
  indices.push(0,2,1,1,2,3,n*4,n*4+1,n*4+2,n*4+1,n*4+3,n*4+2);
  const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(vertices,3));geo.setAttribute('uv',new T.Float32BufferAttribute(new Float32Array(vertices.length/3*2),2));geo.setIndex(indices);geo.computeVertexNormals();return mesh(g,name,geo,m);
 }
-function landscape(root:T.Group,circulation:T.Group,s:SiteParameters,m:M){
+function landscape(root:T.Group,circulation:T.Group,s:SiteParameters,m:M,opening=false){
  const ground=group(root,'Ground','M01,P01','estimated-boundary');const paths=group(root,'Roads_and_Paving','A03,A04,M01','inferred-layout');const green=group(root,'Landscape','C02,R05','simplified-current-state');
  // True hole in paving: coordinate transform maps Shape XY to world XZ.
  const sh=new T.Shape();const z0=s.centerZ-s.depth/2,z1=s.centerZ+s.depth/2;sh.moveTo(-s.width/2,-z0);sh.lineTo(s.width/2,-z0);sh.lineTo(s.width/2,-z1);sh.lineTo(-s.width/2,-z1);sh.closePath();const hole=new T.Path();hole.absellipse(s.plazaX,-s.plazaZ,s.plazaRadiusX,s.plazaRadiusZ,0,Math.PI*2,true,0);sh.holes.push(hole);
@@ -116,7 +116,21 @@ function landscape(root:T.Group,circulation:T.Group,s:SiteParameters,m:M){
  ribbon(plaza,'Retaining_wall',s.plazaRadiusX,s.plazaRadiusZ,.35,s.plazaX,s.plazaZ,.13,Math.PI*2-.13,.05,.05,m.silver,s.plazaDepth+.1);
  addObservedCourtyard(plaza,s);
  const steps=group(circulation,'Auditorium_Grand_Stair','R06','confirmed-feature_estimated-dimensions');
- for(let i=0;i<L.stairCount;i++){const y=(L.stairCount-i)*L.stairRise;box(steps,'Walking_stair_tread',L.stairWalkWidth,y,L.stairRun,0,y/2,L.stairStartZ+i*L.stairRun,m.concrete);if(i%3===0)for(const k of [-1,1])box(steps,'Broad_seating_step',7.5,y,2.4,k*11.25,y/2,-50.2+i*.8,m.concrete);}
+ // Keep the original tread keys and upper silhouette. Only their underfill is cut.
+ const stairBox=(name:string,w:number,top:number,depth:number,x:number,z:number,key:string)=>{
+  const bottom=opening?stairPassageSlabBottom(z,depth,top):0;
+  box(steps,name,w,top-bottom,depth,x,(top+bottom)/2,z,m.concrete);
+  if(bottom>0){
+   const lo=z-depth/2,hi=z+depth/2;
+   for(const [j,[a,b]]of [[lo,Math.min(hi,SP.z-SP.depth/2)],[Math.max(lo,SP.z+SP.depth/2),hi]].entries())if(b>a)box(steps,key+'-cap-'+j,w,bottom,b-a,x,bottom/2,(a+b)/2,m.concrete);
+  }
+ };
+ for(let i=0;i<L.stairCount;i++){
+  const y=(L.stairCount-i)*L.stairRise;
+  stairBox('Walking_stair_tread',L.stairWalkWidth,y,L.stairRun,0,L.stairStartZ+i*L.stairRun,'Opening_stair_'+i);
+  if(i%3===0)for(const k of [-1,1])stairBox('Broad_seating_step',7.5,y,2.4,k*11.25,-50.2+i*.8,'Opening_seating_'+i+'_'+k);
+ }
+ if(opening){const floor=box(steps,'Opening_stair_passage_floor',SP.width,.08,SP.depth,0,-.04,SP.z,m.concrete);floor.userData.source=SP.source;}
  box(steps,'Upper_exterior_landing',30,5.1,1.3,0,2.55,-52.05,m.concrete);
  for(const x of [-15.4,15.4,0])beam(steps,new T.Vector3(x,6.2,-51),new T.Vector3(x,1.15,-27),.07,m.frame);
 }
@@ -134,7 +148,7 @@ export function buildSite(specs:BuildingSpec[]=BUILDINGS.map(b=>({...b})),site:S
  }else b=s.kind==='frameTower'?frameTower(s,m):s.kind==='amenities'?amenities(s,m):auditorium(s,m);
  if(s.id==='B04')decorateCampusLobby(b);b.name=s.id;b.userData={...b.userData,...s,parameters:{...s},dimensionsStatus:s.confidence};b.position.set(s.x,0,s.z);b.rotation.y=s.rotation*Math.PI/180;buildings.add(b);byId.set(s.id,b);
  }
- landscape(environment,circulation,site,m);
+ landscape(environment,circulation,site,m,opening);
  // Raised inner walks, tower-to-tower spans and a circular oculus opening.
  for(const x of [CL.westWalkX]){const raised=group(circulation,'R012','A02,A08','visible-features_inferred-connections');raised.userData={...raised.userData,sceneId:'R012',label:'西侧架空步道（高架）'};if(x<0){box(raised,'Inner_walk_north',4.4,.4,85,x,site.bridgeHeight,-15,m.silver);box(raised,'Inner_walk_south',4.4,.4,15,x,site.bridgeHeight,50,m.silver);}else box(raised,'Inner_colonnade_deck',4.4,.4,115,x,site.bridgeHeight,0,m.silver);for(let z=-52;z<=55;z+=12)if(z<27.5||z>42.5)box(raised,'Column',.6,site.bridgeHeight,.6,x,site.bridgeHeight/2,z,m.silver);for(const side of [-1,1]){const rail=new T.Group();rail.name='Walkway_glass_guard';raised.add(rail);for(const [start,end]of [[-57.5,27.5],[42.5,57.5]]){for(let z=start;z<end;z+=2.5)pane(rail,'Guard_glass',2.45,1.0,x+side*2.2,site.bridgeHeight+.7,z+1.25,m.guard,Math.PI/2);box(rail,'Opaque_top_rail',.075,.065,end-start,x+side*2.2,site.bridgeHeight+1.23,(start+end)/2,m.frame);for(let z=start;z<=end;z+=2.5)box(rail,'Guard_post',.065,1.1,.065,x+side*2.2,site.bridgeHeight+.7,z,m.frame);}}}
  // R01 shows no bridge over the CDS-1 entrance: remove unsupported tower-pair spans.

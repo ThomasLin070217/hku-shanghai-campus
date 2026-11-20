@@ -50,30 +50,37 @@ group('2. The shuttle matches the shared layout');
  assert.ok(floor,'the bus floor slab must exist');
  const box=new T.Box3().setFromObject(floor);
  assert.ok(Math.abs(box.max.y-O.bus.floor)<1e-6,`the bus floor top must be exactly ${O.bus.floor}, got ${box.max.y}`);
- // The body slab carries OPENING.bus.width and OPENING.bus.length.
- assert.ok(Math.abs((box.max.x-box.min.x)-O.bus.width)<1e-6,`the bus body width must match OPENING.bus.width, got ${box.max.x-box.min.x}`);
- assert.ok(Math.abs((box.max.z-box.min.z)-O.bus.length)<1e-6,`the bus body length must match OPENING.bus.length, got ${box.max.z-box.min.z}`);
- // The three-step transition outside the west exit matches opening/navigation.ts.
+ // The body slab runs along X (parallel to the R009 road) and is `length` long.
+ assert.ok(Math.abs((box.max.x-box.min.x)-O.bus.length)<1e-6,`the bus body length must match OPENING.bus.length, got ${box.max.x-box.min.x}`);
+ assert.ok(Math.abs((box.max.z-box.min.z)-O.bus.width)<1e-6,`the bus body width must match OPENING.bus.width, got ${box.max.z-box.min.z}`);
+ // The two steps outside the north exit match opening/navigation.ts.
  const step1=new T.Box3().setFromObject(world.root.getObjectByName('opening-bus-step-1')!);
  const step2=new T.Box3().setFromObject(world.root.getObjectByName('opening-bus-step-2')!);
- assert.ok(Math.abs(step1.max.y-.18)<1e-6,'the first step must top out at 0.18 m');
- assert.ok(Math.abs(step2.max.y-.36)<1e-6,'the second step must top out at 0.36 m');
- assert.ok(Math.abs(step1.min.x-61.9)<1e-6&&Math.abs(step2.min.x-62.7)<1e-6,'the step positions must match opening/navigation.ts');
- assert.ok(Math.abs(step2.max.x-O.bus.doorX)<1e-6,'the upper step must meet the bus door');
- // The west exit, and therefore the door leaf, must sit on the west face.
+ assert.ok(Math.abs(step1.max.y-.18)<1e-6,'the outer step must top out at 0.18 m');
+ assert.ok(Math.abs(step2.max.y-.36)<1e-6,'the upper step must top out at 0.36 m');
+ assert.ok(Math.abs(step1.min.z-(O.bus.z-O.bus.width/2-1.6))<1e-6&&Math.abs(step2.min.z-(O.bus.z-O.bus.width/2-.8))<1e-6,'the step positions must match opening/navigation.ts');
+ assert.ok(Math.abs(step2.max.z-(O.bus.z-O.bus.width/2))<1e-6,'the upper step must meet the bus door');
+ // The north exit, and therefore the door leaf, must sit on the north face.
  const door=world.root.getObjectByName('Opening_bus_door');
  assert.ok(door,'the door leaf must exist');
  const doorBox=new T.Box3().setFromObject(door);
- assert.ok(Math.abs(doorBox.min.x-O.bus.doorX)<0.25,`the door must be on the west face at x=${O.bus.doorX}, got ${doorBox.min.x}`);
- assert.ok(doorBox.min.z>=O.bus.doorZ-.8&&doorBox.max.z<=O.bus.doorZ+.8,'the door leaf must sit in the doorway');
- // The doorway channel (z 31.9..33.3) must stay free of seats and rails.
+ assert.ok(Math.abs(doorBox.min.z-O.bus.doorZ)<0.25,`the door must be on the north face at z=${O.bus.doorZ}, got ${doorBox.min.z}`);
+ const lo=O.bus.doorX-O.bus.doorWidth/2,hi=O.bus.doorX+O.bus.doorWidth/2;
+ assert.ok(doorBox.min.x>=lo-.05&&doorBox.max.x<=hi+.05,'the door leaf must sit in the doorway');
+ // Four wheels, glazing and a road-side sign must exist so the shuttle reads correctly.
+ for(const [x,z] of [[O.bus.x-2.15,O.bus.z-O.bus.width/2-.015],[O.bus.x+2.15,O.bus.z+O.bus.width/2+.015]]){
+  assert.ok(world.root.getObjectByName('opening-bus-wheel-'+x+'-'+z+'-tyre'),`wheel at ${x},${z} must exist`);
+ }
+ assert.ok(world.root.getObjectByName('opening-bus-wall-south-glass-2'),'side windows must be glazed');
+ assert.ok(world.root.getObjectByName('opening-bus-sign-plate'),'the road-side shuttle sign must exist');
+ // The doorway aisle must stay free of seats and rails.
  const seats=world.root.getObjectByName('Opening_bus_seating');
  assert.ok(seats,'the seating group must exist');
  for(const child of seats.children){
   const seatBox=new T.Box3().setFromObject(child);
-  assert.ok(seatBox.min.z>O.bus.doorZ+0.8,`seat ${child.name} must not block the exit channel`);
+  assert.ok(seatBox.min.z>O.bus.doorZ+0.5,`seat ${child.name} must not block the exit channel`);
  }
- ok('bus floor, width and west doorway match the shared layout');
+ ok('bus floor, parallel body, north doorway and wheels match the shared layout');
 }
 
 group('3. The door leaf opens, and only when time passes');
@@ -83,15 +90,15 @@ group('3. The door leaf opens, and only when time passes');
  world.update({incident:false,laptopAcquired:false,doorOpen:true},0);
  assert.equal(door.rotation.y,closedAngle,'a paused frame must not advance the door animation');
  world.update({incident:false,laptopAcquired:false,doorOpen:true},1/30);
- assert.ok(door.rotation.y>closedAngle,'the door must open once time advances');
+ assert.ok(Math.abs(door.rotation.y)>Math.abs(closedAngle),'the door must open once time advances');
  world.update({incident:false,laptopAcquired:false,doorOpen:true},1);
- const openAngle=door.rotation.y;
+ const openAngle=Math.abs(door.rotation.y);
  assert.ok(openAngle>1.0,'the door must swing open');
  // The leaf folds inward so the step down to the pavement stays clear.
  const openBox=new T.Box3().setFromObject(door);
- assert.ok(openBox.max.x>O.bus.doorX+0.2,'the open leaf must fold inward, not across the exit steps');
+ assert.ok(openBox.max.z>O.bus.doorZ+0.2,'the open leaf must fold inward, not across the exit steps');
  world.update({incident:false,laptopAcquired:false,doorOpen:false},2);
- assert.ok(door.rotation.y<openAngle,'the door must close again');
+ assert.ok(Math.abs(door.rotation.y)<openAngle,'the door must close again');
  ok('the door leaf animates only with time and never blocks the exit');
 }
 
@@ -181,10 +188,10 @@ group('6. The furniture leaves the walking routes open');
  assert.ok(stand.distanceTo(anchor)<2.7,'the standing spot must be within the interaction range of the laptop');
  // The staff must stand in the dinner area, not inside a table.
  const staffBox=new T.Box3().setFromObject(world.root.getObjectByName('Opening_b5_dinner')!);
- assert.ok(staffBox.containsPoint(new T.Vector3(O.staff[0],0,O.staff[2])),'the staff position must be inside the dinner area');
+ assert.ok(staffBox.containsPoint(new T.Vector3(...O.staff)),'the staff position must be inside the dinner area');
  for(const name of ['opening-b5-table-0','opening-b5-table-1','opening-b5-table-2','opening-b5-table-3']){
   const box=new T.Box3().setFromObject(world.root.getObjectByName(name)!);
-  assert.ok(!box.containsPoint(new T.Vector3(O.staff[0],0,O.staff[2])),'the staff must not stand inside a table');
+  assert.ok(!box.containsPoint(new T.Vector3(...O.staff)),'the staff must not stand inside a table');
  }
  // No prop may poke through the room walls or the building shell.
  const outside:string[]=[];

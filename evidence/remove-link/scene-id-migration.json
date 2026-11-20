@@ -1,0 +1,842 @@
+[
+  {
+    "mode": "normal",
+    "fromRevision": "9b095734b4d0",
+    "toRevision": "7747e3f3885d",
+    "migrations": [
+      {
+        "oldId": "A012",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-2170c65b5c81",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_underpass_column#1",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-2270c7eee26d",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_underpass_column#2",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-2370c9816859",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_underpass_column#3",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-2470cb14ee45",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_underpass_column#4",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-312aa150c5c6",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#21",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-3133d4305531",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#23",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-322aa2e34bb2",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#20",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-3233d5c3db1d",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#22",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-332aa476d19d",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#23",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-3333d7566108",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#21",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-342aa6095789",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#22",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-3433d8e9e6f4",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#20",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-34361780c007",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#16",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-3536191345f3",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#17",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-362aa92f3403",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#24",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-36361aa6cbdf",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#14",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-37361c3951cb",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#15",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-3833df35cf45",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#24",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-38361dccd7b7",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#12",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-39361f5f5da2",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#13",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-3a3620f2e38e",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#10",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-3b362285697a",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#11",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-42362d8a12ec",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#18",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-43362f1d98d8",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#19",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-459d2ae49c69",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_wall_band#2",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-489d2f9d2e2c",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_wall_band#1",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-b8232710ab93",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#18",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-b92328a3317e",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#19",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-c02333a8daf1",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#10",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-c123353b60dd",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#11",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-c22336cee6c9",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#12",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-c32338616cb4",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#13",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-c42339f4f2a0",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#14",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-c5233b87788c",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#15",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-c6233d1afe78",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#16",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-c7233ead8464",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#17",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-ca37a013e3b7",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_roof#1",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-cafe3790b8f1",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#3",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-caffd27b5ef5",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_upper_band#1",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-cbfe39233edd",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#2",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-cbffd40ee4e1",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_upper_band#2",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-ccfe3ab6c4c8",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#1",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-cefe3ddcd0a0",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#7",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-cffe3f6f568c",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#6",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-d0fe4102dc78",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#5",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-d1fe42956263",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#4",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-d4fe474e956a",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#9",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-d5fe48e11b56",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#8",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-e968d9f0ee7d",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#9",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-ea68db837468",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#8",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-f168e6881ddb",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#1",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-f1cd30478149",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_lower_slab#1",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-f368e9ae29b2",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#3",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-f468eb41af9e",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#2",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-f568ecd4358a",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#5",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-f668ee67bb76",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#4",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-f768effa4162",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#7",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-f868f18dc74d",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#6",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      }
+    ]
+  },
+  {
+    "mode": "opening",
+    "fromRevision": "62de5226dd24",
+    "toRevision": "21c0ba2972e3",
+    "migrations": [
+      {
+        "oldId": "A012",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-2170c65b5c81",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_underpass_column#1",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-2270c7eee26d",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_underpass_column#2",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-2370c9816859",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_underpass_column#3",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-2470cb14ee45",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_underpass_column#4",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-312aa150c5c6",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#21",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-3133d4305531",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#23",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-322aa2e34bb2",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#20",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-3233d5c3db1d",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#22",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-332aa476d19d",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#23",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-3333d7566108",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#21",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-342aa6095789",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#22",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-3433d8e9e6f4",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#20",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-34361780c007",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#16",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-3536191345f3",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#17",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-362aa92f3403",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#24",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-36361aa6cbdf",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#14",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-37361c3951cb",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#15",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-3833df35cf45",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#24",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-38361dccd7b7",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#12",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-39361f5f5da2",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#13",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-3a3620f2e38e",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#10",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-3b362285697a",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#11",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-42362d8a12ec",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#18",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-43362f1d98d8",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#19",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-459d2ae49c69",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_wall_band#2",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-489d2f9d2e2c",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_wall_band#1",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-b8232710ab93",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#18",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-b92328a3317e",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#19",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-c02333a8daf1",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#10",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-c123353b60dd",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#11",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-c22336cee6c9",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#12",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-c32338616cb4",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#13",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-c42339f4f2a0",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#14",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-c5233b87788c",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#15",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-c6233d1afe78",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#16",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-c7233ead8464",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#17",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-ca37a013e3b7",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_roof#1",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-cafe3790b8f1",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#3",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-caffd27b5ef5",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_upper_band#1",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-cbfe39233edd",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#2",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-cbffd40ee4e1",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_upper_band#2",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-ccfe3ab6c4c8",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#1",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-cefe3ddcd0a0",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#7",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-cffe3f6f568c",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#6",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-d0fe4102dc78",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#5",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-d1fe42956263",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#4",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-d4fe474e956a",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#9",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-d5fe48e11b56",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_tall_recessed_glass#8",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-e968d9f0ee7d",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#9",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-ea68db837468",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#8",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-f168e6881ddb",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#1",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-f1cd30478149",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_lower_slab#1",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-f368e9ae29b2",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#3",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-f468eb41af9e",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#2",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-f568ecd4358a",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#5",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-f668ee67bb76",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#4",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-f768effa4162",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#7",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      },
+      {
+        "oldId": "A012-P-f868f18dc74d",
+        "newId": null,
+        "status": "retired",
+        "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/B04_B05_Observed_Connection#1/Link_opaque_fin#6",
+        "reason": "User screenshot correction: remove the entire B04–B05 elevated corridor, including supports. No replacement geometry; IDs reserved and not reassigned."
+      }
+    ]
+  }
+]

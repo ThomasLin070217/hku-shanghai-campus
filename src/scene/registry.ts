@@ -4,6 +4,7 @@ export const SCENE_SCHEMA='hku-scene/1';
 export type EntityKind='campus'|'building'|'road'|'area'|'group'|'part';
 export interface SceneEntity {id:string;name:string;kind:EntityKind;parentId:string|null;buildingId:string|null;authorKey:string;bounds:{min:number[];max:number[]};center:number[];size:number[];sourceFile:string;sourceAnchor:string;reference:string;confidence:string;material?:string;editMode:'source';}
 export interface EntityQuery {q?:string;kind?:EntityKind;parentId?:string;offset?:number;limit?:number;near?:number[];radius?:number}
+// A012 alias is reserved for the retired B04/B05 corridor; never reuse its ID.
 const aliases:Record<string,[string,string,string]>={
  U08_Perimeter_and_lawn_lights:['A015','外围绿化与 HKU 草坪地灯','src/model/videoFollowup.ts'],
  Ground:['A001','校园地面','src/model/buildSite.ts'],Roads_and_Paving:['A002','道路与铺装','src/model/buildSite.ts'],Landscape:['A003','基础绿化','src/model/buildSite.ts'],

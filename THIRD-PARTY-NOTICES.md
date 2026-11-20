@@ -24,6 +24,17 @@ Thimras Park ambiences (2022-07-25), CC0: https://opengameart.org/content/park-a
 
 运行包内 Three.js MIT 全文：`licenses/three.txt`。当前音频来源、CC0 声明和角色许可随运行包保留；不依赖整份研究目录。
 
+## Opening audio integration · 2026-11-19
+
+The project-supplied WorkBuddy delivery adds 48 synthesized effects, 6 music stems,
+9 processed CC0 recordings and one CC0 door-close OGG extracted from the supplied
+StarNinjas archive. Individual authors, source pages, processing and license claims
+are preserved in `assets/audio/story/SOURCES.md`; file hashes are in `IMPORT.json`.
+The car-engine recording substitutes for a shuttle engine; the recordings are not
+HKU field recordings. The CC0 claims apply to the listed external recordings, not
+to the campus project or every file in the delivery. Synthesis sources are retained
+in `scripts/audio/`. Raw archive bundles are excluded from the runtime distribution.
+
 ## AI study v7
 
 - Spark 2.4.0 — World Labs, MIT. https://github.com/sparkjsdev/spark . Full license: `assets/third-party/spark/LICENSE`. Loaded only by the SPZ study page.

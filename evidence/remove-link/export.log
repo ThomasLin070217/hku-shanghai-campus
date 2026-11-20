@@ -1,0 +1,21 @@
+
+> hku-shanghai-whole-campus@9.0.0 export:glb
+> tsx scripts/export-model.ts
+
+HKU-Shanghai-Campus: 21.62 MiB, 173036 triangles, reload passed
+HKU-Shanghai-Opening: 23.92 MiB, 188270 triangles, reload passed
+HKU-Shanghai-Campus-no-ground: 17.43 MiB, 136594 triangles, reload passed
+buildings/B01: 1.51 MiB, 10674 triangles, reload passed
+buildings/B02: 1.38 MiB, 9778 triangles, reload passed
+buildings/B03: 4.20 MiB, 32622 triangles, reload passed
+buildings/B04: 4.88 MiB, 39428 triangles, reload passed
+buildings/B05: 0.76 MiB, 5576 triangles, reload passed
+buildings/B06: 0.65 MiB, 4888 triangles, reload passed
+buildings/B07: 0.76 MiB, 5576 triangles, reload passed
+Student-Green-Gown: 0.03 MiB, 192 triangles, reload passed
+B05-4F-Stepped-Lounge: 0.46 MiB, 4080 triangles, reload passed
+CDS1-Observed-Lobby: 0.32 MiB, 2874 triangles, reload passed
+CDS1-13F-Public-Area: 0.14 MiB, 1172 triangles, reload passed
+Observed-Keyboard-Wall-Lounge: 2.27 MiB, 23692 triangles, reload passed
+Observed-HKU-Flip-Wall-Corridor: 0.80 MiB, 7140 triangles, reload passed
+Observed-Ring-Display-Room: 1.20 MiB, 10796 triangles, reload passed

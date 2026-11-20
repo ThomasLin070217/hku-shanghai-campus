@@ -264,12 +264,12 @@
           {
             "from": "b5-door-in",
             "to": "b5-staff",
-            "seconds": 5.18
+            "seconds": 5.47
           },
           {
             "from": "b5-staff",
             "to": "patrol",
-            "seconds": 1.33
+            "seconds": 2.03
           }
         ]
       }

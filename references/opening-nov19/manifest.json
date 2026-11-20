@@ -1,0 +1,45 @@
+[
+  {
+    "source": "/Users/thomaslin/Downloads/IMG_4378.MOV",
+    "seconds": 50.25,
+    "frames": [
+      0,
+      12,
+      24,
+      36,
+      48
+    ],
+    "sha256": "459b2ae8d03908b441735ac58964ede0309f8be1aaa1a43ba148cb2c37115616",
+    "bytes": 352101803,
+    "sourceModified": false,
+    "externalUpload": false,
+    "derivedFrames": "12-second overview frames; selected detail frames use HLG-to-SDR hable tone mapping; IMG_4380 manually rotated upright. Not a colour or dimensional survey."
+  },
+  {
+    "source": "/Users/thomaslin/Downloads/IMG_4379.MOV",
+    "seconds": 15.97,
+    "frames": [
+      0,
+      12
+    ],
+    "sha256": "e28fb1618dc2f04df4d383c00e5fa6c3b280d22e4a2ff7ddeb9c876e46ab757b",
+    "bytes": 106372671,
+    "sourceModified": false,
+    "externalUpload": false,
+    "derivedFrames": "12-second overview frames; selected detail frames use HLG-to-SDR hable tone mapping; IMG_4380 manually rotated upright. Not a colour or dimensional survey."
+  },
+  {
+    "source": "/Users/thomaslin/Downloads/IMG_4380.MOV",
+    "seconds": 27.0,
+    "frames": [
+      0,
+      12,
+      24
+    ],
+    "sha256": "23b954c7d2fdd39dd897ff494864f0daa9732a9303cd50daaa25837753114b5b",
+    "bytes": 192384231,
+    "sourceModified": false,
+    "externalUpload": false,
+    "derivedFrames": "12-second overview frames; selected detail frames use HLG-to-SDR hable tone mapping; IMG_4380 manually rotated upright. Not a colour or dimensional survey."
+  }
+]

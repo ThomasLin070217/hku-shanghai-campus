@@ -1,0 +1,100 @@
+[
+  {
+    "file": "invitation-open.wav",
+    "seconds": 0.42,
+    "peakDbfs": -12.04,
+    "rmsDbfs": -27.54,
+    "rate": 22050
+  },
+  {
+    "file": "jump-cloth.wav",
+    "seconds": 0.2,
+    "peakDbfs": -14.89,
+    "rmsDbfs": -32.02,
+    "rate": 22050
+  },
+  {
+    "file": "landing-soft.wav",
+    "seconds": 0.24,
+    "peakDbfs": -8.4,
+    "rmsDbfs": -26.0,
+    "rate": 22050
+  },
+  {
+    "file": "run-grass-0.wav",
+    "seconds": 0.115,
+    "peakDbfs": -7.54,
+    "rmsDbfs": -20.61,
+    "rate": 22050
+  },
+  {
+    "file": "run-grass-1.wav",
+    "seconds": 0.158,
+    "peakDbfs": -7.54,
+    "rmsDbfs": -24.31,
+    "rate": 22050
+  },
+  {
+    "file": "run-grass-2.wav",
+    "seconds": 0.161,
+    "peakDbfs": -7.54,
+    "rmsDbfs": -23.66,
+    "rate": 22050
+  },
+  {
+    "file": "run-grass-3.wav",
+    "seconds": 0.102,
+    "peakDbfs": -7.54,
+    "rmsDbfs": -21.17,
+    "rate": 22050
+  },
+  {
+    "file": "run-grass-4.wav",
+    "seconds": 0.117,
+    "peakDbfs": -7.54,
+    "rmsDbfs": -25.05,
+    "rate": 22050
+  },
+  {
+    "file": "run-paving-0.wav",
+    "seconds": 0.066,
+    "peakDbfs": -7.54,
+    "rmsDbfs": -21.71,
+    "rate": 22050
+  },
+  {
+    "file": "run-paving-1.wav",
+    "seconds": 0.066,
+    "peakDbfs": -7.54,
+    "rmsDbfs": -20.87,
+    "rate": 22050
+  },
+  {
+    "file": "run-paving-2.wav",
+    "seconds": 0.067,
+    "peakDbfs": -7.54,
+    "rmsDbfs": -18.84,
+    "rate": 22050
+  },
+  {
+    "file": "run-paving-3.wav",
+    "seconds": 0.063,
+    "peakDbfs": -7.54,
+    "rmsDbfs": -19.99,
+    "rate": 22050
+  },
+  {
+    "file": "run-paving-4.wav",
+    "seconds": 0.064,
+    "peakDbfs": -7.54,
+    "rmsDbfs": -21.86,
+    "rate": 22050
+  },
+  {
+    "file": "staff-english.wav",
+    "seconds": 12.297,
+    "peakDbfs": -2.99,
+    "rmsDbfs": -18.71,
+    "rate": 22050
+  }
+]

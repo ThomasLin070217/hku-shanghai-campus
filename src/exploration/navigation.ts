@@ -1,6 +1,6 @@
 import {openingObstacles,openingSupport} from '../opening/navigation';
 import {LAWN_SIGN,LAWN_SIZE,OCULUS,oculusDeck} from '../model/videoFollowup';
-import {driveLayout,centralWalkLayout,promenadeLayout,contains} from '../model/groundLayout';
+import {driveLayout,centralWalkLayout,promenadeLayout,contains,OPENING_STAIR_PASSAGE as SP} from '../model/groundLayout';
 import {linkLayout} from '../model/nov14Details';
 import {COURTYARD,courtyardHeight,courtyardGate,stairPoint} from '../model/courtyard';
 import {landscapeLayout} from '../model/landscapeDetails';
@@ -81,9 +81,10 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters,opening=f
   for(const side of [-1,1]){if(side===1&&i<2||side===-1&&i>=COURTYARD.steps-2)continue;const p0=stairPoint(s,f,i/COURTYARD.steps,side*(COURTYARD.width/2-.04)),p1=stairPoint(s,f,(i+1)/COURTYARD.steps,side*(COURTYARD.width/2-.04));box('curved-stair-guard',(p0.x+p1.x)/2,(p0.z+p1.z)/2,Math.hypot(p1.x-p0.x,p1.z-p0.z),.055,Math.max(a.y,b.y)+1.05,Math.min(a.y,b.y),-Math.atan2(p1.z-p0.z,p1.x-p0.x));}
  }
  const planted=landscapeLayout(specs,s);for(const bed of planted.beds)if(bed.kerb)box(bed.id,bed.x,bed.z,bed.w,bed.d,bed.y+bed.kerb,bed.y);for(const tree of planted.trees)circle(tree.id,tree.x,tree.z,.13,tree.y+tree.height*.8);
- const link=linkLayout(specs);box('B04-B05-link-slab',link.x,link.z,link.width,link.length,link.bottom+.14,link.bottom-.14);
- for(const side of [-1,1]){for(const z of [-link.length*.33,link.length*.33])box('B04-B05-link-column',link.x+side*(link.width/2-.5),link.z+z,.55,.55,link.bottom);box('side-passage-planter',link.x+side*(link.width/2+1.6),link.z,1.2,3.4,.65);for(const z of [-20,-6])circle('north-green-link-tree',side*10.5,z,.12,4.2);}
- if(opening)openingObstacles(obstacles);
+ // A012 corridor and support collisions retired by the 2026-11-20 user correction.
+ const link=linkLayout(specs);
+ for(const side of [-1,1]){box('side-passage-planter',link.x+side*(link.width/2+1.6),link.z,1.2,3.4,.65);for(const z of [-20,-6])circle('north-green-link-tree',side*10.5,z,.12,4.2);}
+ if(opening){openingObstacles(obstacles);box('opening-stair-passage-ceiling',SP.x,SP.z,SP.width,SP.depth,4.2,SP.clearHeight);}
  const meshes=obstacles.map(o=>{const mesh=new T.Mesh(new T.BoxGeometry(o.w,o.top-o.bottom,o.d));mesh.name=o.name;mesh.position.set(o.x,(o.top+o.bottom)/2,o.z);mesh.rotation.y=o.angle;mesh.updateMatrixWorld();return mesh;});
  function support(x:number,z:number,y:number):number|null{
   if(Math.abs(x)>s.width/2-.75||Math.abs(z-s.centerZ)>s.depth/2-.75)return null;
@@ -101,6 +102,7 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters,opening=f
    h=(30-idx)*.17;
    if(Math.abs(x)>L.stairWalkWidth/2)h=Math.ceil((30-idx)/3)*.51;
   }
+  if(opening&&Math.abs(x)<SP.width/2&&Math.abs(z-SP.z)<SP.depth/2&&y<SP.clearHeight-.2)h=0;
   if(Math.abs(x)<15&&z>=-52.7&&z< -51.4)h=5.1;
   if(Math.abs(x)<14&&z>53&&z<93)h=Math.max(h,.13);if(Math.abs(x)>2&&Math.abs(x)<13&&z> -24.5&&z<.5)h=Math.max(h,.09);
   if(Math.abs(x)<s.sportsWidth/2&&Math.abs(z-s.sportsZ)<s.sportsDepth/2)h=.14;

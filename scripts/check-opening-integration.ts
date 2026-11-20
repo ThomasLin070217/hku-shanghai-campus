@@ -13,7 +13,7 @@ const w=createNavigation(BUILDINGS,SITE,true),g=new CampusGame(w,BUILDINGS,SITE)
 function route(name:string,start:readonly number[],points:readonly (readonly number[])[]){g.body.position.fromArray([...start]);g.body.velocity.set(0,0,0);g.paused=false;g.body.grounded=true;let total=0;
  for(const [x,z]of points){let count=0;while(Math.hypot(x-g.body.position.x,z-g.body.position.z)>.08&&count<14000){g.yaw=Math.atan2(-(x-g.body.position.x),-(z-g.body.position.z));g.human={forward:1,right:0,sprint:false};g.step(1/120);count++;}assert.ok(count<14000,`${name} blocked toward ${x},${z}, at ${g.body.position.toArray()}, contacts ${JSON.stringify(g.body.contacts)}`);total+=count;}
  results.push({name,seconds:total/120,end:g.body.position.toArray()});}
-route('Bus inside to exit',O.spawn,[[63.6,32.6],[61.2,32.6]]);
+route('Bus inside to exit',O.spawn,[[O.bus.doorX,O.bus.z-O.bus.width/2-.35],[O.busExit[0],O.busExit[2]]]);
 route('Building4 to Building5 then turn right',O.busExit,O.routeB5);
 route('Building5 to Building6 pickup space',O.staff,O.routeB6);
 route('Building6 back to Building5',[7.3,5.1,-58.2],[...O.routeB6].reverse());

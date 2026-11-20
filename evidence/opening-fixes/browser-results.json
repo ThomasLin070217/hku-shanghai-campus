@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "checks": [
+    "Zero-heart save restores blocking failure modal",
+    "Load does not silently heal",
+    "Incident save does not invent a chase",
+    "Settings and computer cannot bypass failure",
+    "Recovery action is offered",
+    "Recovery restores hearts but keeps explicit-resume gate",
+    "Recovery retains laptop and story",
+    "Recovery grants 2.6 seconds protection",
+    "Protection counts simulation time without capture",
+    "Paused time does not consume protection",
+    "Quick prompts rendered",
+    "Quick prompt identity and keyboard focus survive 120 updates",
+    "Quick prompt still fills composer"
+  ]
+}

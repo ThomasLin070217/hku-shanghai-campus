@@ -1,0 +1,7 @@
+
+> hku-shanghai-whole-campus@9.0.0 check:audio-review
+> tsx scripts/check-audio-review.ts && tsx scripts/check-story-audio.ts
+
+PASS self-footstep routing, airborne silence, landing deduplication, 16-voice budget, resume and gain fallback (graph mocks; not listening)
+PASS failed-only retry, concurrent loading, singleton ambience, bounded paused previews, late preview cancellation, mute and in-flight abort
+PASS opening asset retry, synchronized singleton music, chase fades, positional robot transitions, curtain pause/resume, capture feedback, jump/landing dedup, shared 16-voice budget, mute/hidden/dispose and old settings

@@ -29,3 +29,10 @@ export function centralWalkLayout(s:SiteParameters){
  const start=Math.max(30,s.plazaZ+s.plazaRadiusZ+2),end=94.5;
  return start>=end?[]:[-16.8,16.8].map(x=>({x,z:(start+end)/2,width:3,depth:end-start}));
 }
+
+/** IMG_4379: staircase above a cross passage. Opening-only position/size estimates. */
+export const OPENING_STAIR_PASSAGE={x:0,z:-49,width:30,depth:3.2,clearHeight:3.2,source:'IMG_4379.MOV 00:01–00:09; topology observed, dimensions estimated'};
+export function stairPassageSlabBottom(z:number,depth:number,top:number){
+ const p=OPENING_STAIR_PASSAGE;
+ return top>p.clearHeight+.15&&z+depth/2>p.z-p.depth/2&&z-depth/2<p.z+p.depth/2?p.clearHeight:0;
+}

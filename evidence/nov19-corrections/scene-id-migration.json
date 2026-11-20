@@ -1,0 +1,36 @@
+{
+  "fromRevision": "cda9f27c0455",
+  "toRevision": "cd9e6c125898",
+  "migrations": [
+    {
+      "oldId": "B05-P-a229bbe63dd6",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Recess_ceiling_strip#5",
+      "newId": "B05",
+      "reason": "B5 enlarged interior cavity replaces this provisional scenic prop; survey-mode asset retains it."
+    },
+    {
+      "oldId": "B05-P-a329bd79c3c2",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Recess_ceiling_strip#4",
+      "newId": "B05",
+      "reason": "B5 enlarged interior cavity replaces this provisional scenic prop; survey-mode asset retains it."
+    },
+    {
+      "oldId": "B05-P-a85c1696d1db",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_seat_back#6",
+      "newId": "B05",
+      "reason": "B5 enlarged interior cavity replaces this provisional scenic prop; survey-mode asset retains it."
+    },
+    {
+      "oldId": "B05-P-b4c5ec3265f3",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_seat#6",
+      "newId": "B05",
+      "reason": "B5 enlarged interior cavity replaces this provisional scenic prop; survey-mode asset retains it."
+    },
+    {
+      "oldId": "B05-P-c86dd321b1d7",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_low_table#3",
+      "newId": "B05",
+      "reason": "B5 enlarged interior cavity replaces this provisional scenic prop; survey-mode asset retains it."
+    }
+  ]
+}

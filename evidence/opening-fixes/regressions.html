@@ -1,0 +1,44 @@
+<!doctype html><meta charset="utf-8"><title>Opening regression fixtures</title><body class="exploring"><div class="stage"></div><pre id="results">Running</pre>
+<script type="module">
+import * as T from '/node_modules/three/build/three.module.js';
+import {CampusGame} from '/src/exploration/game.ts';
+import {createNavigation} from '/src/exploration/navigation.ts';
+import {BUILDINGS,SITE} from '/src/model/campusParameters.ts';
+import {Gait} from '/src/characters/gait.ts';
+import {createOpeningExperience} from '/src/opening/experience.ts';
+import {createOpeningState,reduceOpening} from '/src/opening/state.ts';
+import {createOpeningRuntime} from '/src/opening/runtime.ts';
+import {captureOpeningSave,OPENING_SAVE_KEY} from '/src/opening/persistence.ts';
+import {DEFAULT_SETTINGS} from '/src/gameplay/save.ts';
+const checks=[];const check=(condition,message)=>{if(!condition)throw Error(message);checks.push(message);};
+// Isolated page-local storage and game fixture. Never touches a live player's world, storage or AI grant.
+const values=new Map();Object.defineProperty(window,'localStorage',{value:{getItem:k=>values.get(k)??null,setItem:(k,v)=>values.set(k,String(v)),removeItem:k=>values.delete(k)}});
+try{
+const world=createNavigation(BUILDINGS,SITE,true),g=new CampusGame(world,BUILDINGS,SITE),scene=new T.Scene();
+let story=createOpeningState();for(const event of ['read_invitation','exit_bus','accept_errand','take_laptop','return_b5','read_alert'])story=reduceOpening(story,event);
+g.inventory.slots.fill(null);g.inventory.slots[0]={itemId:'macbook-air-13-silver',instanceId:'opening-macbook-001',count:1};
+const runtime={...createOpeningRuntime(),hearts:0,catches:5};
+const save=captureOpeningSave(g,story,DEFAULT_SETTINGS,undefined,runtime);values.set(OPENING_SAVE_KEY,JSON.stringify(save));
+const fake={game:g,world,enabled:true,camera:new T.PerspectiveCamera(),student:{gait:new Gait()},interactions:new Set(),computers:new Set(),setSensitivity(){},setComfort(){},pause:reason=>g.pause(reason),openPanel:p=>g.openPanel(p),closePanel:()=>g.closePanel()};
+const exp=createOpeningExperience(scene,fake,()=>{},()=>undefined);exp.update(0);
+const snap=()=>g.scenario.snapshot();
+check(snap().modal==='caught'&&g.paused&&g.panel==='computer','Zero-heart save restores blocking failure modal');
+check(snap().runtime.hearts===0,'Load does not silently heal');
+check(!snap().runtime.robot_chase_started,'Incident save does not invent a chase');
+exp.openSettings();exp.openComputer();check(snap().modal==='caught','Settings and computer cannot bypass failure');
+const button=[...document.querySelectorAll('button')].find(b=>b.textContent==='Recover at checkpoint');check(!!button,'Recovery action is offered');button.click();
+check(snap().modal===null&&snap().runtime.hearts===10&&g.paused,'Recovery restores hearts but keeps explicit-resume gate');
+check(g.inventory.slots.filter(Boolean).length===1&&snap().story.stage==='to_b4','Recovery retains laptop and story');
+check(snap().respawnGraceSeconds===2.6,'Recovery grants 2.6 seconds protection');
+g.paused=false;for(let i=0;i<120;i++)g.step(1/120);const grace=snap().respawnGraceSeconds;
+check(Math.abs(grace-1.6)<.001&&snap().runtime.hearts===10,'Protection counts simulation time without capture');
+g.pause('fixture_pause');for(let i=0;i<120;i++)g.step(1/120);check(snap().respawnGraceSeconds===grace,'Paused time does not consume protection');
+exp.update(0);exp.openComputer('agent');exp.update(0);
+const first=document.querySelector('.opening-mac-quickbtn');check(!!first,'Quick prompts rendered');first.focus();
+for(let i=0;i<120;i++)exp.update(1/60);
+check(first===document.querySelector('.opening-mac-quickbtn')&&document.activeElement===first,'Quick prompt identity and keyboard focus survive 120 updates');
+first.click();check(document.querySelector('[data-role="agent-input"]').value===first.textContent,'Quick prompt still fills composer');
+exp.dispose();world.dispose();
+window.__REGRESSION_RESULT={passed:true,checks};document.querySelector('#results').textContent=JSON.stringify(window.__REGRESSION_RESULT,null,2);
+}catch(error){window.__REGRESSION_RESULT={passed:false,error:String(error),checks};document.querySelector('#results').textContent=JSON.stringify(window.__REGRESSION_RESULT,null,2);}
+</script>

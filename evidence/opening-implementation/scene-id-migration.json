@@ -1,11 +1,23 @@
 {
   "scope": "opening asset mode only",
-  "baselineRevision": "9b095734b4d0",
-  "openingRevision": "cda9f27c0455",
+  "baselineRevision": "7747e3f3885d",
+  "openingRevision": "21c0ba2972e3",
   "migrations": [
     {
-      "oldId": "B05-P-94ec27f0f8d5",
-      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_table_support#3",
+      "oldId": "B05-P-a129ba53b7ea",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Recess_ceiling_strip#6",
+      "newId": "B05",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B05-P-a229bbe63dd6",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Recess_ceiling_strip#5",
+      "newId": "B05",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B05-P-a329bd79c3c2",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Recess_ceiling_strip#4",
       "newId": "B05",
       "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
     },
@@ -16,8 +28,56 @@
       "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
     },
     {
+      "oldId": "B05-P-a85c1696d1db",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_seat_back#6",
+      "newId": "B05",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B05-P-a95c182957c7",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_seat_back#7",
+      "newId": "B05",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B05-P-b25c2654ae55",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_seat_back#8",
+      "newId": "B05",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
       "oldId": "B05-P-b3c5ea9fe007",
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_seat#5",
+      "newId": "B05",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B05-P-b4c5ec3265f3",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_seat#6",
+      "newId": "B05",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B05-P-b5c5edc5ebdf",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_seat#7",
+      "newId": "B05",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B05-P-b6c5ef58130e",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_seat#8",
+      "newId": "B05",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B05-P-c86dd321b1d7",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_low_table#3",
+      "newId": "B05",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B05-P-c96dd4b40865",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_low_table#4",
       "newId": "B05",
       "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
     },

@@ -1,0 +1,42 @@
+{
+  "fromRevision": "cd9e6c125898",
+  "toRevision": "62de5226dd24",
+  "migrations": [
+    {
+      "oldId": "B05-P-a129ba53b7ea",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Recess_ceiling_strip#6",
+      "newId": "B05",
+      "reason": "Horizontal B5 hall cavity replaces this provisional facade/interior part; ordinary campus mode is unchanged."
+    },
+    {
+      "oldId": "B05-P-a95c182957c7",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_seat_back#7",
+      "newId": "B05",
+      "reason": "Horizontal B5 hall cavity replaces this provisional facade/interior part; ordinary campus mode is unchanged."
+    },
+    {
+      "oldId": "B05-P-b25c2654ae55",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_seat_back#8",
+      "newId": "B05",
+      "reason": "Horizontal B5 hall cavity replaces this provisional facade/interior part; ordinary campus mode is unchanged."
+    },
+    {
+      "oldId": "B05-P-b5c5edc5ebdf",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_seat#7",
+      "newId": "B05",
+      "reason": "Horizontal B5 hall cavity replaces this provisional facade/interior part; ordinary campus mode is unchanged."
+    },
+    {
+      "oldId": "B05-P-b6c5ef58130e",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_seat#8",
+      "newId": "B05",
+      "reason": "Horizontal B5 hall cavity replaces this provisional facade/interior part; ordinary campus mode is unchanged."
+    },
+    {
+      "oldId": "B05-P-c96dd4b40865",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B05/02_Glass#1/Glazing_and_grid#2/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_low_table#4",
+      "newId": "B05",
+      "reason": "Horizontal B5 hall cavity replaces this provisional facade/interior part; ordinary campus mode is unchanged."
+    }
+  ]
+}

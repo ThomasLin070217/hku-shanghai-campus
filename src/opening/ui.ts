@@ -3,6 +3,9 @@ import {OPENING_UI as T} from '../../content/opening/en';
 import type {OpeningModal, OpeningUIActions, OpeningView} from './contracts';
 import {DEFAULT_SETTINGS} from '../gameplay/save';
 import {setHidden, setText} from '../ui/dom';
+import {createLocalAgent} from './agent';
+import {createMacBookExperience} from './macbook';
+import {OPENING_CAPTURE_DAMAGE, OPENING_MAX_HEARTS} from './runtime';
 
 /**
  * English opening UI renderer. It only renders opening state and submits
@@ -18,6 +21,8 @@ const SLIDERS = [
   ['ambient', 0, 1, 0.05],
   ['steps', 0, 1, 0.05],
   ['ui', 0, 1, 0.05],
+  ['sfx', 0, 1, 0.05],
+  ['music', 0, 1, 0.05],
 ] as const;
 type SliderKey = (typeof SLIDERS)[number][0];
 type DialogKind = Exclude<OpeningModal, null>;
@@ -44,6 +49,7 @@ export function createOpeningUI(
   actions: OpeningUIActions,
 ): {update(view: OpeningView): void; dispose(): void} {
   const events = new AbortController();
+  let currentView:OpeningView|null=null;
 
   // ---------------------------------------------------------------- HUD.
   const hud = node('section', 'opening-hud');
@@ -53,7 +59,12 @@ export function createOpeningUI(
   const detailText = node('p', 'opening-detail-text');
   details.append(node('summary', '', T.hud.details), detailText);
   const saveLine = node('p', 'opening-save');
-  hud.append(node('p', 'opening-eyebrow', T.hud.objectiveLabel), objective, details, saveLine);
+  const distanceEl = node('p', 'opening-distance');
+  const distanceArrow = node('i', 'opening-distance-arrow', '↑');
+  distanceArrow.setAttribute('aria-hidden', 'true');
+  const distanceText = node('span', 'opening-distance-text', '');
+  distanceEl.append(distanceArrow, distanceText);
+  hud.append(node('p', 'opening-eyebrow', T.hud.objectiveLabel), objective, details, distanceEl, saveLine);
 
   const mapCard = node('button', 'opening-mapcard');
   mapCard.type = 'button';
@@ -80,7 +91,40 @@ export function createOpeningUI(
   warningBarEl.append(warningFillEl);
   warningEl.append(node('span', 'opening-warning-label', T.robot.label), warningStateEl, warningBarEl);
 
-  stage.append(hud, mapCard, promptEl, warningEl);
+  // -------------------------------------------------------------- Hearts.
+  const heartSvg = () => {
+    // A deliberately blocky pixel heart: 11 rows of crisp rects, not an emoji.
+    const left = [1, 0, 0, 0, 0, 1, 1, 2, 2, 3, 3];
+    const right = [2, 3, 7, 7, 7, 6, 6, 5, 5, 4, 4];
+    let rects = '';
+    for (let y = 0; y < left.length; y++) {
+      rects += `<rect x="${left[y]}" y="${y}" width="${right[y] - left[y] + 1}" height="1"/>`;
+    }
+    return `<svg viewBox="0 0 8 11" shape-rendering="crispEdges" aria-hidden="true" focusable="false">${rects}</svg>`;
+  };
+  const heartsCard = node('section', 'opening-hearts');
+  heartsCard.setAttribute('aria-label', 'Vital hearts');
+  const heartsHead = node('div', 'opening-hearts-head');
+  const heartsLabel = node('p', 'opening-hearts-label', 'Vitals');
+  const heartsCount = node('span', 'opening-hearts-count', '10 / 10');
+  heartsHead.append(heartsLabel, heartsCount);
+  const heartsRow = node('div', 'opening-hearts-row');
+  const heartEls: HTMLElement[] = [];
+  for (let i = 0; i < OPENING_MAX_HEARTS; i++) {
+    const heart = node('span', 'opening-heart is-full');
+    heart.innerHTML = heartSvg();
+    heart.setAttribute('aria-hidden', 'true');
+    heartsRow.append(heart);
+    heartEls.push(heart);
+  }
+  heartsCard.append(heartsHead, heartsRow);
+  heartsCard.setAttribute('role', 'img');
+  heartsCard.setAttribute('aria-label', '10 of 10 hearts');
+
+  const dangerVignette = node('div', 'opening-danger-vignette');
+  dangerVignette.setAttribute('aria-hidden', 'true');
+
+  stage.append(heartsCard, hud, mapCard, promptEl, warningEl, dangerVignette);
 
   // -------------------------------------------------------------- Modal.
   const modalRoot = node('div', 'opening-modal-root');
@@ -136,8 +180,10 @@ export function createOpeningUI(
   }
 
   function focusFirst(target: HTMLElement): void {
-    const preferred = target.querySelector<HTMLElement>('[data-autofocus]');
-    const first = preferred ?? target.querySelector<HTMLElement>(FOCUSABLE);
+    const usable = (element: HTMLElement | null): element is HTMLElement =>
+      !!element && element.offsetParent !== null && !(element as HTMLButtonElement).disabled;
+    const preferred = Array.from(target.querySelectorAll<HTMLElement>('[data-autofocus]')).find(usable);
+    const first = preferred ?? Array.from(target.querySelectorAll<HTMLElement>(FOCUSABLE)).find(usable);
     (first ?? target).focus({preventScroll: true});
   }
 
@@ -156,6 +202,7 @@ export function createOpeningUI(
     closeSent = null;
     retrySent = false;
     modalRoot.append(next);
+    modalRoot.dataset.kind = nextKind;
     modalRoot.hidden = false;
     focusFirst(next);
   }
@@ -170,33 +217,68 @@ export function createOpeningUI(
     closeSent = null;
     retrySent = false;
     modalRoot.hidden = true;
+    delete modalRoot.dataset.kind;
     if (!restore) return;
     if (restore.isConnected && restore.offsetParent !== null) restore.focus({preventScroll: true});
     else document.querySelector<HTMLElement>('.stage canvas')?.focus({preventScroll: true});
   }
 
+  // ------------------------------------------------------ MacBook + Agent.
+  const localAgent = createLocalAgent();
+  const mac = createMacBookExperience({
+    actions,
+    drawMap: (canvas, large) => actions.drawMap(canvas, large),
+    onClose: () => requestClose(),
+    agent: localAgent,
+  });
+
   // ------------------------------------------------------------ Modals.
-  function invitationDialog(): HTMLElement {
+  function invitationDialog(view: OpeningView): HTMLElement {
     const shell = dialogShell('invitation');
-    shell.append(head(T.invitation.eyebrow, T.invitation.title, true));
-    const body = node('div', 'opening-dialog-body opening-invite');
-    const forLine = node('p', 'opening-invite-for');
-    forLine.append(document.createTextNode(T.invitation.forLabel + ' '), node('strong', '', T.invitation.forValue));
+    shell.classList.add('opening-invite-shell');
+    const card = node('div', 'opening-invite-card');
+    const crest = node('div', 'opening-invite-crest');
+    crest.innerHTML =
+      '<svg viewBox="0 0 84 100" aria-hidden="true" focusable="false">' +
+      '<path d="M42 3 78 15v33c0 24-15 39-36 49C21 87 6 72 6 48V15z" fill="none" stroke="currentColor" stroke-width="2.4"/>' +
+      '<path d="M42 12 69 21v27c0 18-11 31-27 40-16-9-27-22-27-40V21z" fill="none" stroke="currentColor" stroke-width="1" opacity=".55"/>' +
+      '<path d="M27 40h30v4H27zM30 48h24v3H30zM30 55h24v3H30z" fill="currentColor" opacity=".85"/>' +
+      '<path d="M34 70c4-5 12-5 16 0" fill="none" stroke="currentColor" stroke-width="1.8"/>' +
+      '<text x="42" y="34" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="700" fill="currentColor" letter-spacing="1">HKU</text>' +
+      '</svg>';
+    const top = node('p', 'opening-invite-top', T.invitation.eyebrow);
+    const host = node('p', 'opening-invite-host', T.invitation.host);
+    const name = node('p', 'opening-invite-name', T.invitation.name);
+    const rule = node('div', 'opening-invite-rule');
+    rule.setAttribute('aria-hidden', 'true');
+    rule.innerHTML = '<i></i><b>◆</b><i></i>';
+    const title = node('h2', 'opening-invite-title', T.invitation.title);
+    title.id = 'opening-modal-title';
+    const subtitle = node('p', 'opening-invite-subtitle', T.invitation.subtitle);
     const facts = node('dl', 'opening-invite-facts');
     for (const [label, value] of [
+      [T.invitation.dateLabel, T.invitation.dateValue],
+      [T.invitation.timeLabel, T.invitation.timeValue],
       [T.invitation.venueLabel, T.invitation.venueValue],
-      [T.invitation.directionsLabel, T.invitation.directionsValue],
-      [T.invitation.yearLabel, T.invitation.yearValue],
+      [T.invitation.dressLabel, T.invitation.dressValue],
     ] as [string, string][]) {
       const row = node('div', 'opening-invite-fact');
       row.append(node('dt', '', label), node('dd', '', value));
       facts.append(row);
     }
-    body.append(forLine, facts, node('p', 'opening-copy', T.invitation.body), node('p', 'opening-muted', T.invitation.reread));
-    shell.append(body);
-    const continueButton = makeButton(T.invitation.continue, 'primary', () => actions.action('read_invitation'));
+    const body = node('p', 'opening-invite-body', T.invitation.body);
+    const note = node('p', 'opening-invite-note', T.invitation.note);
+    const seal = node('div', 'opening-invite-seal', T.invitation.seal);
+    seal.setAttribute('aria-hidden', 'true');
+    card.append(top, crest, host, name, rule, title, subtitle, facts, body, note, seal);
+    shell.append(card);
+    const continueButton = view.story.invitation_read
+      ? makeButton(T.invitation.alreadyRead, 'primary', () => requestClose())
+      : makeButton(T.invitation.continue, 'primary', () => actions.action('read_invitation'));
     continueButton.dataset.autofocus = 'true';
-    shell.append(actionRow(makeButton(T.common.close, 'secondary', requestClose), continueButton));
+    const footer = actionRow(makeButton(T.invitation.close, 'secondary', requestClose), continueButton);
+    footer.classList.add('opening-invite-actions');
+    shell.append(node('p','opening-muted','Press any key to finish reading and continue.'),footer);
     return shell;
   }
 
@@ -209,6 +291,8 @@ export function createOpeningUI(
       node('p', 'opening-line', T.staff.line1),
       node('p', 'opening-line', T.staff.line2),
       node('p', 'opening-muted', T.staff.line3),
+      node('p', 'opening-muted', 'English voice · synthesized'),
+      makeButton('Replay voice', 'secondary', () => actions.action('replay_voice')),
     );
     shell.append(body);
     const accept = makeButton(T.staff.accept, 'primary', () => actions.action('accept_errand'));
@@ -238,32 +322,12 @@ export function createOpeningUI(
 
   function computerDialog(view: OpeningView): HTMLElement {
     const shell = dialogShell('computer');
-    shell.append(head(T.computer.eyebrow, T.computer.title, true));
-    const tabs = node('nav', 'opening-tabs');
-    tabs.setAttribute('aria-label', 'MacBook pages');
-    for (const page of ['map', 'tasks'] as const) {
-      const tab = node('button', 'opening-tab', T.computer.tabs[page]);
-      tab.type = 'button';
-      tab.setAttribute('aria-current', view.computerPage === page ? 'page' : 'false');
-      if (view.computerPage === page) tab.dataset.autofocus = 'true';
-      tab.addEventListener('click', () => actions.action(page === 'map' ? 'map' : 'computer'));
-      tabs.append(tab);
-    }
-    shell.append(tabs);
-    const body = node('div', 'opening-dialog-body opening-computer');
-    body.append(node('p', 'opening-device-line', T.computer.subtitle));
-    body.append(view.computerPage === 'map' ? mapPage() : tasksPage(view));
-    shell.append(body, actionRow(makeButton(T.common.close, 'secondary', requestClose)));
-    if (view.computerPage === 'map') {
-      const canvas = shell.querySelector<HTMLCanvasElement>('.opening-bigmap');
-      if (canvas) {
-        try {
-          actions.drawMap(canvas, true);
-        } catch {
-          // A failed map preview must not take down the modal or the HUD.
-        }
-      }
-    }
+    shell.classList.add('opening-mac-shell');
+    const closeHint = node('button', 'opening-mac-closehint', 'Put to sleep · C');
+    closeHint.type = 'button';
+    closeHint.addEventListener('click', () => requestClose());
+    shell.append(mac.root, closeHint);
+    mac.open(view);
     return shell;
   }
 
@@ -332,24 +396,77 @@ export function createOpeningUI(
     return wrap;
   }
 
-  function caughtDialog(): HTMLElement {
+  function caughtDialog(view: OpeningView): HTMLElement {
     const shell = dialogShell('caught');
-    shell.append(head(T.caught.eyebrow, T.caught.title, false));
-    const body = node('div', 'opening-dialog-body');
-    body.append(
-      node('p', 'opening-copy', T.caught.body),
-      node('p', 'opening-caught-note', T.caught.note),
-      node('p', 'opening-muted', T.caught.onlyWay),
-    );
-    shell.append(body);
-    const retry = makeButton(T.caught.retry, 'primary', () => {
-      if (retrySent) return;
-      retrySent = true;
-      actions.action('retry');
-    });
-    retry.dataset.autofocus = 'true';
-    shell.append(actionRow(retry));
+    const card = node('div', 'opening-caught-card');
+    const eye = node('div', 'opening-caught-eye');
+    eye.setAttribute('aria-hidden', 'true');
+    const eyebrow = node('p', 'opening-caught-eyebrow', view.runtime.hearts > 0 ? 'PERIMETER UNIT CONTACT' : 'CRITICAL CONDITION');
+    const title = node('h2', 'opening-caught-title', view.runtime.hearts > 0 ? 'Caught' : 'Signal lost');
+    title.id = 'opening-modal-title';
+    const hearts = node('div', 'opening-caught-hearts');
+    for (let i = 0; i < view.runtime.maxHearts; i++) {
+      const heart = node('span', 'opening-heart ' + (i < view.runtime.hearts ? 'is-full' : 'is-empty'));
+      heart.innerHTML = '<svg viewBox="0 0 8 11" shape-rendering="crispEdges" aria-hidden="true"><rect x="1" y="0" width="2" height="1"/><rect x="5" y="0" width="2" height="1"/><rect x="0" y="1" width="8" height="4"/><rect x="1" y="5" width="6" height="2"/><rect x="2" y="7" width="4" height="2"/><rect x="3" y="9" width="2" height="2"/></svg>';
+      hearts.append(heart);
+    }
+    const lost = node('p', 'opening-caught-loss', view.runtime.hearts > 0
+      ? `−${OPENING_CAPTURE_DAMAGE} hearts · ${view.runtime.hearts} / ${view.runtime.maxHearts} remaining`
+      : 'All hearts lost');
+    const copy = node('p', 'opening-caught-copy', view.runtime.hearts > 0
+      ? 'A campus security unit reached you. The screen cuts to black; the checkpoint will restore your body, but not your hearts.'
+      : 'The perimeter closed in. Your run has failed, but the opening can be recovered from the last checkpoint without deleting the story.');
+    const note = node('p', 'opening-caught-note', view.runtime.hearts > 0
+      ? 'Your MacBook, invitation and story progress are kept.'
+      : 'Recover at the checkpoint to restore all 10 hearts; restarting returns to the shuttle.');
+    card.append(eye, eyebrow, title, hearts, lost, copy, note);
+    shell.append(card);
+    const region = node('div', 'opening-caught-actions');
+    if (view.runtime.hearts > 0) {
+      const retry = makeButton('Recover at checkpoint', 'primary', () => {
+        if (retrySent) return;
+        retrySent = true;
+        actions.action('retry');
+      });
+      retry.dataset.autofocus = 'true';
+      region.append(retry);
+    } else {
+      const recover = makeButton('Recover at checkpoint', 'primary', () => {
+        if (retrySent) return;
+        retrySent = true;
+        actions.action('recover');
+      });
+      recover.dataset.autofocus = 'true';
+      const restart = makeButton('Restart opening', 'danger', () => showCaughtRestart(region));
+      region.append(recover, restart);
+    }
+    shell.append(region);
     return shell;
+  }
+
+  function showCaughtRestart(region: HTMLElement): void {
+    region.replaceChildren();
+    const box = node('div', 'opening-caught-confirm');
+    box.append(node('p', '', 'Restart from the shuttle? The current opening save is backed up first.'));
+    const row = node('div', 'opening-caught-confirm-row');
+    const yes = makeButton('Restart from shuttle', 'danger', () => actions.action('restart'));
+    const no = makeButton('Keep progress', 'secondary', () => {
+      region.replaceChildren();
+      const recover = makeButton('Recover at checkpoint', 'primary', () => {
+        if (retrySent) return;
+        retrySent = true;
+        actions.action('recover');
+      });
+      recover.dataset.autofocus = 'true';
+      const restart = makeButton('Restart opening', 'danger', () => showCaughtRestart(region));
+      region.append(recover, restart);
+      recover.focus({ preventScroll: true });
+    });
+    no.dataset.autofocus = 'true';
+    row.append(yes, no);
+    box.append(row);
+    region.append(box);
+    no.focus({ preventScroll: true });
   }
 
   function completeDialog(): HTMLElement {
@@ -446,6 +563,16 @@ export function createOpeningUI(
       toggles.append(label);
     }
     body.append(toggles);
+    const previews=node('div','opening-settings-actions');
+    previews.append(
+      makeButton('Preview ambience','secondary',()=>actions.action('preview_ambient')),
+      makeButton('Preview footsteps','secondary',()=>actions.action('preview_steps')),
+      makeButton('Preview effects','secondary',()=>actions.action('preview_sfx')),
+      makeButton('Preview music','secondary',()=>actions.action('preview_music')),
+      makeButton('Retry audio','secondary',()=>actions.action('retry_audio')),
+    );
+    const audioStatus=node('p','opening-audio-status opening-muted',view.audioStatus);
+    audioStatus.setAttribute('role','status');body.append(previews,audioStatus);
     const region = node('div', 'opening-settings-region');
     region.append(settingsActionRow(region));
     body.append(region, node('p', 'opening-modal-save', view.saveStatus), node('p', 'opening-muted', T.settings.note));
@@ -479,7 +606,7 @@ export function createOpeningUI(
       return;
     }
     const next = view.modal === 'invitation'
-      ? invitationDialog()
+      ? invitationDialog(view)
       : view.modal === 'staff'
         ? staffDialog()
         : view.modal === 'alert'
@@ -487,7 +614,7 @@ export function createOpeningUI(
           : view.modal === 'computer'
             ? computerDialog(view)
             : view.modal === 'caught'
-              ? caughtDialog()
+              ? caughtDialog(view)
               : view.modal === 'settings'
                 ? settingsDialog(view)
                 : completeDialog();
@@ -518,21 +645,36 @@ export function createOpeningUI(
     }
   }
 
+  let dismissedKey:string|null=null;
+  window.addEventListener('blur',()=>{dismissedKey=null;},{signal:events.signal});
+  document.addEventListener('keyup',event=>{if(event.code===dismissedKey){dismissedKey=null;event.stopImmediatePropagation();}},{capture:true,signal:events.signal});
   function onKeyDown(event: KeyboardEvent): void {
+    if(event.code===dismissedKey){event.preventDefault();event.stopImmediatePropagation();return;}
     if (!dialog || modalRoot.hidden) return;
+    if(kind==='invitation'){
+      event.preventDefault();event.stopImmediatePropagation();
+      if(event.repeat||event.isComposing)return;
+      dismissedKey=event.code;
+      if(currentView?.story.invitation_read)requestClose();else actions.action('read_invitation');
+      hideDialog();lastSignature=null;
+      return;
+    }
     if (event.key === 'Tab') {
       trapFocus(event);
       return;
     }
     if (event.repeat) return;
-    if (event.key === 'Escape' || event.code === 'KeyC') {
+    const target = event.target;
+    const editable = target instanceof HTMLElement &&
+      (target.matches('input, textarea, select') || target.isContentEditable);
+    if (event.key === 'Escape' || (event.code === 'KeyC' && !editable)) {
       event.preventDefault();
       event.stopPropagation();
       if (kind === 'caught') return;
       requestClose();
     }
   }
-  document.addEventListener('keydown', onKeyDown, {signal: events.signal});
+  document.addEventListener('keydown', onKeyDown, {capture:true,signal: events.signal});
 
   // ------------------------------------------------------------- Update.
   function updateWarning(view: OpeningView): void {
@@ -554,7 +696,30 @@ export function createOpeningUI(
     warningFillEl.style.width = Math.max(6, Math.round(level * 100)) + '%';
   }
 
+  let lastHearts = OPENING_MAX_HEARTS;
+  function updateHearts(view: OpeningView): void {
+    const hearts = Math.max(0, Math.min(view.runtime.maxHearts, Math.round(view.runtime.hearts)));
+    if (hearts !== lastHearts) {
+      for (let i = hearts; i < lastHearts; i++) {
+        const heart = heartEls[i];
+        if (!heart) continue;
+        heart.classList.add('is-hit');
+        setTimeout(() => heart.classList.remove('is-hit'), 720);
+      }
+      lastHearts = hearts;
+    }
+    heartEls.forEach((heart, index) => {
+      heart.classList.toggle('is-full', index < hearts);
+      heart.classList.toggle('is-empty', index >= hearts);
+    });
+    setText(heartsCount, `${hearts} / ${view.runtime.maxHearts}`);
+    heartsCard.classList.toggle('is-low', hearts > 0 && hearts <= 4);
+    heartsCard.classList.toggle('is-empty', hearts <= 0);
+    heartsCard.setAttribute('aria-label', `${hearts} of ${view.runtime.maxHearts} hearts`);
+  }
+
   function update(view: OpeningView): void {
+    currentView=view;
     // HUD text only: no modal rebuild on per-frame state such as elapsed time.
     setText(objective, view.objective);
     setText(detailText, view.detail);
@@ -563,6 +728,24 @@ export function createOpeningUI(
     setHidden(promptEl, !view.prompt);
     if (view.prompt) setText(promptEl, view.prompt);
     updateWarning(view);
+    updateHearts(view);
+    const target = view.target;
+    if (target) {
+      const dx = target[0] - view.player[0];
+      const dz = target[2] - view.player[2];
+      const dist = Math.hypot(dx, dz);
+      const targetYaw = Math.atan2(-dx, -dz);
+      let rel = targetYaw - view.yaw;
+      rel = Math.atan2(Math.sin(rel), Math.cos(rel));
+      distanceArrow.style.transform = `rotate(${rel}rad)`;
+      setText(distanceText, `${dist < 10 ? dist.toFixed(1) : Math.round(dist)} m to objective`);
+      distanceEl.hidden = false;
+    } else {
+      distanceEl.hidden = true;
+    }
+    const danger = clamp(Number(view.robotWarning) || 0, 0, 1);
+    dangerVignette.style.opacity = String(view.runtime.curtain_deployed ? Math.min(.72, .10 + danger * .62) : 0);
+    if (view.modal === 'computer') mac.update(view);
 
     const now = performance.now();
     if (!document.hidden && now - lastMiniDraw >= 200) {
@@ -581,11 +764,15 @@ export function createOpeningUI(
     } else if (view.modal === 'settings' && dialog) {
       const line = dialog.querySelector<HTMLElement>('.opening-modal-save');
       if (line) setText(line, view.saveStatus);
+      const sound=dialog.querySelector<HTMLElement>('.opening-audio-status');
+      if(sound)setText(sound,view.audioStatus??'');
     }
   }
 
   function dispose(): void {
     events.abort();
+    mac.dispose();
+    localAgent.dispose();
     hideDialog();
     modalRoot.remove();
     hud.remove();

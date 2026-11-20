@@ -1,0 +1,42 @@
+{
+  "checks": [
+    {
+      "key": "Space",
+      "closed": true,
+      "leaked": false
+    },
+    {
+      "key": "Escape",
+      "closed": true,
+      "leaked": false
+    },
+    {
+      "key": "Tab",
+      "closed": true,
+      "leaked": false
+    },
+    {
+      "key": "Enter",
+      "closed": true,
+      "leaked": false
+    },
+    {
+      "key": "Shift",
+      "closed": true,
+      "leaked": false
+    },
+    {
+      "key": "1",
+      "closed": true,
+      "leaked": false
+    }
+  ],
+  "heldKeyConsumed": true,
+  "keyWorksAfterRelease": true,
+  "voice": {
+    "count": 2,
+    "shots": 1,
+    "context": "running"
+  },
+  "stoppedShots": 0
+}

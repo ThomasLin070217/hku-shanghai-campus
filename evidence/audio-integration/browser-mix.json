@@ -1,0 +1,58 @@
+{
+  "scope": "Real CampusAudio mix via recordingStream, Opus capture decoded to PCM WAV. Objective signal check; not subjective listening.",
+  "duration": 10.98,
+  "sampleRate": 48000,
+  "channels": 2,
+  "peak": 0.8321541547775269,
+  "rms": 0.12971360470881735,
+  "clipped": 0,
+  "states": [
+    {
+      "event": "pause",
+      "voices": 0
+    },
+    {
+      "event": "resume"
+    }
+  ],
+  "loaded": 48,
+  "total": 48,
+  "failed": [],
+  "voiceCount": 4,
+  "counts": {
+    "sfx_anomaly_low": 1,
+    "sfx_glitch_burst": 1,
+    "sfx_ai_boot": 1,
+    "sfx_disturbance_spread": 1,
+    "step_jump": 1,
+    "step_land": 1,
+    "sfx_veil_descend": 1,
+    "robot_scan": 2,
+    "robot_lockon": 1,
+    "robot_patrol_step": 4,
+    "sfx_veil_seal": 1
+  },
+  "story": {
+    "music": "tension",
+    "loops": [
+      "music:chase",
+      "ambient:amb_dark_hum",
+      "music:tension",
+      "robot:qa-robot:robot_servo_loop"
+    ],
+    "loopStarts": {
+      "music:safe": 1,
+      "ambient:cc0_amb_birds_loop": 1,
+      "ambient:campus-breeze": 1,
+      "music:tension": 2,
+      "ambient:amb_dark_hum": 2,
+      "robot:qa-robot:robot_servo_loop": 2,
+      "music:chase": 2,
+      "robot:qa-robot:robot_chase_loop": 2
+    },
+    "timeline": null,
+    "paused": false,
+    "duckUntil": 9.478666666666667
+  },
+  "stoppedLoops": 0
+}

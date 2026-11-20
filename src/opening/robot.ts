@@ -143,19 +143,29 @@ interface Graph{nodes:GraphNode[];links:number[][];edges:GraphEdge[]}
  * Small waypoint graph around Building 5. Every candidate edge is proven by a real
  * CharacterPhysics walk before it is allowed, so the robot never plans through a wall.
  */
-const graphCache=new WeakMap<Navigation,Graph>();
-function graphFor(world:Navigation):Graph{
- const cached=graphCache.get(world);
+const graphCache=new WeakMap<Navigation,Map<string,Graph>>();
+const routeSignature=(route:readonly (readonly number[])[])=>route.map(p=>`${p[0]},${p[2]}`).join(';');
+const DEFAULT_ROUTE_SIGNATURE=routeSignature(O.patrol);
+function graphFor(world:Navigation,route:readonly (readonly number[])[],approach:readonly (readonly number[])[]=[]):Graph{
+ let bucket=graphCache.get(world);
+ if(!bucket){bucket=new Map();graphCache.set(world,bucket);}
+ const signature=routeSignature(route)+(approach.length?'|approach:'+routeSignature(approach):'');
+ const cached=bucket.get(signature);
  if(cached)return cached;
  const nodes:GraphNode[]=[];
  const add=(x:number,z:number,name:string)=>{
   if(nodes.some(n=>Math.abs(n.x-x)<0.01&&Math.abs(n.z-z)<0.01))return;
   nodes.push({x,z,y:world.support(x,z,C.maxStep)??0,name});
  };
- for(const [x,,z] of O.patrol)add(x,z,'patrol');
- add(O.b5.door,O.b5.z1+2.3,'b5-door-out');
- add(O.b5.door,O.b5.z1-1.9,'b5-door-in');
- add(O.staff[0],O.staff[2],'b5-staff');
+ const isDefault=routeSignature(route)===DEFAULT_ROUTE_SIGNATURE;
+ for(const [x,,z] of route)add(x,z,'patrol');
+ // The inside/outside door nodes only belong to the authored Building 5 ring.
+ if(isDefault){
+  add(O.b5.door,O.b5.z1+2.3,'b5-door-out');
+  add(O.b5.door,O.b5.z1-1.9,'b5-door-in');
+  add(O.staff[0],O.staff[2],'b5-staff');
+ }
+ for(const [x,,z]of approach)add(x,z,'deployment');
  const links:number[][]=nodes.map(()=>[]);
  const edges:GraphEdge[]=[];
  const probe=new CharacterPhysics(world);
@@ -184,22 +194,47 @@ function graphFor(world:Navigation):Graph{
   if(!result.ok)return;
   links[a].push(b);links[b].push(a);
  };
- const ring=O.patrol.map(p=>[p[0],p[2]] as [number,number]);
+ const ring=route.map(p=>[p[0],p[2]] as [number,number]);
  for(let i=0;i<ring.length;i++)pair(ring[i][0],ring[i][1],ring[(i+1)%ring.length][0],ring[(i+1)%ring.length][1]);
- const doorOut=nodes.findIndex(n=>n.name==='b5-door-out');
- const doorIn=nodes.findIndex(n=>n.name==='b5-door-in');
- const staff=nodes.findIndex(n=>n.name==='b5-staff');
- if(doorOut>=0&&doorIn>=0)pair(nodes[doorOut].x,nodes[doorOut].z,nodes[doorIn].x,nodes[doorIn].z);
- // The doorway must work in both directions: link the outside of the door back to the
- // outside patrol points, otherwise the first cycle strands the robot inside the hall.
- if(doorOut>=0)pair(nodes[doorOut].x,nodes[doorOut].z,O.patrol[1][0],O.patrol[1][2]);
- if(doorOut>=0)pair(nodes[doorOut].x,nodes[doorOut].z,O.patrol[0][0],O.patrol[0][2]);
- if(doorIn>=0)pair(nodes[doorIn].x,nodes[doorIn].z,O.patrol[2][0],O.patrol[2][2]);
- if(doorIn>=0&&staff>=0)pair(nodes[doorIn].x,nodes[doorIn].z,nodes[staff].x,nodes[staff].z);
- if(staff>=0)pair(nodes[staff].x,nodes[staff].z,O.patrol[3][0],O.patrol[3][2]);
+ if(isDefault){
+  const doorOut=nodes.findIndex(n=>n.name==='b5-door-out');
+  const doorIn=nodes.findIndex(n=>n.name==='b5-door-in');
+  const staff=nodes.findIndex(n=>n.name==='b5-staff');
+  if(doorOut>=0&&doorIn>=0)pair(nodes[doorOut].x,nodes[doorOut].z,nodes[doorIn].x,nodes[doorIn].z);
+  // The doorway must work in both directions: link the outside of the door back to the
+  // outside patrol points, otherwise the first cycle strands the robot inside the hall.
+  if(doorOut>=0)pair(nodes[doorOut].x,nodes[doorOut].z,O.patrol[1][0],O.patrol[1][2]);
+  if(doorOut>=0)pair(nodes[doorOut].x,nodes[doorOut].z,O.patrol[0][0],O.patrol[0][2]);
+  if(doorIn>=0)pair(nodes[doorIn].x,nodes[doorIn].z,O.patrol[2][0],O.patrol[2][2]);
+  if(doorIn>=0&&staff>=0)pair(nodes[doorIn].x,nodes[doorIn].z,nodes[staff].x,nodes[staff].z);
+  if(staff>=0)pair(nodes[staff].x,nodes[staff].z,O.patrol[3][0],O.patrol[3][2]);
+ }
+ for(let i=0;i<approach.length;i++){const a=approach[i],b=approach[i+1]??route[0];pair(a[0],a[2],b[0],b[2]);}
  const graph:Graph={nodes,links,edges};
- graphCache.set(world,graph);
+ bucket.set(signature,graph);
  return graph;
+}
+
+/** Optional per-instance configuration for the Thomas patrol fleet. */
+export interface OpeningRobotOptions{
+ /** Patrol loop in world metres. Defaults to the authored Building 5 ring `OPENING.patrol`. */
+ route?:readonly (readonly number[])[];
+ /** Index in the route where this unit starts, so a fleet does not spawn stacked. */
+ startIndex?:number;
+ /** Physically traversed, one-time departure from the visible entrance formation. */
+ approach?:readonly (readonly number[])[];
+ initialYaw?:number;
+ /** Opening presentation flag; does not alter the actor API or advance physics. */
+ standby?:()=>boolean;
+ /** Stable fleet id for diagnostics and scene metadata. */
+ id?:string;
+ /** Optional cap for the expensive drawn-sector rebuilds, e.g. 8 for a fleet. */
+ visualHz?:number;
+ /** Fleet balance multipliers; 1 keeps the single-robot acceptance values. */
+ rangeScale?:number;
+ angleScale?:number;
+ confirmScale?:number;
+ speedScale?:number;
 }
 
 export interface OpeningRobot{
@@ -237,8 +272,10 @@ export interface OpeningRobotDiagnostics{
  graphNodes:[number,number,string][];
 }
 
-export function createOpeningRobot(world:Navigation):OpeningRobot{
- const graph=graphFor(world);
+export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions={}):OpeningRobot{
+ const patrolRoute=options.route??O.patrol;
+ const startingIndex=Math.max(0,Math.min(patrolRoute.length-1,Math.round(options.startIndex??0)));
+ const graph=graphFor(world,patrolRoute,options.approach);
  const body=new CharacterPhysics(world);
  const ray=new T.Raycaster();
  const eye=new T.Vector3();
@@ -246,7 +283,7 @@ export function createOpeningRobot(world:Navigation):OpeningRobot{
  const wedgeOrigin=new T.Vector3(),wedgeDirection=new T.Vector3();
 
  // ---------- model: original blocky security unit, ~1.4 m, red eye, visible scan sector ----------
- const root=new T.Group();root.name='opening-security-robot';
+ const root=new T.Group();root.name='opening-security-robot';root.userData={...root.userData,fleetId:options.id??'opening-robot-0'};
  const rig=new T.Group();rig.name='opening-security-robot-rig';root.add(rig);
  const turret=new T.Group();turret.name='opening-security-robot-turret';rig.add(turret);
  const geometries:T.BufferGeometry[]=[];const materials:T.Material[]=[];
@@ -259,10 +296,10 @@ export function createOpeningRobot(world:Navigation):OpeningRobot{
   const g=new T.BoxGeometry(w,h,d);geometries.push(g);
   const m=new T.Mesh(g,mat);m.name=name;m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;
  };
- const shell=material(0x39424a,.74,.24);
+ const shell=material(0x56636c,.62,.26);
  const dark=material(0x1d2328,.9,.1);
- const trim=material(0xb7c1c6,.45,.4);
- const accent=material(0x13714f,.62,.15);
+ const trim=material(0xd3dde1,.38,.45);
+ const accent=material(0x1c8f65,.5,.18,0x0c4f38,.55);
  const eyeMat=material(0x2a0b0b,.35,.1,0xff2b2b,1.4);
  const lampMat=material(0x3a1010,.4,.1,0xff4a30,.9);
  const beamMat=new T.MeshBasicMaterial({color:0xff3b30,transparent:true,opacity:.16,side:T.DoubleSide,depthWrite:false});
@@ -288,12 +325,14 @@ export function createOpeningRobot(world:Navigation):OpeningRobot{
  sectorGeometry.setIndex(sectorIndices);
  geometries.push(sectorGeometry);
  const sector=new T.Mesh(sectorGeometry,beamMat);sector.name='opening-robot-scan-sector';sector.frustumCulled=false;sector.renderOrder=2;root.add(sector);
+ const beaconLight=new T.PointLight(0xff2a1c,1.1,5.5,2);beaconLight.position.set(0,1.12,0);root.add(beaconLight);
 
  // ---------- authoritative state ----------
+ let standby=options.standby?.()??false;
  let state:OpeningRobotState='patrol';
  let caught=false,warning=0,seenTime=0,searchClock=0,scanClock=0;
  let patrolIndex=1,moveYaw=0,scanYaw=0,routeClock=0,progressClock=0,progressBest=Number.POSITIVE_INFINITY;
- let dwell=0,chaseClock=0,visibleNowCache=false;
+ let dwell=0,chaseClock=0,visibleNowCache=false,visualClock=0;
  let routeUsedGraph=false,legStalls=0,legAbandoned=false;
  let route:{x:number;z:number}[]=[];
  const lastSeen=new T.Vector3();
@@ -401,9 +440,9 @@ export function createOpeningRobot(world:Navigation):OpeningRobot{
  const visibleNow=(player:T.Vector3)=>{
   const dx=player.x-body.position.x,dz=player.z-body.position.z;
   const horizontal=Math.hypot(dx,dz);
-  if(horizontal>ROBOT.range||horizontal<0.001)return false;
+  if(horizontal>ROBOT.range*(options.rangeScale??1)||horizontal<0.001)return false;
   const cos=Math.cos(wrap(headingTo(dx,dz)-scanYaw));
-  if(cos<Math.cos(ROBOT.halfAngle))return false;
+  if(cos<Math.cos(ROBOT.halfAngle*(options.angleScale??1)))return false;
   eye.set(body.position.x,body.position.y+ROBOT.eyeHeight,body.position.z);
   scratch.set(player.x,player.y+ROBOT.chestHeight,player.z);
   return openingRobotLineClear(world,eye,scratch);
@@ -416,12 +455,12 @@ export function createOpeningRobot(world:Navigation):OpeningRobot{
  };
 
  const poseInitial=()=>{
-  const [px,,pz]=O.patrol[0];
+  const [px,,pz]=options.approach?.[0]??patrolRoute[startingIndex];
   body.position.set(px,world.support(px,pz,C.maxStep)??0,pz);
   body.velocity.set(0,0,0);body.grounded=true;body.contacts=[];
-  patrolIndex=1%O.patrol.length;
-  const next=O.patrol[patrolIndex];
-  moveYaw=scanYaw=headingTo(next[0]-px,next[2]-pz);
+  patrolIndex=options.approach?.length?startingIndex:(startingIndex+1)%patrolRoute.length;
+  const next=patrolRoute[patrolIndex];
+  moveYaw=scanYaw=options.initialYaw??headingTo(next[0]-px,next[2]-pz);
   progressAnchor.copy(body.position);
  progressBest=Number.POSITIVE_INFINITY;progressClock=0;legStalls=0;routeUsedGraph=false;
  };
@@ -455,11 +494,20 @@ export function createOpeningRobot(world:Navigation):OpeningRobot{
   beamMat.opacity=state==='patrol'?.12:state==='scanning'?.18:state==='search'?.16:.26;
   const pulse=dt>0?Math.sin(scanClock*(state==='chase'||state==='caught'?9:2.2)):0;
   eyeMat.emissiveIntensity=(state==='chase'||state==='caught'?2.2:state==='search'?1.7:1.1)+pulse*0.3;
+  beaconLight.intensity=(state==='patrol'?.75:.95)+.35*(0.5+0.5*Math.sin(scanClock*3.1));
   lampMat.emissiveIntensity=(state==='caught'?2.4:.9)+pulse*0.4;
-  // The wedge is rebuilt every frame. Refreshing it on a slower timer left it stale
-  // relative to the body, and a cone that lags behind the robot can be drawn through a
-  // wall it can no longer see past.
-  updateSector();
+  sector.visible=!standby;
+  eyeMat.emissive.setHex(standby?0x35bf98:0xff2b2b);eyeMat.color.setHex(standby?0x163e32:0x2a0b0b);
+  lampMat.emissive.setHex(standby?0x35bf98:0xff4a30);lampMat.color.setHex(standby?0x163e32:0x3a1010);
+  beaconLight.color.setHex(standby?0x35bf98:0xff2a1c);
+  if(standby){eyeMat.emissiveIntensity=.6;lampMat.emissiveIntensity=.45;beaconLight.intensity=.18;return;}
+  // A single robot rebuilds the wedge every frame. A fleet caps the expensive sector
+  // probes (opts.visualHz) while the detection rays keep running at full physics rate.
+  if(!options.visualHz||dt<=0){updateSector();}
+  else{
+   visualClock+=dt;
+   if(visualClock>=1/options.visualHz){visualClock=0;updateSector();}
+  }
  };
  publish(0);
 
@@ -467,7 +515,7 @@ export function createOpeningRobot(world:Navigation):OpeningRobot{
 
  const nextPatrolIndex=()=>{
   let best=0,bestD=Number.POSITIVE_INFINITY;
-  for(let i=0;i<O.patrol.length;i++){const d=Math.hypot(O.patrol[i][0]-body.position.x,O.patrol[i][2]-body.position.z);if(d<bestD){bestD=d;best=i;}}
+  for(let i=0;i<patrolRoute.length;i++){const d=Math.hypot(patrolRoute[i][0]-body.position.x,patrolRoute[i][2]-body.position.z);if(d<bestD){bestD=d;best=i;}}
   return best;
  };
 
@@ -482,7 +530,7 @@ export function createOpeningRobot(world:Navigation):OpeningRobot{
 
   if(state==='patrol'||state==='scanning'){
    // A visible target only becomes a chase after the confirm window; being seen is never a failure.
-   if(seen&&seenTime>=ROBOT.confirm){
+   if(seen&&seenTime>=ROBOT.confirm*(options.confirmScale??1)){
     state='chase';chaseClock=0;route=[];routeClock=0;progressBest=Number.POSITIVE_INFINITY;progressClock=0;searchClock=0;routeUsedGraph=false;legStalls=0;legAbandoned=false;
    }else if(seen&&state==='patrol')state='scanning';
    else if(!seen&&state==='scanning')state='patrol';
@@ -503,9 +551,9 @@ export function createOpeningRobot(world:Navigation):OpeningRobot{
      body.step(dt,{forward:0,right:0,sprint:false},moveYaw,false);
     }else{
      scanYaw=turnToward(scanYaw,moveYaw+Math.sin(scanClock*ROBOT.sweepRate)*ROBOT.sweep,ROBOT.turnRate*dt);
-     const [tx,,tz]=O.patrol[patrolIndex];
+     const [tx,,tz]=patrolRoute[patrolIndex];
      if(following(tx,tz,ROBOT.patrolReach,ROBOT.patrolSpeed,dt)){
-      patrolIndex=(patrolIndex+1)%O.patrol.length;route=[];routeClock=0;dwell=ROBOT.patrolDwell;
+      patrolIndex=(patrolIndex+1)%patrolRoute.length;route=[];routeClock=0;dwell=ROBOT.patrolDwell;
      }
     }
     warning=state==='scanning'?0.15+0.35*Math.min(1,seenTime/ROBOT.confirm):0;
@@ -513,7 +561,7 @@ export function createOpeningRobot(world:Navigation):OpeningRobot{
    }
    case 'chase':{
     const goalX=seen?player.x:lastSeen.x,goalZ=seen?player.z:lastSeen.z;
-    following(goalX,goalZ,ROBOT.reach,ROBOT.chaseSpeed,dt);
+    following(goalX,goalZ,ROBOT.reach,ROBOT.chaseSpeed*(options.speedScale??1),dt);
     // A goal it cannot physically reach is treated as lost sight, never ground into the wall.
     if(legAbandoned){state='search';searchClock=0;route=[];routeClock=0;}
     scanYaw=turnToward(scanYaw,headingTo(goalX-body.position.x,goalZ-body.position.z),ROBOT.turnRate*dt);
@@ -524,12 +572,12 @@ export function createOpeningRobot(world:Navigation):OpeningRobot{
     break;
    }
    case 'search':{
-    if(seen&&seenTime>=ROBOT.confirm){
+    if(seen&&seenTime>=ROBOT.confirm*(options.confirmScale??1)){
      state='chase';chaseClock=0;route=[];routeClock=0;
     }else{
      if(hasLastSeen){
       // Walk to the last visible position, then look around for searchSeconds.
-      if(following(lastSeen.x,lastSeen.z,ROBOT.patrolReach,ROBOT.searchSpeed,dt))searchClock+=dt;
+      if(following(lastSeen.x,lastSeen.z,ROBOT.patrolReach,ROBOT.searchSpeed*(options.speedScale??1),dt))searchClock+=dt;
      }else searchClock+=dt;
      scanYaw=wrap(scanYaw+ROBOT.spinRate*dt);
      warning=0.4;
@@ -549,7 +597,7 @@ export function createOpeningRobot(world:Navigation):OpeningRobot{
   caught=false;state='patrol';warning=0;seenTime=0;searchClock=0;scanClock=0;chaseClock=0;
   hasLastSeen=false;lastSeen.set(0,0,0);visibleNowCache=false;
   route=[];routeClock=0;progressBest=Number.POSITIVE_INFINITY;progressClock=0;dwell=0;
-  routeUsedGraph=false;legStalls=0;legAbandoned=false;
+  routeUsedGraph=false;legStalls=0;legAbandoned=false;visualClock=0;
   poseInitial();
   publish(0);
  }
@@ -563,6 +611,7 @@ export function createOpeningRobot(world:Navigation):OpeningRobot{
    * paused=true or dt<=0 -> read only: same state, warning and timers, no movement, no lastSeen change.
    */
   update(dt:number,player:T.Vector3,active:boolean,paused:boolean):OpeningRobotUpdate{
+   const quiet=options.standby?.()??false;if(quiet!==standby){standby=quiet;publish(0);}
    root.visible=active;
    if(!active||paused||!(dt>0))return snapshot();
    advance(dt,player);

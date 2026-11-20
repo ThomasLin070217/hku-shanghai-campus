@@ -5,11 +5,11 @@ import {CLUE_IDS} from './landmarks';
 import type {SurveyProgress} from './survey';
 import {NOV13} from '../model/nov13Parameters';
 export const SAVE_KEY='hku.digital-survey.v1';
-export const DEFAULT_SETTINGS={sensitivity:.0022,fov:72,bob:false,muted:false,ambient:.20,steps:.60,ui:.45,music:0};
+export const DEFAULT_SETTINGS={sensitivity:.0022,fov:72,bob:false,muted:false,ambient:.20,steps:.60,ui:.45,music:0,sfx:.6};
 export type Settings=typeof DEFAULT_SETTINGS;
 export interface SaveData {version:1;worldRevision:string;savedAt:number;position:number[];yaw:number;pitch:number;view:'first'|'third';slots:(ItemStack|null)[];selectedHotbar:number;survey:SurveyProgress;settings:Settings}
 const finite=(x:unknown):x is number=>typeof x==='number'&&Number.isFinite(x);
-export function readSettings(raw:unknown):Settings{const r=raw&&typeof raw==='object'?raw as Record<string,unknown>:{};const s={...DEFAULT_SETTINGS};for(const [k,lo,hi]of [['sensitivity',.0004,.006],['fov',60,90],['ambient',0,1],['steps',0,1],['ui',0,1],['music',0,1]]as const)if(finite(r[k]))s[k]=Math.min(hi,Math.max(lo,r[k] as number));for(const k of ['bob','muted']as const)if(typeof r[k]==='boolean')s[k]=r[k] as boolean;return s;}
+export function readSettings(raw:unknown):Settings{const r=raw&&typeof raw==='object'?raw as Record<string,unknown>:{};const s={...DEFAULT_SETTINGS};for(const [k,lo,hi]of [['sensitivity',.0004,.006],['fov',60,90],['ambient',0,1],['steps',0,1],['ui',0,1],['music',0,1],['sfx',0,1]]as const)if(finite(r[k]))s[k]=Math.min(hi,Math.max(lo,r[k] as number));for(const k of ['bob','muted']as const)if(typeof r[k]==='boolean')s[k]=r[k] as boolean;return s;}
 export function parseSave(raw:unknown):SaveData|null{
  if(!raw||typeof raw!=='object')return null;const r=raw as SaveData;
  if(r.version!==1||!Array.isArray(r.slots)||r.slots.length!==36||!r.survey||!Array.isArray(r.survey.collected)||!Array.isArray(r.survey.discovered))return null;

@@ -1,0 +1,15 @@
+{
+  "preview": {
+    "music": 0.2,
+    "count": 1,
+    "paused": true
+  },
+  "mute": {
+    "muted": true,
+    "masterGain": 0
+  },
+  "restored": {
+    "music": 0,
+    "muted": false
+  }
+}

@@ -1,0 +1,3 @@
+Opening-only audio replacements. Original deterministic paper/cloth/impact foley and softened variants of the existing campus footsteps; generation: scripts/audio/refine-opening-foley.py. Staff voice: locally rendered macOS Daniel English synthesis, 165 wpm, mono WAV, normalized to -19 LUFS / -3 dB true peak. Synthetic-voice notice is present in the dialogue UI. No remote upload, voice cloning, or runtime TTS dependency. Full text and validation: evidence/opening-horizontal/README.md.
+
+Player acceptance reply: "Yeah, I will collect it." Local Samantha English synthesis, 175 wpm, 1.53 s, same normalization. Triggered only when accepting the B5 errand.

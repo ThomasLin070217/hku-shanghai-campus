@@ -1,0 +1,12 @@
+{
+  "stage": "to_b6",
+  "modal": null,
+  "replyCount": 1,
+  "activeShots": 1,
+  "context": "running",
+  "events": [
+    "invitation_read",
+    "opening.bus_exited",
+    "opening.laptop_requested"
+  ]
+}

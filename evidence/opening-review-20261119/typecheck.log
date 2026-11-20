@@ -1,0 +1,3 @@
+
+> hku-shanghai-whole-campus@9.0.0 typecheck
+> tsc --noEmit
