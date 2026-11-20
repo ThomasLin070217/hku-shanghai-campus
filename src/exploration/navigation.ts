@@ -7,11 +7,12 @@ import * as T from 'three';
 import {COLUMN_X,CALIBRATED_LAYOUT as CL} from '../model/scaleCalibration';
 
 import {LION,lionBodySize} from '../model/lionParameters';
+import {SPORTS_DOOR,SPORTS_HALL} from '../model/sportsDoor';
 import {NOV13 as N} from '../model/nov13Parameters';
 import {VIDEO_DETAILS as V} from '../model/videoDetailsParameters';
 import type {BuildingSpec,SiteParameters} from '../model/campusParameters';
 import {EXPLORATION as C,LANDSCAPE as L} from './config';
-export interface Obstacle {name:string;x:number;z:number;w:number;d:number;bottom:number;top:number;angle:number;radius?:number}
+export interface Obstacle {name:string;x:number;z:number;w:number;d:number;bottom:number;top:number;angle:number;radius?:number;open?:boolean}
 /** Stable cylinder against oriented boxes. No render-mesh ownership; works after geometry merging. */
 export function createNavigation(specs:BuildingSpec[],s:SiteParameters){
  const obstacles:Obstacle[]=[];
@@ -48,7 +49,15 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters){
  for(const x of [-18])for(const z of [-25,-12])circle('tree',x,z,.23,3.8);
  for(const z of [-94,-27,92])for(const x of [-COLUMN_X,COLUMN_X])box('planting-bed',x,z,55,3.5,.5);
  box('HKU-lawn-letters',LAWN_SIGN.x,LAWN_SIGN.z+LAWN_SIGN.depth/2,LAWN_SIZE.x,LAWN_SIZE.z,LAWN_SIGN.bottom+LAWN_SIZE.y,LAWN_SIGN.bottom);
- box('sports-hall-closed',-68,s.sportsZ,39,26,10.5);
+ const hx=SPORTS_HALL.x,hz=s.sportsZ,hw=SPORTS_HALL.width,hd=SPORTS_HALL.depth,hh=SPORTS_HALL.wallHeight;
+ // Walled, not one solid block: the fictional east door needs a real opening to walk through.
+ box('sports-hall-west',hx-SPORTS_HALL.eastX,hz,.18,hd,hh);
+ box('sports-hall-north',hx,hz-hd/2,hw,.18,hh);box('sports-hall-south',hx,hz+hd/2,hw,.18,hh);
+ const eastOffset=(hd+SPORTS_DOOR.width)/4,eastSegment=(hd-SPORTS_DOOR.width)/2;
+ for(const dz of [-eastOffset,eastOffset])box('sports-hall-east',hx+SPORTS_HALL.eastX,hz+dz,.18,eastSegment,hh);
+ box('sports-hall-lintel',hx+SPORTS_HALL.eastX,hz,.18,SPORTS_DOOR.width,hh,SPORTS_DOOR.height);
+ box(SPORTS_DOOR.id,hx+SPORTS_HALL.eastX,hz,.18,SPORTS_DOOR.width,SPORTS_DOOR.height);
+ box('sports-hall-roof',hx,hz,hw,hd,SPORTS_HALL.ridge,hh);
  for(const [x,w]of [[-5,44],[53,51]])for(const side of [-1,1])box('court-fence',x,s.sportsZ+side*13,w,.12,4);
  for(const x of [-15.5,5.5])box('tennis-net',x,s.sportsZ,19,.1,1.3);
  // Continuous top rim, with openings only at the two observed curved stair landings.
@@ -101,6 +110,7 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters){
   if(Math.abs(x)<15&&z>=-52.7&&z< -51.4)h=5.1;
   if(Math.abs(x)<14&&z>53&&z<93)h=Math.max(h,.13);if(Math.abs(x)>2&&Math.abs(x)<13&&z> -24.5&&z<.5)h=Math.max(h,.09);
   if(Math.abs(x)<s.sportsWidth/2&&Math.abs(z-s.sportsZ)<s.sportsDepth/2)h=.14;
+  if(Math.abs(x-SPORTS_HALL.x)<SPORTS_HALL.width/2-.09&&Math.abs(z-s.sportsZ)<SPORTS_HALL.depth/2-.09)h=Math.max(h,SPORTS_HALL.floorTop);
   if(((x>27.5&&x<78.5)||(x> -27&&x<17))&&Math.abs(z-s.sportsZ)<12.5)h=.19;
   if(promenades.some(r=>contains(r,x,z)))h=Math.max(h,V.pathHeight);
   const mx=Math.cos(mon.rotation)*(x-mon.x)-Math.sin(mon.rotation)*(z-mon.z),mz=Math.sin(mon.rotation)*(x-mon.x)+Math.cos(mon.rotation)*(z-mon.z);
@@ -118,6 +128,7 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters){
   return h;
  }
  function overlaps(o:Obstacle,x:number,z:number,r=C.radius){
+  if(o.open)return false;
   const dx=x-o.x,dz=z-o.z;if(o.radius)return dx*dx+dz*dz<(o.radius+r)**2;
   const co=Math.cos(o.angle),si=Math.sin(o.angle),lx=co*dx-si*dz,lz=si*dx+co*dz;
   return Math.max(Math.abs(lx)-o.w/2,0)**2+Math.max(Math.abs(lz)-o.d/2,0)**2<r*r;
@@ -134,6 +145,8 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters){
   for(let i=0;i<n;i++){const x=position.x+dx/n,z=position.z+dz/n;if(!valid(x,z)){valid(x,position.z);valid(position.x,z);}}
  }
  function surface(x:number,z:number,y:number):'grass'|'paving'{return (Math.abs(x)<14&&z>53&&z<93&&Math.abs(y-.13)<.12)||(Math.abs(x)>2&&Math.abs(x)<13&&z> -24.5&&z<.5&&Math.abs(y-.09)<.1)?'grass':'paving';}
- return{surface,obstacles,meshes,support,blocked,contacts,overlaps,step,dispose(){meshes.forEach(m=>{m.geometry.dispose();(m.material as T.Material).dispose();});}};
+ function setDoorOpen(name:string,open:boolean){for(const o of obstacles)if(o.name===name)o.open=open;}
+ function doorOpen(name:string){return obstacles.some(o=>o.name===name&&o.open===true);}
+ return{surface,obstacles,meshes,support,blocked,contacts,overlaps,step,setDoorOpen,doorOpen,dispose(){meshes.forEach(m=>{m.geometry.dispose();(m.material as T.Material).dispose();});}};
 }
 export type Navigation=ReturnType<typeof createNavigation>;

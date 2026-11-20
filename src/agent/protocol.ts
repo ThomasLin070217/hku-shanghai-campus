@@ -13,7 +13,7 @@ export interface Observation {
  player:{id:'PLAYER';position:number[];velocity:number[];yawDeg:number;pitchDeg:number;grounded:boolean};
  world:{units:'metres';revision:string;scaleCalibration?:{id:string;horizontalStatus:string;verticalStatus:string;source:string}};
  inventory:import('../items/inventory').InventorySnapshot & {open:boolean};
- survey:ReturnType<import('../gameplay/survey').Survey['snapshot']>;panel:'computer'|'settings'|null;
+ survey:ReturnType<import('../gameplay/survey').Survey['snapshot']>;panel:'computer'|'settings'|'door'|null;
  view:ViewMode;landmarks:{id:string;name:string;relativePosition:number[];position:number[];distance:number}[];
  lastCommand:CommandRecord|null;collisions:{type:string;id:string}[];
 }

@@ -12,9 +12,11 @@ import {PROTOCOL_VERSION,validateAction,type Action,type Observation,type Comman
 const idle=():Intent=>({forward:0,right:0,sprint:false});
 /** Authoritative state + input arbiter. RPCs never advance simulation. */
 export class CampusGame {
- inventory=new Inventory();inventoryOpen=false;panel:'computer'|'settings'|null=null;survey:Survey;
+ inventory=new Inventory();inventoryOpen=false;panel:'computer'|'settings'|'door'|null=null;survey:Survey;
  body:CharacterPhysics;frame=0;timeMs=0;yaw=0;pitch=0;view:ViewMode='first';paused=true;
  epoch=Date.now();armed=false;owner:string|null=null;human=idle();humanJump=false;
+ /** Game-play door states by stable door id; the model and navigation stay source-authored. */
+ doors:Record<string,boolean>={};
  records=new Map<string,CommandRecord>();last:CommandRecord|null=null;active:{action:Action;record:CommandRecord;consumed:boolean}|null=null;
  constructor(world:Navigation,public buildings:BuildingSpec[],public site:SiteParameters=SITE){this.body=new CharacterPhysics(world);this.survey=new Survey(this);this.spawn();}
  /** Keep command history/epoch/clock across geometry rebuilds; revoke authority first. */
@@ -26,7 +28,7 @@ export class CampusGame {
  selectHotbar(index:number){return this.inventory.select(index);}
  openInventory(){this.pause('inventory_open');this.inventoryOpen=true;this.body.velocity.set(0,0,0);}
  closeInventory(){this.inventoryOpen=false;this.paused=true;}
- openPanel(panel:'computer'|'settings'){this.pause(panel+'_open');this.panel=panel;this.inventoryOpen=false;this.body.velocity.set(0,0,0);}
+ openPanel(panel:'computer'|'settings'|'door'){this.pause(panel+'_open');this.panel=panel;this.inventoryOpen=false;this.body.velocity.set(0,0,0);}
  closePanel(){this.panel=null;this.paused=true;}
  enableAI(){if(this.inventoryOpen||this.panel)return;this.takeover('user_enabled_ai');this.armed=true;this.paused=false;}
  acquireControl(agentId:string){if(this.paused||!this.armed)return{ok:false,error:'ai_not_enabled'};if(this.owner)return{ok:false,error:'control_busy'};this.owner=agentId;this.epoch++;return{ok:true,controlEpoch:this.epoch,protocolVersion:PROTOCOL_VERSION};}

@@ -1,0 +1,34 @@
+{
+  "schemaStatus": "draft-awaiting-runtime-schema",
+  "schemaVersion": 1,
+  "id": "puzzle.sports-hall-lock",
+  "doorId": "sports-east-door",
+  "type": "sudoku",
+  "title": "门禁数独",
+  "size": 9,
+  "rows": [
+    "*95463782",
+    "782195463",
+    "4637821*5",
+    "376218549",
+    "549376218",
+    "218549376",
+    "627851934",
+    "85*934627",
+    "93462785*"
+  ],
+  "blankOrder": "row-major",
+  "answer": "1911",
+  "lead": "门禁要求补全 4 个空格。按从上到下、从左到右的顺序读出这 4 个数字，就是 4 位密码。",
+  "hint": "每个空格所在的这一行、这一列和 3×3 宫，都只剩一个数字没有出现。",
+  "failure": "密码不正确。四个空格会保留，可以直接再试一次。",
+  "success": "数独校验通过，门禁进入密码校验。",
+  "password": {
+    "length": 4,
+    "answer": "1911",
+    "lead": "数独校验通过。门禁还有第二道锁：4 位数字密码。",
+    "hint": "HKU 建校时间",
+    "failure": "密码错误。请再试一次。",
+    "success": "密码正确，门禁锁已解除。"
+  }
+}
