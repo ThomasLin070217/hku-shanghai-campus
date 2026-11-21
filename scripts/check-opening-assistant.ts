@@ -23,27 +23,27 @@ assert.equal(ASSISTANT_DEFAULT_ENDPOINT, 'http://127.0.0.1:8790/api/chat', 'the 
 assert.equal(ASSISTANT_DEFAULT_MODEL, 'deepseek-flash', 'default model label matches the DeepSeek deployment');
 
 const prompt = personaPrompt();
-assert.match(prompt, /You are 岚 \(LAN/, 'the model is told who it is');
+assert.match(prompt, /You are LAN, core LAN-4\.2/, 'the model is told who it is');
 assert.match(prompt, /2030/, 'the year and setting are part of the character');
 assert.match(prompt, /five short sentences/, 'answer-length rule is part of the built-in settings');
 assert.match(prompt, /cannot move the player/, 'capability boundaries are explicit');
 assert.match(prompt, /Building 4/, 'the emergency route fact is present');
 assert.ok(!/sk-[A-Za-z0-9_-]{8,}/.test(prompt), 'no credential-looking string in the prompt');
 
-assert.match(personaIdentity(true), /岚/);
-assert.match(personaIdentity(true), /不能移动你/);
+assert.match(personaIdentity(true), /LAN/);
+assert.match(personaIdentity(true), /cannot move you/);
 assert.match(personaIdentity(false), /LAN/);
 assert.match(personaIdentity(false), /cannot move you/);
 
 for (const [state, expected] of [
-  [{laptopAcquired: false, curtainDeployed: false, alertTriggered: false, alertRead: false}, /岚/],
-  [{laptopAcquired: true, curtainDeployed: false, alertTriggered: false, alertRead: false}, /岚/],
+  [{laptopAcquired: false, curtainDeployed: false, alertTriggered: false, alertRead: false}, /LAN/],
+  [{laptopAcquired: true, curtainDeployed: false, alertTriggered: false, alertRead: false}, /LAN/],
   [{laptopAcquired: true, curtainDeployed: true, alertTriggered: false, alertRead: false}, /curtain/],
   [{laptopAcquired: true, curtainDeployed: true, alertTriggered: true, alertRead: true}, /Building 4/],
 ] as const) assert.match(personaGreeting(state), expected, 'greetings stay in character for every stage');
 
-assert.match(personaGreeting({laptopAcquired: true, curtainDeployed: true, alertTriggered: true, alertRead: true}, true), /我是岚/, 'Chinese browsers get a Chinese greeting');
-assert.match(personaGreeting({laptopAcquired: true, curtainDeployed: true, alertTriggered: true, alertRead: true}, true), /4 号楼/);
+assert.match(personaGreeting({laptopAcquired: true, curtainDeployed: true, alertTriggered: true, alertRead: true}, true), /I'm LAN/, 'the greeting is in character');
+assert.match(personaGreeting({laptopAcquired: true, curtainDeployed: true, alertTriggered: true, alertRead: true}, true), /Building 4/);
 
 // A live incident state: laptop in the pack, alert read, curtain down.
 const story = {...createOpeningState(), stage: 'incident', laptop_acquired: true, campus_alert_triggered: true, alert_read: true};
@@ -71,7 +71,7 @@ const answer = await agent.ask('你是谁？', ctx);
 assert.equal(answer.source, 'local-model', 'a reachable bridge is used');
 assert.equal(answer.text, '我在，先往 4 号楼走。');
 assert.equal(prompts.length, 1);
-assert.match(prompts[0], /You are 岚 \(LAN/, 'persona reaches the model');
+assert.match(prompts[0], /You are LAN, core LAN-4\.2/, 'persona reaches the model');
 assert.match(prompts[0], /Story stage: incident/, 'live story state is appended');
 assert.match(prompts[0], /Hearts: 8\/10/, 'live hearts are appended');
 assert.equal(agent.status().mode, 'local-model');
@@ -91,7 +91,7 @@ const started = performance.now();
 const fallback = await offline.ask('你是谁？', ctx);
 const elapsed = performance.now() - started;
 assert.equal(fallback.source, 'builtin', 'no bridge means the built-in core answers');
-assert.match(fallback.text, /岚/, 'the fallback still knows who it is');
+assert.match(fallback.text, /LAN/, 'the fallback still knows who it is');
 assert.match(fallback.text, /不能移动你|cannot move you/);
 assert.ok(elapsed < 1000, `a dead bridge must not hang for the request timeout (took ${Math.round(elapsed)}ms)`);
 
