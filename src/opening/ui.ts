@@ -280,16 +280,24 @@ export function createOpeningUI(
     return shell;
   }
 
-  function staffDialog(): HTMLElement {
+  function staffDialog(view: OpeningView): HTMLElement {
     const shell = dialogShell('staff');
+    shell.dataset.voiceLine = 'true';
     shell.append(head(T.staff.eyebrow, T.staff.title, true));
     const body = node('div', 'opening-dialog-body opening-dialogue');
+    const line1 = node('p', 'opening-line', T.staff.line1);
+    const line2 = node('p', 'opening-line', T.staff.line2);
+    const line3 = node('p', 'opening-line opening-muted', T.staff.line3);
+    [line1, line2, line3].forEach((line, index) => {
+      line.dataset.lineIndex = String(index);
+      if (view.voiceLine === index) line.classList.add('is-speaking');
+    });
     body.append(
       node('p', 'opening-speaker', T.staff.speaker),
-      node('p', 'opening-line', T.staff.line1),
-      node('p', 'opening-line', T.staff.line2),
-      node('p', 'opening-muted', T.staff.line3),
-      node('p', 'opening-muted', 'English voice · synthesized'),
+      line1,
+      line2,
+      line3,
+      node('p', 'opening-muted', T.staff.voiceCredit),
       makeButton('Replay voice', 'secondary', () => actions.action('replay_voice')),
     );
     shell.append(body);
@@ -598,7 +606,7 @@ export function createOpeningUI(
     const next = view.modal === 'invitation'
       ? invitationDialog(view)
       : view.modal === 'staff'
-        ? staffDialog()
+        ? staffDialog(view)
         : view.modal === 'alert'
           ? alertDialog()
           : view.modal === 'computer'
@@ -741,6 +749,12 @@ export function createOpeningUI(
     const danger = clamp(Number(view.robotWarning) || 0, 0, 1);
     dangerVignette.style.opacity = String(view.runtime.curtain_deployed ? Math.min(.72, .10 + danger * .62) : 0);
     updateCinema(view);
+    if (view.modal === 'staff' && dialog) {
+      const index = view.voiceLine ?? -1;
+      dialog.querySelectorAll<HTMLElement>('[data-line-index]').forEach((line) => {
+        line.classList.toggle('is-speaking', Number(line.dataset.lineIndex) === index);
+      });
+    }
 
     const now = performance.now();
     if (!document.hidden && now - lastMiniDraw >= 200) {

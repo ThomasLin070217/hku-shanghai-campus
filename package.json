@@ -22,10 +22,11 @@
     "check:transport": "node scripts/check-agent-transport.mjs",
     "ai:atlas": "tsx scripts/atlas-campus.ts",
     "llm": "node scripts/llm.mjs",
+    "check:llm": "node scripts/check-llm-client.mjs",
     "check:v8": "tsx scripts/check-v8.ts",
     "check:nov13": "tsx scripts/check-nov13.ts",
     "export:v8": "tsx scripts/export-v8.ts",
-    "check:all": "npm run check:exploration && npm run check:v4 && npm run check:video && npm run check:v8 && npm run check:nov13 && npm run check:scale && npm run check:glass && npm run check:survey && npm run check:experience && npm run check:nov14 && npm run check:review && npm run check:audio-review && npm run check:remaining && npm run check:sign-roads && npm run check:scene && npm run check:agent-tools && npm run check:ai-runtime && npm run check:video-followup && npm run check:door && npm run build",
+    "check:all": "npm run check:exploration && npm run check:v4 && npm run check:video && npm run check:v8 && npm run check:nov13 && npm run check:scale && npm run check:glass && npm run check:survey && npm run check:experience && npm run check:nov14 && npm run check:review && npm run check:audio-review && npm run check:remaining && npm run check:sign-roads && npm run check:scene && npm run check:agent-tools && npm run check:ai-runtime && npm run check:llm && npm run check:video-followup && npm run check:door && npm run check:voice && npm run build",
     "check:scale": "tsx scripts/check-scale-calibration.ts",
     "check:glass": "tsx scripts/check-glass.ts",
     "check:survey": "tsx scripts/check-survey.ts",
@@ -51,7 +52,8 @@
     "scene:opening": "tsx scripts/scene-catalog.ts --opening",
     "check:opening": "tsx scripts/check-opening-state.ts && tsx scripts/check-opening-robot.ts && tsx scripts/check-opening-fleet.ts && tsx scripts/check-opening-runtime.ts && tsx scripts/check-opening-atmosphere.ts && tsx scripts/check-opening-world.ts && tsx scripts/check-opening-integration.ts && tsx scripts/check-opening-reference.ts && tsx scripts/check-opening-npcs.ts",
     "check:lion-boss": "tsx scripts/check-lion-boss.ts",
-    "check:door": "tsx scripts/check-sports-door.ts"
+    "check:door": "tsx scripts/check-sports-door.ts",
+    "check:voice": "tsx scripts/check-voice-profiles.ts"
   },
   "dependencies": {
     "@sparkjsdev/spark": "2.4.0",

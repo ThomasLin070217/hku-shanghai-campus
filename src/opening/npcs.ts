@@ -31,7 +31,7 @@ export function createOpeningNPCs(){
   staffTarget=null;
   actors.forEach((actor,index)=>{actor.root.position.fromArray([...OPENING_CAST[index].position]);actor.root.rotation.y=OPENING_CAST[index].yaw;});
  };
- return{root,startStaffTalk,reset,update(dt:number,incident:boolean,paused:boolean,player:T.Vector3){
+ return{root,startStaffTalk,staffPosition:()=>new T.Vector3(staff.root.position.x,staff.root.position.y+1.55,staff.root.position.z),staffRootPosition:()=>staff.root.position,reset,update(dt:number,incident:boolean,paused:boolean,player:T.Vector3){
   root.visible=!incident;if(incident||paused||dt<=0)return;
   for(const actor of actors){
    if(actor===staff&&staffTarget){

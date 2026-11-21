@@ -8,6 +8,10 @@
 
 **场景编号与 AI 接手：** 右上角“场景编号”可搜索、点选细部、定位和复制修改任务。楼栋 B01–B07、道路 R001…、学院牌 S001。团队及 Agent 先读 [AI 最短接手指南](docs/AI-START.md)，工程约定见 [AGENTS.md](AGENTS.md)。支持离线源码索引、HTTP 与 MCP。
 
+**LLM 端点（2026-11-21）：** `npm run llm` 现同时支持 Gemini 直连（`GEMINI_API_KEY`）与 LiteLLM 代理，可用 `--provider` 或 `LLM_PROVIDER` 选择；密钥只存本地 `.env`，不提交、不回显。当前网络位置被 Google 判定为不支持（密钥本身有效），需在支持区域网络或自建网关下调用。说明见 [LLM 端点](docs/LLM-ENDPOINT.md)，离线校验 `npm run check:llm`。
+
+**NPC 英文配音（2026-11-21）：** 第一幕 Building 5 的 Staff 已使用 DaVinci AI / ElevenLabs TTS V3 生成英文配音；本轮只用账号免费的 1 次 Audio 额度，没有付费、升级或声音克隆。声音、字幕、接受回应和“回来问电脑”的重复句已接入固定剧情。平台额度、生成记录、台词对照、Five Voice Profile 和未完成的 Michael / Ruibang / Lam 计划见 [配音报告](docs/voice/DAVINCI-VOICE-REPORT.md) · [Voice Profiles](docs/voice/PROFILES.md) · [台词对照](docs/voice/STAFF-DIALOGUE-DIFF.md)。
+
 **11 月 16 日照片更新：** 学院石牌夜间侧灯、CDS-1 正门错排地灯与门厅细节已更新。室内预览补了键盘墙前的弧形沙发、进门走廊和环形屏公共区。[照片与建模说明](references/campus-media/UPDATE-20261116.md)。
 
 **校园实拍素材库：** [原片、原图和关键帧索引](references/campus-media/index.html) · [下一轮补拍清单](references/campus-media/CAPTURE.md)。

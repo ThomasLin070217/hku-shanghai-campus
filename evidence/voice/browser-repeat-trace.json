@@ -1,0 +1,49 @@
+{
+  "generated": "2026-11-21T06:43:17.527Z",
+  "recording": {
+    "webmUrl": "blob:http://127.0.0.1:5184/4ec40764-6172-4975-ba16-ae108b0547a7",
+    "wavUrl": "blob:http://127.0.0.1:5184/6d765456-c138-4cc7-a3b6-28d5f1460090",
+    "duration": 3
+  },
+  "before": {
+    "result": {
+      "ok": true,
+      "code": "dialogue_repeat",
+      "message": "Dinner coordinator."
+    },
+    "state": {
+      "story": {
+        "schemaVersion": 1,
+        "stage": "to_b6",
+        "invitation_read": true,
+        "laptop_acquired": false,
+        "campus_alert_triggered": false,
+        "alert_read": false,
+        "events": [
+          "invitation_read",
+          "opening.bus_exited",
+          "opening.laptop_requested"
+        ],
+        "elapsedSeconds": 28.93333333333233
+      },
+      "runtime": {
+        "schemaVersion": 1,
+        "hearts": 10,
+        "maxHearts": 10,
+        "catches": 0,
+        "curtain_deployed": false,
+        "robot_chase_started": false,
+        "agent_chat_unlocked": false,
+        "go_to_building4_objective_unlocked": false,
+        "staff_task_received": true
+      },
+      "modal": null,
+      "staffTalkStarted": true,
+      "staffTalkDone": true,
+      "staffTalkLine": 2,
+      "staffVoiceStarted": true,
+      "acceptVoicePlayed": true,
+      "repeatVoiceBusy": true
+    }
+  }
+}

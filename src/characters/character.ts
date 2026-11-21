@@ -79,23 +79,20 @@ export function createCharacter(input:Appearance=STUDENT){
 function disposeOwned(root:T.Object3D,shared=false){const mats=new Set<T.Material>(),textures=new Set<T.Texture>();root.traverse(o=>{if(o instanceof T.Mesh){if(!shared||!geometries.includes(o.geometry))o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material]){mats.add(m);if('map'in m&&m.map)textures.add(m.map as T.Texture);}}});mats.forEach(m=>m.dispose());textures.forEach(t=>t.dispose());}
 export function createFirstPersonArms(a:Appearance=STUDENT){
  const root=new T.Group();root.name='First_person_HKU_arms';
- // Same atlas, sleeve geometry, trim and skin as the complete actor. The arm group is
- // oriented along the forearm instead of hanging down, so the sleeves rise into the
- // lower corners of the lens with the hands at the tips (the old -X rotation pointed
- // the arms behind the near plane, leaving only clipped green slabs on screen).
- const handGeometry=new T.BoxGeometry(.105,.13,.115),skin=new T.MeshStandardMaterial({color:a.skin,roughness:.95});
- const sleeveLength=.55,sleeveScale=sleeveLength/.75;
+ // The old viewmodel kept the hanging -X rotation, so both arms pointed behind the near
+ // plane and only clipped green slabs reached the lens. Each forearm now rises from a
+ // lower corner of the lens to a visible hand, with a thin shirt cuff at the wrist.
+ const handY=.505,cuffGeometry=new T.BoxGeometry(.084,.024,.084),sleeveGeometry=new T.BoxGeometry(.078,.44,.078);
+ const handGeometry=new T.BoxGeometry(.072,.09,.08);
+ const skin=new T.MeshStandardMaterial({color:a.skin,roughness:.95}),coat=new T.MeshStandardMaterial({color:a.coat,roughness:1}),cuff=new T.MeshStandardMaterial({color:a.shirt,roughness:1});
  for(const side of [-1,1]){
-  const arm=new T.Group(),index=side<0?3:4,m=rig.meshes[index];
+  const arm=new T.Group(),handAt=new T.Vector3(side*.185,-.23,-.45),direction=new T.Vector3(-side*.5,.32,-.8).normalize();
   arm.name=side<0?'First_person_arm_left':'First_person_arm_right';
-  arm.position.set(side*.27,-.55,.10);
-  arm.quaternion.setFromUnitVectors(new T.Vector3(0,-1,0),new T.Vector3(-side*.11,.33,-.52).normalize());
-  const sleeve=new T.Mesh(geometries[index],new T.MeshStandardMaterial({map:characterTexture(m.name,a),roughness:.9}));
-  // Centre the offset rig geometry on the forearm axis; the sleeve top sits at the group origin.
-  sleeve.scale.set(.25,sleeveScale,.25);sleeve.position.set(-(index===3?.2:-.2)*.25,-.1*sleeveScale,0);
-  sleeve.castShadow=false;sleeve.receiveShadow=false;arm.add(sleeve);
-  const hand=new T.Mesh(handGeometry,skin);hand.name='First_person_hand';hand.position.set(0,-(sleeveLength+.062),0);
-  hand.castShadow=false;hand.receiveShadow=false;arm.add(hand);
+  arm.position.copy(handAt).addScaledVector(direction,-handY);
+  arm.quaternion.setFromUnitVectors(new T.Vector3(0,-1,0),direction);
+  const sleeve=new T.Mesh(sleeveGeometry,coat);sleeve.name='First_person_sleeve';sleeve.position.y=-.22;sleeve.castShadow=sleeve.receiveShadow=false;arm.add(sleeve);
+  const wrist=new T.Mesh(cuffGeometry,cuff);wrist.name='First_person_cuff';wrist.position.y=-.452;wrist.castShadow=wrist.receiveShadow=false;arm.add(wrist);
+  const hand=new T.Mesh(handGeometry,skin);hand.name='First_person_hand';hand.position.y=-handY;hand.castShadow=hand.receiveShadow=false;arm.add(hand);
   root.add(arm);
  }
  const socket=new T.Group();socket.name='First_person_item_socket';socket.position.set(0,-.22,-.30);socket.rotation.x=.10;root.add(socket);let id:string|null=null,held:T.Group|null=null;

@@ -1,0 +1,222 @@
+{
+  "schemaVersion": 1,
+  "note": "Existing Chinese authored lines kept verbatim. English adaptation and Frost approval are required before any voice generation. No audio was generated for these NPCs because the free audio quota is 0/1.",
+  "npcs": [
+    {
+      "npcId": "npc.student.guide",
+      "displayName": "Michael Zhang",
+      "source": "content/npcs/student-guide.json",
+      "status": "awaiting-approved-english-localization",
+      "lines": [
+        {
+          "dialogueId": "student.guide.firstMeeting",
+          "situation": "初见",
+          "zh": "最后一轮签到，确认完就可以去看草坪上的机器人表演了。",
+          "english": null
+        },
+        {
+          "dialogueId": "student.guide.assignment",
+          "situation": "发布任务",
+          "zh": "我走不开。你熟悉路线，穿过中央楼去 CDS-1 控制中心，Ruibang 会接应你。",
+          "english": null
+        },
+        {
+          "dialogueId": "student.guide.repeat",
+          "situation": "重复询问",
+          "zh": "目标没变：四号楼，CDS-1 控制中心。",
+          "english": null
+        },
+        {
+          "dialogueId": "student.guide.offTopic",
+          "situation": "无关话题",
+          "zh": "先处理机器人，其他问题等大家安全后再说。",
+          "english": null
+        },
+        {
+          "dialogueId": "student.guide.locked",
+          "situation": "任务未解锁",
+          "zh": "先完成签到，我需要确认还有谁留在晚宴区。",
+          "english": null
+        },
+        {
+          "dialogueId": "student.guide.routeHint",
+          "situation": "玩家卡路",
+          "zh": "看工作终端上的箭头，从三号楼方向前往四号楼。",
+          "english": null
+        },
+        {
+          "dialogueId": "student.guide.complete",
+          "situation": "任务完成",
+          "zh": "草坪安全了。做得好，剩下的交给救援人员。",
+          "english": null
+        },
+        {
+          "dialogueId": "student.guide.fallback",
+          "situation": "固定备用",
+          "zh": "信号不好时就看任务终端，目标位置已经标出来了。",
+          "english": null
+        }
+      ]
+    },
+    {
+      "npcId": "npc.campus.tech",
+      "displayName": "Ruibang",
+      "source": "content/npcs/campus-tech.json",
+      "status": "awaiting-approved-english-localization",
+      "lines": [
+        {
+          "dialogueId": "campus.tech.firstMeeting",
+          "situation": "初见",
+          "zh": "我是 Ruibang。控制台还能离线恢复，先看看旁边的应急说明。",
+          "english": null
+        },
+        {
+          "dialogueId": "campus.tech.repeat",
+          "situation": "重复询问",
+          "zh": "三步都在控制台上，重点是先后关系。",
+          "english": null
+        },
+        {
+          "dialogueId": "campus.tech.offTopic",
+          "situation": "无关话题",
+          "zh": "入侵来源还查不到，先恢复本地控制。",
+          "english": null
+        },
+        {
+          "dialogueId": "campus.tech.locked",
+          "situation": "任务未解锁",
+          "zh": "控制台还没通电。靠近主面板并启动离线程序。",
+          "english": null
+        },
+        {
+          "dialogueId": "campus.tech.wrongAnswer",
+          "situation": "谜题错误",
+          "zh": "顺序不对。现在恢复控制，会让外部恶意指令重新进来。",
+          "english": null
+        },
+        {
+          "dialogueId": "campus.tech.hint0",
+          "situation": "提示 0",
+          "zh": "先读应急说明，答案就在控制台旁边。",
+          "english": null
+        },
+        {
+          "dialogueId": "campus.tech.hint1",
+          "situation": "提示 1",
+          "zh": "备用电源必须最先启动，外部网络不能留到最后处理。",
+          "english": null
+        },
+        {
+          "dialogueId": "campus.tech.hint2",
+          "situation": "提示 2",
+          "zh": "正确顺序是先启动电源，再隔离外部网络，最后恢复本地控制。",
+          "english": null
+        },
+        {
+          "dialogueId": "campus.tech.puzzleComplete",
+          "situation": "解密完成",
+          "zh": "本地权限回来了。充电舱里有一台没被感染的四足机器人，启动它。",
+          "english": null
+        },
+        {
+          "dialogueId": "campus.tech.chapterComplete",
+          "situation": "章节完成",
+          "zh": "三处关闭装置全部响应，狮子已经安全停机。",
+          "english": null
+        },
+        {
+          "dialogueId": "campus.tech.fallback",
+          "situation": "固定备用",
+          "zh": "如果操作失败，控制台不会锁死，重新排列就行。",
+          "english": null
+        }
+      ]
+    },
+    {
+      "npcId": "npc.terminal.echo",
+      "displayName": "Lam",
+      "source": "content/npcs/terminal-echo.json",
+      "status": "awaiting-approved-english-localization",
+      "lines": [
+        {
+          "dialogueId": "terminal.echo.firstMeeting",
+          "situation": "初见",
+          "zh": "离线恢复程序可用。等待操作员输入。",
+          "english": null
+        },
+        {
+          "dialogueId": "terminal.echo.repeat",
+          "situation": "重复询问",
+          "zh": "当前目标：恢复本地机器人控制。",
+          "english": null
+        },
+        {
+          "dialogueId": "terminal.echo.offTopic",
+          "situation": "无关话题",
+          "zh": "该问题不属于离线恢复程序。",
+          "english": null
+        },
+        {
+          "dialogueId": "terminal.echo.locked",
+          "situation": "任务未解锁",
+          "zh": "访问受限：请先接受现场任务。",
+          "english": null
+        },
+        {
+          "dialogueId": "terminal.echo.wrongAnswer",
+          "situation": "谜题错误",
+          "zh": "恢复失败。检测到步骤顺序冲突，可以立即重试。",
+          "english": null
+        },
+        {
+          "dialogueId": "terminal.echo.hint0",
+          "situation": "提示 0",
+          "zh": "应急说明包含全部必要规则。",
+          "english": null
+        },
+        {
+          "dialogueId": "terminal.echo.hint1",
+          "situation": "提示 1",
+          "zh": "电源步骤位于第一位；隔离步骤早于恢复步骤。",
+          "english": null
+        },
+        {
+          "dialogueId": "terminal.echo.hint2",
+          "situation": "提示 2",
+          "zh": "启动电源，然后隔离外部网络，最后恢复本地控制。",
+          "english": null
+        },
+        {
+          "dialogueId": "terminal.echo.puzzleComplete",
+          "situation": "解密完成",
+          "zh": "本地控制已恢复。未感染设备：一台。",
+          "english": null
+        },
+        {
+          "dialogueId": "terminal.echo.helperUnlocked",
+          "situation": "助手解锁",
+          "zh": "宇树机器人助手已启动。可用指令：跟随、扫描、牵制。",
+          "english": null
+        },
+        {
+          "dialogueId": "terminal.echo.chapterComplete",
+          "situation": "章节完成",
+          "zh": "三处紧急装置已启动。巨型狮子机器人已安全关机。",
+          "english": null
+        },
+        {
+          "dialogueId": "terminal.echo.fallback",
+          "situation": "固定备用",
+          "zh": "网络不可用，离线任务仍可继续。",
+          "english": null
+        }
+      ]
+    }
+  ],
+  "generationOrder": [
+    "npc.student.guide: firstMeeting, assignment, repeat",
+    "npc.campus.tech: firstMeeting, hint0, hint1, hint2, puzzleComplete",
+    "npc.terminal.echo: firstMeeting, wrongAnswer, puzzleComplete, helperUnlocked, chapterComplete"
+  ],
+  "backgroundPolicy": "Unnamed guests and staff keep text-only roles; no invented lines or voices."
+}

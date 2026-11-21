@@ -1,0 +1,26 @@
+{
+  "generated": "2026-11-21",
+  "note": "Recorded from the game master output via CampusAudio.recordingStream(); stereo 48 kHz WAV.",
+  "files": {
+    "staff-in-game.wav": {
+      "duration": 20.58,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bits": 16,
+      "rmsDb": -28.45,
+      "peakDb": -8.18,
+      "sha256": "a402d1dd68aae5764dc5e9b547dfdaadb7b853911a6f5737461688afb61922c9",
+      "bytes": 3951404
+    },
+    "staff-repeat-in-game.wav": {
+      "duration": 3.0,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bits": 16,
+      "rmsDb": -29.34,
+      "peakDb": -9.12,
+      "sha256": "2264273f9823fec5221b66036ab84a0cdcc7d5069b0516e1bb91ce779cd2a24d",
+      "bytes": 576044
+    }
+  }
+}

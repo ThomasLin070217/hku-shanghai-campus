@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Staff NPC voice · in-game evidence</title>
+<style>
+  :root { color-scheme: dark; --ink:#e9e4d3; --muted:#a9b5a5; --line:#425a4c; --bg:#141b17; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { width:min(980px,calc(100% - 32px)); margin:32px auto 64px; }
+  h1 { font-size:clamp(24px,3.4vw,38px); line-height:1.1; margin:0 0 8px; letter-spacing:-.02em; }
+  .sub { color:var(--muted); margin:0 0 26px; }
+  .grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); }
+  .card { background:#1b2620; border:1px solid var(--line); border-radius:12px; padding:16px; }
+  .card h2 { font-size:15px; margin:0 0 10px; letter-spacing:.08em; text-transform:uppercase; color:#cfe0c9; }
+  audio { width:100%; margin:6px 0 4px; }
+  p { margin:8px 0; }
+  small { color:var(--muted); }
+  .shot { width:100%; border-radius:8px; border:1px solid #30483a; display:block; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th,td { text-align:left; padding:7px 8px; border-bottom:1px solid #2d4135; vertical-align:top; }
+  th { color:#cfe0c9; font-weight:600; }
+  code { color:#f0d9a8; }
+  .warn { border-color:#7a5c37; background:#2a241a; color:#f2dfc5; }
+  a { color:#b7e0c0; }
+</style>
+<main>
+  <h1>Staff NPC voice · in-game evidence</h1>
+  <p class="sub">HKU Shanghai · Act 1 Dinner coordinator · DaVinci AI / ElevenLabs TTS V3 · Asher</p>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Full first meeting (game master mix)</h2>
+      <audio controls src="staff-in-game.wav"></audio>
+      <p><small>20.58 s · stereo 48 kHz · recorded from the live game, not the source take. Includes the Staff intro, player acceptance and Staff thanks.</small></p>
+      <p><a href="staff-in-game.wav">Open WAV</a> · <a href="staff-in-game.webm">WebM</a></p>
+    </section>
+    <section class="card">
+      <h2>Repeat query (game master mix)</h2>
+      <audio controls src="staff-repeat-in-game.wav"></audio>
+      <p><small>3.0 s · plays only when the player returns without the laptop.</small></p>
+      <p><a href="staff-repeat-in-game.wav">Open WAV</a> · <a href="staff-repeat-in-game.webm">WebM</a></p>
+    </section>
+  </div>
+
+  <div class="grid" style="margin-top:16px">
+    <section class="card">
+      <h2>Line 1 · greeting</h2>
+      <img class="shot" src="staff-intro-line1.png" alt="In-game subtitle: Hey, you're one of the Student Ambassadors, right?">
+    </section>
+    <section class="card">
+      <h2>Line 2 · request</h2>
+      <img class="shot" src="staff-intro-line2.png" alt="In-game subtitle: Could you do me a quick favour? We need the presentation MacBook...">
+    </section>
+    <section class="card">
+      <h2>Line 3 · location / urgency</h2>
+      <img class="shot" src="staff-intro-facing.png" alt="In-game subtitle: It's on the office table. Mind picking it up?">
+    </section>
+    <section class="card">
+      <h2>Line 5 · repeat query</h2>
+      <img class="shot" src="staff-repeat-subtitle.png" alt="In-game subtitle: COORDINATOR — Hey — any luck with that laptop?">
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:16px">
+    <h2>Trace checks</h2>
+    <table>
+      <tr><th>Check</th><th>Observed</th></tr>
+      <tr><td>Subtitle / clip order</td><td>line 0 → 1 → 2 at ~0 / 2.4 / 8.4 s; each subtitle exactly matches the clip text.</td></tr>
+      <tr><td>Fixed dialogue clips</td><td><code>npc-voice</code> 1 → 2 → 3; no overlapping Staff lines.</td></tr>
+      <tr><td>Acceptance</td><td><code>npc-voice</code> reaches 5 (player reply + Staff thanks); stage <code>to_b6</code> after the intro.</td></tr>
+      <tr><td>Repeat</td><td>Target <code>opening-staff-repeat</code>, subtitle matches, <code>npc-voice</code> reaches 6.</td></tr>
+      <tr><td>Mix</td><td>Music/ambient duck 0.20 → ~0.084 while speaking; return to 0.20 after.</td></tr>
+      <tr><td>Skip / close</td><td>Blur during a line → <code>activeShots</code> 0 immediately.</td></tr>
+      <tr><td>No runtime TTS</td><td>Only bundled WAV files; no DaVinci/ElevenLabs request during play.</td></tr>
+    </table>
+  </section>
+
+  <section class="card warn" style="margin-top:16px">
+    <h2>Listening caveat</h2>
+    <p>The agent cannot hear audio. The local Vosk transcript of the recorded game mix contains the complete Staff text and the player acceptance line, proving audibility over the ducked bed; this is not a human acting/timbre review. Please use the players above for the subjective listen.</p>
+    <p>Generated with the account's one free DaVinci audio allowance. No paid credits, subscription, top-up or voice cloning. See <a href="../../docs/voice/DAVINCI-VOICE-REPORT.md">the full report</a> and <a href="../../docs/voice/PROFILES.md">voice profiles</a>.</p>
+  </section>
+</main>
+</html>

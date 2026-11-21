@@ -135,3 +135,17 @@ INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
 DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
+
+## NPC voice · DaVinci AI / ElevenLabs · 2026-11-21
+
+The Act 1 Staff voice was generated on DaVinci AI using the ElevenLabs TTS V3
+model and the Asher voice. It was produced with the account's one free audio
+generation; no paid credits, subscription, top-up or voice cloning were used.
+The bundled clips are in `assets/audio/npc/staff/`; provenance, hashes, quota
+log and the dialogue text are in that directory and in
+`docs/voice/DAVINCI-VOICE-REPORT.md`.
+
+This is AI-generated voice content, not a CC0 recording and not a real person's
+voice. DaVinci AI and ElevenLabs terms apply to the generated audio. The agent
+could not subjectively audition the voice; only technical, transcript and browser
+integration checks are claimed.
