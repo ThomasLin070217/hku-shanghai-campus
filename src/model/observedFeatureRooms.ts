@@ -365,13 +365,17 @@ function buildRingDisplayRoom(){
   return root;
 }
 
+/** HKU lettering on a 33 x 17 grid. Every stroke is exactly three tiles wide:
+ * H 0-8 (left 0-2, right 6-8, crossbar rows 7-9); gap 9;
+ * K stem 10-12, three-wide diagonals fanning to 19-21; U 22-31
+ * (left 22-24, right 29-31, foot rows 14-16). Column 32 stays wood. */
 function isDarkTile(column: number, row: number) {
-  if (column <= 7) return column <= 2 || column >= 6 || (row >= 7 && row <= 9);
-  if (column >= 22) return (column <= 24 || column >= 29) || row >= 14;
+  if (column <= 8) return column <= 2 || column >= 6 || (row >= 7 && row <= 9);
+  if (column >= 22) return column <= 31 && (column <= 24 || column >= 29 || row >= 14);
   if (column >= 10 && column <= 12) return true;
   if (column < 13) return false;
-  const diagonal = 13 + Math.abs(row - 8) * .82;
-  return column >= diagonal - .7 && column <= diagonal + 1.5;
+  const start = 13 + Math.floor(Math.abs(row - 8) * .75);
+  return column >= start && column <= start + 2;
 }
 
 function buildAuxPowerCloset() {
