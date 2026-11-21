@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Player voice options · HKU Shanghai</title>
+<style>
+  :root { color-scheme: dark; --ink:#e9e4d3; --muted:#a9b5a5; --line:#425a4c; --bg:#141b17; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+  main { width:min(880px,calc(100% - 32px)); margin:32px auto 64px; }
+  h1 { font-size:clamp(22px,3vw,34px); margin:0 0 8px; letter-spacing:-.02em; }
+  .sub { color:var(--muted); margin:0 0 24px; }
+  .card { background:#1b2620; border:1px solid var(--line); border-radius:12px; padding:16px; margin:14px 0; }
+  .card h2 { font-size:14px; margin:0 0 6px; letter-spacing:.06em; text-transform:uppercase; color:#cfe0c9; }
+  audio { width:100%; margin:8px 0 4px; }
+  small { color:var(--muted); }
+  .chosen { border-color:#8fbf7a; box-shadow:0 0 0 1px #8fbf7a inset; }
+  .badge { display:inline-block; background:#2d4a33; color:#cbecc4; border-radius:999px; padding:2px 8px; font-size:11px; margin-left:6px; }
+  a { color:#b7e0c0; }
+  code { color:#f0d9a8; }
+</style>
+<main>
+  <h1>Player acceptance · voice options</h1>
+  <p class="sub">“Yeah, I'll collect it.” · local neural TTS, no paid API and no DaVinci quota used</p>
+
+  <div class="card chosen">
+    <h2>Kristin · in the game now <span class="badge">current</span></h2>
+    <audio controls src="player-options/kristin.wav"></audio>
+    <p><small><code>en_US-kristin-medium</code> · 1.37 s · public-domain LibriVox-derived Piper voice. Keeps the player as a female voice like the old Samantha line, but replaces the robotic formant synthesis.</small></p>
+  </div>
+
+  <div class="card">
+    <h2>Bryce · alternate male</h2>
+    <audio controls src="player-options/bryce.wav"></audio>
+    <p><small><code>en_US-bryce-medium</code> · 1.65 s · public-domain author-released Piper voice. Different from the male Staff, but changes the player to a male voice.</small></p>
+  </div>
+
+  <div class="card">
+    <h2>Amy · warmer female</h2>
+    <audio controls src="player-options/amy.wav"></audio>
+    <p><small><code>en_US-amy-medium</code> · 2.03 s · model card says it is fine-tuned from Cori Samuel's Hi-Fi TTS voice. Better warmth, but not used because the real-person provenance is less clear.</small></p>
+  </div>
+
+  <div class="card">
+    <h2>Lessac · clear female</h2>
+    <audio controls src="player-options/lessac.wav"></audio>
+    <p><small><code>en_US-lessac-medium</code> · 1.51 s · Blizzard 2013 dataset; professional-sounding, but the voice is based on a real speaker and its license is research-oriented.</small></p>
+  </div>
+
+  <div class="card">
+    <h2>Ryan · male alternative</h2>
+    <audio controls src="player-options/ryan.wav"></audio>
+    <p><small><code>en_US-ryan-high</code> · 1.02 s · CC BY-NC-SA 4.0 dataset; fast and light, but the license is restrictive.</small></p>
+  </div>
+
+  <p><small>All options are local renders, not DaVinci. The DaVinci account had Audio 0/1 after the Staff take; no paid generation was attempted. Switching the game to another option is a local re-render + one file/profile change. <a href="index.html">Back to in-game evidence</a></small></p>
+</main>
+</html>

@@ -1,15 +1,15 @@
 {
   "generated": "2026-11-21",
-  "note": "Recorded from the game master output via CampusAudio.recordingStream(); stereo 48 kHz WAV.",
+  "note": "Recorded from the game master output via CampusAudio.recordingStream(); stereo 48 kHz WAV. Player line is local Piper Kristin; Staff is DaVinci Asher.",
   "files": {
     "staff-in-game.wav": {
       "duration": 20.58,
       "sampleRate": 48000,
       "channels": 2,
       "bits": 16,
-      "rmsDb": -28.45,
-      "peakDb": -8.18,
-      "sha256": "a402d1dd68aae5764dc5e9b547dfdaadb7b853911a6f5737461688afb61922c9",
+      "rmsDb": -29.02,
+      "peakDb": -7.38,
+      "sha256": "8bc38f4d0a0f4b3d90bb074cdd49fb63a28f95a4287f3f720710f6a494774214",
       "bytes": 3951404
     },
     "staff-repeat-in-game.wav": {

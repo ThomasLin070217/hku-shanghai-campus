@@ -1,0 +1,15 @@
+{
+  "id": "player-accept-kristin",
+  "text": "Yeah, I'll collect it.",
+  "file": "assets/audio/npc/player/player-accept-kristin.wav",
+  "source": "assets/audio/npc/player/source/player-accept-kristin-raw.wav",
+  "tts": "Piper (local neural TTS), en_US-kristin-medium, length_scale 1.0",
+  "provider": "local Piper, not DaVinci",
+  "voiceLicense": "public domain, LibriVox voice (see Piper model card)",
+  "duration": 1.37,
+  "sampleRate": 22050,
+  "sha256": "2e8a80a678fd3a13f834046b034e172c227cd53c281a4a0b47faf6f53b5e647f",
+  "rmsDb": -20.09,
+  "peakDb": -3.0,
+  "targetPeakDb": -3.0
+}

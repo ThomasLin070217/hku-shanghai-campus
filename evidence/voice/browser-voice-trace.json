@@ -1,8 +1,8 @@
 {
-  "generated": "2026-11-21T06:48:04.240Z",
+  "generated": "2026-11-21T07:30:09.225Z",
   "recording": {
-    "webmUrl": "blob:http://127.0.0.1:5184/35d295ca-ece4-4585-94be-ca5e87e006f2",
-    "wavUrl": "blob:http://127.0.0.1:5184/541df2f8-f4e8-4ec5-a7df-4ce93f38ca78",
+    "webmUrl": "blob:http://127.0.0.1:5184/c1e56008-061a-4ac2-9806-fe33b4d67fd0",
+    "wavUrl": "blob:http://127.0.0.1:5184/79e4679b-2507-4e83-849d-2d5b7b810b2a",
     "duration": 20.58,
     "sampleRate": 48000,
     "channels": 2,
@@ -249,7 +249,7 @@
       "accept": false,
       "shots": 0,
       "npc": 3,
-      "music": 0.193,
+      "music": 0.19,
       "subtitle": "It's on the office table. Mind picking it up? We're running a bit behind."
     },
     {
@@ -271,8 +271,8 @@
       "accept": false,
       "shots": 1,
       "npc": 4,
-      "music": 0.099,
-      "subtitle": "YOU — Yeah, I will collect it."
+      "music": 0.108,
+      "subtitle": "YOU — Yeah, I'll collect it."
     },
     {
       "t": 14.4,
@@ -283,7 +283,7 @@
       "shots": 1,
       "npc": 4,
       "music": 0.084,
-      "subtitle": "YOU — Yeah, I will collect it."
+      "subtitle": "YOU — Yeah, I'll collect it."
     },
     {
       "t": 15,
@@ -292,9 +292,9 @@
       "done": true,
       "accept": false,
       "shots": 1,
-      "npc": 4,
+      "npc": 5,
       "music": 0.084,
-      "subtitle": "YOU — Yeah, I will collect it."
+      "subtitle": "COORDINATOR — Perfect, thanks! Just bring it back here when you've got it."
     },
     {
       "t": 15.6,
@@ -359,7 +359,7 @@
       "accept": true,
       "shots": 0,
       "npc": 5,
-      "music": 0.183,
+      "music": 0.194,
       "subtitle": "COORDINATOR — Perfect, thanks! Just bring it back here when you've got it."
     },
     {

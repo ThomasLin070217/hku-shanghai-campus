@@ -2,7 +2,7 @@
 
 ## 文件
 
-- `content/voice/profiles.json` — 所有 NPC 的 voice profile；Staff 为 `generated`，Michael / Ruibang / Lam 为 `planned`，玩家接受句为 `existing-local-synth`。
+- `content/voice/profiles.json` — 所有 NPC 的 voice profile；Staff 为 `generated`，Michael / Ruibang / Lam 为 `planned`，玩家接受句为 `generated-local-neural`（本地 Piper，不是 DaVinci）。
 - `content/voice/staff-dialogue.ts` — Staff 的共享台词；UI 字幕和音频 manifest 都从这里取值。
 - `content/voice/planned-dialogue.json` — Michael / Ruibang / Lam 的原始中文台词清单与生成顺序；英文改编未确认前 `english` 保持 `null`。
 - `assets/audio/npc/staff/clips.json` — 每条 Staff 对白的文件、时长、边界、SHA-256、RMS/peak。
@@ -33,6 +33,7 @@
 4. 不克隆真人声音；不使用未授权声音。
 5. 游戏运行时只读 bundled 文件；不调用 DaVinci/ElevenLabs 在线接口。
 6. 缺失音频时保留字幕和任务；`voice.play*` 失败只回调 `onError`，不阻塞 `transition`。
+7. 本地 TTS 只用于 DaVinci 额度不足时的非 NPC 补充（当前只有玩家接受句）；必须标注 provider，不冒充 DaVinci，不使用未授权真人克隆。
 7. 关闭面板、失焦、pagehide、移动离开、重新开始都会 `voice.stop()`；不会重复排队。
 
 ## 新增一个 NPC 的最小步骤

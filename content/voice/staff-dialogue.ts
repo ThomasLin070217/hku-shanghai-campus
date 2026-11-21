@@ -15,7 +15,7 @@ export const STAFF_DIALOGUE = {
   ],
   thanks: "Perfect, thanks! Just bring it back here when you've got it.",
   repeat: 'Hey — any luck with that laptop?',
-  playerAccept: 'Yeah, I will collect it.',
+  playerAccept: "Yeah, I'll collect it.",
   original: {
     line1: "You're one of our Student Ambassadors, right?",
     line2:

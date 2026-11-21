@@ -6,7 +6,8 @@ This folder records the first real in-game run of the new Staff voice.
 
 - `staff-in-game.wav` / `.webm` — 20.58 s of the game's final master mix, recorded
   with `CampusAudio.recordingStream()` while the auto Staff intro, player
-  acceptance and Staff thanks played. The recording is stereo 48 kHz.
+  acceptance and Staff thanks played. Staff is DaVinci Asher; the player line is
+  local Piper Kristin. The recording is stereo 48 kHz.
 - `staff-repeat-in-game.wav` / `.webm` — 3.0 s of the repeat query after the player
   returns to the coordinator without the laptop.
 - `browser-voice-trace.json` — 600 ms samples of line index, story stage, active
@@ -14,6 +15,8 @@ This folder records the first real in-game run of the new Staff voice.
 - `browser-repeat-trace.json` — the repeat interaction result and state.
 - `audio-levels.json`, `transcripts.json` — measured levels and local Vosk
   transcripts of the recorded mixes.
+- `player-accept-kristin.wav`, `player-options.html` — isolated player line and an
+  audition page for the local Piper alternatives (Kristin is the current one).
 
 ## What the trace shows
 
