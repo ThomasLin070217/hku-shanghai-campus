@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-21T02:35:56.759Z",
+  "date": "2026-11-21T05:55:56.001Z",
   "profiles": {
     "clear": {
       "color": 10008753,
@@ -19,6 +19,12 @@
       "roughness": 0.12,
       "envMapIntensity": 1.65
     },
+    "frosted": {
+      "color": 14214623,
+      "opacity": 0.55,
+      "roughness": 0.6,
+      "envMapIntensity": 0.45
+    },
     "guard": {
       "color": 12047821,
       "opacity": 0.18,
@@ -26,9 +32,9 @@
       "envMapIntensity": 1.05
     }
   },
-  "glassMeshes": 448,
-  "opaqueMeshes": 647,
-  "materialCount": 444,
+  "glassMeshes": 450,
+  "opaqueMeshes": 652,
+  "materialCount": 450,
   "gaps": [
     {
       "name": "entrance flank",

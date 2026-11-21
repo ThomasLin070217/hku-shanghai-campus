@@ -3,7 +3,9 @@ import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
 import {campusFont} from '../model/fonts';
 import {glassMaterial} from '../model/glazing';
 import {compact} from '../model/buildCampus';
-import {signPhotoMaterial} from '../model/nov14Details';
+import {emblemMaterial} from '../model/heraldry';
+import dinnerArms from '../model/dinner-arms.json';
+import shield from '../model/hall-crest.json';
 import {createMacBook} from '../items/macbook';
 import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H} from './spatialLayout';
 
@@ -299,11 +301,13 @@ function buildDinner(root:T.Group){
  // A pair of open access-gate pedestals leaves the 2.4 m doorway navigable.
  for(const x of [56.35,59.65])box(group,'opening-b5-access-pedestal-'+x,.24,.92,.42,x,.46,-56.1,materials.frame);
  box(group,'opening-b5-end-wall',D.crossWidth,4.45,.14,D.crossCenter,2.225,D.endZ,timber);
- // Reuse the approved reference crop already used on the campus monument.
- const crestGeo=new T.PlaneGeometry(.91*1.35,1.24*1.35),uv=crestGeo.getAttribute('uv');
- for(let i=0;i<uv.count;i++)uv.setXY(i,.143+uv.getX(i)*.219,.24+uv.getY(i)*.51);
- const crest=tag(new T.Mesh(crestGeo,signPhotoMaterial()),'opening-b5-reference-crest','Opening_b5_reference_crest');crest.position.set(D.crossCenter,2.5,D.endZ+.09);group.add(crest);
- crest.userData.source='existing approved U06 monument crest crop; placement follows IMG_4380, exact wall emblem detail unverified';
+ // phase2-02: full armorial achievement on the timber wall; shield on the lectern.
+ const armorial=emblemMaterial(dinnerArms,'Dinner wall arms');
+ const shieldMaterial=emblemMaterial(shield,'Dinner shield');
+ const crest=tag(new T.Mesh(new T.PlaneGeometry(1.36*26/31,1.36),armorial),'opening-b5-reference-crest','Opening_b5_reference_crest');
+ crest.position.set(D.crossCenter,2.58,D.endZ+.09);
+ crest.userData.source='HKU phase2-02; IMG_4380 00:24';
+ group.add(crest);
  // Simplified pendant chandeliers; two real lights, the other bulbs emissive only.
  for(const [j,z] of [-65,-73].entries())for(const [i,x]of D.archCenters.entries()){
   const m=materials.lamp.clone();strips.push(m);
@@ -377,10 +381,19 @@ function buildDinner(root:T.Group){
  }
  box(head,'opening-b5-lectern',lectern.w-.02,lectern.h-.06,lectern.d-.02,lectern.x,deck+(lectern.h-.06)/2,lectern.z,materials.green);
  box(head,'opening-b5-lectern-cap',lectern.w,.06,lectern.d,lectern.x,deck+lectern.h-.03,lectern.z,materials.frame);
- const lecternCrest=tag(new T.Mesh(crestGeo.clone(),crest.material),'opening-b5-lectern-crest','Opening_b5_lectern_crest');
- lecternCrest.scale.setScalar(.145);
+ const lecternCrest=tag(new T.Mesh(new T.PlaneGeometry(.223,.235),shieldMaterial),'opening-b5-lectern-crest','Opening_b5_lectern_crest');
  lecternCrest.position.set(lectern.x,deck+.84,lectern.z+lectern.d/2-.008);
  head.add(lecternCrest);
+ // The two ceremonial hangings flank the arms in the event photo.
+ const teal=std('Dinner banner velvet',0x17595c);
+ for(const side of [-1,1]){
+  const x=table.x+side*2.25,z=D.endZ+.12;
+  box(head,'opening-b5-banner-'+side,.77,1.57,.035,x,2.46,z,teal);
+  box(head,'opening-b5-banner-rod-'+side,.96,.04,.04,x,3.27,z+.015,materials.frame);
+  const badge=tag(new T.Mesh(new T.PlaneGeometry(.417,.44),shieldMaterial),'opening-b5-banner-shield-'+side,'Banner_shield_'+side);
+  badge.position.set(x,2.55,z+.022);
+  head.add(badge);
+ }
  compact(head);
 
  // Chairs that stand for dinner and topple once the hall is abandoned. One chair,

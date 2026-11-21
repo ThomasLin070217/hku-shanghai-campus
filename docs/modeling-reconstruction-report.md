@@ -78,3 +78,16 @@ Chrome 使用 SwiftShader，记录 Three.js 单帧绘制调用和三角形。指
 已有道路支撑、花坛碰撞、任务点、机器人路径和 Boss 范围继续使用原坐标。雅堂新台体与家具从同一份布局派生视觉和碰撞；实走复测完整入厅、绕桌、离厅路线，并检查上台、可通行的台边与不可穿越的主桌、座椅、讲台。两份场景目录均保留全部历史 ID，各新增两个静态细部 ID。生产构建、开场测试、Boss 检查、GLB 导出重载及校验通过。
 
 本轮另存 6 组 960 × 600 对照。运行既有截图命令时使用 `--grounds` 生成车道、草坪、狮足和两种主桌状态，使用 `--sign` 生成礼堂门头。两组选不同输出目录。逐机位绘制调用和三角形见[室外及主桌基线](../evidence/reconstruction/grounds-before/metrics.json)、[修改后](../evidence/reconstruction/grounds-after/metrics.json)、[门头基线](../evidence/reconstruction/sign-before/metrics.json)和[门头修改后](../evidence/reconstruction/sign-after/metrics.json)。门头近景 201 → 202 次绘制，主桌近景 139 → 147 次。尚无目标显卡帧率及现场尺寸测量。
+
+## 第三轮 · CDS-1 雨棚与雅堂仪式端墙
+
+分支 `codex/campus-reconstruction`，本轮基线 `f22661d`。再次 fetch/prune 后，整合分支仍为 `f77d096`。在本机重新请求喔图相册，返回 HTTP 403 及账号无权限提示。重新打开 CDS Facilities 页面并核对仓库内的两张原图 R01 与 phase2-02，本轮喔图实检 0 张，新增独立照片 0 张。
+
+| 优先级 | 问题与改动 | 来源和待核实项 |
+|---|---|---|
+| P1 · B04 入口 | 旧雨棚整块由金属封闭，横肋在顶面。将靠墙段保留为实心板，前缘改为一张透光面、细横肋和金属封边。新材质区分透光雨棚与门厅清玻璃 | [R01 正门实景](../references/photos/01-cds-shanghai-main-entrance-samu6478.webp)。横向连续分格、前缘与后段明暗差可辨。散射程度、构造材质及前缘约占进深 32% 为视觉估算 |
+| P2 · B05 雅堂 | 原模型把纪念碑灰色徽章复用于端墙和讲台。改为端墙完整彩色纹章、两侧悬旗和讲台盾徽。旗面及徽章纹理复用，两个剧情状态共享摆设 | [phase2-02 启用晚宴](../references/campus/phase2-02.jpg)。纹章与盾徽、挂杆和一左一右的旗面有直接画面依据。纹章微小细节和旗面背后的固定方式待补近照；旗宽、挂高和间距为估算 |
+
+建筑包络、门区、台阶和角色可通行面沿用上一轮坐标。新雨棚射线检查分别命中后段实体与前段透光面。原有碰撞、开场路线、NPC 离场与 Boss 检查通过。两个场景索引各新增 2 个静态细部，旧 ID 删除数均为 0。生产构建、模型导出重载和 glTF 校验通过。
+
+[本轮固定机位对照](../evidence/reconstruction/index.html)默认显示雅堂端墙，可切至异常状态或 CDS-1 入口。复现截图时使用 `--entrances`。在相同 960 × 600 软件渲染条件下，B04 入口由 967 次绘制、131,539 个三角形变为 969 次、131,605 个；两种雅堂机位均从 147 次、27,230 个变为 148 次、27,282 个。数据分别见[基线](../evidence/reconstruction/entrances-before/metrics.json)与[本轮](../evidence/reconstruction/entrances-after/metrics.json)。硬件实机帧率和雨棚现场剖面仍待补充。

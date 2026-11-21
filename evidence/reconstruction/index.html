@@ -36,14 +36,15 @@ const refs = {
  'dinner-normal': ['campus/phase2-02.jpg','启用晚宴 · 香港大学']
 };
 const options = (select, rows) => select.replaceChildren(...rows.map(([key,label])=>new Option(label,key)));
-options(scene,[['sign','中央礼堂 · 校徽与双语校名'],['forecourt','CDS-1 · 车道与入口绿化'],['lawn','南草坪 · 绿化与狮子'],['head','5 号楼 · 主桌与讲台'],['dinner','5 号楼 · 大学雅堂'],['campus','校园北侧'],...buildings.map(id=>[id,id])]);
+options(scene,[['entrances','本轮 · 雨棚与晚宴端墙'],['sign','中央礼堂 · 校徽与双语校名'],['forecourt','CDS-1 · 车道与入口绿化'],['lawn','南草坪 · 绿化与狮子'],['head','5 号楼 · 主桌与讲台'],['dinner','5 号楼 · 大学雅堂'],['campus','校园北侧'],...buildings.map(id=>[id,id])]);
 function show() {
- const key = scene.value+'-'+angle.value;
+ const latest = scene.value==='entrances';
+ const key = latest?angle.value:scene.value+'-'+angle.value;
  const grounds = ['forecourt','lawn','head'].includes(scene.value);
  const filename = key.replace(/^head-/, 'dinner-')+'.png';
- const prefix = scene.value==='sign'?'sign-':grounds?'grounds-':'';
+ const prefix = latest?'entrances-':scene.value==='sign'?'sign-':grounds?'grounds-':'';
  const rows = [[prefix+'before/'+filename,'修改前'],[prefix+'after/'+filename,'修改后']];
- const ref = refs[key];
+ const ref = latest&&key.startsWith('dinner-')?refs['dinner-normal']:refs[key];
  if(ref) rows.push(['../../references/'+ref[0],ref[1]]);
  images.replaceChildren(...rows.map(([src,label])=>{
   const figure=document.createElement('figure'),img=new Image(),caption=document.createElement('figcaption');
@@ -51,7 +52,7 @@ function show() {
  }));
 }
 function selectScene() {
- const values = scene.value==='sign'?[['front','南立面门头近景']]:scene.value==='forecourt'?[['paving','入口正面']]:
+ const values = scene.value==='entrances'?[['dinner-head-normal','雅堂 · 正常晚宴'],['dinner-head-incident','雅堂 · 异常后'],['B04-entry','CDS-1 · 入口雨棚']]:scene.value==='sign'?[['front','南立面门头近景']]:scene.value==='forecourt'?[['paving','入口正面']]:
   scene.value==='lawn'?[['axis','草坪轴线'],['base','接地细节']]:
   scene.value==='head'?[['head-normal','正常晚宴'],['head-incident','异常后']]:scene.value==='dinner'?[['normal','正常晚宴'],['incident','异常后']]:scene.value==='campus'?[['north','北侧高位']]:[['front','正面'],['left','左前方'],['right','右前方'],['entry','入口附近'],['player','玩家眼高']];
  options(angle,values);show();

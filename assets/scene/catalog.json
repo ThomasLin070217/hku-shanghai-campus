@@ -1,6 +1,6 @@
 {
   "schema": "hku-scene/1",
-  "revision": "e0ee4cb6e75a",
+  "revision": "785855ad7de4",
   "units": "metres",
   "axes": "+X east-ish, -Z north-ish, +Y up; not georeferenced",
   "entities": [
@@ -411900,24 +411900,24 @@
       "bounds": {
         "min": [
           48.21,
-          5.155,
+          5.18,
           20.73
         ],
         "max": [
           67.79,
-          5.48,
-          24.33
+          5.38,
+          24.375
         ]
       },
       "center": [
         58,
-        5.3175,
-        22.53
+        5.28,
+        22.5525
       ],
       "size": [
         19.58,
-        0.325,
-        3.6
+        0.2,
+        3.645
       ],
       "sourceFile": "src/model/buildCampus.ts",
       "sourceAnchor": "06_Canopy",
@@ -414084,24 +414084,24 @@
       "bounds": {
         "min": [
           56.5671,
-          5.4,
-          20.73
+          5.225,
+          23.178
         ],
         "max": [
           56.6471,
-          5.48,
+          5.335,
           24.33
         ]
       },
       "center": [
         56.6071,
-        5.44,
-        22.53
+        5.28,
+        23.754
       ],
       "size": [
         0.08,
-        0.08,
-        3.6
+        0.11,
+        1.152
       ],
       "sourceFile": "src/model/buildCampus.ts",
       "sourceAnchor": "Canopy_rib",
@@ -414624,24 +414624,24 @@
       "bounds": {
         "min": [
           55.1743,
-          5.4,
-          20.73
+          5.225,
+          23.178
         ],
         "max": [
           55.2543,
-          5.48,
+          5.335,
           24.33
         ]
       },
       "center": [
         55.2143,
-        5.44,
-        22.53
+        5.28,
+        23.754
       ],
       "size": [
         0.08,
-        0.08,
-        3.6
+        0.11,
+        1.152
       ],
       "sourceFile": "src/model/buildCampus.ts",
       "sourceAnchor": "Canopy_rib",
@@ -415092,24 +415092,24 @@
       "bounds": {
         "min": [
           48.21,
-          5.4,
-          20.73
+          5.225,
+          23.178
         ],
         "max": [
           48.29,
-          5.48,
+          5.335,
           24.33
         ]
       },
       "center": [
         48.25,
-        5.44,
-        22.53
+        5.28,
+        23.754
       ],
       "size": [
         0.08,
-        0.08,
-        3.6
+        0.11,
+        1.152
       ],
       "sourceFile": "src/model/buildCampus.ts",
       "sourceAnchor": "Canopy_rib",
@@ -416352,24 +416352,24 @@
       "bounds": {
         "min": [
           50.9957,
-          5.4,
-          20.73
+          5.225,
+          23.178
         ],
         "max": [
           51.0757,
-          5.48,
+          5.335,
           24.33
         ]
       },
       "center": [
         51.0357,
-        5.44,
-        22.53
+        5.28,
+        23.754
       ],
       "size": [
         0.08,
-        0.08,
-        3.6
+        0.11,
+        1.152
       ],
       "sourceFile": "src/model/buildCampus.ts",
       "sourceAnchor": "Canopy_rib",
@@ -417036,24 +417036,24 @@
       "bounds": {
         "min": [
           49.6029,
-          5.4,
-          20.73
+          5.225,
+          23.178
         ],
         "max": [
           49.6829,
-          5.48,
+          5.335,
           24.33
         ]
       },
       "center": [
         49.6429,
-        5.44,
-        22.53
+        5.28,
+        23.754
       ],
       "size": [
         0.08,
-        0.08,
-        3.6
+        0.11,
+        1.152
       ],
       "sourceFile": "src/model/buildCampus.ts",
       "sourceAnchor": "Canopy_rib",
@@ -419592,24 +419592,24 @@
       "bounds": {
         "min": [
           59.3529,
-          5.4,
-          20.73
+          5.225,
+          23.178
         ],
         "max": [
           59.4329,
-          5.48,
+          5.335,
           24.33
         ]
       },
       "center": [
         59.3929,
-        5.44,
-        22.53
+        5.28,
+        23.754
       ],
       "size": [
         0.08,
-        0.08,
-        3.6
+        0.11,
+        1.152
       ],
       "sourceFile": "src/model/buildCampus.ts",
       "sourceAnchor": "Canopy_rib",
@@ -420132,24 +420132,24 @@
       "bounds": {
         "min": [
           57.96,
-          5.4,
-          20.73
+          5.225,
+          23.178
         ],
         "max": [
           58.04,
-          5.48,
+          5.335,
           24.33
         ]
       },
       "center": [
         58,
-        5.44,
-        22.53
+        5.28,
+        23.754
       ],
       "size": [
         0.08,
-        0.08,
-        3.6
+        0.11,
+        1.152
       ],
       "sourceFile": "src/model/buildCampus.ts",
       "sourceAnchor": "Canopy_rib",
@@ -458652,24 +458652,24 @@
       "bounds": {
         "min": [
           48.25,
-          5.155,
+          5.18,
           20.73
         ],
         "max": [
           67.75,
-          5.405,
-          24.33
+          5.38,
+          23.178
         ]
       },
       "center": [
         58,
         5.28,
-        22.53
+        21.954
       ],
       "size": [
         19.5,
-        0.25,
-        3.6
+        0.2,
+        2.448
       ],
       "sourceFile": "src/model/buildCampus.ts",
       "sourceAnchor": "Thin_canopy",
@@ -463393,6 +463393,42 @@
       "confidence": "inferred",
       "editMode": "source",
       "material": "Opaque facade backing"
+    },
+    {
+      "id": "B04-P-54fab0e17e45",
+      "name": "Canopy_diffusing_strip",
+      "kind": "part",
+      "parentId": "B04-CANOPY",
+      "buildingId": "B04",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/06_Canopy#1/Canopy_diffusing_strip#1",
+      "bounds": {
+        "min": [
+          48.25,
+          5.28,
+          23.178
+        ],
+        "max": [
+          67.75,
+          5.28,
+          24.33
+        ]
+      },
+      "center": [
+        58,
+        5.28,
+        23.754
+      ],
+      "size": [
+        19.5,
+        0,
+        1.152
+      ],
+      "sourceFile": "src/model/buildCampus.ts",
+      "sourceAnchor": "Canopy_diffusing_strip",
+      "reference": "R01",
+      "confidence": "confirmed-form_estimated-dimensions",
+      "editMode": "source",
+      "material": "Glazing_frosted"
     },
     {
       "id": "B04-P-550620f4d155",
@@ -476292,24 +476328,24 @@
       "bounds": {
         "min": [
           66.3171,
-          5.4,
-          20.73
+          5.225,
+          23.178
         ],
         "max": [
           66.3971,
-          5.48,
+          5.335,
           24.33
         ]
       },
       "center": [
         66.3571,
-        5.44,
-        22.53
+        5.28,
+        23.754
       ],
       "size": [
         0.08,
-        0.08,
-        3.6
+        0.11,
+        1.152
       ],
       "sourceFile": "src/model/buildCampus.ts",
       "sourceAnchor": "Canopy_rib",
@@ -476976,24 +477012,24 @@
       "bounds": {
         "min": [
           67.71,
-          5.4,
-          20.73
+          5.225,
+          23.178
         ],
         "max": [
           67.79,
-          5.48,
+          5.335,
           24.33
         ]
       },
       "center": [
         67.75,
-        5.44,
-        22.53
+        5.28,
+        23.754
       ],
       "size": [
         0.08,
-        0.08,
-        3.6
+        0.11,
+        1.152
       ],
       "sourceFile": "src/model/buildCampus.ts",
       "sourceAnchor": "Canopy_rib",
@@ -478488,24 +478524,24 @@
       "bounds": {
         "min": [
           60.7457,
-          5.4,
-          20.73
+          5.225,
+          23.178
         ],
         "max": [
           60.8257,
-          5.48,
+          5.335,
           24.33
         ]
       },
       "center": [
         60.7857,
-        5.44,
-        22.53
+        5.28,
+        23.754
       ],
       "size": [
         0.08,
-        0.08,
-        3.6
+        0.11,
+        1.152
       ],
       "sourceFile": "src/model/buildCampus.ts",
       "sourceAnchor": "Canopy_rib",
@@ -479244,24 +479280,24 @@
       "bounds": {
         "min": [
           62.1386,
-          5.4,
-          20.73
+          5.225,
+          23.178
         ],
         "max": [
           62.2186,
-          5.48,
+          5.335,
           24.33
         ]
       },
       "center": [
         62.1786,
-        5.44,
-        22.53
+        5.28,
+        23.754
       ],
       "size": [
         0.08,
-        0.08,
-        3.6
+        0.11,
+        1.152
       ],
       "sourceFile": "src/model/buildCampus.ts",
       "sourceAnchor": "Canopy_rib",
@@ -480036,24 +480072,24 @@
       "bounds": {
         "min": [
           63.5314,
-          5.4,
-          20.73
+          5.225,
+          23.178
         ],
         "max": [
           63.6114,
-          5.48,
+          5.335,
           24.33
         ]
       },
       "center": [
         63.5714,
-        5.44,
-        22.53
+        5.28,
+        23.754
       ],
       "size": [
         0.08,
-        0.08,
-        3.6
+        0.11,
+        1.152
       ],
       "sourceFile": "src/model/buildCampus.ts",
       "sourceAnchor": "Canopy_rib",
@@ -480504,24 +480540,24 @@
       "bounds": {
         "min": [
           64.9243,
-          5.4,
-          20.73
+          5.225,
+          23.178
         ],
         "max": [
           65.0043,
-          5.48,
+          5.335,
           24.33
         ]
       },
       "center": [
         64.9643,
-        5.44,
-        22.53
+        5.28,
+        23.754
       ],
       "size": [
         0.08,
-        0.08,
-        3.6
+        0.11,
+        1.152
       ],
       "sourceFile": "src/model/buildCampus.ts",
       "sourceAnchor": "Canopy_rib",
@@ -553935,6 +553971,42 @@
       "material": "Glazing_reflective"
     },
     {
+      "id": "B04-P-fa6385460bf7",
+      "name": "Canopy_front_fascia",
+      "kind": "part",
+      "parentId": "B04-CANOPY",
+      "buildingId": "B04",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/06_Canopy#1/Canopy_front_fascia#1",
+      "bounds": {
+        "min": [
+          48.25,
+          5.2,
+          24.285
+        ],
+        "max": [
+          67.75,
+          5.36,
+          24.375
+        ]
+      },
+      "center": [
+        58,
+        5.28,
+        24.33
+      ],
+      "size": [
+        19.5,
+        0.16,
+        0.09
+      ],
+      "sourceFile": "src/model/buildCampus.ts",
+      "sourceAnchor": "Canopy_front_fascia",
+      "reference": "R01",
+      "confidence": "confirmed-form_estimated-dimensions",
+      "editMode": "source",
+      "material": "Warm silver aluminium"
+    },
+    {
       "id": "B04-P-fa63c6c1bda6",
       "name": "Rear_elevation_PROVISIONAL_spandrel_13_8",
       "kind": "part",
@@ -556392,24 +556464,24 @@
       "bounds": {
         "min": [
           53.7814,
-          5.4,
-          20.73
+          5.225,
+          23.178
         ],
         "max": [
           53.8614,
-          5.48,
+          5.335,
           24.33
         ]
       },
       "center": [
         53.8214,
-        5.44,
-        22.53
+        5.28,
+        23.754
       ],
       "size": [
         0.08,
-        0.08,
-        3.6
+        0.11,
+        1.152
       ],
       "sourceFile": "src/model/buildCampus.ts",
       "sourceAnchor": "Canopy_rib",
@@ -556716,24 +556788,24 @@
       "bounds": {
         "min": [
           52.3886,
-          5.4,
-          20.73
+          5.225,
+          23.178
         ],
         "max": [
           52.4686,
-          5.48,
+          5.335,
           24.33
         ]
       },
       "center": [
         52.4286,
-        5.44,
-        22.53
+        5.28,
+        23.754
       ],
       "size": [
         0.08,
-        0.08,
-        3.6
+        0.11,
+        1.152
       ],
       "sourceFile": "src/model/buildCampus.ts",
       "sourceAnchor": "Canopy_rib",

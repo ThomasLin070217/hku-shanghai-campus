@@ -52,7 +52,11 @@ try {
     await writeFile(join(output,name+'.png'),Buffer.from(png.split(',')[1],'base64'));
     metrics[name] = stats;
   }
-  if (process.argv.includes('--sign')) {
+  if (process.argv.includes('--entrances')) {
+    await shot('B04','entry');
+    await shot('dinner','head-normal');
+    await shot('dinner','head-incident');
+  } else if (process.argv.includes('--sign')) {
     await shot('sign','front');
   } else if (process.argv.includes('--grounds')) {
     await shot('forecourt','paving');

@@ -175,8 +175,13 @@ export function buildCampus(parameters:ModelParameters={...DEFAULT_PARAMETERS}):
     cylinder(rot,'Door_post',.045,dh,[ex+Math.sin(a)*rr,y0+dh/2,front+.8+Math.cos(a)*rr],M.silver,6);
   }
   cylinder(rot,'Door_axis',.06,dh,[ex,y0+dh/2,front+.8],M.silver,8);
-  box(canopy,'Thin_canopy',[p.canopyWidth,.25,p.canopyDepth],[ex,y0+p.canopyHeight,front+p.canopyDepth/2],M.silver);
-  for(let i=0;i<=14;i++)box(canopy,'Canopy_rib',[.08,.08,p.canopyDepth],[ex-p.canopyWidth/2+i*p.canopyWidth/14,y0+p.canopyHeight+.16,front+p.canopyDepth/2],M.frame);
+  // R01: solid inner soffit and a pale, divided outer strip under a metal fascia.
+  const lip=p.canopyDepth*.32,soffit=p.canopyDepth-lip,edgeZ=front+soffit+lip/2,canopyY=y0+p.canopyHeight;
+  box(canopy,'Thin_canopy',[p.canopyWidth,.20,soffit],[ex,canopyY,front+soffit/2],M.silver);
+  const glazing=pane(canopy,'Canopy_diffusing_strip',p.canopyWidth,lip,ex,canopyY,edgeZ,glassMaterial('frosted'));
+  glazing.rotation.x=-Math.PI/2;
+  box(canopy,'Canopy_front_fascia',[p.canopyWidth,.16,.09],[ex,canopyY,front+p.canopyDepth],M.silver);
+  for(let i=0;i<=14;i++)box(canopy,'Canopy_rib',[.08,.11,lip],[ex-p.canopyWidth/2+i*p.canopyWidth/14,canopyY,edgeZ],M.frame);
   for(const s of [-1,1]){
     const px=ex+s*(p.canopyWidth/2-.5),pz=front+p.canopyDepth+1;
     cylinder(landscape,'Entrance_security_pole',.055,p.canopyHeight,[px,p.canopyHeight/2,pz],M.frame,8);
