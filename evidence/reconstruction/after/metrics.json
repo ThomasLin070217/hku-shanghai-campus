@@ -1,0 +1,268 @@
+{
+  "B01-front": {
+    "frame": 1,
+    "calls": 896,
+    "triangles": 124644,
+    "points": 0,
+    "lines": 0
+  },
+  "B01-left": {
+    "frame": 2,
+    "calls": 1592,
+    "triangles": 184906,
+    "points": 0,
+    "lines": 0
+  },
+  "B01-right": {
+    "frame": 3,
+    "calls": 376,
+    "triangles": 81426,
+    "points": 0,
+    "lines": 0
+  },
+  "B01-entry": {
+    "frame": 4,
+    "calls": 426,
+    "triangles": 48043,
+    "points": 0,
+    "lines": 0
+  },
+  "B01-player": {
+    "frame": 5,
+    "calls": 1137,
+    "triangles": 134632,
+    "points": 0,
+    "lines": 0
+  },
+  "B02-front": {
+    "frame": 6,
+    "calls": 1508,
+    "triangles": 205295,
+    "points": 0,
+    "lines": 0
+  },
+  "B02-left": {
+    "frame": 7,
+    "calls": 1741,
+    "triangles": 214333,
+    "points": 0,
+    "lines": 0
+  },
+  "B02-right": {
+    "frame": 8,
+    "calls": 485,
+    "triangles": 74364,
+    "points": 0,
+    "lines": 0
+  },
+  "B02-entry": {
+    "frame": 9,
+    "calls": 1089,
+    "triangles": 127538,
+    "points": 0,
+    "lines": 0
+  },
+  "B02-player": {
+    "frame": 10,
+    "calls": 1687,
+    "triangles": 211837,
+    "points": 0,
+    "lines": 0
+  },
+  "B03-front": {
+    "frame": 11,
+    "calls": 1630,
+    "triangles": 203207,
+    "points": 0,
+    "lines": 0
+  },
+  "B03-left": {
+    "frame": 12,
+    "calls": 1046,
+    "triangles": 155200,
+    "points": 0,
+    "lines": 0
+  },
+  "B03-right": {
+    "frame": 13,
+    "calls": 1736,
+    "triangles": 214177,
+    "points": 0,
+    "lines": 0
+  },
+  "B03-entry": {
+    "frame": 14,
+    "calls": 1406,
+    "triangles": 173978,
+    "points": 0,
+    "lines": 0
+  },
+  "B03-player": {
+    "frame": 15,
+    "calls": 1107,
+    "triangles": 137380,
+    "points": 0,
+    "lines": 0
+  },
+  "B04-front": {
+    "frame": 16,
+    "calls": 1105,
+    "triangles": 161574,
+    "points": 0,
+    "lines": 0
+  },
+  "B04-left": {
+    "frame": 17,
+    "calls": 907,
+    "triangles": 148872,
+    "points": 0,
+    "lines": 0
+  },
+  "B04-right": {
+    "frame": 18,
+    "calls": 1419,
+    "triangles": 181020,
+    "points": 0,
+    "lines": 0
+  },
+  "B04-entry": {
+    "frame": 19,
+    "calls": 958,
+    "triangles": 127630,
+    "points": 0,
+    "lines": 0
+  },
+  "B04-player": {
+    "frame": 20,
+    "calls": 727,
+    "triangles": 114778,
+    "points": 0,
+    "lines": 0
+  },
+  "B05-front": {
+    "frame": 21,
+    "calls": 688,
+    "triangles": 85466,
+    "points": 0,
+    "lines": 0
+  },
+  "B05-left": {
+    "frame": 22,
+    "calls": 660,
+    "triangles": 71066,
+    "points": 0,
+    "lines": 0
+  },
+  "B05-right": {
+    "frame": 23,
+    "calls": 908,
+    "triangles": 88704,
+    "points": 0,
+    "lines": 0
+  },
+  "B05-entry": {
+    "frame": 24,
+    "calls": 499,
+    "triangles": 60662,
+    "points": 0,
+    "lines": 0
+  },
+  "B05-player": {
+    "frame": 25,
+    "calls": 552,
+    "triangles": 59650,
+    "points": 0,
+    "lines": 0
+  },
+  "B06-front": {
+    "frame": 26,
+    "calls": 339,
+    "triangles": 35283,
+    "points": 0,
+    "lines": 0
+  },
+  "B06-left": {
+    "frame": 27,
+    "calls": 790,
+    "triangles": 59738,
+    "points": 0,
+    "lines": 0
+  },
+  "B06-right": {
+    "frame": 28,
+    "calls": 347,
+    "triangles": 61673,
+    "points": 0,
+    "lines": 0
+  },
+  "B06-entry": {
+    "frame": 29,
+    "calls": 299,
+    "triangles": 28465,
+    "points": 0,
+    "lines": 0
+  },
+  "B06-player": {
+    "frame": 30,
+    "calls": 638,
+    "triangles": 42474,
+    "points": 0,
+    "lines": 0
+  },
+  "B07-front": {
+    "frame": 31,
+    "calls": 238,
+    "triangles": 36196,
+    "points": 0,
+    "lines": 0
+  },
+  "B07-left": {
+    "frame": 32,
+    "calls": 900,
+    "triangles": 89580,
+    "points": 0,
+    "lines": 0
+  },
+  "B07-right": {
+    "frame": 33,
+    "calls": 207,
+    "triangles": 34988,
+    "points": 0,
+    "lines": 0
+  },
+  "B07-entry": {
+    "frame": 34,
+    "calls": 122,
+    "triangles": 22778,
+    "points": 0,
+    "lines": 0
+  },
+  "B07-player": {
+    "frame": 35,
+    "calls": 342,
+    "triangles": 44858,
+    "points": 0,
+    "lines": 0
+  },
+  "campus-north": {
+    "frame": 36,
+    "calls": 1715,
+    "triangles": 213749,
+    "points": 0,
+    "lines": 0
+  },
+  "dinner-normal": {
+    "frame": 37,
+    "calls": 399,
+    "triangles": 32028,
+    "points": 0,
+    "lines": 0
+  },
+  "dinner-incident": {
+    "frame": 38,
+    "calls": 399,
+    "triangles": 32028,
+    "points": 0,
+    "lines": 0
+  }
+}

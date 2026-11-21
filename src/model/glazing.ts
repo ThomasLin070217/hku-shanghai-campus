@@ -5,6 +5,7 @@ export const GLASS_PROFILES = {
  clear: {color:0x98b8b1,opacity:.26,roughness:.12,envMapIntensity:1.0},
  office: {color:0x648d9c,opacity:.43,roughness:.17,envMapIntensity:1.25},
  reflective: {color:0x355c72,opacity:.68,roughness:.12,envMapIntensity:1.65},
+ frosted: {color:0xd8e5df,opacity:.55,roughness:.60,envMapIntensity:.45},
  guard: {color:0xb7d5cd,opacity:.18,roughness:.10,envMapIntensity:1.05},
 };
 export const GLAZING_DEPTH = {facade:2.6,lobby:2.4,slab:.16,glassFrameGap:.045};

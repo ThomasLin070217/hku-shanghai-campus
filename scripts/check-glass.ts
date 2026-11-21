@@ -4,7 +4,15 @@ import {buildSite} from '../src/model/buildSite';import {BUILDINGS,SITE} from '.
 const asset=buildSite(),world=createNavigation(BUILDINGS,SITE),materials=new Set<T.Material>();let glassMeshes=0,opaqueMeshes=0;
 asset.root.updateMatrixWorld(true);asset.root.traverse(o=>{if(!(o instanceof T.Mesh))return;for(const m of Array.isArray(o.material)?o.material:[o.material]){materials.add(m);if(m.userData.surfaceRole==='glass'){glassMeshes++;assert.ok(m.transparent&&m.opacity<.8&&m.opacity>.1&&!m.depthWrite);assert.ok(!o.castShadow);assert.equal((m as T.MeshStandardMaterial).map,null);}else{opaqueMeshes++;assert.equal(m.transparent,false,`Opaque component ${m.name} made transparent`);assert.equal(m.opacity,1);}}});
 // U06 adds 280 separately sorted curved glass panels; keep a bounded total draw budget.
-assert.ok(glassMeshes>30&&glassMeshes<500);assert.ok(opaqueMeshes>100);assert.equal(new Set(Object.values(GLASS_PROFILES).map(p=>p.opacity)).size,4);
+assert.ok(glassMeshes>30&&glassMeshes<500);assert.ok(opaqueMeshes>100);assert.equal(new Set(Object.values(GLASS_PROFILES).map(p=>p.opacity)).size,Object.keys(GLASS_PROFILES).length);
+// Probe the canopy itself away from its ribs: the rear is solid and the front strip is translucent.
+const main=asset.byId.get('B04')!,canopy=main.getObjectByName('06_Canopy')!;
+for(const [offset,expected] of [[1,undefined],[3.1,'frosted']] as const){
+ const origin=main.localToWorld(new T.Vector3(.5,10,main.userData.parameters.depth/2+.23+offset));
+ const hits=new T.Raycaster(origin,new T.Vector3(0,-1,0)).intersectObject(canopy,true);
+ assert.ok(hits.length,'canopy must cover the doorway');
+ assert.equal(((hits[0].object as T.Mesh).material as T.Material).userData.profile,expected);
+}
 function depth(name:string,origin:T.Vector3,direction:T.Vector3){const hits=new T.Raycaster(origin,direction).intersectObject(asset.byId.get('B04')!,true);const glass=hits.find(h=>(h.object as T.Mesh).material instanceof T.Material&&((h.object as T.Mesh).material as T.Material).userData.surfaceRole==='glass');assert.ok(glass,`${name}: missing pane`);const back=hits.find(h=>h.distance>glass.distance+.1&&((h.object as T.Mesh).material as T.Material).userData.surfaceRole!=='glass');assert.ok(back,`${name}: missing opaque depth`);const gap=back.distance-glass.distance;assert.ok(gap>.6&&gap<4,`${name}: pane backed immediately or open through building (${gap})`);return{name,glassDistance:glass.distance,opaqueDistance:back.distance,gap};}
 const gaps=[depth('entrance flank',new T.Vector3(66,2.4,40),new T.Vector3(0,0,-1)),depth('CDS1 west ground glazing',new T.Vector3(24,2.4,10),new T.Vector3(1,0,0))];
 const b=new CharacterPhysics(world);b.position.set(58,.045,33.5);for(let i=0;i<720;i++)b.step(C.fixedStep,{forward:1,right:0,sprint:true},0,false);assert.ok(b.position.z>23&&b.position.z<23.4);assert.ok(b.contacts.some(c=>c.id.includes('closed-doors')));

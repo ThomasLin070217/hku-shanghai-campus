@@ -1,0 +1,37 @@
+{
+  "forecourt-paving": {
+    "frame": 1,
+    "calls": 993,
+    "triangles": 131614,
+    "points": 0,
+    "lines": 0
+  },
+  "lawn-axis": {
+    "frame": 2,
+    "calls": 1467,
+    "triangles": 202253,
+    "points": 0,
+    "lines": 0
+  },
+  "lawn-base": {
+    "frame": 3,
+    "calls": 709,
+    "triangles": 106373,
+    "points": 0,
+    "lines": 0
+  },
+  "dinner-head-normal": {
+    "frame": 4,
+    "calls": 139,
+    "triangles": 25956,
+    "points": 0,
+    "lines": 0
+  },
+  "dinner-head-incident": {
+    "frame": 5,
+    "calls": 139,
+    "triangles": 25956,
+    "points": 0,
+    "lines": 0
+  }
+}

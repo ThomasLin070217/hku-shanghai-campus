@@ -7,7 +7,7 @@ import {CampusGame} from '../src/exploration/game';
 import {createNavigation} from '../src/exploration/navigation';
 import {BUILDINGS,SITE} from '../src/model/campusParameters';
 import {createOpeningWorld} from '../src/opening/world';
-import {OPENING as O,DINNER_LAYOUT as D,dinnerHallPoint} from '../src/opening/spatialLayout';
+import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H,dinnerHallPoint} from '../src/opening/spatialLayout';
 const w=createNavigation(BUILDINGS,SITE,true),world=createOpeningWorld(),g=new CampusGame(w,BUILDINGS,SITE);
 g.paused=false;g.body.position.fromArray(O.staff);g.body.grounded=true;
 for(const [x,z]of [[64,-63.1],[71.2,-63.1],[71.2,-56],[79.5,-56],[79.5,-63.1],[79.5,-77.3],[71.2,-77.3],[71.2,-63.1],[61,-63.1],[58,-61.5],[58,-53]]){
@@ -21,6 +21,14 @@ assert.equal(w.blocked(60,-72,O.b5.floor),true,'timber wall must block walking t
 assert.equal(w.blocked(60,-60,O.b5.floor),false,'right-turn portal must be physically open');
 assert.equal(w.blocked(...dinnerHallPoint(...D.tables[0]),O.b5.floor),true,'long table must be solid');
 assert.ok(O.b5.clearHeight>D.archSpring+D.archRise+.1,'vault must fit inside cavity');
+const stageTop=O.b5.floor+H.stage.h;
+const stagePoint=dinnerHallPoint(H.stage.x+H.stage.w/2-.48,H.stage.z);
+assert.equal(w.support(...stagePoint,O.b5.floor),stageTop,'dais edge must support a single step');
+assert.equal(w.blocked(...stagePoint,stageTop),false,'dais must have an accessible clear edge');
+for(const prop of [H.table,H.lectern,{x:H.table.x+H.chairOffsets[0],z:H.chairRows[0]}]){
+ assert.equal(w.blocked(...dinnerHallPoint(prop.x,prop.z),stageTop),true,'head-area furniture must be solid');
+}
+
 world.root.updateMatrixWorld(true);
 const crest=world.root.getObjectByName('Opening_b5_reference_crest');assert.ok(crest,'existing reference crest must be present');
 for(let i=0;i<D.tables.length;i++){

@@ -1,0 +1,23 @@
+{
+  "B04-entry": {
+    "frame": 1,
+    "calls": 969,
+    "triangles": 131605,
+    "points": 0,
+    "lines": 0
+  },
+  "dinner-head-normal": {
+    "frame": 2,
+    "calls": 148,
+    "triangles": 27282,
+    "points": 0,
+    "lines": 0
+  },
+  "dinner-head-incident": {
+    "frame": 3,
+    "calls": 148,
+    "triangles": 27282,
+    "points": 0,
+    "lines": 0
+  }
+}
