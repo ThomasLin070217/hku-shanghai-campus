@@ -5,7 +5,8 @@ import {DEFAULT_SETTINGS} from '../gameplay/save';
 import {setHidden, setText} from '../ui/dom';
 import {createLocalAgent} from './agent';
 import {createMacBookExperience} from './macbook';
-import {OPENING_CAPTURE_DAMAGE, OPENING_MAX_HEARTS} from './runtime';
+import {OPENING_CAPTURE_DAMAGE} from './runtime';
+import {createVitalsHud} from '../ui/vitals';
 
 /**
  * English opening UI renderer. It only renders opening state and submits
@@ -92,39 +93,12 @@ export function createOpeningUI(
   warningEl.append(node('span', 'opening-warning-label', T.robot.label), warningStateEl, warningBarEl);
 
   // -------------------------------------------------------------- Hearts.
-  const heartSvg = () => {
-    // A deliberately blocky pixel heart: 11 rows of crisp rects, not an emoji.
-    const left = [1, 0, 0, 0, 0, 1, 1, 2, 2, 3, 3];
-    const right = [2, 3, 7, 7, 7, 6, 6, 5, 5, 4, 4];
-    let rects = '';
-    for (let y = 0; y < left.length; y++) {
-      rects += `<rect x="${left[y]}" y="${y}" width="${right[y] - left[y] + 1}" height="1"/>`;
-    }
-    return `<svg viewBox="0 0 8 11" shape-rendering="crispEdges" aria-hidden="true" focusable="false">${rects}</svg>`;
-  };
-  const heartsCard = node('section', 'opening-hearts');
-  heartsCard.setAttribute('aria-label', 'Vital hearts');
-  const heartsHead = node('div', 'opening-hearts-head');
-  const heartsLabel = node('p', 'opening-hearts-label', 'Vitals');
-  const heartsCount = node('span', 'opening-hearts-count', '10 / 10');
-  heartsHead.append(heartsLabel, heartsCount);
-  const heartsRow = node('div', 'opening-hearts-row');
-  const heartEls: HTMLElement[] = [];
-  for (let i = 0; i < OPENING_MAX_HEARTS; i++) {
-    const heart = node('span', 'opening-heart is-full');
-    heart.innerHTML = heartSvg();
-    heart.setAttribute('aria-hidden', 'true');
-    heartsRow.append(heart);
-    heartEls.push(heart);
-  }
-  heartsCard.append(heartsHead, heartsRow);
-  heartsCard.setAttribute('role', 'img');
-  heartsCard.setAttribute('aria-label', '10 of 10 hearts');
+  const vitals = createVitalsHud();
 
   const dangerVignette = node('div', 'opening-danger-vignette');
   dangerVignette.setAttribute('aria-hidden', 'true');
 
-  stage.append(heartsCard, hud, mapCard, promptEl, warningEl, dangerVignette);
+  stage.append(vitals.element, hud, mapCard, promptEl, warningEl, dangerVignette);
 
   // -------------------------------------------------------------- Modal.
   const modalRoot = node('div', 'opening-modal-root');
@@ -484,7 +458,10 @@ export function createOpeningUI(
     shell.append(body);
     const close = makeButton(T.complete.close, 'primary', requestClose);
     close.dataset.autofocus = 'true';
-    shell.append(actionRow(close));
+    const lawn = makeButton('Play L001 lawn encounter', 'secondary', () => {
+      location.assign('?experience=lion-boss');
+    });
+    shell.append(actionRow(close, lawn));
     return shell;
   }
 
@@ -696,28 +673,6 @@ export function createOpeningUI(
     warningFillEl.style.width = Math.max(6, Math.round(level * 100)) + '%';
   }
 
-  let lastHearts = OPENING_MAX_HEARTS;
-  function updateHearts(view: OpeningView): void {
-    const hearts = Math.max(0, Math.min(view.runtime.maxHearts, Math.round(view.runtime.hearts)));
-    if (hearts !== lastHearts) {
-      for (let i = hearts; i < lastHearts; i++) {
-        const heart = heartEls[i];
-        if (!heart) continue;
-        heart.classList.add('is-hit');
-        setTimeout(() => heart.classList.remove('is-hit'), 720);
-      }
-      lastHearts = hearts;
-    }
-    heartEls.forEach((heart, index) => {
-      heart.classList.toggle('is-full', index < hearts);
-      heart.classList.toggle('is-empty', index >= hearts);
-    });
-    setText(heartsCount, `${hearts} / ${view.runtime.maxHearts}`);
-    heartsCard.classList.toggle('is-low', hearts > 0 && hearts <= 4);
-    heartsCard.classList.toggle('is-empty', hearts <= 0);
-    heartsCard.setAttribute('aria-label', `${hearts} of ${view.runtime.maxHearts} hearts`);
-  }
-
   function update(view: OpeningView): void {
     currentView=view;
     // HUD text only: no modal rebuild on per-frame state such as elapsed time.
@@ -728,7 +683,7 @@ export function createOpeningUI(
     setHidden(promptEl, !view.prompt);
     if (view.prompt) setText(promptEl, view.prompt);
     updateWarning(view);
-    updateHearts(view);
+    vitals.update(view.runtime.hearts);
     const target = view.target;
     if (target) {
       const dx = target[0] - view.player[0];
@@ -779,6 +734,8 @@ export function createOpeningUI(
     mapCard.remove();
     promptEl.remove();
     warningEl.remove();
+    dangerVignette.remove();
+    vitals.dispose();
   }
 
   return {update, dispose};

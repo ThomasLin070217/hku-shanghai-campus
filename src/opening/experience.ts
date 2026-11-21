@@ -43,6 +43,7 @@ export function createOpeningExperience(
  let fleet=createOpeningFleet(explorer.world);scene.add(fleet.root);
  const npcs=createOpeningNPCs();scene.add(npcs.root);const audio=new CampusAudio(settings);audio.enableStory();const voice=createStaffVoice(audio,()=>modal==='staff',()=>modal===null&&story.stage==='to_b6'&&!failed&&explorer.enabled);
  const writerToken=crypto.randomUUID(),writerKey=OPENING_SAVE_KEY+'.writer',events=new AbortController();
+ let robotState='patrol',robotWarning=0;
  const atmo=()=>getAtmosphere?.();
 
  function applySettings(){explorer.setSensitivity(settings.sensitivity);explorer.setComfort(settings.fov,settings.bob);audio.apply(settings);}
@@ -62,6 +63,7 @@ export function createOpeningExperience(
   if(validPose(s)&&story.stage!=='incident'&&story.stage!=='to_b4')pose(s.position,s.yaw);else safePose();
   g.pitch=s.pitch;busClock=8;busReady=story.invitation_read;setBusDoor(explorer.world,story.stage==='bus'&&!busReady);applySettings();
   if(failed)open('caught');
+  else if(story.stage==='complete')open('complete');
   incidentQueued=story.stage==='return_b5';
   if(runtime.curtain_deployed){atmo()?.startIncident();audio.openingAmbience('dark');}
  }
@@ -98,14 +100,14 @@ export function createOpeningExperience(
   if(story.laptop_acquired||g.inventory.slots.some(s=>s?.itemId==='macbook-air-13-silver'))return outcome(false,'already_acquired','The laptop is already in your backpack.');
   if(story.stage!=='to_b6')return outcome(false,'wrong_stage','The presentation MacBook is not available yet.');
   const free=g.inventory.slots.findIndex(s=>s===null);if(free<0)return outcome(false,'inventory_full','Make room in your backpack first.');
-  g.inventory.slots[free]={itemId:'macbook-air-13-silver',instanceId:'opening-macbook-001',count:1};g.inventory.revision++;if(free<9)g.inventory.select(free);else{g.inventory.move(free,0);g.inventory.select(0);}
+  g.inventory.slots[free]={itemId:'macbook-air-13-silver',instanceId:'opening-macbook-'+crypto.randomUUID(),count:1};g.inventory.revision++;if(free<9)g.inventory.select(free);else{g.inventory.move(free,0);g.inventory.select(0);}
   transition('take_laptop');incidentQueued=true;incidentClock=0;disturbancePlayed=false;notify('MacBook Air collected · C to open · E for backpack');audio.play('collect');persist(true);return outcome(true,'laptop_acquired','MacBook Air collected.');
  }
  function computer(page:'map'|'tasks'|'clues'|'submit'|'agent'='tasks'):Outcome{
   if(failed)return outcome(false,'caught','Recover at the checkpoint first.');
   if(story.stage==='bus'){open('invitation');return outcome(true,'invitation_opened','Dinner invitation.');}
   if(!story.laptop_acquired)return outcome(false,'laptop_required','Collect the presentation MacBook from Building 6 first.');
-  const slot=g.inventory.slots.findIndex(s=>s?.itemId==='macbook-air-13-silver');if(slot<0)return outcome(false,'laptop_missing','Required laptop is missing. Reload a valid checkpoint.');if(slot<9)g.inventory.select(slot);else g.inventory.move(slot,g.inventory.selectedHotbar);
+  if(!g.inventory.equipItem('macbook-air-13-silver'))return outcome(false,'laptop_missing','Required laptop is missing. Reload a valid checkpoint.');
   computerPage=page==='map'?'map':page==='agent'?'agent':'tasks';
   open('computer');
   return outcome(true,'page_ready',story.campus_alert_triggered?'Emergency assistant ready.':'Presentation device ready.');
@@ -213,7 +215,6 @@ export function createOpeningExperience(
  window.addEventListener('pagehide',()=>persist(true),{signal:events.signal});document.addEventListener('visibilitychange',()=>{if(document.hidden){persist(true);voice.stop();audio.stopOpeningCues();}},{signal:events.signal});
  for(const id of ['enter-game','enter-compat','enable-ai'])document.getElementById(id)?.addEventListener('click',()=>{void audio.start().then(()=>{if(story.stage==='bus')audio.openingCue('bus');if(runtime.curtain_deployed)audio.openingAmbience('dark');});},{signal:events.signal});
  document.getElementById('experience-settings')?.addEventListener('click',()=>open('settings'),{signal:events.signal});document.getElementById('new-game')?.addEventListener('click',()=>open('settings'),{signal:events.signal});
- let robotState='patrol',robotWarning=0;
  function objectiveFor(){
   if(story.stage==='bus')return story.invitation_read?'Leave the shuttle':'Read your invitation';
   if(story.stage==='return_b5'&&runtime.curtain_deployed)return 'Get back to Building 5';

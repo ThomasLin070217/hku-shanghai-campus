@@ -165,7 +165,13 @@ function builtinReply(text:string,ctx:AgentContext):string{
   :`What I can read: stage ${story.stage}, hearts ${runtime.hearts}/10, MacBook ${story.laptop_acquired?'acquired':'not acquired'}.\n${directions(ctx,zh)}\nAsk me “what happened”, “where are the robots”, or “how do I reach Building 4”.`;
 }
 
-export function createLocalAgent():LocalAgent{
+export interface RecoveryGuide {
+ prompt:(ctx:AgentContext)=>string;
+ reply:(text:string,ctx:AgentContext)=>string;
+ greeting:(ctx:AgentContext)=>string;
+ suggestions:readonly string[];
+}
+export function createLocalAgent(guide?:RecoveryGuide):LocalAgent{
  let controller:AbortController|null=null;
  let disposed=false;
  let status:LocalAgentStatus={mode:'builtin',endpoint:config().endpoint,model:config().model,lastError:null};
@@ -183,7 +189,7 @@ export function createLocalAgent():LocalAgent{
    const turns:ChatTurn[]=[...history.slice(-MAX_HISTORY),{role:'user',content:text}];
    const response=await fetch(c.endpoint,{
     method:'POST',headers,signal:controller.signal,
-    body:JSON.stringify({model:c.model,stream:false,options:{temperature:.4},messages:[{role:'system',content:systemPrompt(ctx)},...turns]}),
+    body:JSON.stringify({model:c.model,stream:false,options:{temperature:.4},messages:[{role:'system',content:(guide?.prompt??systemPrompt)(ctx)},...turns]}),
    });
    if(!response.ok)throw Error('HTTP '+response.status);
    const body=await response.json();
@@ -207,7 +213,7 @@ export function createLocalAgent():LocalAgent{
   // Keep the fallback responsive but not instant; a beat of reading time feels like a system.
   await new Promise<void>(resolve=>setTimeout(resolve,Math.min(420,160+clean.length*3)));
   if(disposed)throw Error('agent disposed');
-  const reply=builtinReply(clean,ctx);
+  const reply=(guide?.reply??builtinReply)(clean,ctx);
   history.push({role:'user',content:clean},{role:'assistant',content:reply});history.splice(0,Math.max(0,history.length-MAX_HISTORY*2));
   return{text:reply,source:'builtin',latencyMs:Math.round((typeof performance!=='undefined'?performance.now():Date.now())-start)};
  }
@@ -217,9 +223,11 @@ export function createLocalAgent():LocalAgent{
   cancel(){controller?.abort();controller=null;},
   status(){return{...status};},
   greeting(ctx){
+   if(guide)return guide.greeting(ctx);
    return `Local Agent online. External network: blocked. I can read this device, your pack and the campus state. ${ctx.story.campus_alert_triggered?'The incident is confirmed.':'No incident is confirmed yet.'} Ask me what happened, where the robots are, or how to reach Building 4.`;
   },
   suggestions(ctx){
+   if(guide)return [...guide.suggestions];
    const {story}=ctx;
    if(!story.laptop_acquired)return['What is this invitation?','Where is the MacBook?','What happened to campus?'];
    if(!story.alert_read)return['What happened to campus?','Why is the network blocked?','What do I do next?'];

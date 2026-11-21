@@ -5,6 +5,11 @@ export class Inventory {
  selectedHotbar=0;revision=0;
  constructor(){this.slots[9]={itemId:'macbook-air-13-silver',instanceId:'student-macbook-001',count:1};}
  get equipped(){return this.slots[this.selectedHotbar];}
+ equipItem(itemId:string){
+  const slot=this.slots.findIndex(stack=>stack?.itemId===itemId);
+  if(slot<0)return false;
+  return slot<9?this.select(slot):this.move(slot,this.selectedHotbar);
+ }
  select(index:number){if(!Number.isInteger(index)||index<0||index>8)return false;if(this.selectedHotbar!==index){this.selectedHotbar=index;this.revision++;}return true;}
  move(from:number,to:number){
   if(![from,to].every(i=>Number.isInteger(i)&&i>=0&&i<36)||from===to)return false;

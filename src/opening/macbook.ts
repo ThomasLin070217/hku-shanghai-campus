@@ -12,18 +12,28 @@ import type {LocalAgent} from './agent';
  * item, pause state and the player body remain owned by the experience.
  */
 
-export type MacApp='desktop'|'finder'|'map'|'agent'|'terminal'|'about'|'invitation';
+export type MacApp='desktop'|'finder'|'map'|'agent'|'terminal'|'about'|'invitation'|'mission';
+type MacView=Pick<OpeningView,'objective'|'detail'|'story'|'runtime'|'player'|'computerPage'>;
 
 interface MacOptions{
- actions:OpeningUIActions;
+ actions?:Pick<OpeningUIActions,'action'>;
  drawMap:(canvas:HTMLCanvasElement,large:boolean)=>void;
  onClose:()=>void;
  agent:LocalAgent;
+ mission?:{
+  title:string;
+  location:string;
+  mapLegend:string;
+  terminal:()=>string[];
+  body:HTMLElement;
+  activate:()=>void;
+ };
 }
 
 interface ChatEntry{role:'user'|'assistant'|'system';text:string;source?:'local-model'|'builtin'}
 
 const ICONS={
+ mission:'<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="5" y="6" width="54" height="52" rx="12" fill="#28654d"/><g fill="none" stroke="#d5f8b4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="m23 23-9 9 9 9m18-18 9 9-9 9m-5-23-8 28"/></g></svg>',
  finder:`<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="fnd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6fd0ff"/><stop offset="1" stop-color="#2f7bff"/></linearGradient></defs><rect x="6" y="6" width="52" height="52" rx="12" fill="url(#fnd)"/><path d="M20 40c4 4 20 4 24 0" stroke="#0a2d63" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="23" cy="27" r="3" fill="#0a2d63"/><circle cx="41" cy="27" r="3" fill="#0a2d63"/><path d="M25 17c3 2 11 2 14 0" stroke="#eaf6ff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
  map:`<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="5" y="7" width="54" height="50" rx="10" fill="#dcefe0"/><path d="M14 44l12-20 8 12 6-9 10 17" stroke="#2d634c" stroke-width="3.4" fill="none" stroke-linejoin="round"/><circle cx="42" cy="20" r="4" fill="#b4812f"/><path d="M12 16h8M12 22h5" stroke="#91b49c" stroke-width="2.4"/></svg>`,
  agent:`<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="5" y="6" width="54" height="52" rx="12" fill="#132820"/><path d="M15 21h34v22H31l-9 8v-8h-7z" fill="#2d634c"/><circle cx="24" cy="32" r="2.6" fill="#d9f0d9"/><circle cx="32" cy="32" r="2.6" fill="#d9f0d9"/><circle cx="40" cy="32" r="2.6" fill="#d9f0d9"/></svg>`,
@@ -41,8 +51,8 @@ function h<K extends keyof HTMLElementTagNameMap>(tag:K,className='',text=''):HT
 const clockString=()=>new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
 
 export function createMacBookExperience(options:MacOptions){
- const {actions,drawMap,onClose,agent}=options;
- let view:OpeningView|null=null;
+ const {actions,drawMap,onClose,agent,mission}=options;
+ let view:MacView|null=null;
  let app:MacApp='desktop';
  let booted=false;
  let alertOpen=false;
@@ -69,6 +79,11 @@ export function createMacBookExperience(options:MacOptions){
  const batteryEl=h('span','opening-mac-battery','▮▮▮▯ 64%');
  const clockEl=h('span','opening-mac-clock',clockString());
  menuRight.append(netEl,batteryEl,clockEl);
+ if(mission){
+  const sleep=h('button','opening-mac-closehint','合上电脑　Esc');
+  sleep.type='button';sleep.dataset.macSleep='';sleep.addEventListener('click',onClose);
+  menuRight.append(sleep);
+ }
  menubar.append(menuLeft,menuRight);
 
  // ------------------------------------------------------------- desktop.
@@ -85,6 +100,7 @@ export function createMacBookExperience(options:MacOptions){
   button.addEventListener('click',()=>setApp(appName));
   desktopIcons.append(button);
  };
+ if(mission)icon('mission',mission.title,ICONS.mission);
  icon('finder','Local Disk',ICONS.finder);
  icon('map','Campus Map',ICONS.map);
  icon('agent','Recovery Agent',ICONS.agent);
@@ -94,6 +110,11 @@ export function createMacBookExperience(options:MacOptions){
  const statusCard=h('section','opening-mac-statuscard');
  statusCard.innerHTML='<p class="opening-mac-status-eyebrow">HKU SHANGHAI · LOCAL RECOVERY</p><h3>Machine access</h3><p class="opening-mac-status-copy">External network is blocked. The Local Agent can read this device and the campus state.</p><div class="opening-mac-status-row"><span>Objective</span><b data-role="objective">—</b></div><div class="opening-mac-status-row"><span>Hearts</span><b data-role="hearts">10 / 10</b></div><div class="opening-mac-status-row"><span>Network</span><b class="is-critical">SEALED</b></div><p class="opening-mac-status-hint">Open <b>Recovery Agent</b> from the dock to continue.</p>';
  const desktopArea=h('div','opening-mac-desktoparea');
+ if(mission){
+  const launch=h('button','opening-mac-secondary','打开'+mission.title);
+  launch.type='button';launch.dataset.launchMission='';
+  launch.addEventListener('click',()=>setApp('mission'));statusCard.append(launch);
+ }
  desktopArea.append(statusCard);
  const windowLayer=h('div','opening-mac-windowlayer');
  const alertLayer=h('div','opening-mac-alert');
@@ -140,6 +161,7 @@ export function createMacBookExperience(options:MacOptions){
  addDock('terminal','Terminal',ICONS.terminal);
  addDock('invitation','High Table invitation',ICONS.invitation);
  addDock('about','About this Mac',ICONS.about);
+ if(mission)addDock('mission',mission.title,ICONS.mission);
 
  root.append(menubar,desktop,dock);
  const appName=menuLeft.querySelector<HTMLElement>('.opening-mac-appname')!;
@@ -149,7 +171,7 @@ export function createMacBookExperience(options:MacOptions){
   const shell=h('section','opening-mac-window '+className+(fill?' is-fill':''));
   const bar=h('div','opening-mac-titlebar');
   const lights=h('div','opening-mac-lights');
-  const red=h('button','opening-mac-light red');red.type='button';red.setAttribute('aria-label','Close MacBook');red.addEventListener('click',onClose);
+  const red=h('button','opening-mac-light red');red.type='button';red.setAttribute('aria-label',mission?'关闭窗口':'Close MacBook');red.addEventListener('click',mission?()=>setApp('desktop'):onClose);
   const yellow=h('button','opening-mac-light yellow');yellow.type='button';yellow.setAttribute('aria-label','Minimize window');yellow.addEventListener('click',()=>setApp('desktop'));
   const green=h('button','opening-mac-light green');green.type='button';green.setAttribute('aria-label','Zoom window');green.addEventListener('click',()=>{zoomed=!zoomed;root.classList.toggle('is-zoomed',zoomed);});
   lights.append(red,yellow,green);
@@ -167,7 +189,10 @@ export function createMacBookExperience(options:MacOptions){
   const hearts=view?`${view.runtime.hearts} / ${view.runtime.maxHearts}`:'10 / 10';
   setRow('objective',objective);setRow('hearts',hearts);
   const note=statusCard.querySelector<HTMLElement>('.opening-mac-status-hint');
-  if(note)note.innerHTML=view?.runtime.agent_chat_unlocked?'Open <b>Recovery Agent</b> from the dock to reach Building 4.':'The MacBook is ready. The <b>Recovery Agent</b> unlocks after the campus alert.';
+  if(note){
+   if(mission)note.textContent='从桌面或程序坞打开「'+mission.title+'」。';
+   else note.innerHTML=view?.runtime.agent_chat_unlocked?'Open <b>Recovery Agent</b> from the dock to reach Building 4.':'The MacBook is ready. The <b>Recovery Agent</b> unlocks after the campus alert.';
+  }
  }
  function setRow(role:string,value:string){
   const el=statusCard.querySelector<HTMLElement>(`[data-role="${role}"]`);if(el)el.textContent=value;
@@ -184,21 +209,23 @@ export function createMacBookExperience(options:MacOptions){
   const main=h('div','opening-mac-findermain');
   main.append(h('p','opening-mac-path','Local Disk › Student Ambassador › High Table'));
   const list=h('div','opening-mac-filelist');
-  for(const [name,kind,appName,meta] of [
+  const files:[string,string,MacApp,string][]=[
    ['High Table Invitation.pdf','PDF · 1 page','invitation','Today 18:12'],
    ['Local Agent.app','Recovery assistant','agent','Today 18:41'],
-   ['Campus Map.app','Opening route','map','Today 18:40'],
+   ['Campus Map.app',mission?.location??'Opening route','map','Today 18:40'],
    ['Recovery notes.txt','Plain text','terminal','Today 18:41'],
    ['Presentation.key','Keynote · 42 MB','about','12 Nov 2030'],
-  ] as [string,string,MacApp,string][]){
+  ];
+  if(mission)files.unshift([mission.title+'.app','Recovery application','mission','Today']);
+  for(const [name,kind,appName,meta] of files){
    const row=h('button','opening-mac-filerow');row.type='button';
-   const ic=h('span','opening-mac-fileicon');ic.innerHTML=appName==='agent'?ICONS.agent:appName==='map'?ICONS.map:appName==='terminal'?ICONS.terminal:ICONS.invitation;
+   const ic=h('span','opening-mac-fileicon');ic.innerHTML=appName==='mission'?ICONS.mission:appName==='agent'?ICONS.agent:appName==='map'?ICONS.map:appName==='terminal'?ICONS.terminal:ICONS.invitation;
    row.append(ic,h('span','opening-mac-filename',name),h('span','opening-mac-filekind',kind),h('span','opening-mac-filemeta',meta));
    row.addEventListener('dblclick',()=>setApp(appName));
    row.addEventListener('click',()=>{for(const other of Array.from(list.querySelectorAll('.is-selected')))other.classList.remove('is-selected');row.classList.add('is-selected');});
    list.append(row);
   }
-  main.append(toolbar([h('span','opening-mac-tool-text','5 items · Local Disk'),h('span','opening-mac-tool-spacer'),h('span','opening-mac-tool-status','External volumes unavailable')]),list);
+  main.append(toolbar([h('span','opening-mac-tool-text',files.length+' items · Local Disk'),h('span','opening-mac-tool-spacer'),h('span','opening-mac-tool-status','External volumes unavailable')]),list);
   body.append(sidebar,main);
   return windowShell('finder','Finder','Local Disk › High Table',body,true);
  }
@@ -206,16 +233,17 @@ export function createMacBookExperience(options:MacOptions){
  function mapApp(){
   const body=h('div','opening-mac-map');
   const canvas=h('canvas','opening-mac-mapcanvas');canvas.width=620;canvas.height=680;
-  canvas.setAttribute('role','img');canvas.setAttribute('aria-label','Campus map with the current opening route. North is up.');
+  canvas.setAttribute('role','img');canvas.setAttribute('aria-label',mission?.location??'Campus map with the current opening route. North is up.');
   const side=h('aside','opening-mac-mapinfo');
-  side.append(h('p','opening-mac-eyebrow','CAMPUS ROUTE'),h('h3','','Building 4 · main entrance'),h('p','opening-mac-muted','The blue arrow is you. Orange is the current objective. The dashed line is the safe walking surface, not indoor navigation.'));
+  side.append(h('p','opening-mac-eyebrow','CAMPUS ROUTE'),h('h3','',mission?.location??'Building 4 · main entrance'),h('p','opening-mac-muted',mission?.mapLegend??'The blue arrow is you. Orange is the current objective. The dashed line is the safe walking surface, not indoor navigation.'));
   const objective=h('div','opening-mac-card');
   objective.append(h('p','opening-mac-cardlabel','CURRENT OBJECTIVE'),h('b','opening-mac-cardtitle',view?.objective??'—'),h('p','opening-mac-muted',view?.detail??''));
-  side.append(objective,h('p','opening-mac-muted','Legend · North up · red scan cones indicate robot coverage.'));
+  side.append(objective);
+  if(!mission)side.append(h('p','opening-mac-muted','Legend · North up · red scan cones indicate robot coverage.'));
   body.append(canvas,side);
   mapDrawn=false;
   requestAnimationFrame(()=>{if(!mapDrawn){mapDrawn=true;try{drawMap(canvas,true);}catch{/* keep the window alive */}}});
-  return windowShell('map','Campus Map','Opening route · sealed perimeter',body,true);
+  return windowShell('map','Campus Map',mission?.location??'Opening route · sealed perimeter',body,true);
  }
 
  function agentApp(){
@@ -273,7 +301,7 @@ export function createMacBookExperience(options:MacOptions){
  function terminalApp(){
   const body=h('div','opening-mac-terminal');
   const pre=h('pre','opening-mac-terminaltext');
-  const lines=[
+  const lines=mission?.terminal()??[
    'HKU-SHANGHAI-MACBOOK — recovery shell',
    'user: ambassador   mode: offline',
    '',
@@ -300,7 +328,7 @@ export function createMacBookExperience(options:MacOptions){
   const info=h('div','opening-mac-aboutinfo');
   info.append(h('p','opening-mac-eyebrow','THIS MAC'),h('h3','','MacBook Air · 13-inch'),h('p','opening-mac-muted','Recovery build · 2030.11.14 · Original game UI, not an Apple asset.'));
   const grid=h('dl','opening-mac-aboutgrid');
-  for(const [k,v] of [['Chip','Local recovery M-series'],['Network','Sealed by AI barrier'],['Storage','5 files · 42 MB'],['Agent','On-device · offline'],['Owner','Student Ambassador']]){
+  for(const [k,v] of [['Chip','Local recovery M-series'],['Network','Sealed by AI barrier'],['Storage',mission?'Local recovery volume':'5 files · 42 MB'],['Agent','On-device · offline'],['Owner','Student Ambassador']]){
    const row=h('div');row.append(h('dt','',k),h('dd','',v));grid.append(row);
   }
   info.append(grid);
@@ -326,9 +354,14 @@ export function createMacBookExperience(options:MacOptions){
   desktopArea.hidden=app!=='desktop';
   desktopIcons.hidden=app!=='desktop';
   root.dataset.app=app;
-  appName.textContent=app==='desktop'?'Finder':app==='finder'?'Finder':app==='map'?'Campus Map':app==='agent'?'Local Agent':app==='terminal'?'Terminal':app==='about'?'About This Mac':'Preview';
+  appName.textContent=app==='mission'&&mission?mission.title:app==='desktop'?'Finder':app==='finder'?'Finder':app==='map'?'Campus Map':app==='agent'?'Local Agent':app==='terminal'?'Terminal':app==='about'?'About This Mac':'Preview';
   for(const button of dockItems)button.classList.toggle('is-active',button.dataset.app===app);
   if(app==='desktop'){renderDesktop();return;}
+  if(app==='mission'&&mission){
+   windowLayer.append(windowShell('mission',mission.title,mission.location,mission.body,true));
+   mission.activate();
+   return;
+  }
   const viewNode=app==='finder'?finderApp():app==='map'?mapApp():app==='agent'?agentApp():app==='terminal'?terminalApp():app==='about'?aboutApp():invitationApp();
   windowLayer.append(viewNode);
 }
@@ -420,7 +453,7 @@ export function createMacBookExperience(options:MacOptions){
  enableBtn.addEventListener('click',()=>{
   if(!view)return;
   alertOpen=false;alertLayer.hidden=true;
-  actions.action('read_alert');
+  actions?.action('read_alert');
   app='agent';
   appendChat({role:'system',text:'Emergency assistance enabled · Local Agent session promoted'});
   appendChat({role:'assistant',text:'I have control of this device only. The campus network is hostile, the perimeter is sealed, and external messages cannot leave. Your next objective is outside the Building 4 main entrance. Keep the MacBook in your pack. Ask me for directions when you are ready.',source:'builtin'});
@@ -435,7 +468,7 @@ export function createMacBookExperience(options:MacOptions){
   app=next;zoomed=false;root.classList.remove('is-zoomed');renderWindow();
  }
 
- function open(nextView:OpeningView){
+ function open(nextView:MacView){
   view=nextView;
   if(!booted){
    booted=true;
@@ -445,13 +478,14 @@ export function createMacBookExperience(options:MacOptions){
   syncAlert();
   if(nextView.story.campus_alert_triggered)root.dataset.phase='night';
   if(nextView.runtime.agent_chat_unlocked&&app==='desktop')app='agent';
-  if(nextView.computerPage==='map')app='map';
+  if(mission)app='desktop';
+  else if(nextView.computerPage==='map')app='map';
   else if(nextView.computerPage==='agent')app='agent';
   renderWindow();
   updateChrome();
  }
 
- function update(nextView:OpeningView){
+ function update(nextView:MacView){
   view=nextView;
   syncAlert();
   root.dataset.phase=alertOpen?'alert':nextView.story.campus_alert_triggered?'night':'day';
@@ -489,5 +523,5 @@ export function createMacBookExperience(options:MacOptions){
   root.remove();
  }
 
- return{root,open,update,focusFirst,dispose,get app(){return app;},get alertOpen(){return alertOpen;}};
+ return{root,open,update,focusFirst,showDesktop:()=>setApp('desktop'),dispose,get app(){return app;},get alertOpen(){return alertOpen;}};
 }

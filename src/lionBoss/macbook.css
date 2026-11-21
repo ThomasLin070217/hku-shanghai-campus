@@ -1,0 +1,10 @@
+.boss-mac-overlay { position:fixed;inset:0;z-index:120;display:grid;place-items:center;background:#061812bf;backdrop-filter:blur(5px) }
+.boss-mac-overlay>.opening-mac { width:min(1180px,96vw);height:min(820px,94dvh) }
+.boss-mac-content { flex:1;min-height:0 }
+.boss-mac-overlay .opening-mac-window.mission { width:min(930px,calc(100% - 34px));height:calc(100% - 90px);top:calc(50% - 26px) }
+.boss-mac-overlay .opening-mac-closehint { padding:3px 10px;white-space:nowrap }
+.boss-mac-overlay [data-launch-mission] { margin-top:12px;pointer-events:auto }
+@media(max-width:620px) {
+  .boss-mac-overlay .opening-mac-window.mission { width:calc(100% - 8px) }
+  .boss-mac-overlay .opening-mac-menuitem,.boss-mac-overlay .opening-mac-battery { display:none }
+}

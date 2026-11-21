@@ -48,6 +48,7 @@
     "check:video-followup": "tsx scripts/check-video-followup.ts",
     "scene:opening": "tsx scripts/scene-catalog.ts --opening",
     "check:opening": "tsx scripts/check-opening-state.ts && tsx scripts/check-opening-robot.ts && tsx scripts/check-opening-fleet.ts && tsx scripts/check-opening-runtime.ts && tsx scripts/check-opening-atmosphere.ts && tsx scripts/check-opening-world.ts && tsx scripts/check-opening-integration.ts && tsx scripts/check-opening-reference.ts && tsx scripts/check-opening-npcs.ts",
+    "check:lion-boss": "tsx scripts/check-lion-boss.ts",
     "check:door": "tsx scripts/check-sports-door.ts"
   },
   "dependencies": {
