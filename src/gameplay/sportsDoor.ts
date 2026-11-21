@@ -15,16 +15,16 @@ export function createSportsRescueExperience(explorer:ReturnType<typeof createEx
  const pause=document.querySelector<HTMLElement>('.pause-card')!;
  const start=pause.querySelector<HTMLButtonElement>('#enter-game')!;
  const next=document.createElement('a');
- next.href='?experience=lion-boss';next.textContent='下一关 · 草坪 L001 →';next.style.textDecoration='underline';next.hidden=true;
+ next.href='?experience=levels';next.textContent='Back to chapters';next.style.textDecoration='underline';next.hidden=true;
  start.before(next);
  const brief=pause.querySelector('p')!;
- pause.querySelector('h2')!.textContent='体育馆营救';
- brief.textContent='100 名学生被困在体育馆。你正面对东门，开始后按 F 检查门锁，补全数独，再输入四位密码。';
- start.textContent='开始营救';
- pause.querySelector<HTMLElement>('#session-save')!.textContent='每次进入本关都会从东门重新开始。';
+ pause.querySelector('h2')!.textContent='Sports Hall Rescue';
+ brief.textContent='100 students are trapped in the sports hall. You are facing the east door. Press F to inspect the lock, complete the sudoku, then enter the four-digit password.';
+ start.textContent='Start the rescue';
+ pause.querySelector<HTMLElement>('#session-save')!.textContent='Each visit starts again at the east door.';
  pause.querySelector<HTMLElement>('#experience-settings')!.hidden=true;
  const replay=pause.querySelector<HTMLButtonElement>('#new-game')!;
- replay.textContent='重玩体育馆营救';
+ replay.textContent='Replay Sports Hall Rescue';
  replay.addEventListener('click',()=>location.reload(),{signal:events.signal});
  function relocate(){
   const door=sportsDoorWorld(game.site.sportsZ),x=door.x+2.6;
@@ -45,10 +45,10 @@ export function createSportsRescueExperience(explorer:ReturnType<typeof createEx
   audio,relocate,openSettings,
   persist(_force=false){/* Standalone rescue is session-only. */},
   update(){
-   if(!game.paused&&!started){started=true;start.textContent='继续营救';}
+   if(!game.paused&&!started){started=true;start.textContent='Continue the rescue';}
    if(game.doors[SPORTS_DOOR.id]&&!rescued){
-    rescued=true;next.hidden=false;start.textContent='进入体育馆';
-    brief.textContent='东门已开启，100 名学生获救。你可以进馆看看，或前往草坪处理 L001。';
+    rescued=true;next.hidden=false;start.textContent='Enter the sports hall';
+    brief.textContent='The east door is open and 100 students are free. Go inside to look around, or return to the chapters.';
    }
    const p=game.body.position;
    audio.update(explorer.student.gait,game.paused||!explorer.enabled,explorer.world.surface(p.x,p.z,p.y),p,explorer.camera.position,game.yaw);
@@ -66,15 +66,15 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
  document.querySelector('.stage')!.append(prompt);
  const puzzle=SPORTS_HALL_PUZZLE,pass=puzzle.password;
  const panel=document.createElement('div');panel.id='door-lock-panel';panel.hidden=true;
- panel.innerHTML=`<section role="dialog" aria-modal="true" aria-labelledby="door-lock-title"><header><div><span class="eyebrow">SPORTS HALL · EAST DOOR</span><h2 id="door-lock-title">${puzzle.title}</h2></div><button id="door-lock-close" aria-label="关闭门锁">关闭</button></header><div id="door-lock-sudoku-step"><p class="door-lock-lead">${puzzle.lead}</p><div id="door-lock-grid" role="group" aria-label="9 乘 9 数独，4 个空格"></div><div class="door-lock-actions"><button id="door-lock-hint">提示</button><button id="door-lock-confirm">确认</button></div><p id="door-lock-status" role="status"></p></div><div id="door-lock-password-step" hidden><p class="door-lock-lead">${pass.lead}</p><p class="door-lock-hint">提示：<b>${pass.hint}</b></p><div id="door-lock-code" role="group" aria-label="${pass.length} 位数字密码"></div><div id="door-lock-keypad" role="group" aria-label="数字键盘"></div><p id="door-lock-code-status" role="status"></p></div></section>`;
+ panel.innerHTML=`<section role="dialog" aria-modal="true" aria-labelledby="door-lock-title"><header><div><span class="eyebrow">SPORTS HALL · EAST DOOR</span><h2 id="door-lock-title">${puzzle.title}</h2></div><button id="door-lock-close" aria-label="Close the door lock">Close</button></header><div id="door-lock-sudoku-step"><p class="door-lock-lead">${puzzle.lead}</p><div id="door-lock-grid" role="group" aria-label="9 by 9 sudoku, 4 blanks"></div><div class="door-lock-actions"><button id="door-lock-hint">Hint</button><button id="door-lock-confirm">Confirm</button></div><p id="door-lock-status" role="status"></p></div><div id="door-lock-password-step" hidden><p class="door-lock-lead">${pass.lead}</p><p class="door-lock-hint">Hint: <b>${pass.hint}</b></p><div id="door-lock-code" role="group" aria-label="${pass.length}-digit password"></div><div id="door-lock-keypad" role="group" aria-label="Number keypad"></div><p id="door-lock-code-status" role="status"></p></div></section>`;
  document.body.append(panel);
  const banner=document.createElement('div');banner.id='rescue-banner';banner.hidden=true;
- banner.innerHTML=`<div role="status" aria-live="polite"><span class="eyebrow">SPORTS HALL · EAST DOOR</span><h2>You have successfully rescued the students!</h2><p>100 students are safe. The hall is clear.</p><small>Click anywhere to dismiss</small></div>`;
+ banner.innerHTML=`<div role="status" aria-live="polite"><span class="eyebrow">SPORTS HALL · EAST DOOR</span><h2>You rescued the students.</h2><p>100 students are safe. The hall is clear.</p><p class="rescue-ending">The End. Thanks for playing BARRIER 2030.</p><p class="rescue-links"><a href="?experience=levels">Back to chapters</a></p><small>Click anywhere to dismiss</small></div>`;
  document.body.append(banner);
  if(options.standalone){
   const actions=document.createElement('p');
-  const next=document.createElement('a');next.href='?experience=lion-boss';next.textContent='下一关 · 前往草坪调查 L001 →';next.style.textDecoration='underline';
-  const dismiss=document.createElement('button');dismiss.type='button';dismiss.textContent='留在体育馆';
+  const next=document.createElement('a');next.href='?experience=levels';next.textContent='Back to chapters';next.style.textDecoration='underline';
+  const dismiss=document.createElement('button');dismiss.type='button';dismiss.textContent='Stay in the sports hall';
   actions.append(next,'　',dismiss);banner.querySelector('small')!.replaceWith(actions);
   next.addEventListener('click',event=>event.stopPropagation());
  }
@@ -91,20 +91,20 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
  const codeBox=panel.querySelector<HTMLElement>('#door-lock-code')!,keypad=panel.querySelector<HTMLElement>('#door-lock-keypad')!,codeStatus=panel.querySelector<HTMLElement>('#door-lock-code-status')!;
  const inputs:HTMLInputElement[]=[],slots:HTMLElement[]=[];
  puzzle.rows.forEach((row,r)=>[...row].forEach((digit,c)=>{
-  if(digit!=='*'){const cell=document.createElement('div');cell.className='sudoku-cell';cell.textContent=digit;cell.setAttribute('aria-label',`第 ${r+1} 行第 ${c+1} 列：${digit}`);grid.append(cell);return;}
+  if(digit!=='*'){const cell=document.createElement('div');cell.className='sudoku-cell';cell.textContent=digit;cell.setAttribute('aria-label',`Row ${r+1}, column ${c+1}: ${digit}`);grid.append(cell);return;}
   const blank=puzzle.blanks[inputs.length],input=document.createElement('input');
   input.className='sudoku-cell';input.type='text';input.inputMode='numeric';input.autocomplete='off';input.maxLength=1;input.dataset.blank=String(blank.order);
-  input.setAttribute('aria-label',`第 ${blank.order} 个空，第 ${r+1} 行第 ${c+1} 列，填入 1–9`);grid.append(input);inputs.push(input);
+  input.setAttribute('aria-label',`Blank ${blank.order}, row ${r+1}, column ${c+1}, enter 1–9`);grid.append(input);inputs.push(input);
  }));
  for(let i=0;i<pass.length;i++){const slot=document.createElement('div');slot.className='code-slot';slot.textContent='·';slots.push(slot);codeBox.append(slot);}
- for(const key of ['1','2','3','4','5','6','7','8','9','back','0','ok']){const button=document.createElement('button');button.type='button';button.dataset.key=key;button.textContent=key==='back'?'←':key==='ok'?'确认':key;if(key==='ok')button.setAttribute('aria-label','确认密码');if(key==='back')button.setAttribute('aria-label','删除一位');keypad.append(button);}
+ for(const key of ['1','2','3','4','5','6','7','8','9','back','0','ok']){const button=document.createElement('button');button.type='button';button.dataset.key=key;button.textContent=key==='back'?'←':key==='ok'?'Confirm':key;if(key==='ok')button.setAttribute('aria-label','Confirm password');if(key==='back')button.setAttribute('aria-label','Delete one digit');keypad.append(button);}
  let rootRef:T.Object3D|null=null,left:T.Object3D|null=null,right:T.Object3D|null=null,led:T.MeshStandardMaterial|null=null;
  let swing=0,flash=0,applied:boolean|null=null,appliedWorld:CampusGame['body']['world']|null=null,opened=false,stage:'sudoku'|'password'='sudoku',sudokuSolved=false,code:string[]=[];
  const isOpen=()=>game().doors[SPORTS_DOOR.id]===true;
  const setStatus=(el:HTMLElement,text:string,tone:'ok'|'warn'|'error'|''='')=>{el.textContent=text;el.dataset.tone=tone;};
- function renderCode(){slots.forEach((slot,i)=>{slot.textContent=code[i]??'·';slot.classList.toggle('filled',!!code[i]);});codeBox.setAttribute('aria-label',`${pass.length} 位数字密码，已输入 ${code.length} 位`);}
+ function renderCode(){slots.forEach((slot,i)=>{slot.textContent=code[i]??'·';slot.classList.toggle('filled',!!code[i]);});codeBox.setAttribute('aria-label',`${pass.length}-digit password, ${code.length} entered`);}
  function showStage(next:'sudoku'|'password'){
-  stage=next;const sudoku=next==='sudoku';sudokuStep.hidden=!sudoku;passwordStep.hidden=sudoku;title.textContent=sudoku?puzzle.title:'门禁密码';
+  stage=next;const sudoku=next==='sudoku';sudokuStep.hidden=!sudoku;passwordStep.hidden=sudoku;title.textContent=sudoku?puzzle.title:'Door password';
   if(sudoku){inputs[0]?.focus({preventScroll:true});}else{code=[];renderCode();setStatus(codeStatus,'');keypad.querySelector<HTMLButtonElement>('[data-key="1"]')?.focus({preventScroll:true});}
  }
  function reset(){for(const input of inputs)input.value='';setStatus(statusLine,'');code=[];renderCode();setStatus(codeStatus,'');card.classList.remove('shake');}
@@ -118,13 +118,13 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
   if(!opened||stage!=='sudoku')return;
   const digits=inputs.map(input=>input.value.trim());
   const missing=digits.filter(d=>!/^[1-9]$/.test(d)).length;
-  if(missing){setStatus(statusLine,`还有 ${missing} 个空格没有填。`,'warn');inputs[digits.findIndex(d=>!/^[1-9]$/.test(d))]?.focus();return;}
+  if(missing){setStatus(statusLine,`${missing} blanks are still empty.`,'warn');inputs[digits.findIndex(d=>!/^[1-9]$/.test(d))]?.focus();return;}
   if(!checkCode(puzzle,digits)){setStatus(statusLine,puzzle.failure,'error');card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');audio(false);return;}
   sudokuSolved=true;showStage('password');
  }
  function submitPassword(){
   if(!opened||stage!=='password')return;
-  if(code.length<pass.length){setStatus(codeStatus,`请输入 ${pass.length} 位数字。`,'warn');return;}
+  if(code.length<pass.length){setStatus(codeStatus,`Enter ${pass.length} digits.`,'warn');return;}
   if(!checkPassword(puzzle,code)){setStatus(codeStatus,pass.failure,'error');code=[];renderCode();card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');audio(false);return;}
   unlock();closeLock(!options.standalone);
  }
@@ -189,11 +189,11 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
  }
  function interact(){
   const g=game();if(g.paused||g.inventoryOpen||g.panel)return false;if(!near(g))return false;
-  if(isOpen()){notify('玻璃门已开启，可以直接通过。');return true;}
+  if(isOpen()){notify('The glass door is open. Walk through.');return true;}
   flash=1;openLock();return true;
  }
- function unlock(){if(isOpen())return;game().doors[SPORTS_DOOR.id]=true;options.persist?.();notify('两道校验通过，玻璃门正在打开。');audio(true);showRescue();}
- function lock(){game().doors[SPORTS_DOOR.id]=false;options.persist?.();notify('门禁锁已重新锁定。');}
+ function unlock(){if(isOpen())return;game().doors[SPORTS_DOOR.id]=true;options.persist?.();notify('Both checks passed. The glass door is opening.');audio(true);showRescue();}
+ function lock(){game().doors[SPORTS_DOOR.id]=false;options.persist?.();notify('The door lock is engaged again.');}
  function update(dt:number){
   ensure();const g=game(),open=isOpen();
   swing=T.MathUtils.damp(swing,open?1:0,7,Math.min(dt,.1));
@@ -204,7 +204,7 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
   syncCollision(g);
   const show=!g.paused&&!g.inventoryOpen&&!g.panel&&!open&&near(g);
   prompt.hidden=!show;
-  if(show)prompt.textContent=`${keyLabel(KEYS.interact)}  检查门禁锁 · 玻璃门已锁定`;
+  if(show)prompt.textContent=`${keyLabel(KEYS.interact)}  Inspect the lock · Glass door locked`;
   if(opened&&!g.panel)closeLock();
  }
  function dispose(){clearTimeout(bannerTimer);banner.remove();panel.remove();prompt.remove();}
