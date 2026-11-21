@@ -2,11 +2,11 @@
   "schemaStatus": "draft-awaiting-runtime-schema",
   "schemaVersion": 1,
   "id": "robot.helper.unitree",
-  "displayName": "宇树机器人助手",
+  "displayName": "Unitree robot helper",
   "workingNickname": "阿树",
   "nameStatus": "temporary",
   "brandStatus": "team-proposal-pending-confirmation",
-  "role": "未感染的四足机器人助手",
+  "role": "Uninfected quadruped robot helper",
   "verbalDialogue": false,
   "commands": [
     "follow",
@@ -14,9 +14,9 @@
     "distract"
   ],
   "feedback": {
-    "accepted": "一声短提示音并执行动作",
-    "rejected": "两声短提示音并在界面显示原因",
-    "unavailable": "指令当前不可用"
+    "accepted": "One short cue tone, then it performs the action",
+    "rejected": "Two short cue tones and the reason shown on screen",
+    "unavailable": "Command not available right now"
   }
 }
 

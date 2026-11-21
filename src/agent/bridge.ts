@@ -21,7 +21,7 @@ export function connectAgent(getGame:()=>CampusGame,screenshot:()=>string,status
   if(disposed)return;clearTimeout(retry);lastHeartbeat=0;
   const previous=socket,ws=new WebSocket(`ws://127.0.0.1:${import.meta.env.VITE_AGENT_PORT||8788}/game`+(claim?'?claim=1':''));socket=ws;previous?.close();
   // A closing old socket must never revoke a newer connection or its authority.
-  ws.onopen=()=>{if(socket!==ws)return;lastHeartbeat=Date.now();ws.send(JSON.stringify({type:'ready'}));getGame().eventSink=pump;status('本机 AI 服务：此窗口已连接 · 127.0.0.1:'+ (import.meta.env.VITE_AGENT_PORT||8788));};
+  ws.onopen=()=>{if(socket!==ws)return;lastHeartbeat=Date.now();ws.send(JSON.stringify({type:'ready'}));getGame().eventSink=pump;status('Local AI service: this window is connected · 127.0.0.1:'+ (import.meta.env.VITE_AGENT_PORT||8788));};
   ws.onmessage=e=>{if(socket!==ws)return;let msg;try{msg=JSON.parse(e.data);}catch{return;}
    if(msg.type==='heartbeat'){lastHeartbeat=Date.now();ws.send(JSON.stringify({type:'heartbeat'}));return;}
    if(msg.type!=='rpc')return;const g=getGame(),args=msg.args;let result:unknown;
@@ -40,10 +40,10 @@ export function connectAgent(getGame:()=>CampusGame,screenshot:()=>string,status
    }catch{result={ok:false,error:'invalid_request'};}
    if(ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify({type:'result',id:msg.id,result}));
   };
-  ws.onerror=()=>{if(socket===ws)status('本机 AI 未连接：运行 npm run agent:server；若其他窗口占用，点击开启 AI 切换。');};
+  ws.onerror=()=>{if(socket===ws)status('Local AI not connected: run npm run agent:server; if another window holds it, click Enable AI to switch.');};
   ws.onclose=e=>{if(socket!==ws)return;socket=null;lastHeartbeat=0;detach();revoke('bridge_disconnected');
-   if(e.code===4001){status('另一个校园窗口已接管服务；本窗口已停控。点击开启 AI 可切回。');return;}
-   status('本机 AI 未连接：运行 npm run agent:server；若其他窗口占用，点击开启 AI 切换。');if(!disposed)retry=setTimeout(()=>connect(),2000);
+   if(e.code===4001){status('Another campus window took over the service; this window has stopped control. Click Enable AI to switch back.');return;}
+   status('Local AI not connected: run npm run agent:server; if another window holds it, click Enable AI to switch.');if(!disposed)retry=setTimeout(()=>connect(),2000);
   };
  }
  const watchdog=setInterval(()=>{if(lastHeartbeat&&Date.now()-lastHeartbeat>1800){revoke('bridge_timeout');socket?.close();lastHeartbeat=0;}},250);

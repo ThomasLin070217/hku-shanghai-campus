@@ -2,7 +2,7 @@
   "schemaStatus": "draft-awaiting-runtime-schema",
   "schemaVersion": 1,
   "chapterId": "chapter.01",
-  "title": "失控的开学典礼",
+  "title": "The Runaway Opening Ceremony",
   "year": 2040,
   "estimatedMinutes": {
     "min": 8,
@@ -12,22 +12,22 @@
   "locations": [
     {
       "id": "location.building.05.high-table",
-      "label": "五号楼高桌晚宴区",
+      "label": "Building 5 high table dining area",
       "status": "placement-pending"
     },
     {
       "id": "location.building.03.central",
-      "label": "三号楼（中央楼）",
+      "label": "Building 3 (Central Building)",
       "status": "placement-pending"
     },
     {
       "id": "location.building.04.cds1-control",
-      "label": "四号楼（CDS-1）控制中心",
+      "label": "Building 4 (CDS-1) control centre",
       "status": "fictional-layout-pending"
     },
     {
       "id": "location.campus.lawn",
-      "label": "校园草坪",
+      "label": "Campus lawn",
       "status": "placement-pending"
     }
   ],
@@ -53,35 +53,35 @@
   "stages": [
     {
       "id": "dinner.duty",
-      "objective": "完成高桌晚宴值勤",
+      "objective": "Finish the high table dinner duty",
       "locationId": "location.building.05.high-table",
       "completion": "event.dinner-checkin-complete",
       "next": "attack.assignment"
     },
     {
       "id": "attack.assignment",
-      "objective": "接受前往控制中心的任务",
+      "objective": "Accept the mission to the control centre",
       "locationId": "location.building.05.high-table",
       "completion": "dialogue.assignment-acknowledged",
       "next": "route.central-building"
     },
     {
       "id": "route.central-building",
-      "objective": "经过中央楼前往四号楼",
+      "objective": "Pass the Central Building to reach Building 4",
       "locationId": "location.building.03.central",
       "completion": "trigger.control-room-arrival",
       "next": "control.inspect"
     },
     {
       "id": "control.inspect",
-      "objective": "阅读应急说明并启动离线程序",
+      "objective": "Read the emergency notes and start the offline procedure",
       "locationId": "location.building.04.cds1-control",
       "completion": "interaction.control-console-opened",
       "next": "control.decrypt"
     },
     {
       "id": "control.decrypt",
-      "objective": "恢复本地机器人控制",
+      "objective": "Restore local robot control",
       "locationId": "location.building.04.cds1-control",
       "puzzleId": "puzzle.control-restore",
       "completion": "puzzle.control-restore.solved",
@@ -89,35 +89,35 @@
     },
     {
       "id": "helper.tutorial",
-      "objective": "启动宇树助手并完成牵制教学",
+      "objective": "Start the Unitree helper and finish the distraction tutorial",
       "locationId": "location.building.04.cds1-control",
       "completion": "event.helper-tutorial-complete",
       "next": "boss.device.01"
     },
     {
       "id": "boss.device.01",
-      "objective": "启动第一处紧急关闭装置",
+      "objective": "Activate the first emergency shutdown device",
       "locationId": "location.campus.lawn",
       "completion": "device.shutdown.01.active",
       "next": "boss.device.02"
     },
     {
       "id": "boss.device.02",
-      "objective": "启动第二处紧急关闭装置",
+      "objective": "Activate the second emergency shutdown device",
       "locationId": "location.campus.lawn",
       "completion": "device.shutdown.02.active",
       "next": "boss.device.03"
     },
     {
       "id": "boss.device.03",
-      "objective": "启动第三处紧急关闭装置",
+      "objective": "Activate the third emergency shutdown device",
       "locationId": "location.campus.lawn",
       "completion": "device.shutdown.03.active",
       "next": "chapter.complete"
     },
     {
       "id": "chapter.complete",
-      "objective": "观看结尾",
+      "objective": "Watch the ending",
       "locationId": "location.campus.lawn",
       "completion": "event.chapter-01-complete",
       "next": null
@@ -132,8 +132,8 @@
   ],
   "ending": {
     "id": "ending.lion-safe-shutdown",
-    "summary": "三处关闭装置启动，巨型狮子机器人完成行礼后安全关机。",
-    "finalHook": "入侵来源：未知。"
+    "summary": "All three shutdown devices activate; the giant lion robot bows and powers down safely.",
+    "finalHook": "Intrusion source: unknown."
   }
 }
 

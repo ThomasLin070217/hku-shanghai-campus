@@ -78,8 +78,8 @@ export function perceive(game:CampusGame):Perception{
   const name=ITEMS[equipped.itemId]?.name??equipped.itemId;
   interactables.push({id:equipped.itemId,name,verb:'equip',distance:0,bearingDeg:0,inView:true,lineOfSight:true,reachable:true,requiredDistance:0});
   if(equipped.itemId==='macbook-air-13-silver'){
-   interactables.push({id:'computer',name:'电脑 · 地图 / 任务 / 线索',verb:'open',distance:0,bearingDeg:0,inView:true,lineOfSight:true,reachable:true,requiredDistance:0});
-   interactables.push({id:'computer-submit',name:'提交校园数字档案',verb:'submit',distance:0,bearingDeg:0,inView:true,lineOfSight:true,reachable:true,requiredDistance:0});
+   interactables.push({id:'computer',name:'Computer · map / tasks / clues',verb:'open',distance:0,bearingDeg:0,inView:true,lineOfSight:true,reachable:true,requiredDistance:0});
+   interactables.push({id:'computer-submit',name:'Submit campus digital archive',verb:'submit',distance:0,bearingDeg:0,inView:true,lineOfSight:true,reachable:true,requiredDistance:0});
   }
  }
  interactables.sort((a,b)=>a.distance-b.distance);
@@ -109,15 +109,15 @@ export function perceive(game:CampusGame):Perception{
  }
  const survey=game.survey.progress,marksWithClue=marks.filter(l=>l.clueId).length;
  const hud:string[]=[];
- if(game.inventoryOpen)hud.push('背包：已打开');
- else if(game.panel)hud.push('面板：'+(game.panel==='computer'?'电脑':'设置'));
- else if(game.paused)hud.push('暂停：'+(game.pauseReason??(game.armed?'等待玩家继续':'AI 未开启')));
- if(target)hud.push('交互：按 F '+(target.actions[0]==='collect'?'采集记录':'查看记录'));
- if(equipped)hud.push('已装备：'+(ITEMS[equipped.itemId]?.name??equipped.itemId));
- hud.push(`巡检：${survey.collected.length}/${marksWithClue} 条记录`);
- if(survey.completed)hud.push('档案：已同步');
- else if(survey.collected.length>=marksWithClue)hud.push('提示：装备 MacBook 打开电脑提交');
- if(game.armed&&game.owner)hud.push('AI 控制：'+game.owner);
+ if(game.inventoryOpen)hud.push('Backpack: open');
+ else if(game.panel)hud.push('Panel: '+(game.panel==='computer'?'computer':'Settings'));
+ else if(game.paused)hud.push('Paused: '+(game.pauseReason??(game.armed?'waiting for the player':'AI is off')));
+ if(target)hud.push('Interact: F '+(target.actions[0]==='collect'?'collect the record':'View record'));
+ if(equipped)hud.push('Equipped: '+(ITEMS[equipped.itemId]?.name??equipped.itemId));
+ hud.push(`Survey: ${survey.collected.length}/${marksWithClue} records`);
+ if(survey.completed)hud.push('Archive: synced');
+ else if(survey.collected.length>=marksWithClue)hud.push('Tip: equip the MacBook, open the computer and submit');
+ if(game.armed&&game.owner)hud.push('AI control: '+game.owner);
  const underfoot=floorAt(body.x,body.z,body.y);
 
  return {

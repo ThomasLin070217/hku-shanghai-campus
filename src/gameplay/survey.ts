@@ -27,23 +27,23 @@ export class Survey {
   }return best;
  }
  tick(dt:number){if(this.game.paused)return;if(!this.progress.completed)this.progress.elapsedSeconds+=dt;
-  for(const l of this.landmarks)if(Math.hypot(l.position[0]-this.game.body.position.x,l.position[2]-this.game.body.position.z)<13&&!this.progress.discovered.includes(l.id)){this.progress.discovered.push(l.id);this.revision++;this.game.event('discovery','发现记录点：'+l.name,{id:l.id});}}
+  for(const l of this.landmarks)if(Math.hypot(l.position[0]-this.game.body.position.x,l.position[2]-this.game.body.position.z)<13&&!this.progress.discovered.includes(l.id)){this.progress.discovered.push(l.id);this.revision++;this.game.event('discovery','Record point found: '+l.name,{id:l.id});}}
  interact(expectedId?:string):Outcome{
-  if(this.game.paused||this.game.inventoryOpen||this.game.panel)return this.finish(false,'paused','请先继续游玩。');
-  const t=this.target();if(!t||expectedId&&t.landmark.id!==expectedId)return this.finish(false,'no_target','靠近记录点，对准它，并确认中间没有障碍。');
+  if(this.game.paused||this.game.inventoryOpen||this.game.panel)return this.finish(false,'paused','Continue the game first.');
+  const t=this.target();if(!t||expectedId&&t.landmark.id!==expectedId)return this.finish(false,'no_target','Move close to the record point, aim at it, and make sure nothing blocks the way.');
   const l=t.landmark;
   if(t.action==='view'){this.emit('view',l.description);return this.finish(true,'viewed',l.description,l.id);}
   this.progress.collected.push(l.clueId!);if(!this.progress.discovered.includes(l.id))this.progress.discovered.push(l.id);this.revision++;
-  this.emit('collect',l.description+(this.progress.collected.length===CLUE_IDS.length?' 记录齐备：装备 MacBook，打开任务页同步。':''));
+  this.emit('collect',l.description+(this.progress.collected.length===CLUE_IDS.length?' All records found: equip the MacBook and open the tasks page to sync.':''));
   return this.finish(true,'collected',l.description,l.id);
  }
  computer(page:ComputerPage|'submit'):Outcome{
-  if(!this.equipped)return this.finish(false,'equip_required','先把 MacBook 放入快捷栏并选中，再打开电脑。');
+  if(!this.equipped)return this.finish(false,'equip_required','Put the MacBook in the hotbar and select it before opening the computer.');
   if(page==='submit'){
-   if(this.progress.completed)return this.finish(true,'already_completed','档案已同步，不会重复结算。');
-   const missing=CLUE_IDS.length-this.progress.collected.length;if(missing)return this.finish(false,'records_missing',`还缺 ${missing} 条校园记录，请先走访地图上的记录点。`);
-   this.progress.completed=true;this.revision++;this.emit('complete','同步完成 · 校园数字档案 001 已解锁。');return this.finish(true,'completed',TASK.archive);
-  }const result={ok:true,code:'page_ready',message:'电脑页面已就绪',page};this.lastOutcome=result;return result;
+   if(this.progress.completed)return this.finish(true,'already_completed','Archive already synced; it will not score twice.');
+   const missing=CLUE_IDS.length-this.progress.collected.length;if(missing)return this.finish(false,'records_missing',`Missing ${missing} campus records. Visit the record points on the map first.`);
+   this.progress.completed=true;this.revision++;this.emit('complete','Sync complete · Campus Digital Archive 001 unlocked.');return this.finish(true,'completed',TASK.archive);
+  }const result={ok:true,code:'page_ready',message:'Computer page ready',page};this.lastOutcome=result;return result;
  }
  private finish(ok:boolean,code:string,message:string,id?:string){const r={ok,code,message,...(id?{id}:{})};this.lastOutcome=r;return r;}
  snapshot(){const t=this.game.paused?null:this.target();return{id:TASK.id,title:TASK.title,status:this.progress.completed?'completed':this.progress.collected.length===CLUE_IDS.length?'ready':'collecting',count:this.progress.collected.length,total:CLUE_IDS.length,collectedClues:this.landmarks.filter(l=>l.clueId&&this.progress.collected.includes(l.clueId)).map(l=>({id:l.clueId!,title:l.name,text:l.description})),discovered:[...this.progress.discovered],archive:this.progress.completed?{id:TASK.archiveId,title:TASK.archiveTitle,text:TASK.archive}:null,elapsedSeconds:Math.round(this.progress.elapsedSeconds),target:!this.game.paused&&t?{id:t.landmark.id,name:t.landmark.name,actions:[t.action],distance:t.distance}:null,objectives:this.landmarks.filter(l=>recordIds.includes(l.id)).map(l=>({id:l.id,name:l.name,position:l.position,collected:this.progress.collected.includes(l.clueId!)}))};}
