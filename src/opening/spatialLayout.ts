@@ -59,8 +59,20 @@ export const OPENING={
   [[63,0,32.9],[50,0,32.9],[50,0,30.6]],
  ] as [number,number,number][][],
  routeB5:[[63.4,27.8],[52,27.8],[52,33.5],[24,33.5],[24,-48],[58,-48],[58,-61.5],[64,-61]],
- routeB6:[[64,-61],[58,-61.5],[58,-48],[24,-48],[18,-48],[18,-26],[4,-26],[4,-52.2],[4,-58],[7.3,-58.2]],
+ routeB6:[[64,-61],[58,-61.5],[58,-48],[24,-48],[18,-48],[18,-26],[4,-26],[4,-52.2],[4,-58],[7.3,-57]],
  routeB4:[[64,-61],[58,-61.5],[58,-48],[24,-48],[24,33.5],[58,33.5],[58,25]],
+} as const;
+
+/** Building 6 office dimensions shared by scenery and collision. */
+export const OFFICE_LAYOUT={
+ interior:{x0:OPENING.b6.x0+.06,x1:OPENING.b6.x1-.06,z0:OPENING.b6.z0+.17,z1:OPENING.b6.z1-.24,ceiling:2.59},
+ presentation:{x:OPENING.laptop[0],z:OPENING.laptop[2],w:1.90,d:.84,h:OPENING.laptop[1]-OPENING.b6.floor},
+ credenza:{x:4.5,z:-61.45,w:5,d:.55,h:.90},
+ planter:{x:1.9,z:-60.6,w:.44,d:.44,h:.44},
+ workstations:[
+  {id:'west',facing:1,desk:{x:2.05,z:-57.8,w:.78,d:1.8,h:.76},chair:{x:2.98,z:-57.8,w:.56,d:.56,h:.95}},
+  {id:'east',facing:-1,desk:{x:8.98,z:-60.25,w:.78,d:1.8,h:.76},chair:{x:8.05,z:-60.25,w:.56,d:.56,h:.95}},
+ ],
 } as const;
 
 /** IMG_4380: observed arrangement, estimated metres. Lobby on the left, hall on the right.

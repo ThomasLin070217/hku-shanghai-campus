@@ -1,5 +1,5 @@
 import * as T from 'three';
-import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H,dinnerHallPoint} from './spatialLayout';
+import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H,OFFICE_LAYOUT as B6,dinnerHallPoint} from './spatialLayout';
 import type {Obstacle} from '../exploration/navigation';
 
 /** Door clearance is shared by the scenery, collision and the step transition. */
@@ -13,7 +13,8 @@ export function openingObstacles(obstacles:Obstacle[]){
  for(const r of [O.b5,O.b6]){
   const index=obstacles.findIndex(o=>o.name===r.id+'/closed-exterior');if(index<0)continue;
   const old=obstacles[index],x0=old.x-old.w/2,x1=old.x+old.w/2,z0=old.z-old.d/2,z1=old.z+old.d/2,l=r.door-r.doorWidth/2,h=r.door+r.doorWidth/2;
-  obstacles.splice(index,1,box(r.id+'/opening-left',x0,r.x0,z0,z1,0,old.top),box(r.id+'/opening-right',r.x1,x1,z0,z1,0,old.top),box(r.id+'/opening-back',r.x0,r.x1,z0,r.z0,0,old.top),box(r.id+'/opening-front-left',r.x0,l,z1-.2,z1,0,old.top),box(r.id+'/opening-front-right',h,r.x1,z1-.2,z1,0,old.top),box(r.id+'/opening-lintel',l,h,z1-.2,z1,r.floor+r.doorHeight,old.top));
+  const inside=r.id===O.b6.id?B6.interior:r;
+  obstacles.splice(index,1,box(r.id+'/opening-left',x0,inside.x0,z0,z1,0,old.top),box(r.id+'/opening-right',inside.x1,x1,z0,z1,0,old.top),box(r.id+'/opening-back',inside.x0,inside.x1,z0,inside.z0,0,old.top),box(r.id+'/opening-front-left',r.x0,l,z1-.2,z1,0,old.top),box(r.id+'/opening-front-right',h,r.x1,z1-.2,z1,0,old.top),box(r.id+'/opening-lintel',l,h,z1-.2,z1,r.floor+r.doorHeight,old.top));
   if(r.floor>0)obstacles.push(box(r.id+'/opening-floor',r.x0,r.x1,r.z0,z1,0,r.floor));
  }
  // Keep the observed lobby/hall separation and furniture solid in the same world.
@@ -34,6 +35,18 @@ export function openingObstacles(obstacles:Obstacle[]){
  furniture('opening-b5-lectern',H.lectern,deck);
  for(const z of H.chairRows)for(const offset of H.chairOffsets){
   furniture('opening-b5-head-chair',{...H.chair,x:H.table.x+offset,z},deck);
+ }
+ const officeFloor=O.b6.floor,{interior}=B6;
+ obstacles.push(box('opening-b6-ceiling',interior.x0,interior.x1,interior.z0,interior.z1,officeFloor+interior.ceiling,officeFloor+O.b6.clearHeight));
+ const officeFurniture=(name:string,{x,z,w,d,h}:{x:number;z:number;w:number;d:number;h:number})=>{
+  obstacles.push(box('opening-b6-'+name,x-w/2,x+w/2,z-d/2,z+d/2,officeFloor,officeFloor+h));
+ };
+ officeFurniture('desk',B6.presentation);
+ officeFurniture('credenza',B6.credenza);
+ officeFurniture('planter',B6.planter);
+ for(const {id,desk,chair} of B6.workstations){
+  officeFurniture(id+'-desk',desk);
+  officeFurniture(id+'-chair',chair);
  }
  const {x0,x1,z0,z1,lo,hi}=openingBusDoorSpan();
  obstacles.push(

@@ -7,7 +7,7 @@ import {emblemMaterial} from '../model/heraldry';
 import dinnerArms from '../model/dinner-arms.json';
 import shield from '../model/hall-crest.json';
 import {createMacBook} from '../items/macbook';
-import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H} from './spatialLayout';
+import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H,OFFICE_LAYOUT as B6} from './spatialLayout';
 
 /**
  * Thomas opening scenery: the campus shuttle, the Building 5 ground-floor dinner
@@ -442,27 +442,106 @@ function buildOffice(root:T.Group){
  root.add(group);
  const floorTop=room.floor;
  const materials={
-  floor:std('Opening_b6_floor',0xdfe3dd),
-  wall:std('Opening_b6_wall',0xe4e7e2),
-  desk:std('Opening_b6_desk_top',0x9c7c52),
-  leg:std('Opening_b6_desk_leg',0x8a8f86),
-  case:std('Opening_b6_cabinet',0x6f7f70),
-  greenery:std('Opening_b6_greenery',0x4e7f4a),
-  lamp:std('Opening_b6_ceiling_lamp',0xfff1cd,0xffe3a8,.5),
+  floor:std('Opening_b6_floor',0xcbd3ce),
+  wall:std('Opening_b6_ivory_wall',0xe0dbcd),
+  ceiling:std('Opening_b6_ivory_ceiling',0xe8e5da),
+  trim:std('Opening_b6_wall_trim',0x78867b),
+  desk:std('Opening_b6_oak',0xad8356),
+  frame:std('Opening_b6_frame',0x414c4c),
+  case:std('Opening_b6_cabinet',0x6b7f73),
+  seat:std('Opening_b6_chair_fabric',0x356b66),
+  screen:std('Opening_b6_monitor_glass',0x304751,0x253c49,.18),
+  pot:std('Opening_b6_terracotta',0x93634f),
+  leaf:std('Opening_b6_leaf',0x4e7f4a),
+  lamp:std('Opening_b6_ivory_ceiling_lamp',0xfff1cd,0xffe3a8,.75),
   paper:std('Opening_b6_paper',0xf3f1e8),
+  folder:std('Opening_b6_folder',0xb59257),
  };
  const w=room.x1-room.x0,d=room.z1-room.z0;
  box(group,'opening-b6-floor',w,.18,d,(room.x0+room.x1)/2,floorTop-.09,(room.z0+room.z1)/2,materials.floor);
- box(group,'opening-b6-ceiling-light',5.2,.10,.34,5.5,floorTop+2.48,-57.6,materials.lamp);
- // Credenza along the north wall and a planter in the far corner.
- box(group,'opening-b6-credenza',5.0,.90,.55,4.5,floorTop+.45,-61.45,materials.case);
- const roomLight=new T.PointLight(0xffe9c0,20,10,2);roomLight.position.set(5.2,floorTop+2.2,-57.4);group.add(roomLight);
- box(group,'opening-b6-planter',.44,.44,.44,1.9,floorTop+.22,-60.6,materials.greenery);
- // Presentation desk; the MacBook sits on it at OPENING.laptop.
- const desk=box(group,'opening-b6-desk',1.90,.09,.84,O.laptop[0],O.laptop[1]-.045,O.laptop[2],materials.desk);
- tag(desk,'opening-b6-desk','opening-b6-desk');
- for(const dx of [-.82,.82])for(const dz of [-.32,.32])box(group,'opening-b6-desk-leg-'+dx+'-'+dz,.09,O.laptop[1]-floorTop-.09,.09,O.laptop[0]+dx,(floorTop+O.laptop[1]-.09)/2,O.laptop[2]+dz,materials.leg);
- box(group,'opening-b6-desk-sheet',.21,.012,.30,O.laptop[0]-.62,O.laptop[1]+.006,O.laptop[2]+.12,materials.paper);
+
+ const {x0,x1,z0,z1,ceiling}=B6.interior;
+ const cx=(x0+x1)/2,cz=(z0+z1)/2;
+ const finishes=tag(new T.Group(),'opening-b6-finishes','Opening_b6_finishes');
+ group.add(finishes);
+ const finish=(key:string,w:number,h:number,d:number,x:number,y:number,z:number,material:T.Material)=>
+  box(finishes,'opening-b6-'+key,w,h,d,x,floorTop+y,z,material);
+ finish('ceiling',x1-x0,.06,z1-z0,cx,ceiling+.03,cz,materials.ceiling);
+ finish('wall-north',x1-x0,ceiling,.04,cx,ceiling/2,z0-.02,materials.wall);
+ finish('baseboard-north',x1-x0,.11,.025,cx,.055,z0+.0125,materials.trim);
+ for(const [side,x,sign] of [['west',x0,-1],['east',x1,1]] as const){
+  finish('wall-'+side,.04,ceiling,z1-z0,x+sign*.02,ceiling/2,cz,materials.wall);
+  finish('baseboard-'+side,.025,.11,z1-z0,x-sign*.0125,.055,cz,materials.trim);
+ }
+ box(group,'opening-b6-ceiling-light',3.8,.06,.38,cx,floorTop+ceiling-.031,-58.9,materials.lamp);
+ finish('ceiling-light-front',3.8,.06,.38,cx,ceiling-.031,-55.6,materials.lamp);
+ compact(finishes);
+ const roomLight=new T.PointLight(0xffe9c0,42,12,2);
+ roomLight.position.set(5.4,floorTop+ceiling-.25,-58.6);
+ group.add(roomLight);
+
+ const cabinet=B6.credenza,plant=B6.planter,presentation=B6.presentation;
+ box(group,'opening-b6-credenza',cabinet.w,cabinet.h,cabinet.d,cabinet.x,floorTop+cabinet.h/2,cabinet.z,materials.case);
+ box(group,'opening-b6-planter',plant.w,plant.h,plant.d,plant.x,floorTop+plant.h/2,plant.z,materials.pot);
+ box(group,'opening-b6-desk',presentation.w,.09,presentation.d,presentation.x,O.laptop[1]-.045,presentation.z,materials.desk);
+ for(const dx of [-.82,.82])for(const dz of [-.32,.32])box(group,'opening-b6-desk-leg-'+dx+'-'+dz,.09,presentation.h-.09,.09,presentation.x+dx,floorTop+(presentation.h-.09)/2,presentation.z+dz,materials.frame);
+ box(group,'opening-b6-desk-sheet',.21,.012,.30,presentation.x-.62,O.laptop[1]+.006,presentation.z+.12,materials.paper);
+
+ const supplies=tag(new T.Group(),'opening-b6-office-supplies','Opening_b6_office_supplies');
+ group.add(supplies);
+ const prop=(key:string,w:number,h:number,d:number,x:number,y:number,z:number,material:T.Material)=>
+  box(supplies,'opening-b6-'+key,w,h,d,x,floorTop+y,z,material);
+ for(const [i,x] of [2.65,3.88,5.12,6.35].entries()){
+  prop('cabinet-door-'+i,1.20,.77,.025,x,.46,cabinet.z+.28,materials.trim);
+  prop('cabinet-pull-'+i,.20,.03,.036,x,.72,cabinet.z+.307,materials.frame);
+ }
+ prop('cabinet-top',cabinet.w,.045,cabinet.d,cabinet.x,cabinet.h+.0225,cabinet.z,materials.desk);
+ prop('printer',.63,.25,.42,5.9,1.07,cabinet.z,materials.paper);
+ prop('printer-output',.46,.055,.015,5.9,1.07,cabinet.z+.214,materials.frame);
+ prop('printer-tray',.42,.026,.15,5.9,.974,cabinet.z+.27,materials.frame);
+ prop('printer-paper',.28,.012,.15,5.9,.994,cabinet.z+.245,materials.paper);
+ for(const [i,material] of [materials.seat,materials.folder,materials.case,materials.frame].entries()){
+  prop('binder-'+i,.105,.32,.26,3.06+i*.115,1.105,cabinet.z,material);
+  prop('binder-label-'+i,.063,.078,.008,3.06+i*.115,1.15,cabinet.z+.131,materials.paper);
+ }
+ prop('noticeboard-frame',2.35,.96,.05,4.45,1.79,z0+.025,materials.desk);
+ prop('noticeboard-cork',2.25,.86,.020,4.45,1.79,z0+.055,materials.folder);
+ for(const [i,x,y,material] of [[0,3.72,1.85,materials.paper],[1,4.14,1.72,materials.paper],[2,4.64,1.91,materials.paper],[3,5.18,1.78,materials.seat]] as const){
+  prop('noticeboard-sheet-'+i,.24,.32,.005,x,y,z0+.0675,material);
+  for(const dy of [-.06,.01,.08])prop('noticeboard-line-'+i+'-'+dy,.15,.012,.003,x,y+dy,z0+.071,i===3?materials.paper:materials.trim);
+ }
+ prop('plant-stem',.06,.53,.06,plant.x,.64,plant.z,materials.desk);
+ prop('plant-leaves-low',.40,.18,.38,plant.x,.68,plant.z,materials.leaf);
+ prop('plant-leaves-mid',.31,.21,.32,plant.x+.045,.85,plant.z,materials.leaf);
+ prop('plant-leaves-top',.21,.20,.22,plant.x-.025,1.01,plant.z,materials.leaf);
+ prop('presentation-notebook',.24,.032,.30,presentation.x+.63,presentation.h+.016,presentation.z+.10,materials.seat);
+ compact(supplies);
+
+ const workstations=tag(new T.Group(),'opening-b6-workstations','Opening_b6_workstations');
+ group.add(workstations);
+ for(const {id,facing,desk,chair} of B6.workstations){
+  const part=(key:string,w:number,h:number,d:number,x:number,y:number,z:number,material:T.Material)=>
+   box(workstations,'opening-b6-'+id+'-'+key,w,h,d,x,floorTop+y,z,material);
+  part('desk',desk.w,.065,desk.d,desk.x,desk.h-.0325,desk.z,materials.desk);
+  for(const dx of [-.30,.30])for(const dz of [-.79,.79]){
+   part('desk-leg-'+dx+'-'+dz,.055,desk.h-.065,.055,desk.x+dx,(desk.h-.065)/2,desk.z+dz,materials.frame);
+  }
+  const monitorX=desk.x-facing*.19,monitorY=desk.h+.30;
+  part('monitor',.055,.35,.53,monitorX,monitorY,desk.z,materials.frame);
+  part('monitor-screen',.008,.294,.47,monitorX+facing*.028,monitorY,desk.z,materials.screen);
+  part('monitor-post',.045,.14,.05,monitorX,desk.h+.072,desk.z,materials.frame);
+  part('monitor-base',.19,.025,.23,monitorX,desk.h+.0125,desk.z,materials.frame);
+  part('keyboard',.14,.027,.42,desk.x+facing*.16,desk.h+.0135,desk.z,materials.frame);
+  part('mouse',.096,.042,.064,desk.x+facing*.15,desk.h+.021,desk.z+.32,materials.frame);
+  part('paper-tray',.32,.048,.27,desk.x,desk.h+.024,desk.z-.56,materials.seat);
+  part('paper-stack',.29,.022,.21,desk.x,desk.h+.058,desk.z-.57,materials.paper);
+  part('chair-seat',chair.w,.09,chair.d,chair.x,.46,chair.z,materials.seat);
+  part('chair-back',.08,.46,chair.d,chair.x+facing*(chair.w/2-.04),chair.h-.23,chair.z,materials.seat);
+  part('chair-post',.08,.39,.08,chair.x,.22,chair.z,materials.frame);
+  part('chair-base-x',chair.w,.045,.065,chair.x,.025,chair.z,materials.frame);
+  part('chair-base-z',.065,.045,chair.d,chair.x,.025,chair.z,materials.frame);
+ }
+ compact(workstations);
 
  // World laptop: hidden once the player carries it. No item is granted here.
  const laptop=createMacBook();
@@ -506,7 +585,7 @@ export function createOpeningWorld(){
   for(const item of dinner.dropped)item.node.position.copy(next?item.fallen:item.upright);
   for(const strip of incidentStrips)strip.material.emissiveIntensity=next?strip.incident:strip.normal;
   dinner.roomLights.forEach((light,index)=>{light.color.setHex(next?0xff5a45:index===0?0xc7b8ff:0x91beff);light.intensity=next?7:30;});
-  office.roomLight.color.setHex(next?0xff5a45:0xffe9c0);office.roomLight.intensity=next?6:20;
+  office.roomLight.color.setHex(next?0xff5a45:0xffe9c0);office.roomLight.intensity=next?6:42;
  }
  function update(state:{incident:boolean;laptopAcquired:boolean;doorOpen:boolean;invitationRead?:boolean},dt:number){
   // dt may be zero (paused frame): animation must not advance, state must not reset.
