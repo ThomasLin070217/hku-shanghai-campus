@@ -1,6 +1,5 @@
-import {CAMPAIGN_CHAPTERS,CHAPTER_ORDER} from './chapters';
 import {
- CAMPAIGN_SAVE_KEY,CAMPAIGN_TRANSITIONS,campaignChapterOf,createCampaignState,parseCampaignState,reduceCampaign,
+ CAMPAIGN_SAVE_KEY,CAMPAIGN_STAGES,CAMPAIGN_TRANSITIONS,campaignChapterOf,createCampaignState,parseCampaignState,reduceCampaign,
  type CampaignEvent,type CampaignStage,type CampaignState,
 } from './state';
 import type {Chapter,ChapterContext,ChapterId,Objective} from './types';
@@ -10,7 +9,8 @@ export interface CampaignHostOptions{
  /** Everything a chapter needs except what the host owns (stage, emit, deviceId). */
  context:Omit<ChapterContext,'stage'|'emit'|'deviceId'>;
  storage?:CampaignStorage|null;
- chapters?:Record<ChapterId,()=>Chapter>;
+ /** Chapter factories (`CAMPAIGN_CHAPTERS` in the game). Injected so headless checks can run the host with fakes. */
+ chapters:Record<ChapterId,()=>Chapter>;
  now?:()=>number;
 }
 
@@ -21,6 +21,8 @@ const STAGE_CARDS:Partial<Record<CampaignStage,[string,string]>>={
  to_sports:['CHAPTER 3','Sports Hall Rescue'],
  ending:['EPILOGUE','Barrier Down'],
 };
+/** Chapters in story order, derived from the stage list. */
+const CHAPTER_ORDER=[...new Set(CAMPAIGN_STAGES.map(campaignChapterOf).filter((id):id is ChapterId=>id!==null))];
 const DESTINATION:Record<ChapterId,string>={
  b4:'the Building 4 entrance',lawn:'the central lawn',sports:'the sports hall east door',ending:'the campus',
 };
@@ -30,9 +32,13 @@ const DESTINATION:Record<ChapterId,string>={
  * lifecycle and the walking legs between chapters. Chapters attach once, when
  * first needed, and stay attached (their scenery is part of the one world) until
  * the campaign is reset or the page goes away.
+ *
+ * Frame time: chapters' `update(dt)` runs every rendered frame, but `dt` is 0
+ * while the game is paused or the explorer is off (model tools), and walking-leg
+ * entry events are not checked then, so chapters never advance behind a pause.
  */
 export function createCampaignHost(o:CampaignHostOptions){
- const factories=o.chapters??CAMPAIGN_CHAPTERS,now=o.now??(()=>Date.now());
+ const factories=o.chapters,now=o.now??(()=>Date.now());
  const storage:CampaignStorage|null=o.storage===undefined?safeLocalStorage():o.storage;
  const instances=new Map<ChapterId,Chapter>(),attached=new Map<ChapterId,Chapter>();
  let state:CampaignState|null=load();
@@ -80,8 +86,9 @@ export function createCampaignHost(o:CampaignHostOptions){
  function update(dt:number){
   if(!state)return;
   sync();
-  for(const c of [...attached.values()])c.update(dt);
-  const leg=state?walkTarget(state.stage):null;
+  const live=o.context.explorer.enabled&&!o.context.explorer.game.paused;
+  for(const c of [...attached.values()])c.update(live?dt:0);
+  const leg=live&&state?walkTarget(state.stage):null;
   if(leg){
    const p=o.context.explorer.game.body.position,[x,,z]=leg.entry.point;
    if(Math.hypot(p.x-x,p.z-z)<=leg.entry.radius)emit(leg.entry.event);

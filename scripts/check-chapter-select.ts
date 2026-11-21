@@ -1,5 +1,10 @@
 import assert from 'node:assert/strict';
-import {OPENING_CHECKPOINTS,CHECKPOINT_LABELS,checkpointPose,checkpointState,openingCheckpoint,type OpeningCheckpoint} from '../src/opening/checkpoint';
+import {OPENING_CHECKPOINTS,CHECKPOINT_LABELS,checkpointCampaign,checkpointPose,checkpointState,openingCheckpoint,type OpeningCheckpoint} from '../src/opening/checkpoint';
+import {B4_ENTRY} from '../src/campaign/b4Chapter';
+import {LAWN_ENTRY} from '../src/campaign/lawnChapter';
+import {SPORTS_ENTRY} from '../src/campaign/sportsChapter';
+import {OPENING as O} from '../src/opening/spatialLayout';
+import type {CampaignStage} from '../src/campaign/state';
 import {validOpeningState} from '../src/opening/state';
 import type {OpeningStage} from '../src/opening/contracts';
 
@@ -50,6 +55,23 @@ group('openingCheckpoint only accepts the menu ids',()=>{
  assert.equal(openingCheckpoint(''),null);
  assert.equal(openingCheckpoint(null),null);
  assert.equal(openingCheckpoint(undefined),null);
+});
+
+group('campaign checkpoints resume the campaign with the earlier chapter results',()=>{
+ const expected:Partial<Record<OpeningCheckpoint,{stage:CampaignStage;relay:boolean;corePower:boolean}>>={
+  'b4-inside':{stage:'b4_keyboard',relay:false,corePower:false},
+  lawn:{stage:'to_lawn',relay:true,corePower:false},
+  sports:{stage:'to_sports',relay:true,corePower:true},
+  ending:{stage:'ending',relay:true,corePower:true},
+ };
+ for(const id of OPENING_CHECKPOINTS)assert.deepEqual(checkpointCampaign(id),expected[id]??null,id);
+});
+
+group('campaign checkpoint poses: inside B04, B04 entrance, lawn entry, sports door',()=>{
+ assert.deepEqual([...checkpointPose('b4-inside').position],B4_ENTRY.point);
+ assert.deepEqual([...checkpointPose('lawn').position],[...O.handoff]);
+ assert.deepEqual([...checkpointPose('sports').position],LAWN_ENTRY.point);
+ assert.deepEqual([...checkpointPose('ending').position],SPORTS_ENTRY.point);
 });
 
 if(failures.length){console.error(`\ncheck-chapter-select: ${failures.length} failed, ${passed} passed`);process.exit(1);}
