@@ -11,27 +11,27 @@ import {exportGLB, download} from './viewer/export';
 const rooms = {
   lobby: {
     build: () => buildObservedInterior('lobby'),
-    note: 'CDS-1 门厅 · 按 11 月 16 日照片细化闸机、冷色竖屏及暖白门框灯。',
+    note: 'CDS-1 lobby · gates, cool vertical screen and warm white doorframe lights refined against the 16 Nov photo.',
     overview: [20, 17, 25], front: [0, 1.64, .60], target: [0, 1.2, -4.9],
   },
   floor13: {
     build: () => buildObservedInterior('floor13'),
-    note: 'IMG_4347 04:49–05:00 · 13 层灰色电梯厅、木色茶水柜、微波炉、长桌与圆吊灯。',
+    note: 'IMG_4347 04:49–05:00 · 13th-floor grey lift lobby, wood pantry cabinet, microwave, long table and round pendant light.',
     overview: [20, 17, 25], front: [0, 1.64, 11], target: [1, 1.2, 0],
   },
   keyboard: {
     build: () => buildObservedFeatureRoom('keyboard'),
-    note: '11 月 15–16 日实拍 · 蓝底圆键、弧形沙发、木阶及格栅走廊。楼栋和楼层尚待核对。',
+    note: 'Shot 15–16 Nov · blue round keys, curved sofa, wood steps and slatted corridor. Building and floor still to be confirmed.',
     overview: [12.6, 10.2, 17.6], front: [.38, 2.57, 6.32], target: [.42, 1.27, 2.78],
   },
   flipWall: {
     build: () => buildObservedFeatureRoom('flipWall'),
-    note: '11 月 15 日实拍 · 走廊两色翻板拼成 HKU，保留墙框、板缝和弧形顶灯槽。楼栋和楼层尚待核对。',
+    note: 'Shot 15 Nov · two-tone flip tiles spell HKU; wall frame, panel seams and curved ceiling light slot kept. Building and floor still to be confirmed.',
     overview: [7.8, 4.5, 7.8], front: [.30, 2.05, 5.5], target: [.30, 1.80, -.75],
   },
   ringDisplay: {
     build: () => buildObservedFeatureRoom('ringDisplay'),
-    note: '11 月 16 日实拍 · 内倾环形屏、红色嵌砖、桌椅与后墙电梯。楼栋和楼层尚待核对。',
+    note: 'Shot 16 Nov · inward-tilted ring screen, red inset brick, tables and chairs, lift on the back wall. Building and floor still to be confirmed.',
     overview: [9.7, 7.4, 11.7], front: [.9, 1.67, 6.3], target: [0, 2.68, -2.3],
   },
 };
@@ -167,7 +167,7 @@ function updateCapButtons() {
   for (const button of capButtons) button.hidden = !visible;
   const phrase = caps.filter(cap => cap.phrase);
   const out = phrase.filter(cap => !cap.attached).length;
-  document.querySelector('#detachPhrase')!.textContent = phrase.length > 0 && out === phrase.length ? '装回 I LOVE CDS' : '拆下 I LOVE CDS';
+  document.querySelector('#detachPhrase')!.textContent = phrase.length > 0 && out === phrase.length ? 'Reattach I LOVE CDS' : 'Remove I LOVE CDS';
 }
 
 let puzzleActive = false;
@@ -206,7 +206,7 @@ function stopKeyboardPuzzle() {
   hidePuzzleHud();
   resetCpuMap();
   updateCapButtons();
-  if (kind === 'keyboard') document.querySelector('#note')!.textContent = rooms.keyboard.note + ' 点击「键盘谜题」开始；也可以拆下键帽查看结构。金色的是 I LOVE CDS 的 8 个谜题键。';
+  if (kind === 'keyboard') document.querySelector('#note')!.textContent = rooms.keyboard.note + ' Click Keyboard Wall to begin; you can also remove a keycap to inspect its structure. The eight gold keys spell I LOVE CDS.';
 }
 function resetCpuMap() {
   document.querySelector('#puzzle-hud')?.classList.remove('online');
@@ -238,7 +238,7 @@ function startPuzzle() {
   keyboardLight = new T.PointLight(0x9dffd0, 0, 10, 2);
   keyboardLight.position.set(.48, 2.8, -2.4);
   scene.add(keyboardLight);
-  document.querySelector('#note')!.textContent = '键盘谜题：按 Mac 提示输入 I LOVE CDS，或点击地上金色键；全部归位后按 Enter 开机。';
+  document.querySelector('#note')!.textContent = 'Keyboard Wall: type I LOVE CDS following the Mac prompt, or click the gold keys on the floor; press Enter to boot once all are back.';
   for (const id of ['#detachPhrase', '#detachV', '#attachAll', '#puzzleStart']) document.querySelector<HTMLButtonElement>(id)!.hidden = true;
   document.querySelector<HTMLButtonElement>('#puzzleReset')!.hidden = false;
   playSfx('tick');
@@ -439,7 +439,7 @@ function collectTiles() {
   if (flipHinge) flipHinge.rotation.y = 0;
   if (powerLight) powerLight.intensity = 0;
   if (workLight) workLight.intensity = 0;
-  document.querySelector('#flipDemo')!.textContent = '翻板演示';
+  document.querySelector('#flipDemo')!.textContent = 'Flip demo';
   document.querySelector('#flip-check')!.classList.remove('show');
   updateSelectionUI();
 }
@@ -453,7 +453,7 @@ function setAllTiles(target: number) {
   for (const tile of tiles) scheduleTile(tile, target, tile.column * .035 + tile.row * .008);
   flipOut = target > Math.PI / 2;
   clearSelection();
-  document.querySelector('#flipDemo')!.textContent = flipOut ? '翻回正面' : '翻板演示';
+  document.querySelector('#flipDemo')!.textContent = flipOut ? 'Back to front' : 'Flip demo';
 }
 function flipAll() {
   setAllTiles(flipOut ? 0 : Math.PI);
@@ -475,9 +475,9 @@ function updateSelectionUI() {
   for (const tile of tiles) if (tile.outline) tile.outline.visible = selectedTiles.has(tile);
   const count = selectedTiles.size;
   const button = document.querySelector<HTMLButtonElement>('#flipSelected')!;
-  button.textContent = `翻转选中 (${count})`;
+  button.textContent = `Flip selected (${count})`;
   button.disabled = count === 0;
-  document.querySelector('#selection-count')!.textContent = `已选 ${count} / ${tiles.length}`;
+  document.querySelector('#selection-count')!.textContent = `Selected ${count} / ${tiles.length}`;
 }
 function clearSelection() {
   selectedTiles.clear();
@@ -577,7 +577,7 @@ function resetWall() {
   }
   flipOut = false;
   clearSelection();
-  document.querySelector('#flipDemo')!.textContent = '翻板演示';
+  document.querySelector('#flipDemo')!.textContent = 'Flip demo';
   document.querySelector('#flip-check')!.classList.remove('show');
   view('flip');
 }
@@ -697,7 +697,7 @@ function select(next: Room) {
   corridorButton.hidden=kind!=='keyboard';
   const flipButtons = ['#flipView', '#flipDemo', '#flipSelected', '#reveal', '#resetWall'].map(id => document.querySelector<HTMLButtonElement>(id)!);
   for (const button of flipButtons) button.hidden = kind !== 'flipWall';
-  document.querySelector('#note')!.textContent = rooms[kind].note + (kind==='keyboard'?' 点击「键盘谜题」开始；也可以拆下键帽查看结构。金色的是 I LOVE CDS 的 8 个谜题键。':kind==='flipWall'?' 点击选板，Shift 连选，Cmd/Ctrl 点选；双击单块翻；Space 翻转选中；「验证并开启电源」跑完整流程。':'');
+  document.querySelector('#note')!.textContent = rooms[kind].note + (kind==='keyboard'?' Click Keyboard Wall to begin; you can also remove a keycap to inspect its structure. The eight gold keys spell I LOVE CDS.':kind==='flipWall'?' Click a tile to select, Shift to extend, Cmd/Ctrl to add; double-click to flip one; Space flips the selection; Verify and power on runs the whole sequence.':'');
   for (const button of roomButtons) {
     const selected = button.dataset.room === kind;
     button.classList.toggle('active', selected);

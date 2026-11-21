@@ -162,7 +162,7 @@ export function createAssistantApp(options:AssistantOptions) {
   let speakingText='';
 
   const root=el('section','ai-app');
-  root.setAttribute('aria-label','岚 · LAN — DeepSeek Harness · local campus assistant');
+  root.setAttribute('aria-label','LAN — DeepSeek Harness · local campus assistant');
 
   const rail=el('aside','ai-rail');
   const brand=el('div','ai-brand');
@@ -186,7 +186,7 @@ export function createAssistantApp(options:AssistantOptions) {
   const head=el('header','ai-head');
   const titleBox=el('div','ai-title');
   const title=el('b','','Campus recovery');
-  const subtitle=el('small','','MacBook Air · 岚 LAN · local core');
+  const subtitle=el('small','','MacBook Air · LAN · local core');
   titleBox.append(title,subtitle);
   const modelChip=el('span','ai-model-chip','on-device');
   const headNew=button('','ai-head-new');
