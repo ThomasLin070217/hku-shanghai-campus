@@ -4,7 +4,7 @@ import * as T from 'three';
 import {CampusGame} from '../src/exploration/game';
 import {createNavigation} from '../src/exploration/navigation';
 import {BUILDINGS,SITE} from '../src/model/campusParameters';
-import {OPENING as O} from '../src/opening/spatialLayout';
+import {OPENING as O,OFFICE_LAYOUT} from '../src/opening/spatialLayout';
 import {buildSite} from '../src/model/buildSite';
 import {sceneRegistry} from '../src/scene/registry';
 import {disposeAsset} from '../src/model/buildCampus';
@@ -16,7 +16,17 @@ function route(name:string,start:readonly number[],points:readonly (readonly num
 route('Bus inside to exit',O.spawn,[[O.bus.doorX,O.bus.z-O.bus.width/2-.35],[O.busExit[0],O.busExit[2]]]);
 route('Building4 to Building5 then turn right',O.busExit,O.routeB5);
 route('Building5 to Building6 pickup space',O.staff,O.routeB6);
-route('Building6 back to Building5',[7.3,5.1,-58.2],[...O.routeB6].reverse());
+const [pickupX,pickupZ]=O.routeB6.at(-1)!;
+const pickup=[pickupX,O.b6.floor,pickupZ];
+const eye=new T.Vector3(pickupX,O.b6.floor+1.64,pickupZ);
+const toLaptop=new T.Vector3(...O.laptop).add(new T.Vector3(0,.1,0)).sub(eye);
+assert.ok(toLaptop.length()<2.7,'The office aisle must put the laptop within interaction range');
+const pickupRay=new T.Raycaster(eye,toLaptop.clone().normalize(),.03,toLaptop.length()-.15);
+assert.equal(pickupRay.intersectObjects(w.meshes,false).length,0,'The office furniture must leave a clear sightline to the laptop');
+for(const {x,z} of [OFFICE_LAYOUT.presentation,OFFICE_LAYOUT.credenza,OFFICE_LAYOUT.planter,...OFFICE_LAYOUT.workstations.flatMap(({desk,chair})=>[desk,chair])]){
+ assert.ok(w.blocked(x,z,O.b6.floor+.003),`Office furniture should be solid at ${x}, ${z}`);
+}
+route('Building6 back to Building5',pickup,[...O.routeB6].reverse());
 route('Building5 to Building4 handoff',O.staff,O.routeB4);
 let called=0;g.scenario={interact(){called++;g.openPanel('computer');return{ok:true,code:'test_modal',message:'Paused'};},computer(){called++;g.openPanel('computer');return{ok:true,code:'page_ready',message:'Paused'};},tick(){},snapshot(){return{};},spawn(){}};
 g.panel=null;g.enableAI();g.acquireControl('opening-test');const epoch=g.epoch,before=g.body.position.toArray();g.act({commandId:'open-modal',controlEpoch:epoch,durationMs:100,interact:'opening-staff',move:{forward:1,right:0}},1000);g.step(1/120,1001);assert.equal(called,1);assert.deepEqual(g.body.position.toArray(),before);assert.equal(g.owner,null);assert.equal(g.paused,true);assert.equal(g.act({commandId:'old',controlEpoch:epoch,durationMs:100},1002).ok,false);results.push({name:'Shared RPC route, modal same-frame stop and epoch invalidation',passed:true});
