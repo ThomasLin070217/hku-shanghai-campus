@@ -1,5 +1,8 @@
 import * as T from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
+import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
+import {UnrealBloomPass} from 'three/addons/postprocessing/UnrealBloomPass.js';
 import {buildObservedInterior} from './model/observedInteriors';
 import {buildObservedFeatureRoom, keyboardKeycaps, flipWallTiles} from './model/observedFeatureRooms';
 import {disposeAsset} from './model/buildCampus';
@@ -52,6 +55,11 @@ controls.enableDamping = true;
 controls.maxDistance = 70;
 controls.minDistance = 1;
 
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new T.Vector2(1, 1), .30, .50, .92);
+composer.addPass(bloom);
+
 let kind: Room = 'lobby';
 const initialRoom = new URLSearchParams(location.search).get('room') as Room | null;
 if (initialRoom && initialRoom in rooms) kind = initialRoom;
@@ -64,14 +72,33 @@ let fittedAspect = 1;
 type Cap = {
   group: T.Group; rest: T.Vector3; attached: boolean; stool: boolean; phrase: boolean; marked: boolean; enter: boolean;
   glow: T.MeshStandardMaterial | null;
+  halo: T.Sprite | null;
   puzzle: 'none' | 'floor' | 'flying' | 'seated';
   scatter: T.Vector3; yaw: number; flyFrom: T.Vector3; flyStart: number; seatedAt: number; lit: boolean;
 };
+const glowCanvas = document.createElement('canvas');
+glowCanvas.width = 64;
+glowCanvas.height = 64;
+const glowContext = glowCanvas.getContext('2d')!;
+const glowGradient = glowContext.createRadialGradient(32, 32, 0, 32, 32, 32);
+glowGradient.addColorStop(0, 'rgba(255,255,255,0)');
+glowGradient.addColorStop(.48, 'rgba(255,255,255,0)');
+glowGradient.addColorStop(.68, 'rgba(255,255,255,.55)');
+glowGradient.addColorStop(1, 'rgba(255,255,255,0)');
+glowContext.fillStyle = glowGradient;
+glowContext.fillRect(0, 0, 64, 64);
+const glowTexture = new T.CanvasTexture(glowCanvas);
+glowTexture.colorSpace = T.SRGBColorSpace;
 let caps: Cap[] = [];
 function collectCaps() {
   caps = keyboardKeycaps(asset).map(group => {
     const face = group.children.find(child => child instanceof T.Mesh && child.name.startsWith('Key_')) as T.Mesh | undefined;
     const glow = face && !Array.isArray(face.material) && face.material instanceof T.MeshStandardMaterial ? face.material : null;
+    const halo = new T.Sprite(new T.SpriteMaterial({map: glowTexture, color: 0xffc24a, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false}));
+    halo.scale.set(.66, .66, 1);
+    halo.position.set(0, 0, .12);
+    halo.visible = false;
+    group.add(halo);
     return {
       group,
       rest: new T.Vector3().fromArray(group.userData.rest as number[]),
@@ -81,6 +108,7 @@ function collectCaps() {
       marked: !!group.userData.marked,
       enter: !!group.userData.enter,
       glow,
+      halo,
       puzzle: 'none' as const,
       scatter: new T.Vector3(), yaw: 0, flyFrom: new T.Vector3(), flyStart: 0, seatedAt: 0, lit: false,
     };
@@ -88,9 +116,14 @@ function collectCaps() {
   updateCapButtons();
 }
 function resetGlow(cap: Cap) {
-  if (!cap.glow) return;
-  cap.glow.emissive.setHex(0);
-  cap.glow.emissiveIntensity = 0;
+  if (cap.glow) {
+    cap.glow.emissive.setHex(0);
+    cap.glow.emissiveIntensity = 0;
+  }
+  if (cap.halo) {
+    cap.halo.visible = false;
+    (cap.halo.material as T.SpriteMaterial).opacity = 0;
+  }
 }
 function setCap(cap: Cap, attached: boolean) {
   cap.attached = attached;
@@ -144,6 +177,7 @@ let typed = '';
 let flashStart = 0;
 let flashTimer: number | null = null;
 let chimeLight: T.PointLight | null = null;
+let keyboardLight: T.PointLight | null = null;
 let enterPressedAt = -Infinity;
 
 function hidePuzzleHud() {
@@ -168,6 +202,7 @@ function stopKeyboardPuzzle() {
   enterPressedAt = -Infinity;
   if (flashTimer !== null) { clearTimeout(flashTimer); flashTimer = null; }
   if (chimeLight) { scene.remove(chimeLight); chimeLight = null; }
+  if (keyboardLight) { scene.remove(keyboardLight); keyboardLight = null; }
   hidePuzzleHud();
   resetCpuMap();
   updateCapButtons();
@@ -187,7 +222,7 @@ function startPuzzle() {
   typed = '';
   const phrase = caps.filter(cap => cap.phrase);
   const xs = [-2.9, -2.0, -1.1, -.2, .7, 1.6, 2.5, 3.3];
-  const zs = [2.9, 3.6, 2.7, 3.9, 3.0, 3.7, 2.8, 3.8];
+  const zs = [1.55, 1.72, 1.48, 1.68, 1.52, 1.75, 1.50, 1.66];
   phrase.forEach((cap, index) => {
     cap.puzzle = 'floor';
     cap.lit = false;
@@ -200,6 +235,9 @@ function startPuzzle() {
   view('keys');
   showPuzzleHud();
   updatePuzzleHud();
+  keyboardLight = new T.PointLight(0x9dffd0, 0, 10, 2);
+  keyboardLight.position.set(.48, 2.8, -2.4);
+  scene.add(keyboardLight);
   document.querySelector('#note')!.textContent = '键盘谜题：按 Mac 提示输入 I LOVE CDS，或点击地上金色键；全部归位后按 Enter 开机。';
   for (const id of ['#detachPhrase', '#detachV', '#attachAll', '#puzzleStart']) document.querySelector<HTMLButtonElement>(id)!.hidden = true;
   document.querySelector<HTMLButtonElement>('#puzzleReset')!.hidden = false;
@@ -227,6 +265,14 @@ function typeLetter(letter: string) {
   if (cap) insertCap(cap);
   updatePuzzleHud();
 }
+function setHalo(cap: Cap, color: number, opacity: number, scale: number) {
+  if (!cap.halo) return;
+  const material = cap.halo.material as T.SpriteMaterial;
+  material.color.setHex(color);
+  material.opacity = opacity;
+  cap.halo.visible = opacity > .015;
+  cap.halo.scale.set(scale, scale, 1);
+}
 function updatePuzzleCaps(now: number) {
   if (!puzzleActive) return;
   for (const cap of caps) {
@@ -234,13 +280,19 @@ function updatePuzzleCaps(now: number) {
     if (cap.puzzle === 'floor') {
       cap.group.position.copy(cap.scatter);
       cap.group.rotation.set(-Math.PI / 2, cap.yaw, 0);
+      cap.group.scale.setScalar(1);
     } else if (cap.puzzle === 'flying') {
       const progress = Math.min(1, (now - cap.flyStart) / 700);
       const eased = progress < .5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
       cap.group.position.lerpVectors(cap.flyFrom, cap.rest, eased);
-      cap.group.rotation.x = -Math.PI / 2 * (1 - eased);
+      cap.group.position.y += Math.sin(Math.PI * progress) * .34;
+      cap.group.rotation.x = -Math.PI / 2 * (1 - eased) + Math.sin(Math.PI * progress) * .22;
       cap.group.rotation.y = cap.yaw * (1 - eased);
+      cap.group.rotation.z = Math.sin(Math.PI * progress) * .20;
+      cap.group.scale.setScalar(1 + Math.sin(Math.PI * progress) * .08);
       if (progress >= 1) {
+        cap.group.scale.setScalar(1);
+        cap.group.rotation.set(0, 0, 0);
         cap.puzzle = 'seated';
         cap.seatedAt = now;
         puzzleInserted++;
@@ -248,40 +300,59 @@ function updatePuzzleCaps(now: number) {
       }
     } else if (cap.puzzle === 'seated') {
       const sink = Math.min(1, (now - cap.seatedAt) / 450);
-      cap.group.position.set(cap.rest.x, cap.rest.y, cap.rest.z - .012 * sink);
+      const sinkEase = 1 - Math.pow(1 - sink, 3);
+      cap.group.position.set(cap.rest.x, cap.rest.y, cap.rest.z - .012 * sinkEase);
       cap.group.rotation.set(0, 0, 0);
-      if (sink >= 1 && !cap.lit) {
+      cap.group.scale.setScalar(1 - .035 * Math.sin(sink * Math.PI));
+      if (sink >= .8 && !cap.lit) {
         cap.lit = true;
         if (cap.glow) {
           cap.glow.emissive.setHex(0xffb43a);
-          cap.glow.emissiveIntensity = 1.4;
+          cap.glow.emissiveIntensity = 1.1;
         }
+        setHalo(cap, 0xffb43a, .4, .72);
       }
-      if (cap.lit && cap.glow && puzzleState !== 'flash') cap.glow.emissiveIntensity = .9 + .22 * Math.sin(now * .008);
+      if (cap.lit && (puzzleState === 'collect' || puzzleState === 'ready')) {
+        if (cap.glow) cap.glow.emissiveIntensity = .8 + .15 * Math.sin(now * .008);
+        setHalo(cap, 0xffb43a, .38 + .10 * Math.sin(now * .008), .72 + .04 * Math.sin(now * .008));
+      }
     }
   }
   const enter = caps.find(cap => cap.enter);
-  if (puzzleInserted === 8 && enter?.glow && puzzleState !== 'flash') {
-    enter.glow.emissive.setHex(0x4aa3ff);
-    enter.glow.emissiveIntensity = 1.0 + .3 * Math.sin(now * .006);
+  if (puzzleInserted === 8 && enter && puzzleState !== 'flash' && puzzleState !== 'online') {
+    if (enter.glow) {
+      enter.glow.emissive.setHex(0x4aa3ff);
+      enter.glow.emissiveIntensity = .8 + .2 * Math.sin(now * .006);
+    }
+    setHalo(enter, 0x4aa3ff, .45 + .10 * Math.sin(now * .006), .74);
     if (puzzleState === 'collect') { puzzleState = 'ready'; updatePuzzleHud(); }
   }
   if (puzzleState === 'flash') {
     const elapsed = (now - flashStart) / 1000;
     const rate = 4 + elapsed * 7;
-    const on = Math.sin(elapsed * rate * Math.PI * 2) > 0;
+    const globalOn = Math.sin(elapsed * rate * Math.PI * 2) > 0;
     for (const cap of caps) {
       if (!cap.glow) continue;
-      cap.glow.emissive.setHex(cap.enter ? 0x4aa3ff : cap.phrase ? 0xffc24a : 0x8fffc0);
-      cap.glow.emissiveIntensity = on ? 2.2 : 0;
+      const row = Number(cap.group.userData.row ?? 0);
+      const column = Number(cap.group.userData.col ?? 0);
+      const phase = elapsed * rate * Math.PI * 2 - (row * .35 + column * .2);
+      const on = Math.sin(phase) > 0;
+      const color = cap.enter ? 0x4aa3ff : cap.phrase ? 0xffc24a : 0x8fffc0;
+      cap.glow.emissive.setHex(color);
+      cap.glow.emissiveIntensity = on ? 1.8 : 0;
+      setHalo(cap, color, on ? .65 : 0, on ? .78 : .66);
     }
+    if (keyboardLight) keyboardLight.intensity = globalOn ? 2.4 : 1.0;
   }
   if (puzzleState === 'online') {
     for (const cap of caps) {
       if (!cap.glow) continue;
-      cap.glow.emissive.setHex(cap.enter ? 0x4aa3ff : cap.phrase ? 0x79ffb0 : 0x3d6b53);
-      cap.glow.emissiveIntensity = cap.enter ? 1.2 : cap.phrase ? .85 : .35;
+      const color = cap.enter ? 0x4aa3ff : cap.phrase ? 0xffc24a : 0x6dffb0;
+      cap.glow.emissive.setHex(color);
+      cap.glow.emissiveIntensity = cap.enter ? 1.0 : cap.phrase ? .65 : .12;
+      setHalo(cap, color, cap.enter ? .55 : cap.phrase ? .4 : .08, cap.enter ? .78 : cap.phrase ? .74 : .64);
     }
+    if (keyboardLight) keyboardLight.intensity = 2.2;
   }
 }
 function flashBeeps(index: number) {
@@ -301,7 +372,11 @@ function setCpuOnline() {
     chimeLight.position.set(0, 3.4, -1);
     scene.add(chimeLight);
   }
-  chimeLight.intensity = 2.4;
+  chimeLight.intensity = 2.6;
+  if (keyboardLight) keyboardLight.intensity = 2.2;
+  const flash = document.querySelector('#puzzle-flash');
+  flash?.classList.add('show');
+  window.setTimeout(() => flash?.classList.remove('show'), 420);
 }
 function startFinale() {
   if (!puzzleActive || puzzleInserted !== 8 || puzzleState !== 'ready') return;
@@ -744,6 +819,7 @@ exportButton.onclick = async () => {
 
 function resize() {
   renderer.setSize(host.clientWidth, host.clientHeight);
+  composer.setSize(host.clientWidth, host.clientHeight);
   camera.aspect = host.clientWidth / host.clientHeight;
   camera.updateProjectionMatrix();
   if (Math.abs(camera.aspect - fittedAspect) > .15) view(activeView);
@@ -760,6 +836,6 @@ renderer.setAnimationLoop(() => {
   updatePuzzleCaps(now);
   updateTiles(now);
   updateReveal(now);
-  renderer.render(scene, camera);
+  composer.render();
 });
 Object.assign(window, {__INTERIORS: {scene, camera, renderer, controls, select, view:(front=false)=>view(front?'front':'overview'), keysView:()=>view('keys'), stoolView:()=>view('stool'), flipView:()=>view('flip'), revealView:()=>view('reveal'), flipAll, toggleTile, flipSelected, selectAllTiles, clearSelection, reveal:revealWall, resetWall, startPuzzle, resetPuzzle, typeLetter, startFinale, screenOf:(row: number, column: number) => { const tile = tiles.find(item => item.row === row && item.column === column); if (!tile) return null; const world = new T.Vector3(); tile.group.getWorldPosition(world); world.project(camera); const rect = renderer.domElement.getBoundingClientRect(); return {x: rect.left + (world.x * .5 + .5) * rect.width, y: rect.top + (-world.y * .5 + .5) * rect.height}; }, get puzzle() { return {active: puzzleActive, state: puzzleState, inserted: puzzleInserted, typed}; }, get revealState() { return revealState; }, get selection() { return [...selectedTiles].map(tile => `${tile.row}:${tile.column}`); }, get asset() { return asset; }, get caps() { return caps.map(cap => ({label: cap.group.userData.label, phrase: cap.phrase, enter: cap.enter, marked: cap.marked, attached: cap.attached, stool: cap.stool, puzzle: cap.puzzle, lit: cap.lit, position: cap.group.position.toArray(), rotation: cap.group.rotation.toArray().slice(0,3)})); }, get tiles() { return tiles.map(tile => ({row: tile.row, column: tile.column, angle: tile.current, front: tile.group.userData.front, back: tile.group.userData.back})); }, setCap, setAllCaps, togglePhrase, detachV, toggleKey:(label: string) => { const cap = caps.find(item => item.group.userData.label === label); if (cap) setCap(cap, !cap.attached); }}});
