@@ -15,7 +15,7 @@ export const OPENING_AUDIO_NAMES=[
  'sfx_anomaly_low','sfx_glitch_burst','sfx_ai_boot','sfx_disturbance_spread','sfx_veil_descend','sfx_veil_seal',
  'amb_dark_hum','robot_servo_loop','robot_patrol_step','robot_scan','robot_lockon','robot_chase_loop','robot_capture',
  'sfx_safe_restore','step_jump','step_land','invitation_open','invitation_close','macbook_open','macbook_close',
- 'agent_status','ui_confirm','ui_error','cc0_bus_engine_idle','cc0_amb_birds_loop','bus_door',
+ 'agent_status','ui_confirm','ui_cancel','ui_error','decrypt_success','cc0_bus_engine_idle','cc0_amb_birds_loop','bus_door',
  'mus_safe','mus_unease','mus_tension','mus_chase','mus_hope',
 ];
 
@@ -56,6 +56,23 @@ export class StoryAudio {
  /** Compress the prelude to the existing game beats. The seal follows the 4.6 s visual curtain. */
  disturbance(){this.cue('sfx_anomaly_low');this.timeline={elapsed:0,events:[{at:.5,id:'sfx_glitch_burst'},{at:1.4,id:'sfx_ai_boot'},{at:2.4,id:'sfx_disturbance_spread'}]};}
  curtain(){this.cue('sfx_veil_descend');this.timeline={elapsed:0,events:[{at:4.6,id:'sfx_veil_seal'}]};}
+ /**
+  * Short interface feedback through the same mixer and 16-voice budget.
+  * UI sounds must survive an open modal, so this bypasses the story `active` gate
+  * (the modal sets it false) but still respects mute, volume groups and hidden tabs.
+  */
+ ui(kind:'hover'|'confirm'|'cancel'|'notify'|'alert'){
+  const map={hover:['ui_confirm',.16,1.32],confirm:['ui_confirm',.44,1],cancel:['ui_cancel',.52,1],notify:['ui_confirm',.34,1.12],alert:['ui_error',.6,.92]} as const;
+  const [id,gain,rate]=map[kind];
+  if(!this.owner.context||!this.owner.buffers.has(id))return;
+  this.owner.play(id,'ui',undefined,gain,rate);
+ }
+ /** The handoff chord: bright, final, and audible while the completion modal owns the input. */
+ ending(){
+  const layer=(id:string,gain:number,delay:number)=>{if(delay<=0){this.owner.play(id,'sfx',undefined,gain,1);return;}setTimeout(()=>{if(this.owner.context&&this.owner.buffers.has(id))this.owner.play(id,'sfx',undefined,gain,1);},delay);};
+  if(!this.owner.context||!this.owner.buffers.has('decrypt_success'))return;
+  layer('decrypt_success',.46,0);layer('sfx_safe_restore',.22,420);layer('agent_status',.3,900);
+ }
  private drop(key:string){const loop=this.loops.get(key);if(!loop)return;this.loops.delete(key);loop.source.onended=null;try{loop.source.stop();}catch{}loop.source.disconnect();loop.gain.disconnect();loop.panner?.disconnect();}
  private loop(key:string,id:string,group:'ambient'|'music'|'sfx',level:number,fade:number,position?:Point){
   const c=this.owner.context!,buffer=this.owner.buffers.get(id);if(!buffer)return;

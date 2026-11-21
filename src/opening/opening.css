@@ -2301,3 +2301,871 @@ body.opening-cinema-letter .opening-invite-card {
   opacity: 1;
   color: #1f3a2d;
 }
+
+/* ================================================================== */
+/* BARRIER 2030 — unified emergency interface                          */
+/*                                                                     */
+/* Appended after the warm-paper base. Every opening surface (HUD,     */
+/* map card, prompt, warning, dialogs, cinematic, epilogue) now reads  */
+/* as one 2030 emergency console: near-black green glass, 1px mint     */
+/* hairlines, monospace status type, amber for keys and warnings.      */
+/* The invitation keeps its paper material and the alert / caught      */
+/* dialogs keep their red material on purpose.                         */
+/* ================================================================== */
+
+.opening-hud,
+.opening-mapcard,
+.opening-prompt,
+.opening-warning,
+.opening-modal-root,
+.opening-cinema,
+.opening-epilogue {
+  --opening-ink: #e8f4ee;
+  --opening-ink-soft: #a4bcb1;
+  --opening-paper: rgba(8, 18, 15, 0.92);
+  --opening-paper-deep: rgba(11, 24, 20, 0.95);
+  --opening-green: #74e6b4;
+  --opening-line: rgba(116, 230, 180, 0.22);
+  --opening-line-strong: rgba(116, 230, 180, 0.46);
+  --opening-gold: #ffb648;
+  --opening-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+  --opening-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  color: var(--opening-ink);
+}
+
+/* The letter is a physical object on top of the console, not a panel. */
+.opening-dialog--invitation {
+  --opening-ink: #173e31;
+  --opening-ink-soft: #315544;
+  --opening-green: #2d634c;
+  --opening-line: #92a58e;
+  --opening-line-strong: #6b8067;
+  --opening-gold: #b4812f;
+  color: var(--opening-ink);
+}
+
+/* ------------------------------------------------------------------ HUD. */
+.opening-hud {
+  width: 308px;
+  padding: 15px 18px 14px 20px;
+  background: linear-gradient(180deg, rgba(10, 23, 19, 0.94), rgba(5, 13, 11, 0.92));
+  border: 1px solid var(--opening-line);
+  border-left: 3px solid var(--opening-green);
+  box-shadow: var(--opening-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.opening-hud::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 14px;
+  height: 14px;
+  border-top: 1px solid var(--opening-line-strong);
+  border-right: 1px solid var(--opening-line-strong);
+  pointer-events: none;
+}
+.opening-hud .opening-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--opening-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--opening-green);
+}
+.opening-hud .opening-eyebrow::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  background: var(--opening-green);
+  box-shadow: 0 0 10px var(--opening-green);
+  animation: opening-ui-blink 2.6s steps(2) infinite;
+}
+@keyframes opening-ui-blink {
+  50% { opacity: 0.3; }
+}
+.opening-objective {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.32;
+  letter-spacing: 0.005em;
+}
+.opening-details {
+  margin-top: 12px;
+}
+.opening-details > summary {
+  min-height: 26px;
+  font-family: var(--opening-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--opening-ink-soft);
+}
+.opening-details > summary::before {
+  content: "+";
+  width: 12px;
+  color: var(--opening-green);
+}
+.opening-details[open] > summary::before {
+  content: "−";
+}
+.opening-hud .opening-detail-text {
+  margin-top: 8px;
+  padding-left: 10px;
+  border-left: 1px solid var(--opening-line);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--opening-ink-soft);
+}
+.opening-save {
+  margin-top: 12px;
+  padding-top: 9px;
+  border-top: 1px solid var(--opening-line);
+  font-family: var(--opening-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #86a296;
+}
+.opening-distance {
+  font-family: var(--opening-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--opening-green);
+}
+
+/* ---------------------------------------------------------- Mini map card. */
+.opening-mapcard {
+  padding: 7px;
+  background: rgba(8, 18, 15, 0.9);
+  border: 1px solid var(--opening-line);
+  box-shadow: var(--opening-shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.opening-mapcard:hover {
+  background: rgba(16, 34, 28, 0.96);
+  border-color: var(--opening-line-strong);
+}
+.opening-mapcard:focus-visible {
+  outline: 2px solid var(--opening-gold);
+  outline-offset: 3px;
+}
+.opening-minimap-canvas {
+  background: #08130f;
+  border: 1px solid var(--opening-line);
+}
+.opening-mapcard-label {
+  font-family: var(--opening-mono);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: var(--opening-green);
+}
+
+/* -------------------------------------------------------------- Prompt. */
+.opening-prompt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px 8px 9px;
+  background: rgba(5, 13, 11, 0.9);
+  border: 1px solid var(--opening-line-strong);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.5);
+  color: var(--opening-ink);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.opening-prompt-key {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  background: var(--opening-gold);
+  color: #150f04;
+  font: 800 12px/1 var(--opening-mono);
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 0 #8a5f13;
+}
+.opening-prompt-key[hidden] {
+  display: none !important;
+}
+.opening-prompt-text {
+  min-width: 0;
+}
+.opening-prompt.is-new {
+  animation: opening-prompt-in 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes opening-prompt-in {
+  from { opacity: 0; transform: translate(-50%, 7px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* ------------------------------------------------------- Robot warning. */
+.opening-warning {
+  padding: 8px 14px;
+  background: rgba(24, 8, 7, 0.9);
+  border: 1px solid rgba(255, 92, 74, 0.55);
+  border-left: 3px solid #ff5c4a;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5), 0 0 26px rgba(255, 92, 74, 0.14);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.opening-warning-label {
+  font-family: var(--opening-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #ff9d8d;
+}
+.opening-warning-state {
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  color: #ffe6de;
+}
+.opening-warning-bar {
+  height: 6px;
+  background: #3a1512;
+  border: 1px solid #6f2a25;
+}
+.opening-warning-bar b {
+  background: #ff5c4a;
+}
+
+/* ----------------------------------------------------------- Modal shell. */
+body.opening-mode .opening-modal-root {
+  background: rgba(2, 7, 6, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) {
+  background: linear-gradient(180deg, rgba(10, 22, 18, 0.98), rgba(5, 12, 10, 0.99));
+  border: 1px solid var(--opening-line);
+  box-shadow: 0 34px 90px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-dialog-head {
+  padding: 18px 24px 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--opening-line);
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-eyebrow {
+  font-family: var(--opening-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--opening-green);
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-dialog-title {
+  margin-top: 8px;
+  font-size: 25px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-dialog-body {
+  scrollbar-color: #2d5c4b #081310;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-dialog-actions {
+  border-top: 1px solid var(--opening-line);
+  background: rgba(0, 0, 0, 0.24);
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-dialog-close {
+  padding: 7px 11px;
+  background: transparent;
+  border: 1px solid var(--opening-line-strong);
+  color: var(--opening-ink-soft);
+  font-family: var(--opening-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-dialog-close:hover {
+  background: rgba(116, 230, 180, 0.1);
+  color: var(--opening-ink);
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-dialog-close:focus-visible {
+  outline: 2px solid var(--opening-gold);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------- Buttons. */
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-button,
+.opening-epilogue .opening-button {
+  padding: 11px 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--opening-line-strong);
+  color: var(--opening-ink);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  box-shadow: none;
+  transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease, transform 0.06s ease;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-button:hover,
+.opening-epilogue .opening-button:hover {
+  background: rgba(116, 230, 180, 0.1);
+  border-color: var(--opening-green);
+  color: #f4fffa;
+  filter: none;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-button:active,
+.opening-epilogue .opening-button:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-button--primary,
+.opening-epilogue .opening-button--primary {
+  background: var(--opening-green);
+  border-color: var(--opening-green);
+  color: #04120c;
+  font-weight: 800;
+  box-shadow: 0 0 26px rgba(116, 230, 180, 0.22);
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-button--primary:hover,
+.opening-epilogue .opening-button--primary:hover {
+  background: #93f3c9;
+  border-color: #93f3c9;
+  color: #04120c;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-button--danger {
+  background: rgba(255, 92, 74, 0.08);
+  border-color: rgba(255, 92, 74, 0.55);
+  color: #ffb0a0;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-button--danger:hover {
+  background: rgba(255, 92, 74, 0.16);
+  border-color: #ff7c68;
+  color: #ffe4dc;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-button:focus-visible,
+.opening-epilogue .opening-button:focus-visible {
+  outline: 2px solid var(--opening-gold);
+  outline-offset: 3px;
+}
+
+/* ------------------------------------------------- Text inside dialogs. */
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) :is(
+  .opening-copy,
+  .opening-muted,
+  .opening-line,
+  .opening-info-line,
+  .opening-device-line,
+  .opening-computer-detail,
+  .opening-map-legend,
+  .opening-map-info p,
+  .opening-modal-save
+) {
+  color: var(--opening-ink-soft);
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-speaker {
+  background: rgba(116, 230, 180, 0.14);
+  border: 1px solid var(--opening-line-strong);
+  color: var(--opening-green);
+  font-family: var(--opening-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-info {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--opening-line);
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-info-title {
+  font-size: 14px;
+  letter-spacing: 0.01em;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-objective-box {
+  background: rgba(116, 230, 180, 0.05);
+  border: 1px solid var(--opening-line);
+  border-left: 3px solid var(--opening-green);
+  box-shadow: none;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-computer-objective {
+  font-size: 19px;
+  font-weight: 600;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-tabs {
+  background: rgba(0, 0, 0, 0.28);
+  border-bottom: 1px solid var(--opening-line);
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-tab {
+  font-family: var(--opening-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--opening-ink-soft);
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-tab:hover {
+  background: rgba(116, 230, 180, 0.08);
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-tab[aria-current="page"] {
+  background: rgba(116, 230, 180, 0.1);
+  border-bottom-color: var(--opening-green);
+  color: var(--opening-ink);
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-tab:focus-visible {
+  outline: 2px solid var(--opening-gold);
+  outline-offset: -2px;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-bigmap {
+  background: #08130f;
+  border: 1px solid var(--opening-line);
+}
+
+/* Steps read as a mission checklist, not paper cards. */
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-steps-title {
+  font-family: var(--opening-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-step {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--opening-line);
+  color: var(--opening-ink);
+  font-size: 13px;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-step-mark,
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-step-status {
+  font-family: var(--opening-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: #86a296;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-step.is-done {
+  background: rgba(116, 230, 180, 0.07);
+  border-color: rgba(116, 230, 180, 0.3);
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-step.is-done .opening-step-mark,
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-step.is-done .opening-step-status {
+  color: var(--opening-green);
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-step.is-next {
+  background: rgba(255, 182, 72, 0.08);
+  border-color: var(--opening-gold);
+  box-shadow: none;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-step.is-next .opening-step-status {
+  color: var(--opening-gold);
+}
+
+/* Settings. */
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-setting-head {
+  color: var(--opening-ink);
+  font-size: 13px;
+  font-weight: 500;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-setting-value {
+  color: var(--opening-green);
+  font-size: 12px;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-setting-input,
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-toggle input {
+  accent-color: var(--opening-green);
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-setting-input:focus-visible,
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-toggle input:focus-visible {
+  outline: 2px solid var(--opening-gold);
+  outline-offset: 3px;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-modal-save {
+  border-top: 1px solid var(--opening-line);
+  font-family: var(--opening-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-confirm {
+  background: rgba(255, 182, 72, 0.07);
+  border: 1px solid var(--opening-gold);
+  box-shadow: none;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-confirm-title {
+  color: #ffd79a;
+}
+:is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) .opening-confirm-body {
+  color: #d8c6a4;
+}
+
+/* ------------------------------------------------- Handoff completion. */
+.opening-brandlock {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  margin: 0 0 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--opening-line);
+}
+.opening-brandlock-zh {
+  font-family: "Songti SC", "Noto Serif SC", Georgia, serif;
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  color: var(--opening-ink);
+}
+.opening-brandlock-en {
+  font-family: var(--opening-mono);
+  font-size: 11px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--opening-green);
+}
+.opening-brandlock-chapter {
+  margin-left: auto;
+  padding: 3px 7px;
+  border: 1px solid var(--opening-line-strong);
+  font-family: var(--opening-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--opening-ink-soft);
+}
+.opening-complete-facts {
+  background: rgba(116, 230, 180, 0.05);
+  border: 1px solid var(--opening-line-strong);
+}
+.opening-complete-fact {
+  border-bottom: 1px dashed rgba(116, 230, 180, 0.18);
+}
+.opening-complete-fact dt {
+  font-family: var(--opening-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #86a296;
+}
+.opening-complete-fact dd {
+  color: var(--opening-ink);
+  font-weight: 600;
+}
+.opening-endofslice {
+  margin: 16px 0 0;
+  padding: 9px 12px;
+  border-left: 2px solid var(--opening-gold);
+  background: rgba(255, 182, 72, 0.07);
+  font-family: var(--opening-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #ffd79a;
+}
+.opening-other-slices {
+  margin-top: 16px;
+  font-size: 12px;
+}
+.opening-other-slices > summary {
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--opening-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--opening-ink-soft);
+}
+.opening-other-slices > summary::-webkit-details-marker {
+  display: none;
+}
+.opening-other-slices > summary::before {
+  content: "+ ";
+  color: var(--opening-green);
+}
+.opening-other-slices[open] > summary::before {
+  content: "− ";
+}
+.opening-other-slices-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.opening-other-slices-row .opening-button {
+  padding: 8px 11px;
+  font-size: 11px;
+}
+
+/* ---------------------------------------------------------- Cinematic. */
+.opening-cinema-title[lang="zh-Hans"] {
+  font-family: "Songti SC", "Noto Serif SC", "PingFang SC", Georgia, serif;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+}
+.opening-cinema[data-mode="wake"] .opening-cinema-title[lang="zh-Hans"] {
+  color: #f6f1de;
+  text-shadow: 0 0 34px rgba(116, 230, 180, 0.18), 0 2px 18px #000c;
+}
+.opening-cinema-subtitle-line {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  letter-spacing: 0.3em;
+  color: var(--opening-gold);
+}
+
+/* ----------------------------------------------------------- Epilogue. */
+.opening-epilogue {
+  position: absolute;
+  inset: 0;
+  z-index: 74;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 50% 28%, rgba(11, 27, 22, 0.96) 0%, rgba(3, 8, 7, 0.99) 68%),
+    #020605;
+  color: var(--opening-ink);
+  font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  pointer-events: auto;
+}
+.opening-epilogue[hidden] {
+  display: none !important;
+}
+.opening-epilogue::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.028) 0 1px, transparent 1px 3px);
+  pointer-events: none;
+}
+.opening-epilogue-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: block;
+  height: 7.2vh;
+  background: #020605;
+}
+.opening-epilogue-bar.top { top: 0; }
+.opening-epilogue-bar.bottom { bottom: 0; }
+.opening-epilogue-inner {
+  position: relative;
+  z-index: 3;
+  width: min(760px, 90vw);
+  padding: 6px 0 6px 24px;
+  border-left: 2px solid var(--opening-green);
+  display: grid;
+  gap: 14px;
+  animation: opening-epilogue-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes opening-epilogue-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.opening-epilogue-eyebrow {
+  margin: 0;
+  font-family: var(--opening-mono);
+  font-size: 10px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--opening-green);
+}
+.opening-epilogue-title {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.opening-epilogue-zh {
+  font-family: "Songti SC", "Noto Serif SC", "PingFang SC", Georgia, serif;
+  font-size: clamp(46px, 7.4vw, 86px);
+  line-height: 0.96;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: #f4f8f2;
+  text-shadow: 0 0 44px rgba(116, 230, 180, 0.16);
+}
+.opening-epilogue-en {
+  font-family: var(--opening-mono);
+  font-size: clamp(11px, 1.35vw, 15px);
+  letter-spacing: 0.52em;
+  text-transform: uppercase;
+  color: var(--opening-green);
+}
+.opening-epilogue-line {
+  margin: 4px 0 0;
+  max-width: 58ch;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: clamp(15px, 1.55vw, 18px);
+  line-height: 1.65;
+  color: #cfe2d8;
+}
+.opening-epilogue-ticker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 11px 0;
+  border-top: 1px solid var(--opening-line);
+  border-bottom: 1px solid var(--opening-line);
+}
+.opening-epilogue-ticker-label {
+  margin: 0;
+  font-family: var(--opening-mono);
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #86a296;
+}
+.opening-epilogue-ticker-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.opening-epilogue-ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border: 1px solid rgba(116, 230, 180, 0.3);
+  background: rgba(116, 230, 180, 0.07);
+  font-family: var(--opening-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #d8f7e8;
+  opacity: 0;
+  animation: opening-ticker-in 0.42s ease forwards;
+  animation-delay: var(--epilogue-delay, 0s);
+}
+@keyframes opening-ticker-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.opening-epilogue-ticker-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--opening-green);
+  box-shadow: 0 0 8px var(--opening-green);
+}
+.opening-epilogue-meta {
+  margin: 0;
+  font-family: var(--opening-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #86a296;
+}
+.opening-epilogue-note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #c9a86a;
+}
+.opening-epilogue-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* --------------------------------------------------- Toast (opening). */
+body.opening-mode.exploring #toast {
+  top: 14px;
+  bottom: auto;
+  max-width: min(52%, 520px);
+  padding: 10px 16px;
+  background: rgba(5, 13, 11, 0.92);
+  border: 1px solid var(--opening-line-strong, rgba(116, 230, 180, 0.46));
+  border-radius: 0;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.5);
+  color: #e8f4ee;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+body.opening-mode.exploring #toast.error {
+  background: rgba(36, 9, 8, 0.94);
+  border-color: rgba(255, 92, 74, 0.6);
+}
+
+/* --------------------------------------------- Hearts in opening mode. */
+body.opening-mode.exploring .opening-hearts {
+  background: linear-gradient(180deg, rgba(9, 21, 17, 0.94), rgba(4, 11, 9, 0.92));
+  border: 1px solid rgba(116, 230, 180, 0.24);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+body.opening-mode.exploring .opening-hearts.is-low {
+  box-shadow: 0 0 0 1px rgba(217, 74, 60, 0.7), 0 0 26px rgba(217, 74, 60, 0.35);
+}
+
+/* The scene index owns the left edge; do not stack the opening HUD on it. */
+body.scene-inspecting .opening-hud,
+body.scene-inspecting .opening-mapcard,
+body.scene-inspecting .opening-prompt,
+body.scene-inspecting .opening-hearts {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------- Responsive. */
+@media (max-width: 700px) {
+  .opening-hud {
+    padding: 12px 14px 12px 16px;
+  }
+  .opening-objective {
+    font-size: 16px;
+  }
+  .opening-prompt {
+    gap: 8px;
+    padding: 7px 13px 7px 8px;
+  }
+  .opening-epilogue-inner {
+    width: min(92vw, 760px);
+    padding-left: 16px;
+    gap: 12px;
+  }
+  .opening-epilogue-ticker-item {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+  .opening-brandlock-chapter {
+    margin-left: 0;
+  }
+}
+@media (max-height: 720px) {
+  .opening-epilogue-inner {
+    gap: 10px;
+  }
+  .opening-epilogue-zh {
+    font-size: clamp(38px, 6vw, 60px);
+  }
+  .opening-epilogue-ticker {
+    padding: 8px 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .opening-hud .opening-eyebrow::before,
+  .opening-prompt.is-new,
+  .opening-epilogue-inner,
+  .opening-epilogue-ticker-item {
+    animation: none !important;
+  }
+  .opening-epilogue-ticker-item {
+    opacity: 1;
+  }
+  .opening-epilogue-inner {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-contrast: more) {
+  .opening-hud,
+  .opening-mapcard,
+  .opening-prompt {
+    background: #04100c;
+    border-color: #9bf3cd;
+    color: #ffffff;
+  }
+  .opening-epilogue {
+    background: #020605;
+  }
+}

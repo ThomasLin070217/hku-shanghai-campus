@@ -143,13 +143,13 @@ window.addEventListener('pagehide',event=>{experience.persist(true);explorer.pau
 if(!import.meta.env.DEV&&import.meta.env.MODE!=='review'){document.querySelectorAll('a[href*="evidence/"],.evidence-note').forEach(n=>n.remove());dialog.remove();}
 
 if(openingMode){
- document.title='HKU Shanghai · High Table';document.body.classList.add('opening-mode');
+ document.title='《屏障》BARRIER 2030 · High Table';document.body.classList.add('opening-mode');
  const copy:Record<string,string>={'mode-label':'Building 4 · Shanghai Campus','reset':'Return to checkpoint','mode-toggle':'Campus model tools','takeover':'Take control','night-toggle':'Night / Day','experience-settings':'Settings & save','new-game':'Restart opening…','enable-ai':'Enable AI control','bridge-status':'Local control service','enter-compat':'Drag controls','scene-index-toggle':'Scene index'};
  for(const [id,text]of Object.entries(copy)){const node=document.getElementById(id);if(node)node.textContent=text;}
- const pause=document.querySelector('.pause-card');if(pause){pause.querySelector('h2')!.textContent='High Table';pause.querySelector('p')!.textContent='2030 · You are a Student Ambassador on your way to High Table Dinner. Begin on the campus shuttle.';pause.querySelector('.key-guide')!.textContent='WASD move · Shift run · Space jump · F interact · E backpack · C MacBook · V view';pause.querySelector('.desktop-note')!.textContent='Keyboard and mouse · Continue to look around and move';pause.querySelector('summary')!.textContent='Restart / AI control';}
+ const pause=document.querySelector('.pause-card');if(pause){const eyebrow=pause.querySelector('.eyebrow');if(eyebrow)eyebrow.textContent='屏障 / BARRIER 2030';pause.querySelector('h2')!.textContent='屏障';pause.querySelector('p')!.textContent='BARRIER 2030 · You are a Student Ambassador on your way to the High Table Dinner. Begin on the campus shuttle.';pause.querySelector('.key-guide')!.textContent='WASD move · Shift run · Space jump · F interact · E backpack · C MacBook · V view';pause.querySelector('.desktop-note')!.textContent='Keyboard and mouse · Continue to look around and move';pause.querySelector('summary')!.textContent='Restart / AI control';}
  const help=document.querySelector('.header-right > button:not(#scene-index-toggle):not(#night-toggle)');if(help)help.textContent='Help';
  toolsMenu.querySelector('summary')!.textContent='Campus tools';advanced.querySelector('summary')!.textContent='Restart / AI control';
- document.querySelector('.brand-copy > span')!.textContent='HIGH TABLE · 2030';
+ document.querySelector('.brand-copy > span')!.textContent='屏障 · BARRIER 2030';
  document.querySelector('.stage-bottom > span')!.textContent='WASD move · Shift run · F interact · C MacBook · E backpack';
  for(const node of Array.from(document.querySelectorAll<HTMLElement>('.header-right > span'))){if(node.textContent==='正常校园')node.textContent='Campus';if(node.textContent==='张江基地')node.textContent='Shanghai';}
  const header=document.querySelector('.header-right');for(const node of Array.from(header?.childNodes??[]))if(node.nodeType===Node.TEXT_NODE){if(node.textContent?.includes('正常校园'))node.textContent='Campus';else if(node.textContent?.includes('张江基地'))node.textContent='Shanghai';}

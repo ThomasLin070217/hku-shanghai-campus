@@ -20,10 +20,12 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  const firstPerson=createFirstPersonArms();const arms=firstPerson.root;camera.add(arms);
  const deviceView=createDeviceView(camera,arms);
  const keys=new Set<string>(),ray=new T.Raycaster();let bob=false;let distance=Number(C.cameraDistance),actualDistance=distance,sensitivity=Number(C.mouseSensitivity);
+ /** Milliseconds left in which a queued jump may still fire on landing. */
+ let jumpBuffer=0;
  const editable=(t:EventTarget|null)=>t instanceof HTMLElement&&!!t.closest('input,select,textarea,[contenteditable="true"],dialog');
  const locked=()=>document.pointerLockElement===canvas;
  const controlled=()=>locked()||compat;
- const clear=()=>{dragging=false;keys.clear();game.human={forward:0,right:0,sprint:false};game.humanJump=false;accumulator=0;};
+ const clear=()=>{dragging=false;keys.clear();game.human={forward:0,right:0,sprint:false};game.humanJump=false;jumpBuffer=0;accumulator=0;};
  function openInventory(){if(!enabled||game.panel)return;clear();compat=false;game.openInventory();if(locked())document.exitPointerLock();}
  function closeInventory(){clear();game.closeInventory();}
  const inventoryUI=createInventoryUI(()=>game,openInventory,closeInventory,opening);
@@ -46,7 +48,7 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
   if(e.code===KEYS.pause&&compat){pause('escape');return;}
   if(!controlled()||game.paused)return;
   if(e.code===KEYS.interact){e.preventDefault();if(!e.repeat)for(const fn of interactions)fn();return;}
-  if(movement||e.code===KEYS.view){e.preventDefault();keys.add(e.code);if(!e.repeat&&e.code===KEYS.jump)game.humanJump=true;if(!e.repeat&&e.code===KEYS.view)game.view=game.view==='first'?'third':'first';}
+  if(movement||e.code===KEYS.view){e.preventDefault();keys.add(e.code);if(!e.repeat&&e.code===KEYS.jump){game.humanJump=true;jumpBuffer=C.jumpBufferMs;}if(!e.repeat&&e.code===KEYS.view)game.view=game.view==='first'?'third':'first';}
  });
  listenWindow('keyup',e=>keys.delete(e.code));
  listenDocument('mousemove',e=>{if(enabled&&locked()&&!game.paused){game.yaw-=e.movementX*sensitivity;game.pitch=T.MathUtils.clamp(game.pitch+e.movementY*sensitivity,C.minPitch,C.maxPitch);}});
@@ -71,7 +73,14 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  }
  function update(dt:number){inventoryUI.refresh();if(!enabled)return;const held=game.inventory.equipped?.itemId??null;student.equip(held);firstPerson.equip(held);dt=Math.min(dt,.1);const before=game.body.position.clone();
   game.human={forward:Number(keys.has(KEYS.forward))-Number(keys.has(KEYS.back)),right:Number(keys.has(KEYS.right))-Number(keys.has(KEYS.left)),sprint:keys.has(KEYS.sprint)};
-  if(!game.paused){accumulator+=dt;while(accumulator>=C.fixedStep){game.step(C.fixedStep);accumulator-=C.fixedStep;}}
+  if(!game.paused){
+   // A jump pressed a moment before landing is re-armed on the first grounded step.
+   if(jumpBuffer>0){
+    jumpBuffer=Math.max(0,jumpBuffer-dt*1000);
+    if(game.body.grounded&&!game.humanJump){game.humanJump=true;jumpBuffer=0;}
+   }
+   accumulator+=dt;while(accumulator>=C.fixedStep){game.step(C.fixedStep);accumulator-=C.fixedStep;}
+  }
   const d=game.body.position.clone().sub(before),travel=Math.hypot(d.x,d.z);
   if(travel>.00001){const desired=Math.atan2(-d.x,-d.z);turn+=Math.atan2(Math.sin(desired-turn),Math.cos(desired-turn))*(1-Math.exp(-C.turnSharpness*dt));}
   student.root.position.copy(game.body.position);student.root.rotation.y=turn;student.animate(game.paused?0:dt,travel,game.body.grounded,game.body.velocity.y,Math.hypot(game.body.velocity.x,game.body.velocity.z));updateCamera(dt);

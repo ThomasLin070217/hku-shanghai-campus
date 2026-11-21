@@ -3,6 +3,8 @@ export const KEYS={forward:'KeyW',back:'KeyS',left:'KeyA',right:'KeyD',sprint:'S
 export const EXPLORATION={
  speed:2.6, sprintSpeed:5.2, radius:.28, height:1.80, eyeHeight:1.64,
  maxStep:.24,maxDrop:.30,gravity:22,jumpSpeed:7.2,fixedStep:1/120,
+ /** Grace window so a jump pressed just before landing still fires. Feel only: no physics change. */
+ jumpBufferMs:140,
  spawnOffset:[0,0,13] as [number,number,number],
  cameraDistance:4.8,minDistance:2.2,maxDistance:10,cameraPitch:.18,
  minPitch:-1.40,maxPitch:1.40,targetHeight:1.30,followSharpness:20,turnSharpness:18,
