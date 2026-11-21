@@ -1,7 +1,7 @@
 import './menu.css';
 import lawnPhoto from './lawn.webp';
 import {getGraphicsQuality,setGraphicsQuality,type GraphicsQuality} from '../viewer/graphicsQuality';
-import {OPENING_SAVE_KEY} from '../opening/persistence';
+import {clearProgress} from './resetProgress';
 
 document.title = 'BARRIER 2030 · HKU Shanghai';
 
@@ -60,18 +60,11 @@ lowGraphics.addEventListener('change', () => {
   showQuality(quality);
 });
 
-// Clear only this game's namespaces: the opening save (and its writer/backup
-// slots), everything under hku.*, and the lion boss save.
+// Clear only this game's namespaces (the one list lives in resetProgress.ts):
+// the opening save and its slots, everything under hku.*, the lion boss save
+// and the campaign save.
 document.querySelector<HTMLButtonElement>('#reset-progress')!.addEventListener('click', () => {
   if (!confirm('Reset all local progress for BARRIER 2030 on this device? The opening, chapter and mission saves are cleared.')) return;
-  const exact = new Set([OPENING_SAVE_KEY, OPENING_SAVE_KEY + '.writer']);
-  const prefixes = [OPENING_SAVE_KEY + '.', 'hku.', 'hku.lion-boss.v1.'];
-  const doomed: string[] = [];
-  for (let index = 0; index < localStorage.length; index++) {
-    const key = localStorage.key(index);
-    if (!key) continue;
-    if (exact.has(key) || prefixes.some(prefix => key.startsWith(prefix))) doomed.push(key);
-  }
-  for (const key of doomed) localStorage.removeItem(key);
+  clearProgress(localStorage);
   location.reload();
 });

@@ -45,3 +45,81 @@ input.sudoku-cell:focus{outline:3px solid #c58b2c;outline-offset:-3px;background
 #rescue-banner p{font-size:15px;line-height:1.7;margin:0;color:#3d5b45}
 #rescue-banner small{display:block;margin-top:20px;font-size:11px;letter-spacing:.08em;color:#7b8c72}
 @media(max-width:650px){#rescue-banner>div{padding:24px 22px}#rescue-banner h2{font-size:23px}}
+
+/* Campaign mode. The one-world page uses the opening dark HUD, so the lock panel,
+   prompt and rescue banner take the same tokens. Values mirror the dark variant
+   of the opening tokens in src/opening/opening.css. No new palette. */
+#door-prompt.campaign-door,
+#door-lock-panel.campaign-door,
+#rescue-banner.campaign-door{
+ --opening-ink:#e8f4ee;
+ --opening-ink-soft:#a4bcb1;
+ --opening-paper:rgba(8,18,15,.92);
+ --opening-paper-deep:rgba(11,24,20,.95);
+ --opening-green:#74e6b4;
+ --opening-line:rgba(116,230,180,.22);
+ --opening-line-strong:rgba(116,230,180,.46);
+ --opening-gold:#ffb648;
+ --opening-mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+ color:var(--opening-ink);
+ font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+#door-prompt.campaign-door{
+ background:var(--opening-paper);
+ color:var(--opening-ink);
+ border:1px solid var(--opening-line-strong);
+ border-left:3px solid var(--opening-green);
+ box-shadow:0 18px 48px rgba(0,0,0,.55);
+ font:600 12px/1.4 var(--opening-mono);
+ letter-spacing:.06em;
+}
+#door-lock-panel.campaign-door{background:rgba(3,10,8,.78);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#door-lock-panel.campaign-door>section{
+ background:var(--opening-paper);
+ color:var(--opening-ink);
+ border:1px solid var(--opening-line-strong);
+ box-shadow:0 18px 48px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.05);
+}
+#door-lock-panel.campaign-door header{border-bottom:1px solid var(--opening-line)}
+#door-lock-panel.campaign-door .eyebrow{font:600 10px/1.2 var(--opening-mono);letter-spacing:.22em;color:var(--opening-green)}
+#door-lock-panel.campaign-door h2{font:400 24px/1.15 Georgia,"Times New Roman",serif;color:var(--opening-ink)}
+#door-lock-panel.campaign-door #door-lock-close{border:1px solid var(--opening-line-strong);background:transparent;color:var(--opening-ink-soft);font:600 11px/1 var(--opening-mono);letter-spacing:.08em}
+#door-lock-panel.campaign-door #door-lock-close:hover{color:var(--opening-ink);border-color:var(--opening-green)}
+#door-lock-panel.campaign-door .door-lock-lead{color:var(--opening-ink-soft)}
+#door-lock-panel.campaign-door #door-lock-grid{border:1px solid var(--opening-line-strong);background:var(--opening-paper-deep)}
+#door-lock-panel.campaign-door .sudoku-cell{font-family:var(--opening-mono);color:var(--opening-ink);border-color:var(--opening-line)}
+#door-lock-panel.campaign-door .sudoku-cell:nth-child(9n+3),
+#door-lock-panel.campaign-door .sudoku-cell:nth-child(9n+6){border-right-color:var(--opening-line-strong)}
+#door-lock-panel.campaign-door .sudoku-cell:nth-child(n+19):nth-child(-n+27),
+#door-lock-panel.campaign-door .sudoku-cell:nth-child(n+46):nth-child(-n+54){border-bottom-color:var(--opening-line-strong)}
+#door-lock-panel.campaign-door input.sudoku-cell{background:rgba(255,182,72,.10);color:var(--opening-gold)}
+#door-lock-panel.campaign-door input.sudoku-cell:focus{outline:2px solid var(--opening-gold);outline-offset:-2px;background:rgba(255,182,72,.18)}
+#door-lock-panel.campaign-door .door-lock-actions button{border:1px solid var(--opening-line-strong);background:transparent;color:var(--opening-ink-soft);font-family:var(--opening-mono);letter-spacing:.06em}
+#door-lock-panel.campaign-door .door-lock-actions button:hover{color:var(--opening-ink);border-color:var(--opening-green)}
+#door-lock-panel.campaign-door #door-lock-confirm{background:var(--opening-green);border-color:var(--opening-green);color:#04120c;font-weight:800;box-shadow:0 0 26px rgba(116,230,180,.22)}
+#door-lock-panel.campaign-door #door-lock-status,
+#door-lock-panel.campaign-door #door-lock-code-status{color:var(--opening-ink-soft);font-family:var(--opening-mono);font-size:11.5px}
+#door-lock-panel.campaign-door #door-lock-status[data-tone=warn],
+#door-lock-panel.campaign-door #door-lock-code-status[data-tone=warn]{color:var(--opening-gold)}
+#door-lock-panel.campaign-door #door-lock-status[data-tone=error],
+#door-lock-panel.campaign-door #door-lock-code-status[data-tone=error]{color:#ffb0a0}
+#door-lock-panel.campaign-door #door-lock-status[data-tone=ok],
+#door-lock-panel.campaign-door #door-lock-code-status[data-tone=ok]{color:var(--opening-green)}
+#door-lock-panel.campaign-door .door-lock-hint{background:var(--opening-paper-deep);border:1px dashed var(--opening-line-strong);color:var(--opening-gold);font-family:var(--opening-mono);font-size:12px}
+#door-lock-panel.campaign-door .code-slot{background:var(--opening-paper-deep);border:1px solid var(--opening-line-strong);color:var(--opening-gold);font-family:var(--opening-mono)}
+#door-lock-panel.campaign-door .code-slot.filled{border-color:var(--opening-green);color:var(--opening-green);box-shadow:0 0 16px rgba(116,230,180,.16)}
+#door-lock-panel.campaign-door #door-lock-keypad button{border:1px solid var(--opening-line);background:transparent;color:var(--opening-ink);font-family:var(--opening-mono)}
+#door-lock-panel.campaign-door #door-lock-keypad button:hover{border-color:var(--opening-green);color:var(--opening-green)}
+#door-lock-panel.campaign-door #door-lock-keypad button[data-key=back]{color:var(--opening-gold)}
+#door-lock-panel.campaign-door #door-lock-keypad button[data-key=ok]{background:var(--opening-green);border-color:var(--opening-green);color:#04120c;font-weight:800;letter-spacing:.08em}
+#rescue-banner.campaign-door{background:rgba(3,10,8,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#rescue-banner.campaign-door>div{
+ background:var(--opening-paper);
+ color:var(--opening-ink);
+ border:1px solid var(--opening-line-strong);
+ box-shadow:0 18px 48px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.05);
+}
+#rescue-banner.campaign-door .eyebrow{font:600 11px/1.2 var(--opening-mono);letter-spacing:.22em;color:var(--opening-green)}
+#rescue-banner.campaign-door h2{font-family:Georgia,"Times New Roman",serif;color:var(--opening-ink)}
+#rescue-banner.campaign-door p{color:var(--opening-ink-soft)}
+#rescue-banner.campaign-door small{font-family:var(--opening-mono);color:var(--opening-ink-soft);letter-spacing:.08em}
