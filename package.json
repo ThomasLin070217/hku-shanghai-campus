@@ -35,6 +35,7 @@
     "check:experience": "tsx scripts/check-experience-fix.ts",
     "check:chapter-select": "tsx scripts/check-chapter-select.ts",
     "check:campaign": "tsx scripts/check-campaign-state.ts && tsx scripts/check-campaign-host.ts",
+    "check:campaign-lawn": "tsx scripts/check-campaign-lawn.ts",
     "check:nov14": "tsx scripts/check-nov14-video.ts",
     "build:review": "tsc --noEmit && vite build --mode review",
     "check:review": "tsx scripts/check-workbuddy.ts",

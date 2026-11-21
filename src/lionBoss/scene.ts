@@ -32,7 +32,11 @@ function box(parent:T.Object3D,x:number,y:number,z:number,w:number,h:number,d:nu
   return mesh;
 }
 
+/** Canvas sprites need a DOM; headless checks build the same scene without them. */
+const canDraw=()=>typeof document!=='undefined';
+
 function numberPlate(text:string) {
+  if(!canDraw())return null;
   const canvas=document.createElement('canvas');
   canvas.width=128; canvas.height=80;
   const ctx=canvas.getContext('2d')!;
@@ -135,14 +139,18 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
   props.name='L001_boss_gameplay';
   props.userData.dynamicGameplay=true;
   scene.add(props);
-  const shadowCanvas=document.createElement('canvas');
-  shadowCanvas.width=shadowCanvas.height=64;
-  const shadowContext=shadowCanvas.getContext('2d')!;
-  const gradient=shadowContext.createRadialGradient(32,32,6,32,32,32);
-  gradient.addColorStop(0,'rgba(25,33,24,.38)'); gradient.addColorStop(1,'rgba(25,33,24,0)');
-  shadowContext.fillStyle=gradient; shadowContext.fillRect(0,0,64,64);
-  const contactMap=new T.CanvasTexture(shadowCanvas);
-  const contact=new T.Mesh(new T.PlaneGeometry(5.6,5.6),new T.MeshBasicMaterial({map:contactMap,transparent:true,depthWrite:false}));
+  let contactMap:T.CanvasTexture|null=null;
+  const contact=new T.Mesh(new T.PlaneGeometry(5.6,5.6),new T.MeshBasicMaterial({transparent:true,depthWrite:false,visible:canDraw()}));
+  if(canDraw()){
+    const shadowCanvas=document.createElement('canvas');
+    shadowCanvas.width=shadowCanvas.height=64;
+    const shadowContext=shadowCanvas.getContext('2d')!;
+    const gradient=shadowContext.createRadialGradient(32,32,6,32,32,32);
+    gradient.addColorStop(0,'rgba(25,33,24,.38)'); gradient.addColorStop(1,'rgba(25,33,24,0)');
+    shadowContext.fillStyle=gradient; shadowContext.fillRect(0,0,64,64);
+    contactMap=new T.CanvasTexture(shadowCanvas);
+    contact.material.map=contactMap;
+  }
   contact.rotation.x=-Math.PI/2; props.add(contact);
   const telegraph=telegraphs();props.add(telegraph.root);
   const dog=helperModel();props.add(dog);
@@ -161,7 +169,7 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
     group.add(boundary);
     box(group,0,.62,0,.84,1.23,.57,dark);
     for(const y of [.42,.63,.84])box(group,0,y,.31,.51,.09,.07,lamp);
-    group.add(numberPlate('PWR'));
+    const plate=numberPlate('PWR');if(plate)group.add(plate);
     props.add(group);
     return {lamp,boundary};
   });
@@ -224,7 +232,7 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
     }
   }
   function dispose() {
-    contactMap.dispose();
+    contactMap?.dispose();
     for(const eye of eyes)eye.removeFromParent();
     eyeGeometry.dispose();eyeLight.dispose();
     rig.dispose();
@@ -242,5 +250,5 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
     });
     for(const material of materials) material.dispose();
   }
-  return {render,syncCollision,dispose};
+  return {render,syncCollision,dispose,rig};
 }
