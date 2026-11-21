@@ -78,3 +78,14 @@ export const DINNER_LAYOUT={
 /** Quarter-turn of the authored hall: its long axis is east–west, parallel to B5.
  * Lobby and entry retain their positions. This transform is shared by scenery and physics. */
 export function dinnerHallPoint(x:number,z:number):[number,number]{return[60.5+(-60-z),-78+(x-60.5)];}
+
+/** IMG_4380 00:24 / phase2-02: low timber dais, transverse table and a lectern on the left.
+ * Dimensions are provisional. All rectangles are in authored hall coordinates. */
+export const DINNER_HEAD={
+ stage:{x:DINNER_LAYOUT.crossCenter,z:DINNER_LAYOUT.endZ+.995,w:9.2,d:1.85,h:.14},
+ table:{x:DINNER_LAYOUT.crossCenter,z:-80.32,w:5.85,d:.80,h:.78},
+ lectern:{x:DINNER_LAYOUT.crossCenter-3.7,z:-80.32,w:.62,d:.56,h:1.10},
+ chairRows:[-81.01,-79.64],
+ chairOffsets:[-2.35,-1.41,-.47,.47,1.41,2.35],
+ chair:{w:.46,d:.47,h:.93},
+};

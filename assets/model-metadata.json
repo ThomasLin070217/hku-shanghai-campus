@@ -182,10 +182,10 @@
   },
   "assets": {
     "HKU-Shanghai-Campus": {
-      "bytes": 24740936,
+      "bytes": 25147408,
       "before": {
-        "triangles": 194155,
-        "meshes": 1099,
+        "triangles": 197586,
+        "meshes": 1101,
         "size": [
           208,
           85.59999848008155,
@@ -203,8 +203,8 @@
         ]
       },
       "after": {
-        "triangles": 194155,
-        "meshes": 1099,
+        "triangles": 197586,
+        "meshes": 1101,
         "size": [
           208,
           85.59999848008155,
@@ -224,10 +224,10 @@
       "reload": "passed"
     },
     "HKU-Shanghai-Opening": {
-      "bytes": 27829228,
+      "bytes": 28400128,
       "before": {
-        "triangles": 214333,
-        "meshes": 1741,
+        "triangles": 219038,
+        "meshes": 1751,
         "size": [
           208,
           85.59999848008155,
@@ -245,8 +245,8 @@
         ]
       },
       "after": {
-        "triangles": 214333,
-        "meshes": 1741,
+        "triangles": 219038,
+        "meshes": 1751,
         "size": [
           208,
           85.59999848008155,
@@ -266,10 +266,10 @@
       "reload": "passed"
     },
     "HKU-Shanghai-Campus-no-ground": {
-      "bytes": 18332132,
+      "bytes": 18502792,
       "before": {
-        "triangles": 136982,
-        "meshes": 1017,
+        "triangles": 138645,
+        "meshes": 1018,
         "size": [
           190,
           85.59999848008155,
@@ -287,8 +287,8 @@
         ]
       },
       "after": {
-        "triangles": 136982,
-        "meshes": 1017,
+        "triangles": 138645,
+        "meshes": 1018,
         "size": [
           190,
           85.59999848008155,
@@ -518,10 +518,10 @@
       "reload": "passed"
     },
     "buildings/B06": {
-      "bytes": 686156,
+      "bytes": 856736,
       "before": {
-        "triangles": 4888,
-        "meshes": 87,
+        "triangles": 6551,
+        "meshes": 88,
         "size": [
           34.45000076293945,
           25.059999974817035,
@@ -539,8 +539,8 @@
         ]
       },
       "after": {
-        "triangles": 4888,
-        "meshes": 87,
+        "triangles": 6551,
+        "meshes": 88,
         "size": [
           34.45000076293945,
           25.059999974817035,

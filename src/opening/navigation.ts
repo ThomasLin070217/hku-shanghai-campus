@@ -1,5 +1,5 @@
 import * as T from 'three';
-import {OPENING as O,DINNER_LAYOUT as D,dinnerHallPoint} from './spatialLayout';
+import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H,dinnerHallPoint} from './spatialLayout';
 import type {Obstacle} from '../exploration/navigation';
 
 /** Door clearance is shared by the scenery, collision and the step transition. */
@@ -24,6 +24,17 @@ export function openingObstacles(obstacles:Obstacle[]){
  // The outer end wall remains solid; the former internal side wall is retired.
  const [endX,endZ]=dinnerHallPoint(D.crossCenter,D.endZ);
  obstacles.push(box('opening-b5-hall-end',endX-.07,endX+.07,endZ-D.crossWidth/2,endZ+D.crossWidth/2,0,4.45));
+ const deck=r.floor+H.stage.h;
+ const furniture=(name:string,part:{x:number;z:number;w:number;d:number;h:number},bottom:number)=>{
+  const [x,z]=dinnerHallPoint(part.x,part.z);
+  obstacles.push(box(name,x-part.d/2,x+part.d/2,z-part.w/2,z+part.w/2,bottom,bottom+part.h));
+ };
+ furniture('opening-b5-dais',H.stage,r.floor);
+ furniture('opening-b5-head-table',H.table,deck);
+ furniture('opening-b5-lectern',H.lectern,deck);
+ for(const z of H.chairRows)for(const offset of H.chairOffsets){
+  furniture('opening-b5-head-chair',{...H.chair,x:H.table.x+offset,z},deck);
+ }
  const {x0,x1,z0,z1,lo,hi}=openingBusDoorSpan();
  obstacles.push(
   box('opening-bus-floor',x0,x1,z0,z1,0,O.bus.floor),
@@ -43,6 +54,8 @@ export function openingObstacles(obstacles:Obstacle[]){
 export function openingSupport(x:number,z:number,y:number,base:number|null){
  let h=base;
  const hall=O.b5;if(x>=hall.x0&&x<=hall.x1&&z>=hall.z0&&z<=hall.z1&&hall.floor<=y+.242)h=Math.max(h??-Infinity,hall.floor);
+ const dais=H.stage,[dx,dz]=dinnerHallPoint(dais.x,dais.z),daisTop=hall.floor+dais.h;
+ if(Math.abs(x-dx)<=dais.d/2&&Math.abs(z-dz)<=dais.w/2&&daisTop<=y+.242)h=Math.max(h??-Infinity,daisTop);
  const r=O.b6;if(x>=r.x0&&x<=r.x1&&z>=r.z0&&z<=r.z1&&r.floor<=y+.242)h=Math.max(h??-Infinity,r.floor);
  const b=O.bus,x0=b.x-b.length/2,x1=b.x+b.length/2,z0=b.z-b.width/2,z1=b.z+b.width/2;
  if(x>=x0&&x<=x1&&z>=z0&&z<=z1&&b.floor<=y+.242)h=Math.max(h??-Infinity,b.floor);

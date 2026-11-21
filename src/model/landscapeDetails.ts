@@ -25,7 +25,15 @@ export function addLandscapeDetails(parent:T.Group,specs:BuildingSpec[],site:Sit
  for(const bed of layout.beds){const {x,z,w,d,y}=bed;
   if(bed.kerb){block('Raised_bed_soil',w,.1,d,x,y+.05,z,soil);for(const side of [-1,1]){block('Bed_edge',w,bed.kerb,.10,x,y+bed.kerb/2,z+side*d/2,kerb);block('Bed_edge',.10,bed.kerb,d,x+side*w/2,y+bed.kerb/2,z,kerb);}}
   const alongX=w>d,length=alongX?w:d,count=Math.max(3,Math.floor(length/1.3));
-  for(let i=0;i<count;i++){const offset=(i+.5)/count*length-length/2,px=x+(alongX?offset:(i%2?-.22:.22)),pz=z+(alongX?(i%2?-.45:.45):offset);shrub(px,y+(bed.kerb?.1:0),pz,1.05,bed.shrub*(.8+(i%3)*.15),1.0,i);}
+  const entry=bed.id.startsWith('entry-layer');
+  for(let i=0;i<count;i++){
+   const offset=(i+.5)/count*length-length/2;
+   const sway=entry?[.15,-.62,0,.58][i%4]:(i%2?-.45:.45);
+   const px=x+(alongX?offset:(i%2?-.22:.22)),pz=z+(alongX?sway:offset);
+   const width=entry?[1.28,1.04,1.38,.90][i%4]:[1.25,1.04,1.16][i%3];
+   const height=bed.shrub*(entry?[.88,1.02,.67,.72][i%4]:[.82,1.0,.73][i%3]);
+   shrub(px,y+(bed.kerb?.1:0),pz,width,height,width*.87,i);
+  }
   // Low edge groundcover, separated from the taller middle shrubs.
   for(let i=0;i<count*2;i++){const offset=(i+.5)/(count*2)*length-length/2;for(const side of [-1,1])block('Low_groundcover',alongX?.42:.38,.12,alongX?.38:.42,x+(alongX?offset:side*(w/2-.3)),y+(bed.kerb?.1:0)+.06,z+(alongX?side*(d/2-.35):offset),blades);}
  }

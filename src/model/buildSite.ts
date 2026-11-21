@@ -1,3 +1,4 @@
+import {addHallSign} from './hallSign';
 import {cutOpeningBuildings} from '../opening/geometry';
 import {createOpeningWorld} from '../opening/world';
 import {tagChildren} from '../scene/authoring';
@@ -93,11 +94,14 @@ function auditorium(s:BuildingSpec,m:M){const root=new T.Group();const mass=grou
  const baseGlazing={...m,clear:m.dark};
  for(const side of [-1,1]){glazedFace(glass,W*.83,8,0,0,side*D*.44,12,2,baseGlazing,false,undefined,true);glazedFace(glass,D*.88,8,side*W*.415,0,0,12,2,baseGlazing,true,undefined,true);}
 
- for(const side of [-1,1]){if(side<0)glazedFace(glass,W-2.4,H-10,0,9,side*(D/2+.1),14,3,m,false,undefined,true);else{const eastGlass=glazedFace(glass,W*.47,H-10,W*.24,9,D/2+.1,7,5,m,false,undefined,true);eastGlass.traverse(o=>{if(o instanceof T.Mesh&&(o.material as T.Material).userData?.surfaceRole==='glass')o.material=m.glass;});glazedFace(glass,W*.46,H-10,-W*.25,9,D/2-3.8,7,3,m,false,undefined,true);box(ent,'Recessed_exterior_terrace',W*.48,.25,4,-W*.25,8.8,D/2-1.8,m.silver);pane(ent,'Terrace_glass_guard',W*.46,1.05,-W*.25,9.5,D/2+.12,m.guard);box(ent,'Terrace_guard_handrail',W*.46,.06,.06,-W*.25,10.05,D/2+.13,m.frame);for(let i=0;i<=7;i++)box(ent,'Terrace_guard_post',.06,1.1,.06,-W*.48+i*W*.46/7,9.5,D/2+.13,m.frame);}for(const a of [-1,1]){box(framing,'Wide_frame',1.3,H-8,1.5,a*(W/2-.5),8+(H-8)/2,side*(D/2+.4),m.silver);box(framing,'Wide_frame',W,1.3,1.5,0,a===1?H-.6:8.6,side*(D/2+.4),m.silver);}}
+ for(const side of [-1,1]){if(side<0)glazedFace(glass,W-2.4,H-10,0,9,side*(D/2+.1),14,3,m,false,undefined,true);else{const eastGlass=glazedFace(glass,W*.47,H-10,W*.24,9,D/2+.1,7,5,m,false,undefined,true);eastGlass.traverse(o=>{if(o instanceof T.Mesh&&(o.material as T.Material).userData?.surfaceRole==='glass')o.material=m.glass;});const signBay=glazedFace(glass,W*.46,H-10,-W*.25,9,D/2-3.8,7,3,m,false,undefined,true);
+ signBay.traverse(node=>{
+  if(node instanceof T.Mesh&&node.name==='Recess_back')node.material.color.setHex(0x283a40);
+ });box(ent,'Recessed_exterior_terrace',W*.48,.25,4,-W*.25,8.8,D/2-1.8,m.silver);pane(ent,'Terrace_glass_guard',W*.46,1.05,-W*.25,9.5,D/2+.12,m.guard);box(ent,'Terrace_guard_handrail',W*.46,.06,.06,-W*.25,10.05,D/2+.13,m.frame);for(let i=0;i<=7;i++)box(ent,'Terrace_guard_post',.06,1.1,.06,-W*.48+i*W*.46/7,9.5,D/2+.13,m.frame);}for(const a of [-1,1]){box(framing,'Wide_frame',1.3,H-8,1.5,a*(W/2-.5),8+(H-8)/2,side*(D/2+.4),m.silver);box(framing,'Wide_frame',W,1.3,1.5,0,a===1?H-.6:8.6,side*(D/2+.4),m.silver);}}
  for(const x of [-W*.4,W*.4])box(framing,'Pilotis',1.1,8,1.1,x,4,D*.4,m.silver);
  // C08: the lower right service doors are opaque; the recessed upper entrance is glazed.
  box(ent,'Opaque_hall_service_doors',8,3,.18,W*.20,6.5,D/2+.3,m.silver);for(const x of [-4,0,4])box(ent,'Service_door_frame',.10,3,.22,W*.20+x,6.5,D/2+.4,m.frame);pane(ent,'Closed_upper_hall_glass_doors',6,3,-W*.25,10.5,D/2-3.6,m.clear);for(const x of [-3,0,3])box(ent,'Upper_hall_door_frame',.10,3,.18,-W*.25+x,10.5,D/2-3.5,m.frame);box(ent,'Hall_door_canopy',11,.22,2.4,0,8.1,D/2+1.3,m.silver);
- text(framing,'THE UNIVERSITY OF HONG KONG',.48,-W*.23,19,D/2-2.9,m.white);text(framing,'HKU',1.1,-W*.35,20.2,D/2-2.9,m.white);
+ addHallSign(framing,W,D,m.white);
  box(rt,'Flat_hall_roof',W,.25,D,0,H-.4,0,m.roof);for(const k of [-1,1])box(rt,'Hall_roof_edge',W,.6,.3,0,H-.1,k*D/2,m.silver);box(rt,'Service_volume_PROVISIONAL',6,1.3,8,7,H+.4,-7,m.equipment);return root;
 }
 /** Watertight strip with variable level; preserves a true open sunken courtyard. */
@@ -202,10 +206,40 @@ function buildSports(g:T.Group,s:SiteParameters,m:M){const z=s.sportsZ;g.userDat
 }
 
 /** R01: thin entrance canopy retained; low planted beds, level forecourt and road markings. */
+/** R01: staggered grey setts and darker cross-lane courses, over the existing road slab. */
+function addArrivalSetts(parent:T.Group,width:number,depth:number,centerZ:number){
+ const positions:number[]=[],colors:number[]=[];
+ const palettes=[0x787f83,0x81898d,0x8b9296,0x737a7e].map(c=>new T.Color(c));
+ const dark=new T.Color(0x535e66);
+ for(let row=0;row<13;row++){
+  const front=centerZ-depth/2+row*.5+.009,back=front+.482;
+  for(let column=-1;column<Math.ceil(width/.95);column++){
+   const start=-width/2+(column+(row%2)*.5)*.95;
+   const left=Math.max(-width/2+.009,start+.009),right=Math.min(width/2-.009,start+.941);
+   if(right<=left)continue;
+   const color=row===3||row===9?dark:palettes[(column+row*7+4)%4];
+   positions.push(left,.046,front,left,.046,back,right,.046,front,right,.046,front,left,.046,back,right,.046,back);
+   for(let i=0;i<6;i++)colors.push(color.r,color.g,color.b);
+  }
+ }
+ const geometry=new T.BufferGeometry();
+ geometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));
+ geometry.setAttribute('color',new T.Float32BufferAttribute(colors,3));
+ geometry.computeVertexNormals();
+ const surface=new T.MeshStandardMaterial({name:'Arrival grey stone setts',vertexColors:true,roughness:.94});
+ surface.userData.keepColor=true;
+ const setts=new T.Mesh(geometry,surface);
+ setts.name='Arrival_staggered_stone_setts';
+ setts.receiveShadow=true;
+ setts.userData={source:'R01 CDS-1; pattern and contrast observed, module and band spacing estimated'};
+ parent.add(setts);
+}
+
 function buildEntranceExterior(parent:T.Group,b:BuildingSpec,m:M){
  const g=group(parent,'CDS1_Entrance_Forecourt','R01 official CDS-1 entrance','observed-components_estimated-layout');g.position.set(b.x,0,b.z);g.rotation.y=b.rotation*Math.PI/180;const f=b.depth/2;
  box(g,'Entrance_paving',b.width,.08,9.6,0,.04,f+4.9,m.concrete);
  const lane=group(g,'R009','R01','observed-components_estimated-layout');lane.userData.sceneId='R009';lane.userData.label='CDS-1 门前到达车道';box(lane,'Front_arrival_lane',b.width+4,.04,6.5,0,.025,f+13,m.road);
+ addArrivalSetts(lane,b.width+4,6.5,f+13);
  for(const dz of [10.3,15.8])box(g,'Yellow_kerb_line',b.width+4,.012,.10,0,.052,f+dz,m.yellow);
  for(let x=-b.width/2;x<b.width/2;x+=1.2)box(g,'Long_paving_joint',.018,.01,9.4,x,.085,f+4.9,m.roof);
  const longitudinal=[];for(let x=-b.width/2;x<b.width/2;x+=1.2)longitudinal.push({x,z:f+4.9,width:.018,depth:9.4});

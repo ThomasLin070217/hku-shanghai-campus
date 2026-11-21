@@ -5,7 +5,7 @@ import {glassMaterial} from '../model/glazing';
 import {compact} from '../model/buildCampus';
 import {signPhotoMaterial} from '../model/nov14Details';
 import {createMacBook} from '../items/macbook';
-import {OPENING as O,DINNER_LAYOUT as D} from './spatialLayout';
+import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H} from './spatialLayout';
 
 /**
  * Thomas opening scenery: the campus shuttle, the Building 5 ground-floor dinner
@@ -353,6 +353,36 @@ function buildDinner(root:T.Group){
  });
  compact(chairs);
  compact(settings);
+ const head=tag(new T.Group(),'opening-b5-head-table-area','Opening_b5_head_table_area');
+ hallFrame.add(head);
+ head.userData.source='IMG_4380 00:24 and HKU phase2-02; dimensions estimated';
+ const {stage,table,lectern,chair}=H;
+ const deck=floorTop+stage.h;
+ box(head,'opening-b5-dais',stage.w,stage.h,stage.d,stage.x,floorTop+stage.h/2,stage.z,timber);
+ box(head,'opening-b5-dais-nosing',stage.w,.025,.03,stage.x,deck-.019,stage.z+stage.d/2-.015,materials.table);
+ box(head,'opening-b5-head-table',table.w,.075,table.d,table.x,deck+table.h-.0555,table.z,materials.table);
+ for(const side of [-1,1]){
+  box(head,'opening-b5-head-cloth-long-'+side,table.w,.65,.024,table.x,deck+table.h-.325,table.z+side*(table.d/2-.015),materials.green);
+  box(head,'opening-b5-head-cloth-end-'+side,.024,.65,table.d,table.x+side*(table.w/2-.015),deck+table.h-.325,table.z,materials.green);
+ }
+ box(head,'opening-b5-head-cloth-top',table.w,.018,table.d,table.x,deck+table.h-.009,table.z,materials.green);
+ for(const [row,z] of H.chairRows.entries())for(const [i,dx] of H.chairOffsets.entries()){
+  const key='opening-b5-head-chair-'+row+'-'+i,x=table.x+dx;
+  box(head,key+'-seat',chair.w,.08,chair.d,x,deck+.46,z,materials.green);
+  box(head,key+'-back',chair.w,.53,.065,x,deck+chair.h-.265,z+(row===0?-1:1)*(chair.d/2-.033),materials.chair);
+  for(const sx of [-1,1])for(const sz of [-1,1])box(head,key+'-leg-'+sx+'-'+sz,.049,.42,.049,x+sx*.18,deck+.21,z+sz*.18,materials.frame);
+  const placeZ=table.z+(row===0?-.27:.27);
+  box(head,key+'-plate',.21,.016,.21,x,deck+table.h+.008,placeZ,materials.plate);
+  box(head,key+'-cup',.064,.09,.064,x+.17,deck+table.h+.045,placeZ,materials.cup);
+ }
+ box(head,'opening-b5-lectern',lectern.w-.02,lectern.h-.06,lectern.d-.02,lectern.x,deck+(lectern.h-.06)/2,lectern.z,materials.green);
+ box(head,'opening-b5-lectern-cap',lectern.w,.06,lectern.d,lectern.x,deck+lectern.h-.03,lectern.z,materials.frame);
+ const lecternCrest=tag(new T.Mesh(crestGeo.clone(),crest.material),'opening-b5-lectern-crest','Opening_b5_lectern_crest');
+ lecternCrest.scale.setScalar(.145);
+ lecternCrest.position.set(lectern.x,deck+.84,lectern.z+lectern.d/2-.008);
+ head.add(lecternCrest);
+ compact(head);
+
  // Chairs that stand for dinner and topple once the hall is abandoned. One chair,
  // two poses: the geometry never changes, only the transform.
  const tipping:{node:T.Group;upright:T.Vector3;uprightYaw:number;fallen:T.Vector3;fallenEuler:number}[]=[];

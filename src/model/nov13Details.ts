@@ -159,7 +159,7 @@ export function createLion(){
  const scale = LION.bodyHeight/(bounds.max.y-bounds.min.y);
  body.scale.setScalar(scale);
  body.position.y = LION.support.height-bounds.min.y*scale;
- const base = new T.Mesh(new T.BoxGeometry(LION.support.width,LION.support.height,LION.support.depth),gown);
+ const base = new T.Mesh(new T.BoxGeometry(LION.support.width,LION.support.height,LION.support.depth),mat('Lion ground-contact fabric',0x30352c));
  base.name = 'Lion_low_support_PROVISIONAL';
  base.position.set(0,LION.support.height/2,.12);
  root.add(base);

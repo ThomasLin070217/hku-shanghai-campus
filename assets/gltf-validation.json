@@ -3878,7 +3878,7 @@
         }
       ],
       "animationCount": 0,
-      "materialCount": 10,
+      "materialCount": 11,
       "hasMorphTargets": false,
       "hasSkins": false,
       "hasTextures": false,
@@ -5617,12 +5617,6 @@
           "code": "UNUSED_OBJECT",
           "message": "This object may be unused.",
           "severity": 2,
-          "pointer": "/meshes/79/primitives/0/attributes/TEXCOORD_0"
-        },
-        {
-          "code": "UNUSED_OBJECT",
-          "message": "This object may be unused.",
-          "severity": 2,
           "pointer": "/meshes/80/primitives/0/attributes/TEXCOORD_0"
         },
         {
@@ -5630,6 +5624,12 @@
           "message": "This object may be unused.",
           "severity": 2,
           "pointer": "/meshes/81/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/82/primitives/0/attributes/TEXCOORD_0"
         }
       ],
       "truncated": false
@@ -5638,14 +5638,15 @@
       "version": "2.0",
       "generator": "THREE.GLTFExporter r181",
       "extensionsUsed": [
-        "KHR_materials_emissive_strength"
+        "KHR_materials_emissive_strength",
+        "KHR_materials_unlit"
       ],
       "resources": [
         {
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 463308
+          "byteLength": 632508
         },
         {
           "pointer": "/images/0",
@@ -5675,14 +5676,14 @@
         }
       ],
       "animationCount": 0,
-      "materialCount": 59,
+      "materialCount": 60,
       "hasMorphTargets": false,
       "hasSkins": false,
       "hasTextures": true,
       "hasDefaultScene": true,
-      "drawCallCount": 87,
-      "totalVertexCount": 14396,
-      "totalTriangleCount": 4888,
+      "drawCallCount": 88,
+      "totalVertexCount": 19385,
+      "totalTriangleCount": 6551,
       "maxUVs": 1,
       "maxInfluences": 0,
       "maxAttributes": 3

@@ -25,3 +25,6 @@
 - [HKU CDS 上海](https://sh.cds.hku.hk/) 和 [Facilities](https://sh.cds.hku.hk/about/about-us/facilities/) 用于核实设施命名。Facilities 通过直接网页请求返回 200。
 - [港大 CDS Delta X](https://master.cds.hku.hk/delta-x-26-27/) 的 R02 字母标注图和 [仓库卫星对照](../scale-calibration/REPORT.md) 供定位。检索未取得张江竣工总平面或可用的连续街景。
 - [上海市政府](https://www.shanghai.gov.cn/nw4411/20260831/7d2d033436ef481ab0596da14c26b339.html?siteId=1) 与 [浦东新区](https://english.pudong.gov.cn/2026-09/18/c_1215255.htm) 用于交叉核对活动日期与启用背景。
+### 第二轮新增核对
+
+[IMG_4342 首帧](../nov13/IMG_4342/0000.jpg)为团队已有视频，00:00，拍摄日期待核，南草坪 L001。B 级，与 phase2-07 交叉确认充气狮子近地放置。草面遮挡承托结构，无法量出底座外形。此次另用 C08 核对礼堂双语门头，用 phase2-02 和 IMG_4380 的 00:24 核对雅堂主桌方向和讲台位置。用户给出的局部截图与 C08 同一门头，单独计为定位提示。

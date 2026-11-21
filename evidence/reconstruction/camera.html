@@ -26,8 +26,21 @@ window.capture = (id, angle) => {
   const b = BUILDINGS.find(b => b.id === id);
   camera.fov = angle === 'player' || id === 'dinner' ? 70 : 52;
   camera.updateProjectionMatrix();
-  openingWorld.update({incident: angle === 'incident', laptopAcquired: false, doorOpen: false}, 0);
-  if (id === 'dinner') {
+  openingWorld.update({incident: angle.endsWith('incident'), laptopAcquired: false, doorOpen: false}, 0);
+  if (id === 'sign') {
+    camera.position.set(-7.4, 19.7, -39.4);
+    camera.lookAt(-7.4, 19.7, -53);
+  } else if (id === 'dinner' && angle.startsWith('head-')) {
+    camera.position.set(75.5, 1.65, -65.1);
+    camera.lookAt(81, 1.4, -66.6);
+  } else if (id === 'forecourt') {
+    camera.position.set(52, 2.8, 39);
+    camera.lookAt(52, 2.3, 23);
+  } else if (id === 'lawn') {
+    const close = angle === 'base';
+    camera.position.set(close ? 5 : 0, close ? 1.25 : 2.7, close ? 83 : 101);
+    camera.lookAt(0, close ? .85 : 3.15, 76);
+  } else if (id === 'dinner') {
     camera.position.set(62, 1.65, -63.1);
     camera.lookAt(78, 2, -69);
   } else if (id === 'campus') {

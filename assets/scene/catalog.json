@@ -1,6 +1,6 @@
 {
   "schema": "hku-scene/1",
-  "revision": "5cc2515b39ec",
+  "revision": "e0ee4cb6e75a",
   "units": "metres",
   "axes": "+X east-ish, -Z north-ish, +Y up; not georeferenced",
   "entities": [
@@ -596970,35 +596970,35 @@
     },
     {
       "id": "B06-P-a86abb1a8366",
-      "name": "HKU",
+      "name": "香 港 大 學",
       "kind": "part",
       "parentId": "B06-G-5f53fc910041",
       "buildingId": "B06",
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B06/03_Columns#1/HKU#1",
       "bounds": {
         "min": [
-          -13.3919,
-          20.1725,
-          -55.825
+          -11.611,
+          19.49,
+          -53.275
         ],
         "max": [
-          -10.5131,
-          21.3143,
-          -55.765
+          -5.2591,
+          20.29,
+          -53.275
         ]
       },
       "center": [
-        -11.9525,
-        20.7434,
-        -55.795
+        -8.435,
+        19.89,
+        -53.275
       ],
       "size": [
-        2.8787,
-        1.1418,
-        0.06
+        6.3519,
+        0.8,
+        0
       ],
       "sourceFile": "src/model/buildSite.ts",
-      "sourceAnchor": "HKU",
+      "sourceAnchor": "香 港 大 學",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-wide-frame",
       "editMode": "source",
@@ -602341,25 +602341,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B06/03_Columns#1/THE UNIVERSITY OF HONG KONG#1",
       "bounds": {
         "min": [
-          -12.9327,
-          18.9866,
-          -55.825
+          -11.611,
+          18.55,
+          -53.275
         ],
         "max": [
-          -2.7763,
-          19.5006,
-          -55.765
+          -0.7854,
+          19.07,
+          -53.275
         ]
       },
       "center": [
-        -7.8545,
-        19.2436,
-        -55.795
+        -6.1982,
+        18.81,
+        -53.275
       ],
       "size": [
-        10.1563,
-        0.5141,
-        0.06
+        10.8256,
+        0.52,
+        0
       ],
       "sourceFile": "src/model/buildSite.ts",
       "sourceAnchor": "THE UNIVERSITY OF HONG KONG",
@@ -602583,6 +602583,42 @@
       "confidence": "confirmed-wide-frame",
       "editMode": "source",
       "material": "Silver facade fins"
+    },
+    {
+      "id": "B06-P-f63a056b18e2",
+      "name": "Auditorium_coloured_crest",
+      "kind": "part",
+      "parentId": "B06-G-5f53fc910041",
+      "buildingId": "B06",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B06/03_Columns#1/Auditorium_coloured_crest#1",
+      "bounds": {
+        "min": [
+          -14.0589,
+          18.48,
+          -53.275
+        ],
+        "max": [
+          -11.8852,
+          20.7779,
+          -53.275
+        ]
+      },
+      "center": [
+        -12.9721,
+        19.6289,
+        -53.275
+      ],
+      "size": [
+        2.1737,
+        2.2979,
+        0
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Auditorium_coloured_crest",
+      "reference": "R02,R06,A06,P01",
+      "confidence": "confirmed-wide-frame",
+      "editMode": "source",
+      "material": "Hall crest colours"
     },
     {
       "id": "B06-P-f64fc80451da",
@@ -635099,7 +635135,7 @@
       "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
       "editMode": "source",
-      "material": "Lion teal gown"
+      "material": "Lion ground-contact fabric"
     },
     {
       "id": "L001-P-e75e8476ebcc",
@@ -635547,18 +635583,18 @@
           22.21
         ],
         "max": [
-          83.6077,
+          83.7355,
           5.9165,
           87.2933
         ]
       },
       "center": [
-        34.5999,
+        34.6637,
         3.0233,
         54.7517
       ],
       "size": [
-        98.0157,
+        98.1435,
         5.7865,
         65.0833
       ],
@@ -636297,25 +636333,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#11",
       "bounds": {
         "min": [
-          -12.9158,
-          0.2644,
-          82.9233
+          -12.9988,
+          0.2678,
+          82.8875
         ],
         "max": [
-          -12.0442,
-          0.3988,
-          83.7433
+          -11.9612,
+          0.4055,
+          83.7792
         ]
       },
       "center": [
         -12.48,
-        0.3316,
+        0.3366,
         83.3333
       ],
       "size": [
-        0.8715,
-        0.1344,
-        0.82
+        1.0375,
+        0.1378,
+        0.8917
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -636333,25 +636369,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#10",
       "bounds": {
         "min": [
-          -13.005,
+          -13.105,
           0.13,
-          82.8333
+          82.7896
         ],
         "max": [
-          -11.955,
-          0.2812,
-          83.8333
+          -11.855,
+          0.285,
+          83.8771
         ]
       },
       "center": [
         -12.48,
-        0.2056,
+        0.2075,
         83.3333
       ],
       "size": [
-        1.05,
-        0.1512,
-        1
+        1.25,
+        0.155,
+        1.0875
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -636369,25 +636405,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#13",
       "bounds": {
         "min": [
-          -13.445,
+          -13.44,
           0.13,
-          84.5
+          84.5476
         ],
         "max": [
-          -12.395,
-          0.3096,
-          85.5
+          -12.4,
+          0.319,
+          85.4524
         ]
       },
       "center": [
         -12.92,
-        0.2198,
+        0.2245,
         85
       ],
       "size": [
-        1.05,
-        0.1796,
-        1
+        1.04,
+        0.189,
+        0.9048
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -636441,25 +636477,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#12",
       "bounds": {
         "min": [
-          -12.7635,
-          0.387,
-          83.0483
+          -12.8175,
+          0.3935,
+          83.0234
         ],
         "max": [
-          -12.1965,
-          0.471,
-          83.6183
+          -12.1425,
+          0.4796,
+          83.6433
         ]
       },
       "center": [
         -12.48,
-        0.429,
+        0.4365,
         83.3333
       ],
       "size": [
-        0.567,
-        0.084,
-        0.57
+        0.675,
+        0.0861,
+        0.6199
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -636513,25 +636549,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#15",
       "bounds": {
         "min": [
-          -13.2035,
-          0.4352,
-          84.715
+          -13.2008,
+          0.4513,
+          84.7421
         ],
         "max": [
-          -12.6365,
-          0.535,
-          85.285
+          -12.6392,
+          0.5563,
+          85.2579
         ]
       },
       "center": [
         -12.92,
-        0.4851,
+        0.5038,
         85
       ],
       "size": [
-        0.567,
-        0.0997,
-        0.57
+        0.5616,
+        0.105,
+        0.5157
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -636621,25 +636657,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#86",
       "bounds": {
         "min": [
-          75.5642,
-          0.75,
-          23.24
+          75.5684,
+          0.726,
+          23.109
         ],
         "max": [
-          76.4358,
-          1.08,
-          24.06
+          76.4316,
+          1.032,
+          23.851
         ]
       },
       "center": [
         76,
-        0.915,
-        23.65
+        0.879,
+        23.48
       ],
       "size": [
-        0.8715,
-        0.33,
-        0.82
+        0.8632,
+        0.306,
+        0.7419
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -636657,25 +636693,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#14",
       "bounds": {
         "min": [
-          -13.3558,
-          0.2896,
-          84.59
+          -13.3516,
+          0.298,
+          84.629
         ],
         "max": [
-          -12.4842,
-          0.4492,
-          85.41
+          -12.4884,
+          0.466,
+          85.371
         ]
       },
       "center": [
         -12.92,
-        0.3694,
+        0.382,
         85
       ],
       "size": [
-        0.8715,
-        0.1596,
-        0.82
+        0.8632,
+        0.168,
+        0.7419
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -636765,25 +636801,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#87",
       "bounds": {
         "min": [
-          75.7165,
-          1.0511,
-          23.365
+          75.7192,
+          1.0052,
+          23.2221
         ],
         "max": [
-          76.2835,
-          1.2574,
-          23.935
+          76.2808,
+          1.1965,
+          23.7379
         ]
       },
       "center": [
         76,
-        1.1543,
-        23.65
+        1.1009,
+        23.48
       ],
       "size": [
-        0.567,
-        0.2062,
-        0.57
+        0.5616,
+        0.1912,
+        0.5157
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -636801,25 +636837,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#17",
       "bounds": {
         "min": [
-          -12.9158,
-          0.3148,
-          86.2567
+          -12.9614,
+          0.2526,
+          86.2529
         ],
         "max": [
-          -12.0442,
-          0.4996,
-          87.0767
+          -11.9986,
+          0.3753,
+          87.0804
         ]
       },
       "center": [
         -12.48,
-        0.4072,
+        0.314,
         86.6667
       ],
       "size": [
-        0.8715,
-        0.1848,
-        0.82
+        0.9628,
+        0.1226,
+        0.8275
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -636909,25 +636945,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#84",
       "bounds": {
         "min": [
-          74.3074,
-          0.9651,
-          24.265
+          74.2453,
+          0.9249,
+          23.9326
         ],
         "max": [
-          74.8744,
-          1.1432,
-          24.835
+          74.9365,
+          1.0899,
+          24.5674
         ]
       },
       "center": [
         74.5909,
-        1.0541,
-        24.55
+        1.0074,
+        24.25
       ],
       "size": [
-        0.567,
-        0.1781,
-        0.57
+        0.6912,
+        0.165,
+        0.6348
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -636945,25 +636981,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#16",
       "bounds": {
         "min": [
-          -13.005,
+          -13.06,
           0.13,
-          86.1667
+          86.1621
         ],
         "max": [
-          -11.955,
-          0.3379,
-          87.1667
+          -11.9,
+          0.268,
+          87.1713
         ]
       },
       "center": [
         -12.48,
-        0.234,
+        0.199,
         86.6667
       ],
       "size": [
-        1.05,
-        0.2079,
-        1
+        1.16,
+        0.138,
+        1.0092
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -637089,25 +637125,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#85",
       "bounds": {
         "min": [
-          75.475,
+          75.48,
           0.42,
-          23.15
+          23.0276
         ],
         "max": [
-          76.525,
-          0.7913,
-          24.15
+          76.52,
+          0.7642,
+          23.9324
         ]
       },
       "center": [
         76,
-        0.6056,
-        23.65
+        0.5921,
+        23.48
       ],
       "size": [
-        1.05,
-        0.3713,
-        1
+        1.04,
+        0.3442,
+        0.9048
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -637125,25 +637161,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#99",
       "bounds": {
         "min": [
-          81.3529,
-          0.879,
-          23.365
+          81.3556,
+          1.0052,
+          23.2221
         ],
         "max": [
-          81.9199,
-          1.029,
-          23.935
+          81.9172,
+          1.1965,
+          23.7379
         ]
       },
       "center": [
         81.6364,
-        0.954,
-        23.65
+        1.1009,
+        23.48
       ],
       "size": [
-        0.567,
-        0.15,
-        0.57
+        0.5616,
+        0.1912,
+        0.5157
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -637161,25 +637197,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#19",
       "bounds": {
         "min": [
-          12.395,
+          12.295,
           0.13,
-          57.8333
+          57.7896
         ],
         "max": [
-          13.445,
-          0.2812,
-          58.8333
+          13.545,
+          0.285,
+          58.8771
         ]
       },
       "center": [
         12.92,
-        0.2056,
+        0.2075,
         58.3333
       ],
       "size": [
-        1.05,
-        0.1512,
-        1
+        1.25,
+        0.155,
+        1.0875
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -637305,25 +637341,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#82",
       "bounds": {
         "min": [
-          74.0659,
+          73.9509,
           0.42,
-          24.05
+          23.6932
         ],
         "max": [
-          75.1159,
-          0.7406,
-          25.05
+          75.2309,
+          0.717,
+          24.8068
         ]
       },
       "center": [
         74.5909,
-        0.5803,
-        24.55
+        0.5685,
+        24.25
       ],
       "size": [
-        1.05,
-        0.3206,
-        1
+        1.28,
+        0.297,
+        1.1136
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -637341,25 +637377,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#98",
       "bounds": {
         "min": [
-          81.2006,
-          0.66,
-          23.24
+          81.2048,
+          0.726,
+          23.109
         ],
         "max": [
-          82.0721,
-          0.9,
-          24.06
+          82.068,
+          1.032,
+          23.851
         ]
       },
       "center": [
         81.6364,
-        0.78,
-        23.65
+        0.879,
+        23.48
       ],
       "size": [
-        0.8715,
-        0.24,
-        0.82
+        0.8632,
+        0.306,
+        0.7419
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -637377,25 +637413,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#18",
       "bounds": {
         "min": [
-          -12.7635,
-          0.4834,
-          86.3817
+          -12.7932,
+          0.3645,
+          86.379
         ],
         "max": [
-          -12.1965,
-          0.5989,
-          86.9517
+          -12.1668,
+          0.4412,
+          86.9543
         ]
       },
       "center": [
         -12.48,
-        0.5412,
+        0.4029,
         86.6667
       ],
       "size": [
-        0.567,
-        0.1155,
-        0.57
+        0.6264,
+        0.0767,
+        0.5752
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -637521,25 +637557,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#83",
       "bounds": {
         "min": [
-          74.1552,
-          0.705,
-          24.14
+          74.0597,
+          0.684,
+          23.7934
         ],
         "max": [
-          75.0267,
-          0.99,
-          24.96
+          75.1221,
+          0.948,
+          24.7066
         ]
       },
       "center": [
         74.5909,
-        0.8475,
-        24.55
+        0.816,
+        24.25
       ],
       "size": [
-        0.8715,
-        0.285,
-        0.82
+        1.0624,
+        0.264,
+        0.9132
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -637629,25 +637665,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#80",
       "bounds": {
         "min": [
-          72.7461,
-          0.66,
-          23.24
+          72.8083,
+          0.636,
+          24.359
         ],
         "max": [
-          73.6176,
-          0.9,
-          24.06
+          73.5553,
+          0.852,
+          25.001
         ]
       },
       "center": [
         73.1818,
-        0.78,
-        23.65
+        0.744,
+        24.68
       ],
       "size": [
-        0.8715,
-        0.24,
-        0.82
+        0.747,
+        0.216,
+        0.6421
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -637737,25 +637773,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#81",
       "bounds": {
         "min": [
-          72.8983,
-          0.879,
-          23.365
+          72.9388,
+          0.8331,
+          24.4568
         ],
         "max": [
-          73.4653,
-          1.029,
-          23.935
+          73.4248,
+          0.9681,
+          24.9032
         ]
       },
       "center": [
         73.1818,
-        0.954,
-        23.65
+        0.9006,
+        24.68
       ],
       "size": [
-        0.567,
-        0.15,
-        0.57
+        0.486,
+        0.135,
+        0.4463
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -637773,25 +637809,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#39",
       "bounds": {
         "min": [
-          32.671,
-          0.879,
-          24.265
+          32.6089,
+          0.9249,
+          23.9326
         ],
         "max": [
-          33.238,
-          1.029,
-          24.835
+          33.3001,
+          1.0899,
+          24.5674
         ]
       },
       "center": [
         32.9545,
-        0.954,
-        24.55
+        1.0074,
+        24.25
       ],
       "size": [
-        0.567,
-        0.15,
-        0.57
+        0.6912,
+        0.165,
+        0.6348
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -637881,25 +637917,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#38",
       "bounds": {
         "min": [
-          32.5188,
-          0.66,
-          24.14
+          32.4233,
+          0.684,
+          23.7934
         ],
         "max": [
-          33.3903,
-          0.9,
-          24.96
+          33.4857,
+          0.948,
+          24.7066
         ]
       },
       "center": [
         32.9545,
-        0.78,
-        24.55
+        0.816,
+        24.25
       ],
       "size": [
-        0.8715,
-        0.24,
-        0.82
+        1.0624,
+        0.264,
+        0.9132
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638025,25 +638061,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#91",
       "bounds": {
         "min": [
-          78.2932,
+          78.3682,
           0.42,
-          23.15
+          24.2885
         ],
         "max": [
-          79.3432,
-          0.7406,
-          24.15
+          79.2682,
+          0.663,
+          25.0715
         ]
       },
       "center": [
         78.8182,
-        0.5803,
-        23.65
+        0.5415,
+        24.68
       ],
       "size": [
-        1.05,
-        0.3206,
-        1
+        0.9,
+        0.243,
+        0.783
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638097,25 +638133,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#90",
       "bounds": {
         "min": [
-          77.1256,
-          0.879,
-          24.265
+          77.0365,
+          0.8044,
+          23.7578
         ],
         "max": [
-          77.6926,
-          1.029,
-          24.835
+          77.7817,
+          0.93,
+          24.4422
         ]
       },
       "center": [
         77.4091,
-        0.954,
-        24.55
+        0.8672,
+        24.1
       ],
       "size": [
-        0.567,
-        0.15,
-        0.57
+        0.7452,
+        0.1256,
+        0.6843
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638169,25 +638205,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#93",
       "bounds": {
         "min": [
-          78.5347,
-          0.9651,
-          23.365
+          78.5752,
+          0.8331,
+          24.4568
         ],
         "max": [
-          79.1017,
-          1.1432,
-          23.935
+          79.0612,
+          0.9681,
+          24.9032
         ]
       },
       "center": [
         78.8182,
-        1.0541,
-        23.65
+        0.9006,
+        24.68
       ],
       "size": [
-        0.567,
-        0.1781,
-        0.57
+        0.486,
+        0.135,
+        0.4463
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638205,25 +638241,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#33",
       "bounds": {
         "min": [
-          12.1965,
-          0.4352,
-          84.715
+          12.1992,
+          0.4513,
+          84.7421
         ],
         "max": [
-          12.7635,
-          0.535,
-          85.285
+          12.7608,
+          0.5563,
+          85.2579
         ]
       },
       "center": [
         12.48,
-        0.4851,
+        0.5038,
         85
       ],
       "size": [
-        0.567,
-        0.0997,
-        0.57
+        0.5616,
+        0.105,
+        0.5157
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638241,25 +638277,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#88",
       "bounds": {
         "min": [
-          76.8841,
+          76.7191,
           0.42,
-          24.05
+          23.4997
         ],
         "max": [
-          77.9341,
-          0.69,
-          25.05
+          78.0991,
+          0.6461,
+          24.7003
         ]
       },
       "center": [
         77.4091,
-        0.555,
-        24.55
+        0.5331,
+        24.1
       ],
       "size": [
-        1.05,
-        0.27,
-        1
+        1.38,
+        0.2261,
+        1.2006
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638277,25 +638313,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#92",
       "bounds": {
         "min": [
-          78.3824,
-          0.705,
-          23.24
+          78.4447,
+          0.636,
+          24.359
         ],
         "max": [
-          79.2539,
-          0.99,
-          24.06
+          79.1917,
+          0.852,
+          25.001
         ]
       },
       "center": [
         78.8182,
-        0.8475,
-        23.65
+        0.744,
+        24.68
       ],
       "size": [
-        0.8715,
-        0.285,
-        0.82
+        0.747,
+        0.216,
+        0.6421
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638313,25 +638349,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#32",
       "bounds": {
         "min": [
-          12.0442,
-          0.2896,
-          84.59
+          12.0484,
+          0.298,
+          84.629
         ],
         "max": [
-          12.9158,
-          0.4492,
-          85.41
+          12.9116,
+          0.466,
+          85.371
         ]
       },
       "center": [
         12.48,
-        0.3694,
+        0.382,
         85
       ],
       "size": [
-        0.8715,
-        0.1596,
-        0.82
+        0.8632,
+        0.168,
+        0.7419
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638349,25 +638385,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#89",
       "bounds": {
         "min": [
-          76.9733,
-          0.66,
-          24.14
+          76.8364,
+          0.621,
+          23.6078
         ],
         "max": [
-          77.8448,
-          0.9,
-          24.96
+          77.9818,
+          0.822,
+          24.5922
         ]
       },
       "center": [
         77.4091,
-        0.78,
-        24.55
+        0.7215,
+        24.1
       ],
       "size": [
-        0.8715,
-        0.24,
-        0.82
+        1.1454,
+        0.201,
+        0.9845
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638385,25 +638421,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#95",
       "bounds": {
         "min": [
-          79.7915,
-          0.75,
-          24.14
+          79.6961,
+          0.684,
+          23.7934
         ],
         "max": [
-          80.663,
-          1.08,
-          24.96
+          80.7585,
+          0.948,
+          24.7066
         ]
       },
       "center": [
         80.2273,
-        0.915,
-        24.55
+        0.816,
+        24.25
       ],
       "size": [
-        0.8715,
-        0.33,
-        0.82
+        1.0624,
+        0.264,
+        0.9132
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638421,25 +638457,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#31",
       "bounds": {
         "min": [
-          11.955,
+          11.96,
           0.13,
-          84.5
+          84.5476
         ],
         "max": [
-          13.005,
-          0.3096,
-          85.5
+          13,
+          0.319,
+          85.4524
         ]
       },
       "center": [
         12.48,
-        0.2198,
+        0.2245,
         85
       ],
       "size": [
-        1.05,
-        0.1796,
-        1
+        1.04,
+        0.189,
+        0.9048
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638457,25 +638493,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#94",
       "bounds": {
         "min": [
-          79.7023,
+          79.5873,
           0.42,
-          24.05
+          23.6932
         ],
         "max": [
-          80.7523,
-          0.7913,
-          25.05
+          80.8673,
+          0.717,
+          24.8068
         ]
       },
       "center": [
         80.2273,
-        0.6056,
-        24.55
+        0.5685,
+        24.25
       ],
       "size": [
-        1.05,
-        0.3713,
-        1
+        1.28,
+        0.297,
+        1.1136
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638493,25 +638529,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#30",
       "bounds": {
         "min": [
-          12.6365,
-          0.387,
-          83.0483
+          12.5825,
+          0.3935,
+          83.0234
         ],
         "max": [
-          13.2035,
-          0.471,
-          83.6183
+          13.2575,
+          0.4796,
+          83.6433
         ]
       },
       "center": [
         12.92,
-        0.429,
+        0.4365,
         83.3333
       ],
       "size": [
-        0.567,
-        0.084,
-        0.57
+        0.675,
+        0.0861,
+        0.6199
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638601,25 +638637,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#97",
       "bounds": {
         "min": [
-          81.1114,
+          81.1164,
           0.42,
-          23.15
+          23.0276
         ],
         "max": [
-          82.1614,
-          0.69,
-          24.15
+          82.1564,
+          0.7642,
+          23.9324
         ]
       },
       "center": [
         81.6364,
-        0.555,
-        23.65
+        0.5921,
+        23.48
       ],
       "size": [
-        1.05,
-        0.27,
-        1
+        1.04,
+        0.3442,
+        0.9048
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638637,25 +638673,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#37",
       "bounds": {
         "min": [
-          32.4295,
+          32.3145,
           0.42,
-          24.05
+          23.6932
         ],
         "max": [
-          33.4795,
-          0.69,
-          25.05
+          33.5945,
+          0.717,
+          24.8068
         ]
       },
       "center": [
         32.9545,
-        0.555,
-        24.55
+        0.5685,
+        24.25
       ],
       "size": [
-        1.05,
-        0.27,
-        1
+        1.28,
+        0.297,
+        1.1136
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638745,25 +638781,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#96",
       "bounds": {
         "min": [
-          79.9438,
-          1.0511,
-          24.265
+          79.8817,
+          0.9249,
+          23.9326
         ],
         "max": [
-          80.5108,
-          1.2574,
-          24.835
+          80.5729,
+          1.0899,
+          24.5674
         ]
       },
       "center": [
         80.2273,
-        1.1543,
-        24.55
+        1.0074,
+        24.25
       ],
       "size": [
-        0.567,
-        0.2062,
-        0.57
+        0.6912,
+        0.165,
+        0.6348
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638781,25 +638817,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#36",
       "bounds": {
         "min": [
-          12.6365,
-          0.4834,
-          86.3817
+          12.6068,
+          0.3645,
+          86.379
         ],
         "max": [
-          13.2035,
-          0.5989,
-          86.9517
+          13.2332,
+          0.4412,
+          86.9543
         ]
       },
       "center": [
         12.92,
-        0.5412,
+        0.4029,
         86.6667
       ],
       "size": [
-        0.567,
-        0.1155,
-        0.57
+        0.6264,
+        0.0767,
+        0.5752
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638853,25 +638889,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#35",
       "bounds": {
         "min": [
-          12.4842,
-          0.3148,
-          86.2567
+          12.4386,
+          0.2526,
+          86.2529
         ],
         "max": [
-          13.3558,
-          0.4996,
-          87.0767
+          13.4014,
+          0.3753,
+          87.0804
         ]
       },
       "center": [
         12.92,
-        0.4072,
+        0.314,
         86.6667
       ],
       "size": [
-        0.8715,
-        0.1848,
-        0.82
+        0.9628,
+        0.1226,
+        0.8275
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -638925,25 +638961,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#34",
       "bounds": {
         "min": [
-          12.395,
+          12.34,
           0.13,
-          86.1667
+          86.1621
         ],
         "max": [
-          13.445,
-          0.3379,
-          87.1667
+          13.5,
+          0.268,
+          87.1713
         ]
       },
       "center": [
         12.92,
-        0.234,
+        0.199,
         86.6667
       ],
       "size": [
-        1.05,
-        0.2079,
-        1
+        1.16,
+        0.138,
+        1.0092
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -639393,25 +639429,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#102",
       "bounds": {
         "min": [
-          82.762,
-          0.9651,
-          24.265
+          82.6729,
+          0.8044,
+          23.7578
         ],
         "max": [
-          83.329,
-          1.1432,
-          24.835
+          83.4181,
+          0.93,
+          24.4422
         ]
       },
       "center": [
         83.0455,
-        1.0541,
-        24.55
+        0.8672,
+        24.1
       ],
       "size": [
-        0.567,
-        0.1781,
-        0.57
+        0.7452,
+        0.1256,
+        0.6843
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -639465,25 +639501,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#101",
       "bounds": {
         "min": [
-          82.6097,
-          0.705,
-          24.14
+          82.4728,
+          0.621,
+          23.6078
         ],
         "max": [
-          83.4812,
-          0.99,
-          24.96
+          83.6182,
+          0.822,
+          24.5922
         ]
       },
       "center": [
         83.0455,
-        0.8475,
-        24.55
+        0.7215,
+        24.1
       ],
       "size": [
-        0.8715,
-        0.285,
-        0.82
+        1.1454,
+        0.201,
+        0.9845
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -639537,25 +639573,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#100",
       "bounds": {
         "min": [
-          82.5205,
+          82.3555,
           0.42,
-          24.05
+          23.4997
         ],
         "max": [
-          83.5705,
-          0.7406,
-          25.05
+          83.7355,
+          0.6461,
+          24.7003
         ]
       },
       "center": [
         83.0455,
-        0.5803,
-        24.55
+        0.5331,
+        24.1
       ],
       "size": [
-        1.05,
-        0.3206,
-        1
+        1.38,
+        0.2261,
+        1.2006
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -642525,25 +642561,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#8",
       "bounds": {
         "min": [
-          -12.9158,
-          0.3148,
-          61.2567
+          -12.9614,
+          0.2526,
+          61.2529
         ],
         "max": [
-          -12.0442,
-          0.4996,
-          62.0767
+          -11.9986,
+          0.3753,
+          62.0804
         ]
       },
       "center": [
         -12.48,
-        0.4072,
+        0.314,
         61.6667
       ],
       "size": [
-        0.8715,
-        0.1848,
-        0.82
+        0.9628,
+        0.1226,
+        0.8275
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -642561,25 +642597,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#9",
       "bounds": {
         "min": [
-          -12.7635,
-          0.4834,
-          61.3817
+          -12.7932,
+          0.3645,
+          61.379
         ],
         "max": [
-          -12.1965,
-          0.5989,
-          61.9517
+          -12.1668,
+          0.4412,
+          61.9543
         ]
       },
       "center": [
         -12.48,
-        0.5412,
+        0.4029,
         61.6667
       ],
       "size": [
-        0.567,
-        0.1155,
-        0.57
+        0.6264,
+        0.0767,
+        0.5752
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -642597,25 +642633,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#2",
       "bounds": {
         "min": [
-          -12.9158,
-          0.2644,
-          57.9233
+          -12.9988,
+          0.2678,
+          57.8875
         ],
         "max": [
-          -12.0442,
-          0.3988,
-          58.7433
+          -11.9612,
+          0.4055,
+          58.7792
         ]
       },
       "center": [
         -12.48,
-        0.3316,
+        0.3366,
         58.3333
       ],
       "size": [
-        0.8715,
-        0.1344,
-        0.82
+        1.0375,
+        0.1378,
+        0.8917
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -642669,25 +642705,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#3",
       "bounds": {
         "min": [
-          -12.7635,
-          0.387,
-          58.0483
+          -12.8175,
+          0.3935,
+          58.0234
         ],
         "max": [
-          -12.1965,
-          0.471,
-          58.6183
+          -12.1425,
+          0.4796,
+          58.6433
         ]
       },
       "center": [
         -12.48,
-        0.429,
+        0.4365,
         58.3333
       ],
       "size": [
-        0.567,
-        0.084,
-        0.57
+        0.675,
+        0.0861,
+        0.6199
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -642777,25 +642813,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#1",
       "bounds": {
         "min": [
-          -13.005,
+          -13.105,
           0.13,
-          57.8333
+          57.7896
         ],
         "max": [
-          -11.955,
-          0.2812,
-          58.8333
+          -11.855,
+          0.285,
+          58.8771
         ]
       },
       "center": [
         -12.48,
-        0.2056,
+        0.2075,
         58.3333
       ],
       "size": [
-        1.05,
-        0.1512,
-        1
+        1.25,
+        0.155,
+        1.0875
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -642813,25 +642849,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#64",
       "bounds": {
         "min": [
-          45.1114,
+          45.1164,
           0.42,
-          23.15
+          23.0276
         ],
         "max": [
-          46.1614,
-          0.69,
-          24.15
+          46.1564,
+          0.7642,
+          23.9324
         ]
       },
       "center": [
         45.6364,
-        0.555,
-        23.65
+        0.5921,
+        23.48
       ],
       "size": [
-        1.05,
-        0.27,
-        1
+        1.04,
+        0.3442,
+        0.9048
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -642921,25 +642957,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#6",
       "bounds": {
         "min": [
-          -13.2035,
-          0.4352,
-          59.715
+          -13.2008,
+          0.4513,
+          59.7421
         ],
         "max": [
-          -12.6365,
-          0.535,
-          60.285
+          -12.6392,
+          0.5563,
+          60.2579
         ]
       },
       "center": [
         -12.92,
-        0.4851,
+        0.5038,
         60
       ],
       "size": [
-        0.567,
-        0.0997,
-        0.57
+        0.5616,
+        0.105,
+        0.5157
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -642957,25 +642993,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#65",
       "bounds": {
         "min": [
-          45.2006,
-          0.66,
-          23.24
+          45.2048,
+          0.726,
+          23.109
         ],
         "max": [
-          46.0721,
-          0.9,
-          24.06
+          46.068,
+          1.032,
+          23.851
         ]
       },
       "center": [
         45.6364,
-        0.78,
-        23.65
+        0.879,
+        23.48
       ],
       "size": [
-        0.8715,
-        0.24,
-        0.82
+        0.8632,
+        0.306,
+        0.7419
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -643065,25 +643101,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#7",
       "bounds": {
         "min": [
-          -13.005,
+          -13.06,
           0.13,
-          61.1667
+          61.1621
         ],
         "max": [
-          -11.955,
-          0.3379,
-          62.1667
+          -11.9,
+          0.268,
+          62.1713
         ]
       },
       "center": [
         -12.48,
-        0.234,
+        0.199,
         61.6667
       ],
       "size": [
-        1.05,
-        0.2079,
-        1
+        1.16,
+        0.138,
+        1.0092
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -643101,25 +643137,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#66",
       "bounds": {
         "min": [
-          45.3529,
-          0.879,
-          23.365
+          45.3556,
+          1.0052,
+          23.2221
         ],
         "max": [
-          45.9199,
-          1.029,
-          23.935
+          45.9172,
+          1.1965,
+          23.7379
         ]
       },
       "center": [
         45.6364,
-        0.954,
-        23.65
+        1.1009,
+        23.48
       ],
       "size": [
-        0.567,
-        0.15,
-        0.57
+        0.5616,
+        0.1912,
+        0.5157
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -643245,25 +643281,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#4",
       "bounds": {
         "min": [
-          -13.445,
+          -13.44,
           0.13,
-          59.5
+          59.5476
         ],
         "max": [
-          -12.395,
-          0.3096,
-          60.5
+          -12.4,
+          0.319,
+          60.4524
         ]
       },
       "center": [
         -12.92,
-        0.2198,
+        0.2245,
         60
       ],
       "size": [
-        1.05,
-        0.1796,
-        1
+        1.04,
+        0.189,
+        0.9048
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -643281,25 +643317,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#67",
       "bounds": {
         "min": [
-          46.5205,
+          46.3555,
           0.42,
-          24.05
+          23.4997
         ],
         "max": [
-          47.5705,
-          0.7406,
-          25.05
+          47.7355,
+          0.6461,
+          24.7003
         ]
       },
       "center": [
         47.0455,
-        0.5803,
-        24.55
+        0.5331,
+        24.1
       ],
       "size": [
-        1.05,
-        0.3206,
-        1
+        1.38,
+        0.2261,
+        1.2006
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -643317,25 +643353,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#77",
       "bounds": {
         "min": [
-          71.337,
-          0.75,
-          24.14
+          71.2,
+          0.621,
+          23.6078
         ],
         "max": [
-          72.2085,
-          1.08,
-          24.96
+          72.3454,
+          0.822,
+          24.5922
         ]
       },
       "center": [
         71.7727,
-        0.915,
-        24.55
+        0.7215,
+        24.1
       ],
       "size": [
-        0.8715,
-        0.33,
-        0.82
+        1.1454,
+        0.201,
+        0.9845
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -643497,25 +643533,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#5",
       "bounds": {
         "min": [
-          -13.3558,
-          0.2896,
-          59.59
+          -13.3516,
+          0.298,
+          59.629
         ],
         "max": [
-          -12.4842,
-          0.4492,
-          60.41
+          -12.4884,
+          0.466,
+          60.371
         ]
       },
       "center": [
         -12.92,
-        0.3694,
+        0.382,
         60
       ],
       "size": [
-        0.8715,
-        0.1596,
-        0.82
+        0.8632,
+        0.168,
+        0.7419
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -643533,25 +643569,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#28",
       "bounds": {
         "min": [
-          12.395,
+          12.295,
           0.13,
-          82.8333
+          82.7896
         ],
         "max": [
-          13.445,
-          0.2812,
-          83.8333
+          13.545,
+          0.285,
+          83.8771
         ]
       },
       "center": [
         12.92,
-        0.2056,
+        0.2075,
         83.3333
       ],
       "size": [
-        1.05,
-        0.1512,
-        1
+        1.25,
+        0.155,
+        1.0875
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -643569,25 +643605,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#60",
       "bounds": {
         "min": [
-          42.5347,
-          0.9651,
-          23.365
+          42.5752,
+          0.8331,
+          24.4568
         ],
         "max": [
-          43.1017,
-          1.1432,
-          23.935
+          43.0612,
+          0.9681,
+          24.9032
         ]
       },
       "center": [
         42.8182,
-        1.0541,
-        23.65
+        0.9006,
+        24.68
       ],
       "size": [
-        0.567,
-        0.1781,
-        0.57
+        0.486,
+        0.135,
+        0.4463
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -643605,25 +643641,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#76",
       "bounds": {
         "min": [
-          71.2477,
+          71.0827,
           0.42,
-          24.05
+          23.4997
         ],
         "max": [
-          72.2977,
-          0.7913,
-          25.05
+          72.4627,
+          0.6461,
+          24.7003
         ]
       },
       "center": [
         71.7727,
-        0.6056,
-        24.55
+        0.5331,
+        24.1
       ],
       "size": [
-        1.05,
-        0.3713,
-        1
+        1.38,
+        0.2261,
+        1.2006
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -643785,25 +643821,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#29",
       "bounds": {
         "min": [
-          12.4842,
-          0.2644,
-          82.9233
+          12.4012,
+          0.2678,
+          82.8875
         ],
         "max": [
-          13.3558,
-          0.3988,
-          83.7433
+          13.4388,
+          0.4055,
+          83.7792
         ]
       },
       "center": [
         12.92,
-        0.3316,
+        0.3366,
         83.3333
       ],
       "size": [
-        0.8715,
-        0.1344,
-        0.82
+        1.0375,
+        0.1378,
+        0.8917
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -643821,25 +643857,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#61",
       "bounds": {
         "min": [
-          43.7023,
+          43.5873,
           0.42,
-          24.05
+          23.6932
         ],
         "max": [
-          44.7523,
-          0.7913,
-          25.05
+          44.8673,
+          0.717,
+          24.8068
         ]
       },
       "center": [
         44.2273,
-        0.6056,
-        24.55
+        0.5685,
+        24.25
       ],
       "size": [
-        1.05,
-        0.3713,
-        1
+        1.28,
+        0.297,
+        1.1136
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -643857,25 +643893,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#75",
       "bounds": {
         "min": [
-          70.0801,
-          0.9651,
-          23.365
+          70.0828,
+          1.0052,
+          23.2221
         ],
         "max": [
-          70.6471,
-          1.1432,
-          23.935
+          70.6444,
+          1.1965,
+          23.7379
         ]
       },
       "center": [
         70.3636,
-        1.0541,
-        23.65
+        1.1009,
+        23.48
       ],
       "size": [
-        0.567,
-        0.1781,
-        0.57
+        0.5616,
+        0.1912,
+        0.5157
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -644037,25 +644073,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#62",
       "bounds": {
         "min": [
-          43.7915,
-          0.75,
-          24.14
+          43.6961,
+          0.684,
+          23.7934
         ],
         "max": [
-          44.663,
-          1.08,
-          24.96
+          44.7585,
+          0.948,
+          24.7066
         ]
       },
       "center": [
         44.2273,
-        0.915,
-        24.55
+        0.816,
+        24.25
       ],
       "size": [
-        0.8715,
-        0.33,
-        0.82
+        1.0624,
+        0.264,
+        0.9132
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -644073,25 +644109,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#74",
       "bounds": {
         "min": [
-          69.9279,
-          0.705,
-          23.24
+          69.932,
+          0.726,
+          23.109
         ],
         "max": [
-          70.7994,
-          0.99,
-          24.06
+          70.7952,
+          1.032,
+          23.851
         ]
       },
       "center": [
         70.3636,
-        0.8475,
-        23.65
+        0.879,
+        23.48
       ],
       "size": [
-        0.8715,
-        0.285,
-        0.82
+        0.8632,
+        0.306,
+        0.7419
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -644289,25 +644325,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#63",
       "bounds": {
         "min": [
-          43.9438,
-          1.0511,
-          24.265
+          43.8817,
+          0.9249,
+          23.9326
         ],
         "max": [
-          44.5108,
-          1.2574,
-          24.835
+          44.5729,
+          1.0899,
+          24.5674
         ]
       },
       "center": [
         44.2273,
-        1.1543,
-        24.55
+        1.0074,
+        24.25
       ],
       "size": [
-        0.567,
-        0.2062,
-        0.57
+        0.6912,
+        0.165,
+        0.6348
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -644325,25 +644361,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#73",
       "bounds": {
         "min": [
-          69.8386,
+          69.8436,
           0.42,
-          23.15
+          23.0276
         ],
         "max": [
-          70.8886,
-          0.7406,
-          24.15
+          70.8836,
+          0.7642,
+          23.9324
         ]
       },
       "center": [
         70.3636,
-        0.5803,
-        23.65
+        0.5921,
+        23.48
       ],
       "size": [
-        1.05,
-        0.3206,
-        1
+        1.04,
+        0.3442,
+        0.9048
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -644505,25 +644541,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#72",
       "bounds": {
         "min": [
-          68.671,
-          0.879,
-          24.265
+          68.6089,
+          0.9249,
+          23.9326
         ],
         "max": [
-          69.238,
-          1.029,
-          24.835
+          69.3001,
+          1.0899,
+          24.5674
         ]
       },
       "center": [
         68.9545,
-        0.954,
-        24.55
+        1.0074,
+        24.25
       ],
       "size": [
-        0.567,
-        0.15,
-        0.57
+        0.6912,
+        0.165,
+        0.6348
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -644541,25 +644577,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#48",
       "bounds": {
         "min": [
-          36.8983,
-          0.879,
-          23.365
+          36.9388,
+          0.8331,
+          24.4568
         ],
         "max": [
-          37.4653,
-          1.029,
-          23.935
+          37.4248,
+          0.9681,
+          24.9032
         ]
       },
       "center": [
         37.1818,
-        0.954,
-        23.65
+        0.9006,
+        24.68
       ],
       "size": [
-        0.567,
-        0.15,
-        0.57
+        0.486,
+        0.135,
+        0.4463
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -644649,25 +644685,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#71",
       "bounds": {
         "min": [
-          68.5188,
-          0.66,
-          24.14
+          68.4233,
+          0.684,
+          23.7934
         ],
         "max": [
-          69.3903,
-          0.9,
-          24.96
+          69.4857,
+          0.948,
+          24.7066
         ]
       },
       "center": [
         68.9545,
-        0.78,
-        24.55
+        0.816,
+        24.25
       ],
       "size": [
-        0.8715,
-        0.24,
-        0.82
+        1.0624,
+        0.264,
+        0.9132
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -644685,25 +644721,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#49",
       "bounds": {
         "min": [
-          38.0659,
+          37.9509,
           0.42,
-          24.05
+          23.6932
         ],
         "max": [
-          39.1159,
-          0.7406,
-          25.05
+          39.2309,
+          0.717,
+          24.8068
         ]
       },
       "center": [
         38.5909,
-        0.5803,
-        24.55
+        0.5685,
+        24.25
       ],
       "size": [
-        1.05,
-        0.3206,
-        1
+        1.28,
+        0.297,
+        1.1136
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -644793,25 +644829,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#70",
       "bounds": {
         "min": [
-          68.4295,
+          68.3145,
           0.42,
-          24.05
+          23.6932
         ],
         "max": [
-          69.4795,
-          0.69,
-          25.05
+          69.5945,
+          0.717,
+          24.8068
         ]
       },
       "center": [
         68.9545,
-        0.555,
-        24.55
+        0.5685,
+        24.25
       ],
       "size": [
-        1.05,
-        0.27,
-        1
+        1.28,
+        0.297,
+        1.1136
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -644937,25 +644973,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#20",
       "bounds": {
         "min": [
-          12.4842,
-          0.2644,
-          57.9233
+          12.4012,
+          0.2678,
+          57.8875
         ],
         "max": [
-          13.3558,
-          0.3988,
-          58.7433
+          13.4388,
+          0.4055,
+          58.7792
         ]
       },
       "center": [
         12.92,
-        0.3316,
+        0.3366,
         58.3333
       ],
       "size": [
-        0.8715,
-        0.1344,
-        0.82
+        1.0375,
+        0.1378,
+        0.8917
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -644973,25 +645009,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#68",
       "bounds": {
         "min": [
-          46.6097,
-          0.705,
-          24.14
+          46.4728,
+          0.621,
+          23.6078
         ],
         "max": [
-          47.4812,
-          0.99,
-          24.96
+          47.6182,
+          0.822,
+          24.5922
         ]
       },
       "center": [
         47.0455,
-        0.8475,
-        24.55
+        0.7215,
+        24.1
       ],
       "size": [
-        0.8715,
-        0.285,
-        0.82
+        1.1454,
+        0.201,
+        0.9845
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645009,25 +645045,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#21",
       "bounds": {
         "min": [
-          12.6365,
-          0.387,
-          58.0483
+          12.5825,
+          0.3935,
+          58.0234
         ],
         "max": [
-          13.2035,
-          0.471,
-          58.6183
+          13.2575,
+          0.4796,
+          58.6433
         ]
       },
       "center": [
         12.92,
-        0.429,
+        0.4365,
         58.3333
       ],
       "size": [
-        0.567,
-        0.084,
-        0.57
+        0.675,
+        0.0861,
+        0.6199
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645045,25 +645081,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#69",
       "bounds": {
         "min": [
-          46.762,
-          0.9651,
-          24.265
+          46.6729,
+          0.8044,
+          23.7578
         ],
         "max": [
-          47.329,
-          1.1432,
-          24.835
+          47.4181,
+          0.93,
+          24.4422
         ]
       },
       "center": [
         47.0455,
-        1.0541,
-        24.55
+        0.8672,
+        24.1
       ],
       "size": [
-        0.567,
-        0.1781,
-        0.57
+        0.7452,
+        0.1256,
+        0.6843
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645081,25 +645117,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#59",
       "bounds": {
         "min": [
-          42.3824,
-          0.705,
-          23.24
+          42.4447,
+          0.636,
+          24.359
         ],
         "max": [
-          43.2539,
-          0.99,
-          24.06
+          43.1917,
+          0.852,
+          25.001
         ]
       },
       "center": [
         42.8182,
-        0.8475,
-        23.65
+        0.744,
+        24.68
       ],
       "size": [
-        0.8715,
-        0.285,
-        0.82
+        0.747,
+        0.216,
+        0.6421
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645117,25 +645153,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#22",
       "bounds": {
         "min": [
-          11.955,
+          11.96,
           0.13,
-          59.5
+          59.5476
         ],
         "max": [
-          13.005,
-          0.3096,
-          60.5
+          13,
+          0.319,
+          60.4524
         ]
       },
       "center": [
         12.48,
-        0.2198,
+        0.2245,
         60
       ],
       "size": [
-        1.05,
-        0.1796,
-        1
+        1.04,
+        0.189,
+        0.9048
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645153,25 +645189,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#42",
       "bounds": {
         "min": [
-          34.0801,
-          0.9651,
-          23.365
+          34.0828,
+          1.0052,
+          23.2221
         ],
         "max": [
-          34.6471,
-          1.1432,
-          23.935
+          34.6444,
+          1.1965,
+          23.7379
         ]
       },
       "center": [
         34.3636,
-        1.0541,
-        23.65
+        1.1009,
+        23.48
       ],
       "size": [
-        0.567,
-        0.1781,
-        0.57
+        0.5616,
+        0.1912,
+        0.5157
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645189,25 +645225,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#58",
       "bounds": {
         "min": [
-          42.2932,
+          42.3682,
           0.42,
-          23.15
+          24.2885
         ],
         "max": [
-          43.3432,
-          0.7406,
-          24.15
+          43.2682,
+          0.663,
+          25.0715
         ]
       },
       "center": [
         42.8182,
-        0.5803,
-        23.65
+        0.5415,
+        24.68
       ],
       "size": [
-        1.05,
-        0.3206,
-        1
+        0.9,
+        0.243,
+        0.783
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645297,25 +645333,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#23",
       "bounds": {
         "min": [
-          12.0442,
-          0.2896,
-          59.59
+          12.0484,
+          0.298,
+          59.629
         ],
         "max": [
-          12.9158,
-          0.4492,
-          60.41
+          12.9116,
+          0.466,
+          60.371
         ]
       },
       "center": [
         12.48,
-        0.3694,
+        0.382,
         60
       ],
       "size": [
-        0.8715,
-        0.1596,
-        0.82
+        0.8632,
+        0.168,
+        0.7419
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645333,25 +645369,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#43",
       "bounds": {
         "min": [
-          35.2477,
+          35.0827,
           0.42,
-          24.05
+          23.4997
         ],
         "max": [
-          36.2977,
-          0.7913,
-          25.05
+          36.4627,
+          0.6461,
+          24.7003
         ]
       },
       "center": [
         35.7727,
-        0.6056,
-        24.55
+        0.5331,
+        24.1
       ],
       "size": [
-        1.05,
-        0.3713,
-        1
+        1.38,
+        0.2261,
+        1.2006
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645441,25 +645477,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#24",
       "bounds": {
         "min": [
-          12.1965,
-          0.4352,
-          59.715
+          12.1992,
+          0.4513,
+          59.7421
         ],
         "max": [
-          12.7635,
-          0.535,
-          60.285
+          12.7608,
+          0.5563,
+          60.2579
         ]
       },
       "center": [
         12.48,
-        0.4851,
+        0.5038,
         60
       ],
       "size": [
-        0.567,
-        0.0997,
-        0.57
+        0.5616,
+        0.105,
+        0.5157
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645477,25 +645513,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#40",
       "bounds": {
         "min": [
-          33.8386,
+          33.8436,
           0.42,
-          23.15
+          23.0276
         ],
         "max": [
-          34.8886,
-          0.7406,
-          24.15
+          34.8836,
+          0.7642,
+          23.9324
         ]
       },
       "center": [
         34.3636,
-        0.5803,
-        23.65
+        0.5921,
+        23.48
       ],
       "size": [
-        1.05,
-        0.3206,
-        1
+        1.04,
+        0.3442,
+        0.9048
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645549,25 +645585,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#25",
       "bounds": {
         "min": [
-          12.395,
+          12.34,
           0.13,
-          61.1667
+          61.1621
         ],
         "max": [
-          13.445,
-          0.3379,
-          62.1667
+          13.5,
+          0.268,
+          62.1713
         ]
       },
       "center": [
         12.92,
-        0.234,
+        0.199,
         61.6667
       ],
       "size": [
-        1.05,
-        0.2079,
-        1
+        1.16,
+        0.138,
+        1.0092
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645585,25 +645621,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#79",
       "bounds": {
         "min": [
-          72.6568,
+          72.7318,
           0.42,
-          23.15
+          24.2885
         ],
         "max": [
-          73.7068,
-          0.69,
-          24.15
+          73.6318,
+          0.663,
+          25.0715
         ]
       },
       "center": [
         73.1818,
-        0.555,
-        23.65
+        0.5415,
+        24.68
       ],
       "size": [
-        1.05,
-        0.27,
-        1
+        0.9,
+        0.243,
+        0.783
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645621,25 +645657,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#41",
       "bounds": {
         "min": [
-          33.9279,
-          0.705,
-          23.24
+          33.932,
+          0.726,
+          23.109
         ],
         "max": [
-          34.7994,
-          0.99,
-          24.06
+          34.7952,
+          1.032,
+          23.851
         ]
       },
       "center": [
         34.3636,
-        0.8475,
-        23.65
+        0.879,
+        23.48
       ],
       "size": [
-        0.8715,
-        0.285,
-        0.82
+        0.8632,
+        0.306,
+        0.7419
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645657,25 +645693,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#55",
       "bounds": {
         "min": [
-          40.8841,
+          40.7191,
           0.42,
-          24.05
+          23.4997
         ],
         "max": [
-          41.9341,
-          0.69,
-          25.05
+          42.0991,
+          0.6461,
+          24.7003
         ]
       },
       "center": [
         41.4091,
-        0.555,
-        24.55
+        0.5331,
+        24.1
       ],
       "size": [
-        1.05,
-        0.27,
-        1
+        1.38,
+        0.2261,
+        1.2006
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645765,25 +645801,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#26",
       "bounds": {
         "min": [
-          12.4842,
-          0.3148,
-          61.2567
+          12.4386,
+          0.2526,
+          61.2529
         ],
         "max": [
-          13.3558,
-          0.4996,
-          62.0767
+          13.4014,
+          0.3753,
+          62.0804
         ]
       },
       "center": [
         12.92,
-        0.4072,
+        0.314,
         61.6667
       ],
       "size": [
-        0.8715,
-        0.1848,
-        0.82
+        0.9628,
+        0.1226,
+        0.8275
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645801,25 +645837,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#78",
       "bounds": {
         "min": [
-          71.4892,
-          1.0511,
-          24.265
+          71.4001,
+          0.8044,
+          23.7578
         ],
         "max": [
-          72.0562,
-          1.2574,
-          24.835
+          72.1453,
+          0.93,
+          24.4422
         ]
       },
       "center": [
         71.7727,
-        1.1543,
-        24.55
+        0.8672,
+        24.1
       ],
       "size": [
-        0.567,
-        0.2062,
-        0.57
+        0.7452,
+        0.1256,
+        0.6843
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645837,25 +645873,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#46",
       "bounds": {
         "min": [
-          36.6568,
+          36.7318,
           0.42,
-          23.15
+          24.2885
         ],
         "max": [
-          37.7068,
-          0.69,
-          24.15
+          37.6318,
+          0.663,
+          25.0715
         ]
       },
       "center": [
         37.1818,
-        0.555,
-        23.65
+        0.5415,
+        24.68
       ],
       "size": [
-        1.05,
-        0.27,
-        1
+        0.9,
+        0.243,
+        0.783
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645873,25 +645909,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#54",
       "bounds": {
         "min": [
-          39.7165,
-          1.0511,
-          23.365
+          39.7192,
+          1.0052,
+          23.2221
         ],
         "max": [
-          40.2835,
-          1.2574,
-          23.935
+          40.2808,
+          1.1965,
+          23.7379
         ]
       },
       "center": [
         40,
-        1.1543,
-        23.65
+        1.1009,
+        23.48
       ],
       "size": [
-        0.567,
-        0.2062,
-        0.57
+        0.5616,
+        0.1912,
+        0.5157
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -645981,25 +646017,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#27",
       "bounds": {
         "min": [
-          12.6365,
-          0.4834,
-          61.3817
+          12.6068,
+          0.3645,
+          61.379
         ],
         "max": [
-          13.2035,
-          0.5989,
-          61.9517
+          13.2332,
+          0.4412,
+          61.9543
         ]
       },
       "center": [
         12.92,
-        0.5412,
+        0.4029,
         61.6667
       ],
       "size": [
-        0.567,
-        0.1155,
-        0.57
+        0.6264,
+        0.0767,
+        0.5752
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -646017,25 +646053,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#47",
       "bounds": {
         "min": [
-          36.7461,
-          0.66,
-          23.24
+          36.8083,
+          0.636,
+          24.359
         ],
         "max": [
-          37.6176,
-          0.9,
-          24.06
+          37.5553,
+          0.852,
+          25.001
         ]
       },
       "center": [
         37.1818,
-        0.78,
-        23.65
+        0.744,
+        24.68
       ],
       "size": [
-        0.8715,
-        0.24,
-        0.82
+        0.747,
+        0.216,
+        0.6421
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -646053,25 +646089,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#57",
       "bounds": {
         "min": [
-          41.1256,
-          0.879,
-          24.265
+          41.0365,
+          0.8044,
+          23.7578
         ],
         "max": [
-          41.6926,
-          1.029,
-          24.835
+          41.7817,
+          0.93,
+          24.4422
         ]
       },
       "center": [
         41.4091,
-        0.954,
-        24.55
+        0.8672,
+        24.1
       ],
       "size": [
-        0.567,
-        0.15,
-        0.57
+        0.7452,
+        0.1256,
+        0.6843
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -646125,25 +646161,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#44",
       "bounds": {
         "min": [
-          35.337,
-          0.75,
-          24.14
+          35.2,
+          0.621,
+          23.6078
         ],
         "max": [
-          36.2085,
-          1.08,
-          24.96
+          36.3454,
+          0.822,
+          24.5922
         ]
       },
       "center": [
         35.7727,
-        0.915,
-        24.55
+        0.7215,
+        24.1
       ],
       "size": [
-        0.8715,
-        0.33,
-        0.82
+        1.1454,
+        0.201,
+        0.9845
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -646161,25 +646197,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#56",
       "bounds": {
         "min": [
-          40.9733,
-          0.66,
-          24.14
+          40.8364,
+          0.621,
+          23.6078
         ],
         "max": [
-          41.8448,
-          0.9,
-          24.96
+          41.9818,
+          0.822,
+          24.5922
         ]
       },
       "center": [
         41.4091,
-        0.78,
-        24.55
+        0.7215,
+        24.1
       ],
       "size": [
-        0.8715,
-        0.24,
-        0.82
+        1.1454,
+        0.201,
+        0.9845
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -646233,25 +646269,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#45",
       "bounds": {
         "min": [
-          35.4892,
-          1.0511,
-          24.265
+          35.4001,
+          0.8044,
+          23.7578
         ],
         "max": [
-          36.0562,
-          1.2574,
-          24.835
+          36.1453,
+          0.93,
+          24.4422
         ]
       },
       "center": [
         35.7727,
-        1.1543,
-        24.55
+        0.8672,
+        24.1
       ],
       "size": [
-        0.567,
-        0.2062,
-        0.57
+        0.7452,
+        0.1256,
+        0.6843
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -646269,25 +646305,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#51",
       "bounds": {
         "min": [
-          38.3074,
-          0.9651,
-          24.265
+          38.2453,
+          0.9249,
+          23.9326
         ],
         "max": [
-          38.8744,
-          1.1432,
-          24.835
+          38.9365,
+          1.0899,
+          24.5674
         ]
       },
       "center": [
         38.5909,
-        1.0541,
-        24.55
+        1.0074,
+        24.25
       ],
       "size": [
-        0.567,
-        0.1781,
-        0.57
+        0.6912,
+        0.165,
+        0.6348
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -646341,25 +646377,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#50",
       "bounds": {
         "min": [
-          38.1552,
-          0.705,
-          24.14
+          38.0597,
+          0.684,
+          23.7934
         ],
         "max": [
-          39.0267,
-          0.99,
-          24.96
+          39.1221,
+          0.948,
+          24.7066
         ]
       },
       "center": [
         38.5909,
-        0.8475,
-        24.55
+        0.816,
+        24.25
       ],
       "size": [
-        0.8715,
-        0.285,
-        0.82
+        1.0624,
+        0.264,
+        0.9132
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -646377,25 +646413,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#53",
       "bounds": {
         "min": [
-          39.5642,
-          0.75,
-          23.24
+          39.5684,
+          0.726,
+          23.109
         ],
         "max": [
-          40.4358,
-          1.08,
-          24.06
+          40.4316,
+          1.032,
+          23.851
         ]
       },
       "center": [
         40,
-        0.915,
-        23.65
+        0.879,
+        23.48
       ],
       "size": [
-        0.8715,
-        0.33,
-        0.82
+        0.8632,
+        0.306,
+        0.7419
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -646413,25 +646449,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Reference_planting_layers#1/Layered_block_shrub#52",
       "bounds": {
         "min": [
-          39.475,
+          39.48,
           0.42,
-          23.15
+          23.0276
         ],
         "max": [
-          40.525,
-          0.7913,
-          24.15
+          40.52,
+          0.7642,
+          23.9324
         ]
       },
       "center": [
         40,
-        0.6056,
-        23.65
+        0.5921,
+        23.48
       ],
       "size": [
-        1.05,
-        0.3713,
-        1
+        1.04,
+        0.3442,
+        0.9048
       ],
       "sourceFile": "src/model/landscapeDetails.ts",
       "sourceAnchor": "Layered_block_shrub",
@@ -649363,18 +649399,18 @@
         ],
         "max": [
           89.85,
-          0.045,
+          0.046,
           36.75
         ]
       },
       "center": [
         58,
-        0.025,
+        0.0255,
         33.5
       ],
       "size": [
         63.7,
-        0.04,
+        0.041,
         6.5
       ],
       "sourceFile": "src/model/buildSite.ts",
@@ -649418,6 +649454,42 @@
       "confidence": "observed-components_estimated-layout",
       "editMode": "source",
       "material": "Asphalt"
+    },
+    {
+      "id": "R009-P-c33f15f6a598",
+      "name": "Arrival_staggered_stone_setts",
+      "kind": "part",
+      "parentId": "R009",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/CDS1_Entrance_Forecourt#1/R009#1/Arrival_staggered_stone_setts#1",
+      "bounds": {
+        "min": [
+          26.159,
+          0.046,
+          30.259
+        ],
+        "max": [
+          89.841,
+          0.046,
+          36.741
+        ]
+      },
+      "center": [
+        58,
+        0.046,
+        33.5
+      ],
+      "size": [
+        63.682,
+        0,
+        6.482
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Arrival_staggered_stone_setts",
+      "reference": "R01 CDS-1; pattern and contrast observed, module and band spacing estimated",
+      "confidence": "observed-components_estimated-layout",
+      "editMode": "source",
+      "material": "Arrival grey stone setts"
     },
     {
       "id": "R010",

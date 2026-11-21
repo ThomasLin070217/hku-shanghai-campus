@@ -52,10 +52,18 @@ try {
     await writeFile(join(output,name+'.png'),Buffer.from(png.split(',')[1],'base64'));
     metrics[name] = stats;
   }
-  for (const id of ['B01','B02','B03','B04','B05','B06','B07'])
-    for (const view of ['front','left','right','entry','player']) await shot(id,view);
-  await shot('campus','north');
-  for (const view of ['normal','incident']) await shot('dinner',view);
+  if (process.argv.includes('--sign')) {
+    await shot('sign','front');
+  } else if (process.argv.includes('--grounds')) {
+    await shot('forecourt','paving');
+    for (const view of ['axis','base']) await shot('lawn',view);
+    for (const view of ['head-normal','head-incident']) await shot('dinner',view);
+  } else {
+    for (const id of ['B01','B02','B03','B04','B05','B06','B07'])
+      for (const view of ['front','left','right','entry','player']) await shot(id,view);
+    await shot('campus','north');
+    for (const view of ['normal','incident']) await shot('dinner',view);
+  }
   await writeFile(join(output,'metrics.json'),JSON.stringify(metrics,null,2)+'\n');
   if (process.argv.includes('--smoke')) {
     const game = new URL('/', url);
