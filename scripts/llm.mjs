@@ -72,6 +72,49 @@ function configFor(provider) {
   return provider === 'gemini' ? geminiConfig() : litellmConfig();
 }
 
+/** Outbound proxy for the client, if one is configured (LLM_PROXY wins). */
+export function proxyUrl() {
+  return trim('LLM_PROXY') || trim('HTTPS_PROXY') || trim('https_proxy');
+}
+
+function redactProxy(proxy) {
+  return proxy.replace(/\/\/[^/@]+@/, '//<credentials>@');
+}
+
+function nodeAppliesProxy() {
+  const flag = (process.env.NODE_USE_ENV_PROXY || '').toLowerCase();
+  return flag === '1' || flag === 'true';
+}
+
+/**
+ * Node's built-in fetch only honours proxies when started with
+ * NODE_USE_ENV_PROXY=1, and it needs to be set before the process starts.
+ * Restart the CLI once with that flag; returns true when a child took over.
+ */
+function reexecWithProxy() {
+  const proxy = proxyUrl();
+  if (!proxy || nodeAppliesProxy()) return false;
+  const major = Number(process.versions.node.split('.')[0]);
+  if (major < 24) {
+    throw new Error(`LLM_PROXY/HTTPS_PROXY needs Node.js 24+ (found ${process.versions.node}). Update Node, or run the request from a proxied host.`);
+  }
+  const child = spawn(process.execPath, [...process.execArgv, process.argv[1], ...process.argv.slice(2)], {
+    stdio: 'inherit',
+    env: { ...process.env, NODE_USE_ENV_PROXY: '1', HTTPS_PROXY: proxy, https_proxy: proxy }
+  });
+  for (const signal of ['SIGINT', 'SIGTERM']) {
+    process.on(signal, () => child.kill(signal));
+  }
+  child.on('error', error => {
+    console.error(JSON.stringify({ ok: false, error: `proxy restart failed: ${error.message}` }));
+    process.exitCode = 1;
+  });
+  child.on('exit', (code, signal) => {
+    process.exitCode = signal ? 1 : (code ?? 0);
+  });
+  return true;
+}
+
 /**
  * Provider used when the caller does not pass one: LLM_PROVIDER if set, else
  * gemini when a Gemini key exists, else litellm.
@@ -303,10 +346,12 @@ function parseArgs(argv) {
 function usage(provider) {
   const gemini = geminiConfig();
   const litellm = litellmConfig();
+  const proxy = proxyUrl();
   return {
     ok: false,
     usage: 'npm run llm -- "your prompt" [--system "..."] [--model name] [--provider gemini|litellm] [--json] | --models | --ping',
     defaultProvider: provider,
+    proxy: proxy ? { url: redactProxy(proxy), applied: nodeAppliesProxy() } : null,
     configured: {
       gemini: { apiKey: Boolean(gemini.key), model: gemini.model, baseUrl: gemini.base, transport: gemini.transport },
       litellm: { baseUrl: Boolean(litellm.base), apiKey: Boolean(litellm.key), model: litellm.model || '(unset)' }
@@ -336,7 +381,8 @@ async function main() {
     }
     const probe = await chat([{ role: 'user', content: 'Reply with the single word: pong' }], {
       model: options.model,
-      maxTokens: 16,
+      // Gemini 3.x spends tokens on thinking first; a tiny cap yields empty text.
+      maxTokens: 256,
       provider
     });
     result.reply = probe.choices?.[0]?.message?.content?.trim();
@@ -365,8 +411,15 @@ async function main() {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  main().catch(error => {
-    console.error(JSON.stringify({ ok: false, error: error.message }));
+  try {
+    if (!reexecWithProxy()) {
+      main().catch(error => {
+        console.error(JSON.stringify({ ok: false, error: error.message }));
+        process.exitCode = 1;
+      });
+    }
+  } catch (error) {
+    console.error(JSON.stringify({ ok: false, error: error instanceof Error ? error.message : String(error) }));
     process.exitCode = 1;
-  });
+  }
 }
