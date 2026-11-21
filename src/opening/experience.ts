@@ -8,6 +8,7 @@ import type {OpeningModal,OpeningSave,OpeningState,OpeningEvent,OpeningView,Open
 import {createOpeningState,reduceOpening} from './state';
 import {OPENING_SAVE_KEY,captureOpeningSave,parseOpeningSave} from './persistence';
 import {createOpeningRuntime,damageOpeningHearts,healOpeningHearts,syncRuntimeWithStory,OPENING_RESPAWN_GRACE_SECONDS,OPENING_MAX_HEARTS,type OpeningRuntime} from './runtime';
+import {loadWorldThreat,sealWorld,resetWorldThreat,tryPurgeWorld,markLionDefeated,markPowerCut,markLocalModelCleared,cloneWorldThreat,type WorldThreat} from '../gameplay/worldThreat';
 import {OPENING as O,OPENING_WORLD_REVISION} from './spatialLayout';
 import {setBusDoor} from './navigation';
 import {createOpeningFleet} from './robots';
@@ -47,6 +48,7 @@ export function createOpeningExperience(
 ){
  const g=explorer.game,stage=document.querySelector<HTMLElement>('.stage')!;
  let story=createOpeningState(),runtime=createOpeningRuntime(),settings:Settings={...DEFAULT_SETTINGS,music:.2},modal:OpeningModal=null,computerPage:ComputerPage='tasks';
+ let worldThreat:WorldThreat=loadWorldThreat();
  let busClock=0,busReady=false,saveMessage='Progress saves on this device.',protectedSave=false,ownsSave=false,storageOkay=true,lastSave=0,stamp='',disposed=false,failed=false,scanClock=0,wasPaused=true;
  let incidentClock=0,disturbancePlayed=false,incidentQueued=false,autoInvitationShown=false,heartbeatClock=0,chaseCueClock=0,respawnGrace=0,compatBeforePanel=false;
  let wakeStarted=false,wakeClock=0,wakeDone=false,subtitleText='',subtitleSeconds=0,titleText='',titleSubtitle='',titleSeconds=0,introPromptClock=0,introAutoOpened=false,introCompleted=false;
@@ -111,13 +113,19 @@ export function createOpeningExperience(
  function validPose(s:OpeningSave){const [x,y,z]=s.position,w=explorer.world,h=w.support(x,z,y+.24);return s.worldRevision===OPENING_WORLD_REVISION&&h!==null&&Math.abs(h-y)<.3&&!w.blocked(x,z,h+.003)&&[[.18,0],[-.18,0],[0,.18],[0,-.18]].every(([dx,dz])=>{const n=w.support(x+dx,z+dz,h);return n!==null&&Math.abs(n-h)<.3;});}
  function restore(s:OpeningSave){
   explorer.pause('opening_load');story=structuredClone(s.story);runtime=syncRuntimeWithStory(s.runtime??createOpeningRuntime(),story);settings={...s.settings};
+  // The world state is authoritative: a sealed campus stays dark even when an
+  // older opening save predates the flag, and a purged campus never re-seals.
+  worldThreat=loadWorldThreat();
+  if(worldThreat.phase==='sealed')runtime={...runtime,curtain_deployed:true};
+  else if(worldThreat.phase==='purged')runtime={...runtime,curtain_deployed:false};
   g.inventory.slots.splice(0,36,...s.slots.map(i=>i?{...i}:null));g.inventory.selectedHotbar=s.selectedHotbar;g.inventory.revision++;g.view=s.view;modal=null;g.closePanel();failed=runtime.hearts<=0;respawnGrace=OPENING_RESPAWN_GRACE_SECONDS;wakeStarted=story.stage!=='bus'||story.invitation_read;wakeDone=wakeStarted;introPromptClock=0;introAutoOpened=false;staffTalkStarted=false;staffTalkDone=false;staffTalkClock=0;staffTalkLine=0;staffVoiceStarted=false;acceptVoicePlayed=false;acceptVoiceBusy=false;repeatVoiceBusy=false;npcs.reset();fleet.reset();
   if(validPose(s)&&story.stage!=='incident'&&story.stage!=='to_b4')pose(s.position,s.yaw);else safePose();
   g.pitch=s.pitch;busClock=8;busReady=story.invitation_read;setBusDoor(explorer.world,story.stage==='bus'&&!busReady);applySettings();
   if(failed)open('caught');
   else if(story.stage==='complete')open('complete');
   incidentQueued=story.stage==='return_b5';
-  if(runtime.curtain_deployed){atmo()?.startIncident();audio.openingAmbience('dark');}
+  if(worldThreat.phase==='sealed'){atmo()?.restoreSealed();audio.openingAmbience('dark');}
+  else if(worldThreat.phase==='purged'){audio.openingAmbience('day');}
  }
  function persist(force=false){if(disposed||protectedSave||!ownsSave||!force&&performance.now()-lastSave<5000)return;try{if(localStorage.getItem(writerKey)!==writerToken){ownsSave=false;return;}const safe=story.stage==='incident'||story.stage==='to_b4'?([...O.encounterSafe] as [number,number,number]):undefined;localStorage.setItem(OPENING_SAVE_KEY,JSON.stringify(captureOpeningSave(g,story,settings,safe,runtime)));lastSave=performance.now();storageOkay=true;saveMessage='Saved on this device.';}catch{storageOkay=false;saveMessage='Storage unavailable. Progress remains in this session.';}}
  function claimSave(){if(protectedSave)return;try{if(localStorage.getItem(writerKey)!==writerToken){const latestRaw=localStorage.getItem(OPENING_SAVE_KEY);if(latestRaw){let saved:OpeningSave|null=null;try{saved=parseOpeningSave(JSON.parse(latestRaw));}catch{}if(!saved){protectedSave=true;saveMessage='Unrecognized save protected. Start a new opening to back it up.';return;}if(lastSave>0||saved.savedAt>loadedAt){restore(saved);saveMessage='Latest checkpoint continued from another window.';}}localStorage.setItem(writerKey,writerToken);}ownsSave=true;}catch{ownsSave=true;storageOkay=false;}}
@@ -202,10 +210,14 @@ export function createOpeningExperience(
  function restart(){
   try{const raw=localStorage.getItem(OPENING_SAVE_KEY);if(raw)localStorage.setItem(OPENING_SAVE_KEY+'.backup.'+Date.now(),raw);localStorage.removeItem(INTRO_KEY);localStorage.setItem(writerKey,writerToken);protectedSave=false;ownsSave=true;}catch{notify('Could not back up the save. Restart cancelled.');return;}
   audio.story?.reset();audio.stopPreviews();
-  story=createOpeningState();runtime=createOpeningRuntime();g.inventory.slots.fill(null);g.inventory.selectedHotbar=0;g.inventory.revision++;g.records.clear();g.last=null;failed=false;busClock=0;busReady=false;incidentClock=0;disturbancePlayed=false;incidentQueued=false;autoInvitationShown=false;respawnGrace=0;wakeStarted=false;wakeDone=false;wakeClock=0;subtitleSeconds=0;titleSeconds=0;introPromptClock=0;introAutoOpened=false;introCompleted=false;staffTalkStarted=false;staffTalkDone=false;staffTalkClock=0;staffTalkLine=0;staffVoiceStarted=false;acceptVoicePlayed=false;acceptVoiceBusy=false;repeatVoiceBusy=false;npcs.reset();fleet.reset();modal=null;explorer.closePanel();safePose();setBusDoor(explorer.world,true);atmo()?.reset();audio.openingAmbience('day');audio.stopOpeningCues();persist(true);
+  worldThreat=resetWorldThreat();story=createOpeningState();runtime=createOpeningRuntime();g.inventory.slots.fill(null);g.inventory.selectedHotbar=0;g.inventory.revision++;g.records.clear();g.last=null;failed=false;busClock=0;busReady=false;incidentClock=0;disturbancePlayed=false;incidentQueued=false;autoInvitationShown=false;respawnGrace=0;wakeStarted=false;wakeDone=false;wakeClock=0;subtitleSeconds=0;titleSeconds=0;introPromptClock=0;introAutoOpened=false;introCompleted=false;staffTalkStarted=false;staffTalkDone=false;staffTalkClock=0;staffTalkLine=0;staffVoiceStarted=false;acceptVoicePlayed=false;acceptVoiceBusy=false;repeatVoiceBusy=false;npcs.reset();fleet.reset();modal=null;explorer.closePanel();safePose();setBusDoor(explorer.world,true);atmo()?.reset();audio.openingAmbience('day');audio.stopOpeningCues();persist(true);
  }
  function beginIncident(announce=true){
   if(runtime.curtain_deployed)return;
+  worldThreat=loadWorldThreat();
+  // A purged campus is terminal for this run; a stale save must not re-seal it.
+  if(worldThreat.phase==='purged')return;
+  worldThreat=sealWorld();
   runtime={...runtime,curtain_deployed:true};
   atmo()?.startIncident();
   audio.openingCue('curtain');
@@ -217,7 +229,7 @@ export function createOpeningExperience(
   if(failed&&!'retry recover restart'.split(' ').includes(action))return;
   if(action==='read_invitation'){transition('read_invitation');close();}
   else if(action==='accept_errand'&&story.stage==='to_b5'){runtime={...runtime,staff_task_received:true};if(transition('accept_errand')){close();playAcceptanceVoices();notify(`You: ${STAFF_DIALOGUE.playerAccept}`);}}
-  else if(action==='read_alert'){transition('read_alert');runtime={...runtime,agent_chat_unlocked:true,go_to_building4_objective_unlocked:true};modal='computer';computerPage='agent';audio.openingCue('unlock');persist(true);}
+  else if(action==='read_alert'){transition('read_alert');runtime={...runtime,agent_chat_unlocked:true,go_to_building4_objective_unlocked:true};worldThreat=loadWorldThreat();if(worldThreat.phase==='clear'){worldThreat=sealWorld();runtime={...runtime,curtain_deployed:true};atmo()?.startIncident();audio.openingAmbience('dark');}modal='computer';computerPage='agent';audio.openingCue('unlock');persist(true);}
   else if(action==='retry')recoverFromCatch(false);
   else if(action==='recover')recoverFromCatch(true);
   else if(action==='restart')restart();
@@ -274,7 +286,7 @@ export function createOpeningExperience(
    if(!runtime.curtain_deployed&&outside)beginIncident();
   }
   if(story.stage==='return_b5'&&g.body.position.distanceTo(new T.Vector3(...O.returnPoint))<3.3){
-   transition('return_b5');runtime={...runtime,curtain_deployed:true};atmo()?.startIncident();audio.openingAmbience('dark');
+   transition('return_b5');worldThreat=sealWorld();runtime={...runtime,curtain_deployed:true};atmo()?.startIncident();audio.openingAmbience('dark');
    notify('The dinner hall is empty. Chairs are overturned. Open the MacBook with C.');
   }
   const alert=story.campus_alert_triggered||runtime.curtain_deployed;
@@ -293,7 +305,7 @@ export function createOpeningExperience(
    persist(true);
   }
  }
- g.scenario={interact,computer,tick,snapshot:()=>({story:structuredClone(story),runtime:structuredClone(runtime),modal,busReady,respawnGraceSeconds:respawnGrace,robotState,warning:robotWarning,goal:objectiveFor(),handoff:story.stage==='complete'?'opening.building4_reached':null,target:target()?.id??null}),spawn:()=>{safePose();fleet.reset();}};
+ g.scenario={interact,computer,tick,snapshot:()=>({story:structuredClone(story),runtime:structuredClone(runtime),worldThreat:cloneWorldThreat(worldThreat),modal,busReady,respawnGraceSeconds:respawnGrace,robotState,warning:robotWarning,goal:objectiveFor(),handoff:story.stage==='complete'?'opening.building4_reached':null,target:target()?.id??null}),spawn:()=>{safePose();fleet.reset();}};
  let loadedAt=0;let raw:string|null=null;
  try{raw=localStorage.getItem(OPENING_SAVE_KEY);const saved=raw?parseOpeningSave(JSON.parse(raw)):null;if(saved){restore(saved);loadedAt=saved.savedAt;saveMessage='Opening checkpoint restored.';}else{g.inventory.slots.fill(null);g.inventory.revision++;safePose();if(raw){protectedSave=true;saveMessage='Unrecognized save protected. Restart to back it up.';}}}catch{g.inventory.slots.fill(null);g.inventory.revision++;safePose();protectedSave=!!raw;storageOkay=false;saveMessage='Save unavailable. A new session is ready.';}
  // One-time replay guard for the new COD-style intro. A legacy bus save may already
@@ -307,7 +319,7 @@ export function createOpeningExperience(
    saveMessage='New cinematic intro. Read the invitation to continue.';
   }
  }catch{}
- applySettings();setBusDoor(explorer.world,story.stage==='bus'&&!busReady);if(runtime.curtain_deployed){atmo()?.startIncident();audio.openingAmbience('dark');}
+ applySettings();setBusDoor(explorer.world,story.stage==='bus'&&!busReady);worldThreat=loadWorldThreat();if(worldThreat.phase==='sealed'){runtime={...runtime,curtain_deployed:true};atmo()?.restoreSealed();audio.openingAmbience('dark');}else if(worldThreat.phase==='purged'){runtime={...runtime,curtain_deployed:false};audio.openingAmbience('day');}
  const humanInteract=()=>{const r=g.interact();if(!r.ok)notify(r.message);},humanComputer=()=>{const r=g.computer('tasks');if(!r.ok)notify(r.message);};explorer.interactions.add(humanInteract);explorer.computers.add(humanComputer);
  document.addEventListener('pointerdown',e=>{if(e.isTrusted)claimSave();},{capture:true,signal:events.signal});document.addEventListener('keydown',e=>{if(e.isTrusted)claimSave();},{capture:true,signal:events.signal});
  window.addEventListener('storage',e=>{if(e.key===writerKey&&e.newValue!==writerToken&&ownsSave){ownsSave=false;explorer.pause('save_owner_changed');saveMessage='Another window owns this save. Click to continue here.';}},{signal:events.signal});
@@ -356,7 +368,14 @@ export function createOpeningExperience(
   // Fixed-step actor simulation happens in tick(); this read never advances it.
   const r=alert?fleet.update(0,g.body.position,active&&story.stage!=='complete',true):fleet.standby(active&&story.stage!=='complete');robotState=r.state;robotWarning=r.warning;
   getWorld()?.update({incident:alert,laptopAcquired:story.laptop_acquired,doorOpen:busReady,invitationRead:story.invitation_read},g.paused?0:dt);
-  atmo()?.update(dt,{incident:alert,curtain:runtime.curtain_deployed,paused:g.paused});
+  // The sky is owned by the persistent world state, not by the chapter flag.
+  // A sealed runtime without a world record is repaired here, and a purged
+  // world record always wins over a stale curtain flag.
+  if(runtime.curtain_deployed&&worldThreat.phase==='clear')worldThreat=sealWorld();
+  const sealed=worldThreat.phase==='sealed';
+  if(sealed&&!runtime.curtain_deployed)runtime={...runtime,curtain_deployed:true};
+  else if(!sealed&&worldThreat.phase==='purged'&&runtime.curtain_deployed)runtime={...runtime,curtain_deployed:false};
+  atmo()?.update(dt,{incident:sealed,curtain:sealed,paused:g.paused});
   if(g.paused&&!wasPaused&&modal!=='staff')audio.stopOpeningCues();wasPaused=g.paused;
   const surface=explorer.world.surface(g.body.position.x,g.body.position.z,g.body.position.y);
   audio.update(explorer.student.gait,g.paused||!active,surface,g.body.position,explorer.camera.position,g.yaw);
@@ -388,5 +407,5 @@ export function createOpeningExperience(
   const enter=document.getElementById('enter-game');if(enter)enter.textContent=story.elapsedSeconds>0?'Continue':'Start opening';
   const status=document.getElementById('session-save');if(status)status.textContent=saveMessage;
  }
- return{update,relocate(){fleet.dispose();fleet=createOpeningFleet(explorer.world);scene.add(fleet.root);setBusDoor(explorer.world,story.stage==='bus'&&!busReady);safePose();},openComputer(page:ComputerPage='tasks'){const r=computer(page);if(!r.ok)notify(r.message);},openSettings(){open('settings');},persist,audio,debug:{openInvitation(){open('invitation');},readInvitation(){if(story.stage==='bus'){transition('read_invitation');if(modal==='invitation')close();}},openStaff(){open('staff');},acceptErrand(){if(story.stage==='to_b5'){runtime={...runtime,staff_task_received:true};if(transition('accept_errand')){if(modal==='staff')close();playAcceptanceVoices();}}},takeLaptop(){return collectLaptop();},setBusReady(){busClock=8;busReady=true;setBusDoor(explorer.world,false);},exitBus(){if(story.stage==='bus'){busClock=8;busReady=true;setBusDoor(explorer.world,false);transition('exit_bus');}},triggerIncident(){beginIncident();},reachB5(){if(story.stage==='return_b5'){transition('return_b5');runtime={...runtime,curtain_deployed:true};atmo()?.startIncident();audio.openingAmbience('dark');}},readAlert(){action('read_alert');},openComputer(page:ComputerPage='tasks'){return computer(page);},arriveB4(){if(story.stage==='to_b4'){transition('reach_b4');open('complete');}},catchNow(){catchPlayer();},recover(){recoverFromCatch(true);},setHearts(n:number){runtime={...runtime,hearts:Math.max(0,Math.min(OPENING_MAX_HEARTS,Math.round(n)))};},state(){return{story:structuredClone(story),runtime:structuredClone(runtime),modal,staffTalkStarted,staffTalkDone,staffTalkLine,staffVoiceStarted,acceptVoicePlayed,repeatVoiceBusy};}},get settings(){return settings;},get saveStatus(){return{message:saveMessage,storageOkay,ownsSave};},get story(){return story;},get runtime(){return runtime;},dispose(){persist(true);disposed=true;events.abort();explorer.interactions.delete(humanInteract);explorer.computers.delete(humanComputer);g.scenario=null;fleet.dispose();npcs.dispose();ui.dispose();voice.dispose();audio.dispose();}};
+ return{update,relocate(){fleet.dispose();fleet=createOpeningFleet(explorer.world);scene.add(fleet.root);setBusDoor(explorer.world,story.stage==='bus'&&!busReady);safePose();},openComputer(page:ComputerPage='tasks'){const r=computer(page);if(!r.ok)notify(r.message);},openSettings(){open('settings');},persist,audio,debug:{openInvitation(){open('invitation');},readInvitation(){if(story.stage==='bus'){transition('read_invitation');if(modal==='invitation')close();}},openStaff(){open('staff');},acceptErrand(){if(story.stage==='to_b5'){runtime={...runtime,staff_task_received:true};if(transition('accept_errand')){if(modal==='staff')close();playAcceptanceVoices();}}},takeLaptop(){return collectLaptop();},setBusReady(){busClock=8;busReady=true;setBusDoor(explorer.world,false);},exitBus(){if(story.stage==='bus'){busClock=8;busReady=true;setBusDoor(explorer.world,false);transition('exit_bus');}},triggerIncident(){beginIncident();},reachB5(){if(story.stage==='return_b5'){transition('return_b5');runtime={...runtime,curtain_deployed:true};atmo()?.startIncident();audio.openingAmbience('dark');}},readAlert(){action('read_alert');},openComputer(page:ComputerPage='tasks'){return computer(page);},arriveB4(){if(story.stage==='to_b4'){transition('reach_b4');open('complete');}},catchNow(){catchPlayer();},recover(){recoverFromCatch(true);},setHearts(n:number){runtime={...runtime,hearts:Math.max(0,Math.min(OPENING_MAX_HEARTS,Math.round(n)))};},state(){return{story:structuredClone(story),runtime:structuredClone(runtime),worldThreat:cloneWorldThreat(worldThreat),modal,staffTalkStarted,staffTalkDone,staffTalkLine,staffVoiceStarted,acceptVoicePlayed,repeatVoiceBusy};},worldThreat(){return cloneWorldThreat(worldThreat);},sealWorld(){return beginIncident();},markLionDefeated(){worldThreat=markLionDefeated();return cloneWorldThreat(worldThreat);},markPowerCut(){worldThreat=markPowerCut();return cloneWorldThreat(worldThreat);},markLocalModelCleared(){worldThreat=markLocalModelCleared();return cloneWorldThreat(worldThreat);},purgeWorld(){const result=tryPurgeWorld();worldThreat=result.threat;if(result.purged){runtime={...runtime,curtain_deployed:false};atmo()?.release();audio.openingAmbience('day');}return result.purged;},resetWorld(){worldThreat=resetWorldThreat();runtime={...runtime,curtain_deployed:false};atmo()?.reset();return cloneWorldThreat(worldThreat);},tickAtmosphere(seconds:number){const sealed=worldThreat.phase==='sealed';for(let i=0;i<Math.max(0,Math.round(seconds*60));i++)atmo()?.update(1/60,{incident:sealed,curtain:sealed,paused:false});}},get settings(){return settings;},get saveStatus(){return{message:saveMessage,storageOkay,ownsSave};},get story(){return story;},get runtime(){return runtime;},dispose(){persist(true);disposed=true;events.abort();explorer.interactions.delete(humanInteract);explorer.computers.delete(humanComputer);g.scenario=null;fleet.dispose();npcs.dispose();ui.dispose();voice.dispose();audio.dispose();}};
 }

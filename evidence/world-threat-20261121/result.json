@@ -1,0 +1,107 @@
+{
+  "ok": true,
+  "errors": [],
+  "sealedOpening": "{\"world\":{\"schemaVersion\":1,\"phase\":\"sealed\",\"sealedAt\":1795250791198,\"purgedAt\":null,\"flags\":{\"lionDefeated\":false,\"powerCut\":false,\"localModelCleared\":false}},\"snap\":{\"phase\":\"disturbance\",\"curtainProgress\":0,\"curtainVisible\":true,\"releasing\":false,\"background\":\"#b5d7e4\",\"fogDensity\":0,\"hemiIntensity\":1.35,\"sunIntensity\":2.5,\"fillIntensity\":0.4,\"redLights\":0,\"domeRadius\":170,\"domeTop\":167},\"stage\":\"complete\",\"curtain\":true,\"save\":\"complete\"}",
+  "reloaded": "{\"world\":{\"schemaVersion\":1,\"phase\":\"sealed\",\"sealedAt\":1795250791198,\"purgedAt\":null,\"flags\":{\"lionDefeated\":false,\"powerCut\":false,\"localModelCleared\":false}},\"snap\":{\"phase\":\"night\",\"curtainProgress\":1,\"curtainVisible\":true,\"releasing\":false,\"background\":\"#05080c\",\"fogDensity\":0.0075,\"hemiIntensity\":0.28,\"sunIntensity\":0.08,\"fillIntensity\":0.2,\"redLights\":6,\"domeRadius\":170,\"domeTop\":167},\"stage\":\"complete\"}",
+  "lionSealed": "{\"world\":{\"schemaVersion\":1,\"phase\":\"sealed\",\"sealedAt\":1795250791198,\"purgedAt\":null,\"flags\":{\"lionDefeated\":false,\"powerCut\":false,\"localModelCleared\":false}},\"atmo\":{\"phase\":\"night\",\"progress\":1,\"sealed\":true}}",
+  "afterLion": {
+    "world": {
+      "schemaVersion": 1,
+      "phase": "sealed",
+      "sealedAt": 1795250791198,
+      "purgedAt": null,
+      "flags": {
+        "lionDefeated": true,
+        "powerCut": false,
+        "localModelCleared": false
+      }
+    },
+    "atmo": {
+      "phase": "night",
+      "progress": 1,
+      "sealed": true
+    }
+  },
+  "afterPower": {
+    "world": {
+      "schemaVersion": 1,
+      "phase": "sealed",
+      "sealedAt": 1795250791198,
+      "purgedAt": null,
+      "flags": {
+        "lionDefeated": true,
+        "powerCut": true,
+        "localModelCleared": false
+      }
+    },
+    "atmo": {
+      "phase": "night",
+      "progress": 1,
+      "sealed": true
+    }
+  },
+  "mid": {
+    "world": {
+      "schemaVersion": 1,
+      "phase": "purged",
+      "sealedAt": 1795250791198,
+      "purgedAt": 1795251430619,
+      "flags": {
+        "lionDefeated": true,
+        "powerCut": true,
+        "localModelCleared": true
+      }
+    },
+    "atmo": {
+      "phase": "disturbance",
+      "progress": 0.9903653846165309,
+      "sealed": false
+    }
+  },
+  "day": {
+    "world": {
+      "schemaVersion": 1,
+      "phase": "purged",
+      "sealedAt": 1795250791198,
+      "purgedAt": 1795251430619,
+      "flags": {
+        "lionDefeated": true,
+        "powerCut": true,
+        "localModelCleared": true
+      }
+    },
+    "atmo": {
+      "phase": "day",
+      "progress": 0,
+      "sealed": false
+    }
+  },
+  "reopened": {
+    "world": {
+      "schemaVersion": 1,
+      "phase": "purged",
+      "sealedAt": 1795250791198,
+      "purgedAt": 1795251430619,
+      "flags": {
+        "lionDefeated": true,
+        "powerCut": true,
+        "localModelCleared": true
+      }
+    },
+    "snap": {
+      "phase": "day",
+      "curtainProgress": 0,
+      "curtainVisible": false,
+      "releasing": false,
+      "background": "#b5d7e4",
+      "fogDensity": 0,
+      "hemiIntensity": 1.35,
+      "sunIntensity": 2.5,
+      "fillIntensity": 0.4,
+      "redLights": 0,
+      "domeRadius": 170,
+      "domeTop": 167
+    },
+    "curtain": false
+  }
+}

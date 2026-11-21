@@ -1,5 +1,6 @@
 import {createOpeningExperience} from './opening/experience';
 import {createOpeningAtmosphere,type OpeningAtmosphere} from './opening/atmosphere';
+import {loadWorldThreat,sealWorld} from './gameplay/worldThreat';
 const route=new URLSearchParams(location.search).get('experience');
 const sportsMode=route==='sports-hall';
 const openingMode=route!=='survey'&&!sportsMode;
@@ -112,7 +113,7 @@ let nightRequested=false;
 el('night-toggle').onclick=()=>{if(loungeView){notify('The lounge uses indoor lighting. Return to campus to switch night mode.');return;}nightRequested=!nightRequested;lighting.set(nightRequested,imported||asset.root);el('night-toggle').textContent=openingMode?(nightRequested?'Day mode':'Night mode'):(nightRequested?'Switch to day':'Switch to night');};
 function showLounge(){mode(false);loungeView=true;sync();lighting.set(false,asset.root);viewer.view('selected',lounge);el('mode-label').textContent='Building 5 · 4F stepped lounge / standalone section · estimated dimensions';stats();notify('Building and floor confirmed. This is a standalone reference asset; use Return to outdoor exploration to go back to campus.');}
 el('lounge-toggle').onclick=()=>showLounge();
-index();stats();mode(true);if(openingMode){atmosphere=createOpeningAtmosphere(viewer.scene,viewer.renderer,viewer.lights);if((experience as {runtime?:{curtain_deployed:boolean}}).runtime?.curtain_deployed)atmosphere.startIncident();document.getElementById('night-toggle')?.style.setProperty('display','none');}if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign(window,{__CAMPUS:{viewer,explorer,experience,door,crowd,openingDebug:(experience as {debug?:unknown}).debug,mode,showLounge,lighting,atmosphere,lounge,get asset(){return asset;},get imported(){return imported;},stats,select,setView,rebuild,exportTarget,perf:()=>viewer.perf(),memory:()=>debugMemory(),resources:()=>resourceReport(viewer.scene),deferred:()=>deferredTextureStats(),ready:true}});
+index();stats();mode(true);if(openingMode){atmosphere=createOpeningAtmosphere(viewer.scene,viewer.renderer,viewer.lights);let threat=loadWorldThreat();if(threat.phase==='clear'&&(experience as {runtime?:{curtain_deployed:boolean}}).runtime?.curtain_deployed)threat=sealWorld();if(threat.phase==='sealed')atmosphere.restoreSealed();document.getElementById('night-toggle')?.style.setProperty('display','none');}if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign(window,{__CAMPUS:{viewer,explorer,experience,door,crowd,openingDebug:(experience as {debug?:unknown}).debug,mode,showLounge,lighting,atmosphere,lounge,worldThreat:()=>loadWorldThreat(),get asset(){return asset;},get imported(){return imported;},stats,select,setView,rebuild,exportTarget,perf:()=>viewer.perf(),memory:()=>debugMemory(),resources:()=>resourceReport(viewer.scene),deferred:()=>deferredTextureStats(),ready:true}});
 
 el('enter-game').onclick=()=>explorer.enter();
 el('takeover').onclick=()=>explorer.takeover();

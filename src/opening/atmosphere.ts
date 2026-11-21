@@ -31,6 +31,8 @@ export interface OpeningAtmosphereSnapshot{
  phase:OpeningAtmospherePhase;
  curtainProgress:number;
  curtainVisible:boolean;
+ /** True while an explicit purge plays the dome back up into the sky. */
+ releasing:boolean;
  background:string;
  fogDensity:number;
  hemiIntensity:number;
@@ -196,6 +198,7 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
  let progress=0;
  let target=0;
  let curtain=false;
+ let releasing=false;
  let clock=0;
  let pulse=0;
  let lastSnapshot:OpeningAtmosphereSnapshot|null=null;
@@ -237,26 +240,59 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
 
  /** Called by the experience when the laptop pickup starts the takeover. */
  function startIncident(){
-  target=1;curtain=true;
+  target=1;curtain=true;releasing=false;
   root.visible=true;
   if(phase==='day')phase='disturbance';
  }
 
+ /**
+  * Restore an already-sealed campus without replaying the descent.
+  * Used on page load and when the lion-boss route opens after a sealed opening.
+  */
+ function restoreSealed(){
+  progress=1;target=1;curtain=true;releasing=false;phase='night';
+  root.visible=true;curtainRoot.position.y=dropFor(1);
+  apply(1,0);
+ }
+
+ /**
+  * Purge the campus: play the dome back up into the sky and return the scene to
+  * daylight. Only an explicit endgame transition may call this; an ordinary
+  * false/no-seal frame no longer resets the atmosphere by itself.
+  */
+ function release(){
+  if(progress<=0&&phase==='day'){releasing=false;return;}
+  target=0;curtain=false;releasing=true;
+  if(progress<1&&phase!=='disturbance')phase='disturbance';
+ }
+
  function update(dt:number,state:OpeningAtmosphereState){
-  if(state.incident||state.curtain)startIncident();
-  if(!state.incident&&!state.curtain&&phase!=='day'){
-   // A restart returns the whole scene to its opening afternoon.
-   progress=0;target=0;curtain=false;phase='day';curtainRoot.position.y=dropFor(0);root.visible=false;
-   apply(0,0);return;
+  const wantsSeal=state.incident||state.curtain;
+  if(wantsSeal){
+   // A new seal cancels an in-flight purge.
+   releasing=false;
+   startIncident();
+  }else if(progress>0&&!releasing){
+   release();
   }
-  if(dt>0&&!state.paused&&progress<target)progress=Math.min(target,progress+dt/DOME_SECONDS);
-  if(progress>=1&&phase!=='night')phase='night';
-  if(progress>0&&progress<1&&phase!=='disturbance')phase='disturbance';
+  if(releasing){
+   if(dt>0&&!state.paused&&progress>0)progress=Math.max(0,progress-dt/DOME_SECONDS);
+   if(progress>0&&progress<1&&phase!=='disturbance')phase='disturbance';
+   if(progress<=0){
+    progress=0;target=0;curtain=false;releasing=false;phase='day';
+    root.visible=false;curtainRoot.position.y=dropFor(0);
+    apply(0,0);return;
+   }
+  }else{
+   if(dt>0&&!state.paused&&progress<target)progress=Math.min(target,progress+dt/DOME_SECONDS);
+   if(progress>=1&&phase!=='night')phase='night';
+   if(progress>0&&progress<1&&phase!=='disturbance')phase='disturbance';
+  }
   apply(progress,state.paused?0:dt);
  }
 
  function reset(){
-  progress=0;target=0;curtain=false;phase='day';clock=0;pulse=0;
+  progress=0;target=0;curtain=false;releasing=false;phase='day';clock=0;pulse=0;
   root.visible=false;curtainRoot.position.y=dropFor(0);
   scene.background=baseBackground.clone();
   scene.environmentIntensity=baseEnvironment;
@@ -272,7 +308,7 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
 
  function snapshot():OpeningAtmosphereSnapshot{
   const s:OpeningAtmosphereSnapshot={
-   phase,curtainProgress:Math.round(progress*1000)/1000,curtainVisible:root.visible,
+   phase,curtainProgress:Math.round(progress*1000)/1000,curtainVisible:root.visible,releasing,
    background:'#'+new T.Color(scene.background instanceof T.Color?scene.background:DAY_BG).getHexString(),
    fogDensity:scene.fog instanceof T.FogExp2?scene.fog.density:0,
    hemiIntensity:Math.round(lights.hemi.intensity*100)/100,
@@ -290,10 +326,13 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
   root,
   update,
   startIncident,
+  restoreSealed,
+  release,
   reset,
   snapshot,
   get phase(){return phase;},
   get curtainProgress(){return progress;},
+  get releasing(){return releasing;},
   dispose(){
    root.traverse(o=>{
     const renderable=o as T.Mesh;

@@ -68,7 +68,34 @@ const frozen=atmosphere.snapshot();
 for(let i=0;i<120;i++)atmosphere.update(1,{incident:true,curtain:true,paused:true});
 assert.equal(atmosphere.snapshot().curtainProgress,frozen.curtainProgress,'pausing freezes deployment');
 
-// Restart returns the whole scene to the opening afternoon.
+// Re-entering a sealed campus restores the dome fully deployed, without replaying
+// the descent the player already saw in the opening.
+atmosphere.restoreSealed();
+const restored=atmosphere.snapshot();
+assert.equal(restored.phase,'night');
+assert.equal(restored.curtainProgress,1);
+assert.equal(restored.curtainVisible,true);
+assert.equal(restored.releasing,false);
+
+// The explicit purge plays the dome back up and returns daylight.
+atmosphere.release();
+assert.equal(atmosphere.snapshot().releasing,true,'release is a deliberate transition');
+for(let i=0;i<60;i++)atmosphere.update(1/60,{incident:false,curtain:false,paused:false});
+const releasing=atmosphere.snapshot();
+assert.ok(releasing.curtainProgress>0&&releasing.curtainProgress<1,`release is animated (${releasing.curtainProgress})`);
+const frozenRelease=releasing.curtainProgress;
+atmosphere.update(1,{incident:false,curtain:false,paused:true});
+assert.equal(atmosphere.snapshot().curtainProgress,frozenRelease,'pausing freezes the purge');
+for(let i=0;i<400;i++)atmosphere.update(1/60,{incident:false,curtain:false,paused:false});
+const cleared=atmosphere.snapshot();
+assert.equal(cleared.phase,'day');
+assert.equal(cleared.curtainProgress,0);
+assert.equal(cleared.curtainVisible,false);
+assert.equal(cleared.releasing,false);
+assert.ok(Math.abs(cleared.hemiIntensity-day.hemiIntensity)<.01,'the purge restores the day light');
+assert.ok(Math.abs(renderer.toneMappingExposure-1)<.01,'the purge restores tone mapping');
+
+// Restart returns the whole scene to the opening afternoon immediately.
 atmosphere.reset();
 const reset=atmosphere.snapshot();
 assert.equal(reset.phase,'day');
@@ -77,4 +104,4 @@ assert.equal(reset.redLights,0);
 assert.ok(Math.abs(reset.hemiIntensity-day.hemiIntensity)<.01,'reset restores the day light');
 assert.ok(Math.abs(renderer.toneMappingExposure-1)<.01,'reset restores tone mapping');
 assert.doesNotThrow(()=>atmosphere.dispose(),'dispose is safe');
-console.log('PASS atmosphere: animated curtain deployment, night lighting, red beacons, pause freeze and day reset');
+console.log('PASS atmosphere: hemispherical dome clears every roof, animated deployment, instant sealed restore, animated purge to daylight, red beacons and pause freeze');

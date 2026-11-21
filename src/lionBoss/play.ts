@@ -21,6 +21,8 @@ import {createBossMacBook} from './macbook';
 import {DEFAULT_RANGE,SKILL_SPECS} from './skillCatalog';
 import {attachLawnAgent} from './agentControl';
 import {hasCorePowerCut,recordCorePowerCut,sportsRescueLink} from './mission';
+import {createOpeningAtmosphere} from '../opening/atmosphere';
+import {loadWorldThreat,markLionDefeated,markPowerCut,markLocalModelCleared,resetWorldThreat,tryPurgeWorld,type WorldThreat} from '../gameplay/worldThreat';
 import {BOSS_SKILL_KEYS,KEYS} from '../exploration/config';
 import type {BossAction} from '../agent/protocol';
 import type {Outcome} from '../gameplay/survey';
@@ -77,6 +79,24 @@ const viewer = createSiteViewer(view,() => performance.now() < redrawUntil,1.4);
 const buildings = cloneBuildings();
 const campus = buildSite(buildings, SITE);
 viewer.scene.add(campus.root);
+// The campus sky is world state, not a chapter flag: entering the lawn after a
+// sealed opening must keep the same dome until the campus is actually purged.
+let worldThreat:WorldThreat=loadWorldThreat();
+const atmosphere=createOpeningAtmosphere(viewer.scene,viewer.renderer,viewer.lights);
+let sealed=worldThreat.phase==='sealed';
+if(sealed)atmosphere.restoreSealed();
+viewer.renderer.shadowMap.needsUpdate=true;
+function syncWorldThreat(){
+ worldThreat=loadWorldThreat();
+ const next=worldThreat.phase==='sealed';
+ if(next!==sealed){
+  sealed=next;
+  if(sealed)atmosphere.restoreSealed();
+  else atmosphere.release();
+ }
+ viewer.renderer.shadowMap.needsUpdate=true;
+ redrawUntil=Math.max(redrawUntil,performance.now()+1800);
+}
 const scenery = batchLawnScenery(campus.root);
 void prepareModelTextures(campus.root).then(() => { redrawUntil=Math.max(redrawUntil,performance.now()+100); }).catch(() => {});
 viewer.renderer.shadowMap.autoUpdate=false;
@@ -147,6 +167,9 @@ try {
     if (Number.isSafeInteger(save.catches) && save.catches >= 0) runtime = {...runtime,catches:save.catches};
   }
 } catch { /* Storage is optional for one session. */ }
+// A completed lion fight is one of the three purge facts, never the purge itself.
+if(restored===3){markLionDefeated();if(hasCorePowerCut(mac.instanceId))markPowerCut();tryPurgeWorld();}
+syncWorldThreat();
 const combat = createCombat(restored);
 const visuals = createBossScene(campus.root,explorer.world,viewer.scene);
 const state = combat.state;
@@ -350,7 +373,14 @@ function simulate(dt:number) {
     holding=false;sound.play('complete');
     if(state.repaired===3){
       leg='finished';playing=false;shutdownUntil=performance.now()+1750;redrawUntil=performance.now()+3500;explorer.pause('boss_complete');
-      if(recordCorePowerCut(mac.instanceId,3))game.event('ai_core_power_cut','AI core power is off',{next:'sports-hall'});
+      // The lion shutdown and the core power cut are two of the three endgame
+      // facts. The local-model wipe is a later chapter; the sky stays sealed.
+      const coreCut=recordCorePowerCut(mac.instanceId,3);
+      markLionDefeated();
+      if(coreCut||hasCorePowerCut(mac.instanceId))markPowerCut();
+      tryPurgeWorld();
+      syncWorldThreat();
+      if(coreCut)game.event('ai_core_power_cut','AI core power is off',{next:'sports-hall'});
     }
     feedback(idx===2?'Emergency Shutdown executed':'Released '+NODES[idx].name+' · Alert raised');saveProgress();
   }else if(before!==state.phase&&(state.phase==='chargeWarn'||state.phase==='swipeWarn')){
@@ -505,8 +535,12 @@ place(leg==='arrival'?entrance:SAFE);
 if(leg==='prepare')game.inventory.equipItem(macId);
 if(needsRetry)blackoutUntil=performance.now()+1000;
 viewer.beforeRender.add(dt => {
-  if (!game.paused) redrawUntil=performance.now()+1800;
+  // The barrier descent/purge must keep drawing even when the fight is paused.
+  const sealAnimating=atmosphere.releasing||(atmosphere.curtainProgress>0&&atmosphere.curtainProgress<1);
+  if (!game.paused || sealAnimating) redrawUntil=performance.now()+1800;
   if (savedRevision !== game.inventory.revision || savedView !== game.view) redrawUntil=performance.now()+150;
+  // The purge is a cinematic: it must keep moving while the fight is paused.
+  atmosphere.update(dt,{incident:sealed,curtain:sealed,paused:game.paused&&!sealAnimating});
   if(needsRetry&&performance.now()>=blackoutUntil)resumeAfterCapture();
   if(leg==='finished'&&shutdownUntil>performance.now()){
     const yaw=Math.atan2(game.body.position.x-state.lion.x,game.body.position.z-state.lion.z);
@@ -524,12 +558,22 @@ viewer.beforeRender.add(dt => {
   refresh();
 });
 if (import.meta.env.DEV || import.meta.env.MODE === 'review') {
-  Object.assign(window,{__LION_BOSS:{snapshot:() => game.scenario?.snapshot()}});
+  Object.assign(window,{__LION_BOSS:{
+    snapshot:() => game.scenario?.snapshot(),
+    worldThreat:() => loadWorldThreat(),
+    atmosphere:() => ({phase:atmosphere.phase,progress:atmosphere.curtainProgress,sealed}),
+    markLionDefeated(){markLionDefeated();syncWorldThreat();},
+    markPowerCut(){markPowerCut();syncWorldThreat();},
+    markLocalModelCleared(){markLocalModelCleared();syncWorldThreat();},
+    purgeWorld(){const purge=tryPurgeWorld();syncWorldThreat();return purge.purged;},
+    resetWorld(){resetWorldThreat();syncWorldThreat();},
+    tick(seconds:number){for(let i=0;i<Math.max(0,Math.round(seconds*60));i++)atmosphere.update(1/60,{incident:sealed,curtain:sealed,paused:false});},
+  }});
 }
 refresh();
 window.addEventListener('pagehide',event => {
   saveProgress();explorer.pause('page_hidden');
   if (event.persisted) return;
-  events.abort(); agent.dispose(); observer.disconnect(); workbench.dispose(); visuals.dispose();
+  events.abort(); agent.dispose(); observer.disconnect(); workbench.dispose(); visuals.dispose(); atmosphere.dispose();
   vitals.dispose(); explorer.dispose(); sound.dispose(); scenery.dispose(); disposeAsset(campus.root); viewer.dispose();
 });
