@@ -1,17 +1,22 @@
 import * as T from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+import {getGraphicsQuality,graphicsPixelRatio} from './graphicsQuality';
 export type CampusView='iso'|'north'|'south'|'top'|'plaza'|'selected';
-export function createSiteViewer(host:HTMLElement, renderWhen:()=>boolean=()=>true){
+export function createSiteViewer(host:HTMLElement, renderWhen:()=>boolean=()=>true,maxRatio=2){
  let needsFrame=true;
- const renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:false});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;host.append(renderer.domElement);renderer.domElement.setAttribute('aria-label','HKU 上海校园三维预览；拖动旋转、滚轮缩放、右键平移');
+ const quality=getGraphicsQuality();
+ const renderer=new T.WebGLRenderer({antialias:quality!=='low',alpha:true,preserveDrawingBuffer:false});renderer.shadowMap.enabled=quality!=='low';renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;host.append(renderer.domElement);renderer.domElement.setAttribute('aria-label','HKU 上海校园三维预览；拖动旋转、滚轮缩放、右键平移');
  const scene=new T.Scene();scene.name='Preview_Scene';scene.background=new T.Color(0xb5d7e4);let env:T.WebGLRenderTarget;
  function refreshEnvironment(){const pmrem=new T.PMREMGenerator(renderer),room=new RoomEnvironment();try{const next=pmrem.fromScene(room,.04);scene.environment=next.texture;env?.dispose();env=next;}finally{room.dispose();pmrem.dispose();}}
  refreshEnvironment();scene.environmentIntensity=.25;
  renderer.domElement.addEventListener('webglcontextrestored',refreshEnvironment);
  const lights=new T.Group();lights.name='Preview_Lights';scene.add(lights);const hemi=new T.HemisphereLight(0xe5f3ff,0x6c8157,1.35);lights.add(hemi);const sun=new T.DirectionalLight(0xffefd6,2.5);sun.position.set(-160,240,150);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-200,right:200,top:210,bottom:-210,far:650});sun.shadow.normalBias=.12;sun.shadow.bias=-.00012;lights.add(sun);const fill=new T.DirectionalLight(0xc1d8e0,.4);fill.position.set(160,100,-130);lights.add(fill);
  const camera=new T.OrthographicCamera(-200,200,200,-200,.1,2000);camera.name='Preview_Camera';const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.08;controls.minZoom=.25;controls.maxZoom=14;controls.maxPolarAngle=Math.PI*.495;let activeCamera:T.Camera=camera; const beforeRender=new Set<(dt:number)=>void>(); let viewHeight=330;let current:CampusView='iso';let frameSpan=330;
- function resize(){const r=host.getBoundingClientRect();if(!r.width||!r.height)return;needsFrame=true;renderer.setSize(r.width,r.height);const aspect=r.width/r.height;viewHeight=Math.max(frameSpan,frameSpan/Math.max(aspect,.1));camera.left=-viewHeight*aspect/2;camera.right=viewHeight*aspect/2;camera.top=viewHeight/2;camera.bottom=-viewHeight/2;camera.updateProjectionMatrix();}
+ function resize(){const r=host.getBoundingClientRect();if(!r.width||!r.height)return;needsFrame=true;
+  const ratio=graphicsPixelRatio(quality,r.width,r.height,devicePixelRatio,maxRatio);
+  if(renderer.getPixelRatio()!==ratio)renderer.setPixelRatio(ratio);
+  renderer.setSize(r.width,r.height);const aspect=r.width/r.height;viewHeight=Math.max(frameSpan,frameSpan/Math.max(aspect,.1));camera.left=-viewHeight*aspect/2;camera.right=viewHeight*aspect/2;camera.top=viewHeight/2;camera.bottom=-viewHeight/2;camera.updateProjectionMatrix();}
  function view(v:CampusView='iso',selected?:T.Object3D){const damping=controls.enableDamping;controls.enableDamping=false;controls.update();current=v;camera.zoom=1;camera.up.set(0,1,0);const target=new T.Vector3(0,20,-12);let offset=new T.Vector3(250,400,300);frameSpan=310;
  if(v==='north')offset.set(-220,170,-310);if(v==='south')offset.set(0,130,370);if(v==='top'){offset.set(0,500,.01);target.set(0,0,-15);frameSpan=282;}
  if(v==='plaza'){target.set(0,-1,25);offset.set(0,100,65);frameSpan=70;}

@@ -130,7 +130,7 @@ export const OPENING_UI = {
       ['Handoff point', 'Building 4 main entrance'],
       ['Progress', 'Opening complete'],
     ] as [string, string][],
-    note: 'The opening ends here. Later chapters continue inside Building 4.',
+    note: 'Continue to the sports hall to rescue the students, or take your MacBook straight to the lawn.',
     close: 'Close',
   },
   settings: {

@@ -50,6 +50,7 @@ function setting(key:string,fallback:string):string{
  try{const value=store?.getItem(key);return value===null||value===undefined?fallback:value;}catch{return fallback;}
 }
 function config(){
+ if(import.meta.env?.MODE==='playtest')return{endpoint:'',model:'built-in',key:'',offline:true};
  const endpoint=setting('hku.opening.agent.endpoint',DEFAULT_ENDPOINT).trim();
  const model=setting('hku.opening.agent.model',DEFAULT_MODEL).trim();
  const key=setting('hku.opening.agent.key','').trim();

@@ -36,20 +36,19 @@ document.querySelector('#app')!.innerHTML = `
       <p id="boss-slots"></p><details id="boss-bindings"><summary>技能按键</summary>
         <label>短时麻痹 <select id="boss-stun-key"></select></label>
         <label>助手牵制 <select id="boss-lure-key"></select></label></details>
-      <a id="boss-home" href="./">返回校园开场</a></div></section>
+      <nav class="boss-links" aria-label="其他关卡"><a href="?experience=levels">选择关卡</a><a id="boss-home" href="?experience=opening">返回校园开场</a></nav></div></section>
     <div id="boss-workbench-host"></div>
   </main>`;
 const element = (id:string) => document.getElementById('boss-'+id)!;
 const button = (id:string) => element(id) as HTMLButtonElement;
 const view = element('view');
 let redrawUntil = performance.now()+1800;
-const viewer = createSiteViewer(view,() => performance.now() < redrawUntil);
+const viewer = createSiteViewer(view,() => performance.now() < redrawUntil,1.4);
 const buildings = cloneBuildings();
 const campus = buildSite(buildings, SITE);
 viewer.scene.add(campus.root);
 const scenery = batchLawnScenery(campus.root);
 void prepareModelTextures(campus.root).then(() => { redrawUntil=Math.max(redrawUntil,performance.now()+100); }).catch(() => {});
-viewer.renderer.setPixelRatio(Math.min(devicePixelRatio, 1.4));
 viewer.renderer.shadowMap.autoUpdate=false;
 viewer.renderer.shadowMap.needsUpdate=true;
 viewer.renderer.domElement.addEventListener('webglcontextrestored',() => {

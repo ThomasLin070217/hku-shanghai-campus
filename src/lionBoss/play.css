@@ -17,6 +17,7 @@
 .boss-card p {margin:0 0 20px;line-height:1.8;color:#d9e8d9}
 .boss-card #boss-slots {font-size:12px;color:#b4cfbd;border-top:1px solid #b3cebe44;margin:16px 0 9px;padding-top:12px}
 .boss-card a {color:#b8ccbf;font-size:12px}
+.boss-links {display:flex;gap:16px}
 #boss-bindings {font-size:12px;margin:0 0 9px;color:#c2d7c8}
 #boss-bindings summary {cursor:pointer;width:fit-content}
 #boss-bindings label {display:inline-block;margin:5px 12px 0 0}

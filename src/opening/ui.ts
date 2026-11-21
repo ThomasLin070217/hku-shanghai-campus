@@ -461,7 +461,10 @@ export function createOpeningUI(
     const lawn = makeButton('Play L001 lawn encounter', 'secondary', () => {
       location.assign('?experience=lion-boss');
     });
-    shell.append(actionRow(close, lawn));
+    const rescue = makeButton('Rescue the sports hall students', 'secondary', () => {
+      location.assign('?experience=sports-hall');
+    });
+    shell.append(actionRow(close, rescue, lawn));
     return shell;
   }
 
