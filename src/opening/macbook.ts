@@ -25,7 +25,7 @@ export interface MacOptions {
   mission?:MountedApp&{title:string;location:string;mapLegend:string;terminal:()=>string[]};
   /** Plain-text lines for the Terminal window. Falls back to the mission shell. */
   terminal?:()=>string[];
-  /** Review-only apps (Vibe Console / Robotics). The story entries keep these off the Dock. */
+  /** Lists Vibe Console / Robotics in Finder > Applications (review fixture). The opening story Mac mounts neither app. */
   devTools?:boolean;
   /** Window to open when the shell first appears. Story Macs default to Finder. */
   startApp?:WindowApp;
@@ -118,7 +118,9 @@ export function createMacBookExperience(options:MacOptions){
   desktopIcon('Mission Logs','logs',()=>showApp('logs'));
 
   const launchers=new Map<WindowApp,HTMLButtonElement>();
-  for(const app of dockApps){
+  // Callers that mount Vibe Console / Robotics (the L001 lawn Mac) get Dock launchers for them.
+  const mounted:WindowApp[]=[...(options.mission?['mission' as const]:[]),...(options.robotics?['robotics' as const]:[])];
+  for(const app of [...dockApps,...mounted]){
     const b=action('',()=>showApp(app),'mac-dock-item');
     b.dataset.app=app;b.dataset.state='closed';b.title=names[app];b.setAttribute('aria-label',names[app]);
     const icon=glyph(app as Glyph);icon.classList.add('mac-dock-icon');
@@ -354,12 +356,13 @@ export function createMacBookExperience(options:MacOptions){
   function permissionBody(app:'robotics'|'mission'){
     const container=el('div','mac-permission');appContent.set(app,{root:container,key:''});return container;
   }
-  function refreshPermissions(app:'robotics'|'mission'){
+  function refreshPermissions(app:'robotics'|'mission',reopened=false){
     const entry=appContent.get(app);if(!entry)return;
     const value=access(),extension=app==='robotics'?options.robotics:options.mission;
     const devices=app==='robotics'&&!extension?(options.devices?.()??[]):[];
     const key=value+'|'+(extension?'adapter':'')+'|'+JSON.stringify(devices);
-    if(key===entry.key)return;
+    // A reopened window keeps its body; re-activate so the mounted app refreshes its live state.
+    if(key===entry.key){if(reopened&&value!=='locked'&&extension)extension.activate();return;}
     entry.key=key;
     if(value!=='locked'&&extension){entry.root.replaceChildren(extension.body);extension.activate();return;}
     entry.root.replaceChildren();
@@ -411,7 +414,7 @@ export function createMacBookExperience(options:MacOptions){
     manager.open(target,windowTitle(target),()=>buildBody(target),()=>{
       if(target==='finder'&&finderHistoryIndex<0){finderGo('recents');}
       if(target==='logs')options.logs?.activate();
-      if(target==='mission'||target==='robotics'){refreshPermissions(target);}
+      if(target==='mission'||target==='robotics'){refreshPermissions(target,true);}
       if(target==='map')lastMap='';
     });
     if(target==='logs')renderLogs();

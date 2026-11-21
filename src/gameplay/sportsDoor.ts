@@ -6,6 +6,7 @@ import {SPORTS_DOOR,sportsDoorWorld} from '../model/sportsDoor';
 import {SPORTS_HALL_PUZZLE,checkCode,checkPassword} from './sudokuPuzzle';
 import {CampusAudio} from './audio';
 import {DEFAULT_SETTINGS} from './save';
+import {hasCorePowerCut} from '../lionBoss/mission';
 import './sportsDoor.css';
 
 /** A short, replayable rescue. Each visit begins at the east door and has no save writer. */
@@ -15,11 +16,12 @@ export function createSportsRescueExperience(explorer:ReturnType<typeof createEx
  const pause=document.querySelector<HTMLElement>('.pause-card')!;
  const start=pause.querySelector<HTMLButtonElement>('#enter-game')!;
  const next=document.createElement('a');
- next.href='?experience=lion-boss';next.textContent='下一关 · 草坪 L001 →';next.style.textDecoration='underline';next.hidden=true;
+ next.href='?experience=levels';next.textContent='返回选关';next.style.textDecoration='underline';next.hidden=true;
  start.before(next);
  const brief=pause.querySelector('p')!;
  pause.querySelector('h2')!.textContent='体育馆营救';
- brief.textContent='100 名学生被困在体育馆。你正面对东门，开始后按 F 检查门锁，补全数独，再输入四位密码。';
+ const restored=hasCorePowerCut(new URLSearchParams(location.search).get('device')??'');
+ brief.textContent=(restored?'核心已断电，体育馆救援通道恢复。':'')+'100 名学生被困在体育馆。你正面对东门，开始后按 F 检查门锁，补全数独，再输入四位密码。';
  start.textContent='开始营救';
  pause.querySelector<HTMLElement>('#session-save')!.textContent='每次进入本关都会从东门重新开始。';
  pause.querySelector<HTMLElement>('#experience-settings')!.hidden=true;
@@ -48,7 +50,7 @@ export function createSportsRescueExperience(explorer:ReturnType<typeof createEx
    if(!game.paused&&!started){started=true;start.textContent='继续营救';}
    if(game.doors[SPORTS_DOOR.id]&&!rescued){
     rescued=true;next.hidden=false;start.textContent='进入体育馆';
-    brief.textContent='东门已开启，100 名学生获救。你可以进馆看看，或前往草坪处理 L001。';
+    brief.textContent='东门已开启，100 名学生获救。你可以进馆看看，或返回选关。';
    }
    const p=game.body.position;
    audio.update(explorer.student.gait,game.paused||!explorer.enabled,explorer.world.surface(p.x,p.z,p.y),p,explorer.camera.position,game.yaw);
@@ -73,7 +75,7 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
  document.body.append(banner);
  if(options.standalone){
   const actions=document.createElement('p');
-  const next=document.createElement('a');next.href='?experience=lion-boss';next.textContent='下一关 · 前往草坪调查 L001 →';next.style.textDecoration='underline';
+  const next=document.createElement('a');next.href='?experience=levels';next.textContent='返回选关';next.style.textDecoration='underline';
   const dismiss=document.createElement('button');dismiss.type='button';dismiss.textContent='留在体育馆';
   actions.append(next,'　',dismiss);banner.querySelector('small')!.replaceWith(actions);
   next.addEventListener('click',event=>event.stopPropagation());

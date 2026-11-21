@@ -98,7 +98,11 @@ Gemini API 对调用来源有地区限制。在中国大陆、香港等不支持
 
 ### 1.5 LiteLLM 代理
 
-LiteLLM 用 OpenAI API 格式代理 100+ 模型供应商。
+LiteLLM 用 OpenAI API 格式代理 100+ 模型供应商。拿到访问信息：
+
+1. 打开邀请邮件里的 **Accept Invitation**，用 `u3660124@connect.hku.hk` 注册并接受邀请。
+2. 登录后在 LiteLLM 页面创建 **Virtual Key**（虚拟密钥）。
+3. 记下代理地址（proxy base URL）。地址形如 `https://<host>`，也可以是 `https://<host>/v1`。
 
 | 变量 | 含义 | 示例 |
 | --- | --- | --- |
@@ -106,6 +110,8 @@ LiteLLM 用 OpenAI API 格式代理 100+ 模型供应商。
 | `LITELLM_API_KEY` | 虚拟密钥 | `sk-...` |
 | `LITELLM_MODEL` | 默认模型名，须与 `/v1/models` 返回一致 | `gpt-4o-mini` |
 | `LITELLM_TIMEOUT_MS` | 可选，请求超时（毫秒） | `60000` |
+
+本机无需认证的 OpenAI 兼容服务（llama.cpp、Ollama 的 `/v1` 等）可把 `LITELLM_BASE_URL` 指向环回地址（`127.0.0.1` / `localhost`），`LITELLM_API_KEY` 留空，再设置 `LITELLM_MODEL`。
 
 ```sh
 npm run llm -- --provider litellm --models
@@ -129,6 +135,9 @@ node scripts/llm-bridge.mjs   # 或 npm run llm:bridge
 - 密钥只在桥进程内读取 `.env`，日志不打印提示词、密钥或完整响应；桥没启动或没有密钥时，游戏回退到内置校园规则。
 - 桥是可选进程：`scripts/start.mjs` 里标记为非 fatal，桥退出不会停掉 Vite 或 agent server。
 - 需要代理时仍用 `LLM_PROXY`；桥会像 CLI 一样用 `NODE_USE_ENV_PROXY=1` 重启一次（Node 24+）。DeepSeek 直连时通常不需要代理。
+- 草坪 L001 的 Vibe Console 与岚共用同一套连接配置（`src/opening/modelTransport.ts`）。技能编译会额外发送 `response_format`（JSON Schema）和 `temperature: 0`；桥把两者转给 provider，provider 以 400/415/422 拒绝 `response_format` 时改用普通文本重试一次，再由游戏规则校验 JSON。页面关闭或取消请求时，桥会中止上游调用。
+- 已发布的静态试玩（`build:playtest`）默认离线，Vibe Console 可手选三个离线预设。团队若部署了自己的同源模型代理，可在构建时设置 `VITE_CAMPUS_MODEL_ENDPOINT` 与 `VITE_CAMPUS_MODEL_NAME`；这两个前端字段只适合公开的路径和模型名。
+- 旧的 Vite 开发服务器同源路由 `/api/campus-model` 已由本机桥取代；只跑 `npm run dev` 时请另开 `npm run llm:bridge`。
 
 ## 2. 命令行
 
@@ -158,7 +167,7 @@ const response = await chat([
 console.log(response.choices[0].message.content);
 ```
 
-`chat(messages, { model, temperature, maxTokens, provider })` 接受 OpenAI 消息数组，三个 provider 都返回 OpenAI 形状；`models()` 列出模型；`configured()` 判断密钥是否就绪；`activeProvider()` 返回默认 provider。游戏里那位助手（岚）的系统提示词与离线话术由 `src/opening/persona.ts` 提供，不要在调用处另写一份人设。
+`chat(messages, { model, temperature, maxTokens, provider, responseFormat, signal })` 接受 OpenAI 消息数组，三个 provider 都返回 OpenAI 形状；`models()` 列出模型；`configured()` 判断密钥是否就绪；`activeProvider()` 返回默认 provider。游戏里那位助手（岚）的系统提示词与离线话术由 `src/opening/persona.ts` 提供，不要在调用处另写一份人设。
 
 ## 4. 离线检查
 
@@ -172,7 +181,7 @@ npm run check:opening-assistant
 ## 5. 边界
 
 - 客户端只做出站调用，不监听端口，不扩展现有 `scripts/agent-server.mjs` 的 `/act` 权限模型，也不新增文件写入或任意代码执行入口。
-- 密钥不落盘（除本地 `.env`）、不提交、不回显；错误只截取响应体片段。
+- 密钥不落盘（除本地 `.env`）、不提交、不回显；错误只截取响应体片段，HTTP 错误带状态码。
 - 场景几何修改仍走「源码参数 + 重新生成 + 视觉/碰撞核对」流程，LLM 不直接改模型。
 - Gemini 的地区限制由 Google 侧判定，本项目只如实上报，不做绕过。
 - DeepSeek 同样只做出站调用；密钥只在本机 `.env` 与桥进程内，浏览器、构建产物、日志和错误信息里都不出现。

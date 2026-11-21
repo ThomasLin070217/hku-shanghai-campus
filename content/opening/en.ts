@@ -143,7 +143,7 @@ export const OPENING_UI = {
       ['Handoff point', 'Building 4 main entrance'],
       ['Progress', 'Chapter 04 handoff'],
     ] as [string, string][],
-    note: 'End of the current slice. The full rescue, core shutdown and lights-show ending are not part of this build.',
+    note: 'Continue the playtest at the lawn with your MacBook. Cutting core power opens the route to the sports hall.',
     close: 'Continue',
   },
   epilogue: {
@@ -153,7 +153,7 @@ export const OPENING_UI = {
     tickerLabel: 'Core status',
     ticker: ['CPU 01 ONLINE', 'CPU 02 ONLINE', 'CPU 03 ONLINE', 'CPU 04 ONLINE'],
     meta: 'MacBook retained · Building 4 main entrance · End of the current slice',
-    note: 'The rescue, the core shutdown and the lights-show ending are not implemented in this build.',
+    note: 'The lights-show ending is not implemented in this build.',
     continue: 'Continue',
     replay: 'Replay chapter',
     aria: 'Chapter 04 handoff. End of the current playable slice.',

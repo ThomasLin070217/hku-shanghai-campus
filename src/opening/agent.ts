@@ -1,3 +1,4 @@
+import {campusModelConfig as config,ModelUnavailable,requestCampusModelReply} from './modelTransport';
 import type {OpeningState} from './contracts';
 import type {OpeningRuntime} from './runtime';
 import {personaGreeting, personaIdentity, personaPrompt, prefersChinese} from './persona';
@@ -9,7 +10,8 @@ import {personaGreeting, personaIdentity, personaPrompt, prefersChinese} from '.
  * loopback only) which forwards to DeepSeek/Gemini/LiteLLM with the key kept
  * server-side. If the bridge or the model is unavailable it falls back to the
  * deterministic in-game assistant, which keeps 岚's voice and reads the live
- * opening state. Nothing in the browser ever holds an API key.
+ * opening state. Nothing in the browser ever holds an API key. The request
+ * itself goes through `./modelTransport`, shared with the lawn skill compiler.
  *
  * Configure without editing code:
  *   localStorage['hku.opening.agent.endpoint'] = 'http://127.0.0.1:8790/api/chat'
@@ -42,8 +44,7 @@ export interface LocalAgent{
  dispose():void;
 }
 
-export const ASSISTANT_DEFAULT_ENDPOINT='http://127.0.0.1:8790/api/chat';
-export const ASSISTANT_DEFAULT_MODEL='deepseek-flash';
+export {ASSISTANT_DEFAULT_ENDPOINT,ASSISTANT_DEFAULT_MODEL} from './modelTransport';
 const TIMEOUT_MS=40000;
 const RETRY_COOLDOWN_MS=15000;
 const MAX_HISTORY=10;
@@ -51,18 +52,6 @@ const MAX_HISTORY=10;
 function storage():Storage|null{
  try{return typeof localStorage==='undefined'?null:localStorage;}catch{return null;}
 }
-function setting(key:string,fallback:string):string{
- const store=storage();
- try{const value=store?.getItem(key);return value===null||value===undefined?fallback:value;}catch{return fallback;}
-}
-function config(){
- if(import.meta.env?.MODE==='playtest')return{endpoint:'',model:'built-in',offline:true};
- const endpoint=setting('hku.opening.agent.endpoint',ASSISTANT_DEFAULT_ENDPOINT).trim();
- const model=setting('hku.opening.agent.model',ASSISTANT_DEFAULT_MODEL).trim();
- const offline=setting('hku.opening.agent.offline','0')==='1';
- return{endpoint,model,offline};
-}
-
 function systemPrompt(ctx:AgentContext):string{
  const {story,runtime}=ctx;
  return[
@@ -74,26 +63,6 @@ function systemPrompt(ctx:AgentContext):string{
   `Current objective: ${ctx.objective??story.stage}. ${ctx.detail??''}`,
   `Compute connection reported by the game: ${ctx.computeStatus??'unreported'}.`,
  ].join('\n');
-}
-
-function localEndpointReply(payload:unknown):string|null{
- if(!payload||typeof payload!=='object')return null;
- const p=payload as Record<string,unknown>;
- const message=p.message;
- if(message&&typeof message==='object'){
-  const content=(message as Record<string,unknown>).content;
-  if(typeof content==='string'&&content.trim())return content.trim();
- }
- const choices=p.choices;
- if(Array.isArray(choices)&&choices.length){
-  const first=choices[0] as Record<string,unknown>;
-  const m=first?.message as Record<string,unknown>|undefined;
-  if(typeof m?.content==='string'&&m.content.trim())return m.content.trim();
-  if(typeof first?.text==='string'&&first.text.trim())return first.text.trim();
- }
- const response=p.response;
- if(typeof response==='string'&&response.trim())return response.trim();
- return null;
 }
 
 const hasCJK=(text:string)=>/[\u3400-\u9fff]/.test(text);
@@ -232,24 +201,15 @@ export function createLocalAgent(guide?:RecoveryGuide):LocalAgent{
   status={mode:'checking',endpoint:c.endpoint,model:c.model,lastError:null};
   try{
    const turns:ChatTurn[]=[...previous.slice(-MAX_HISTORY),{role:'user',content:text}];
-   const tuning=/11434|ollama/i.test(c.endpoint)?{options:{temperature:.4}}:{temperature:.4};
-   const response=await fetch(c.endpoint,{
-    method:'POST',headers:{'content-type':'application/json'},signal:active.signal,
-    body:JSON.stringify({model:c.model,stream:false,...tuning,messages:[{role:'system',content:(guide?.prompt??systemPrompt)(ctx)},...turns]}),
-   });
-   if(!response.ok)throw Error('HTTP '+response.status);
-   const body=await response.json();
-   const reply=localEndpointReply(body);
-   if(!reply)throw Error('empty local model reply');
-   const model=body&&typeof body==='object'&&typeof (body as {model?:unknown}).model==='string'
-     ?(body as {model:string}).model:c.model;
+   const {text:reply,model=c.model}=await requestCampusModelReply(c,[{role:'system',content:(guide?.prompt??systemPrompt)(ctx)},...turns],active.signal);
    if(serial===request)status={...status,mode:'local-model',model,lastError:null};
    retryAfter=0;
    return reply.slice(0,12000);
   }catch(error){
    if(serial!==request||disposed)throw new DOMException('Request cancelled','AbortError');
    const message=timedOut?'Model response timed out':error instanceof Error?error.message:'Model unavailable';
-   if(error instanceof TypeError||/HTTP 5\d\d/.test(message))retryAfter=Date.now()+RETRY_COOLDOWN_MS;
+   // Unreachable bridge or a 5xx: skip the endpoint for a short while.
+   if(error instanceof ModelUnavailable&&(error.status===undefined||error.status>=500))retryAfter=Date.now()+RETRY_COOLDOWN_MS;
    status={...status,mode:'builtin',lastError:message};
    return null;
   }finally{clearTimeout(timer);if(controller===active)controller=null;}

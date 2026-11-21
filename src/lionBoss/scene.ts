@@ -1,9 +1,10 @@
 import * as T from 'three';
 import type {Navigation} from '../exploration/navigation';
+import type {PrimitiveTrace} from '../scene/authoring';
 import {LION} from '../model/lionParameters';
 import {NOV13} from '../model/nov13Parameters';
 import {
-  BOSS, canSubmit, CHARGE_HALF_WIDTH, CHARGE_LENGTH, CHARGE_WARNING, NODES, SAFE,
+  AWAKEN_SECONDS, BOSS, canSubmit, CHARGE_HALF_WIDTH, CHARGE_LENGTH, CHARGE_WARNING, NODES, SAFE,
   SWIPE_HALF_ANGLE, SWIPE_RADIUS, type CombatState,
 } from './combat';
 
@@ -36,7 +37,7 @@ function numberPlate(text:string) {
   const ctx=canvas.getContext('2d')!;
   ctx.fillStyle='#10272c';ctx.fillRect(0,0,128,80);
   ctx.strokeStyle='#cce9d7';ctx.lineWidth=4;ctx.strokeRect(3,3,122,74);
-  ctx.fillStyle='#ffffff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 54px monospace';
+  ctx.fillStyle='#ffffff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold '+(text.length>2?'40':'54')+'px monospace';
   ctx.fillText(text,64,43);
   const texture=new T.CanvasTexture(canvas);
   texture.colorSpace=T.SRGBColorSpace;
@@ -110,7 +111,21 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
   const pivot=new T.Group();
   anchor.add(pivot);pivot.add(body);
   // The campus uses a baked sun shadow; the moving lion has its own contact shadow.
-  body.traverse(object=>{ object.castShadow=false; });
+  // Merged campus meshes retain each eye's authored local bounds.
+  const eyeGeometry=new T.SphereGeometry(1,12,8);
+  const eyeLight=new T.MeshBasicMaterial({color:0xff291b,transparent:true,depthWrite:false,toneMapped:false});
+  const eyes:T.Mesh[]=[];
+  body.traverse(object=>{
+    object.castShadow=false;
+    if(!(object instanceof T.Mesh))return;
+    for(const part of (object.userData.authorParts??[]) as PrimitiveTrace[]){
+      if(part.name!=='Eye')continue;
+      const [x,y,z,xx,yy,zz]=part.bounds,eye=new T.Mesh(eyeGeometry,eyeLight);
+      eye.position.set((x+xx)/2,(y+yy)/2,(z+zz)/2+.025);
+      eye.scale.set((xx-x)*.56,(yy-y)*.55,(zz-z)*.68);
+      eyes.push(eye);object.add(eye);
+    }
+  });
 
   const props=new T.Group();
   props.name='L001_boss_gameplay';
@@ -130,16 +145,25 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
   const pad=ring(2.4,.11,0x4dded0);
   pad.position.set(SAFE.x,GROUND+.045,SAFE.z);props.add(pad);
   const statusRing=ring(2.4,.12,ONLINE);props.add(statusRing);
+  const beacon=new T.Group();
+  const echo=ring(1,.075,0x57e7ff);
+  const signal=new T.Mesh(new T.OctahedronGeometry(.55),new T.MeshBasicMaterial({color:0x82f4ff,wireframe:true}));
+  signal.position.y=1.2;beacon.add(echo,signal);props.add(beacon);
   const dark=new T.MeshStandardMaterial({color:0x18343b,roughness:.65});
   const nodes=NODES.map((node,i)=>{
     const group=new T.Group();group.position.set(node.x,GROUND,node.z);
     const lamp=new T.MeshBasicMaterial({color:INACTIVE});
     const boundary=ring(1.96,.075,INACTIVE);
     group.add(boundary);
-    box(group,0,.09,0,.65,.15,.58,dark);
-    box(group,0,.53,0,.32,.79,.3,dark);
-    box(group,0,.94,0,.51,.13,.44,lamp);
-    group.add(numberPlate(String(i+1).padStart(2,'0')));
+    if(i===2){
+      box(group,0,.62,0,.84,1.23,.57,dark);
+      for(const y of [.42,.63,.84])box(group,0,y,.31,.51,.09,.07,lamp);
+    }else{
+      box(group,0,.09,0,.65,.15,.58,dark);
+      box(group,0,.53,0,.32,.79,.3,dark);
+      box(group,0,.94,0,.51,.13,.44,lamp);
+    }
+    group.add(numberPlate(['A','B','PWR'][i]));
     props.add(group);
     return {lamp,boundary};
   });
@@ -160,6 +184,8 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
 
   // The game freezes its physics at completion. The presentation can still finish the bow.
   let completionStarted:number|null=null;
+  let previouslyActive=false;
+  const frost=new T.Color(0x58d0ff),hostile=new T.Color(0xff291b);
   function render(state:CombatState) {
     const phase=state.phase;
     syncCollision(state);
@@ -168,27 +194,41 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
     contact.position.set(state.lion.x,GROUND+.012,state.lion.z);
     const ca=Math.cos(LION.yaw),sa=Math.sin(LION.yaw);
     pivot.position.set(dx*ca-dz*sa,0,dx*sa+dz*ca);
-    if (phase==='complete') completionStarted ??= performance.now();
-    else completionStarted=null;
-    const bow=completionStarted===null?0:Math.sin(Math.min((performance.now()-completionStarted)/1600,1)*Math.PI)*.22;
+    if (phase==='complete') completionStarted ??= previouslyActive?performance.now():performance.now()-1700;
+    else {previouslyActive=true;completionStarted=null;}
+    const powerOff=completionStarted===null?0:Math.min((performance.now()-completionStarted)/1600,1);
+    const boot=phase==='awakening'?1-state.remaining/AWAKEN_SECONDS:state.awakened?1:0;
+    const bow=powerOff*.16+(phase==='awakening'?-.055*Math.sin(boot*Math.PI):0);
+    eyeLight.opacity=boot*(1-powerOff);
+    eyeLight.color.copy(phase==='stunned'?frost:hostile);
+    for(const eye of eyes)eye.visible=eyeLight.opacity>.005;
     const lean=phase==='chargeWarn'?.09*(1-state.remaining/CHARGE_WARNING):phase==='charge'?-.08:0;
     pivot.rotation.order='YXZ';pivot.rotation.set(bow+lean,localYaw,phase==='swipeWarn'?-.075:0);
     telegraph.charge.visible=phase==='chargeWarn'||phase==='charge';
-    telegraph.swipe.visible=phase==='swipeWarn'||(phase==='lured' && state.remaining>2.5);
+    telegraph.swipe.visible=phase==='swipeWarn';
     telegraph.root.position.set(state.origin.x,GROUND+.045,state.origin.z);
     telegraph.root.rotation.y=state.yaw;
     telegraph.fill.opacity=.44+.09*Math.sin(state.elapsed*10);
-    statusRing.visible=phase==='stunned'||phase==='lured';
+    statusRing.visible=phase==='stunned'||phase==='lured'||phase==='ghosted';
+    statusRing.material.color.setHex(phase==='stunned'?0x58d0ff:phase==='ghosted'?0x57e7ff:ONLINE);
     statusRing.position.set(state.lion.x,GROUND+.08,state.lion.z);
+    beacon.visible=state.signal!==null;
+    if(state.signal){
+      beacon.position.set(state.signal.x,GROUND+.05,state.signal.z);
+      signal.rotation.y=state.elapsed*1.9;signal.position.y=1.2+.12*Math.sin(state.elapsed*5);
+      echo.scale.setScalar(.72+.55*(.5+.5*Math.sin(state.elapsed*6)));
+    }
     dog.position.set(state.helper.x,GROUND+(phase==='helperRun'?.045*Math.abs(Math.sin(state.elapsed*21)):0),state.helper.z);
     dog.rotation.y=state.helperYaw;
     for(const [i,node] of nodes.entries()) {
-      const color=i<state.repaired?ONLINE:i===state.repaired?(canSubmit(state)?ONLINE:ACTIVE):INACTIVE;
+      const color=i===2&&phase==='complete'?INACTIVE:i<state.repaired?ONLINE:i===state.repaired?(canSubmit(state)?ONLINE:ACTIVE):INACTIVE;
       node.lamp.color.setHex(color);node.boundary.material.color.setHex(color);
     }
   }
   function dispose() {
     contactMap.dispose();
+    for(const eye of eyes)eye.removeFromParent();
+    eyeGeometry.dispose();eyeLight.dispose();
     anchor!.add(body!);pivot.removeFromParent();
     if(originalCollision && obstacle) Object.assign(obstacle,originalCollision);
     if(originalMesh && collisionMesh) {

@@ -4,7 +4,12 @@
 // Providers:
 //   deepseek - DeepSeek platform API, OpenAI-compatible (DEEPSEEK_API_KEY)
 //   gemini   - Google Gemini API directly (GEMINI_API_KEY)
-//   litellm  - OpenAI-compatible LiteLLM proxy (LITELLM_*)
+//   litellm  - OpenAI-compatible LiteLLM proxy (LITELLM_*). A loopback
+//              LITELLM_BASE_URL (127.0.0.1 / localhost) may omit the key, for
+//              local llama.cpp / Ollama-style servers.
+//
+// chat() also accepts `responseFormat` (OpenAI response_format, used by the
+// lawn skill compiler for structured output) and an AbortSignal `signal`.
 //
 // Reads .env at the repo root, then process.env (existing variables win).
 // The key is never printed, logged, or written anywhere.
@@ -60,12 +65,23 @@ function deepseekConfig() {
   };
 }
 
+function isLoopback(base) {
+  try {
+    return ['127.0.0.1', 'localhost', '[::1]'].includes(new URL(base).hostname);
+  } catch {
+    return false;
+  }
+}
+
 function litellmConfig() {
+  const base = trim('LITELLM_BASE_URL').replace(/\/+$/, '');
   return {
     name: 'litellm',
-    base: trim('LITELLM_BASE_URL').replace(/\/+$/, ''),
+    base,
     key: trim('LITELLM_API_KEY') || trim('LITELLM_KEY'),
     model: trim('LITELLM_MODEL'),
+    // An unauthenticated OpenAI-compatible server on this machine needs no key.
+    loopback: isLoopback(base),
     timeoutMs: timeoutMs('litellm')
   };
 }
@@ -151,7 +167,7 @@ export function configured(provider = activeProvider()) {
   const config = configFor(provider);
   if (provider === 'gemini') return Boolean(config.key);
   if (provider === 'deepseek') return Boolean(config.key);
-  return Boolean(config.base && config.key);
+  return Boolean(config.base && (config.key || config.loopback));
 }
 
 function requireConfig(provider) {
@@ -168,7 +184,7 @@ function requireConfig(provider) {
     }
     return config;
   }
-  const missing = [!config.base && 'LITELLM_BASE_URL', !config.key && 'LITELLM_API_KEY'].filter(Boolean);
+  const missing = [!config.base && 'LITELLM_BASE_URL', !config.key && !config.loopback && 'LITELLM_API_KEY'].filter(Boolean);
   if (missing.length) {
     throw new Error(`${missing.join(' and ')} missing. Copy .env.example to .env, fill it in privately, and never paste keys in chat or commit them.`);
   }
@@ -200,14 +216,19 @@ function describeHttpError(provider, response, text) {
 }
 
 async function requestJson(provider, url, init, config) {
+  const { signal: callerSignal, ...rest } = init || {};
+  const deadline = AbortSignal.timeout(config.timeoutMs);
+  const signal = callerSignal ? AbortSignal.any([callerSignal, deadline]) : deadline;
   let response;
   try {
-    response = await fetch(url, { ...init, signal: AbortSignal.timeout(config.timeoutMs) });
+    response = await fetch(url, { ...rest, signal });
   } catch (error) {
     throw new Error(`${provider} request failed: ${error.message}`);
   }
   const text = await response.text();
-  if (!response.ok) throw new Error(describeHttpError(provider, response, text));
+  // `status` lets callers (the MacBook bridge) tell a rejected request shape
+  // (400/415/422) from an outage.
+  if (!response.ok) throw Object.assign(new Error(describeHttpError(provider, response, text)), { status: response.status });
   try {
     return JSON.parse(text);
   } catch {
@@ -289,7 +310,7 @@ export async function models(provider = activeProvider()) {
     return (body.data || []).map(model => model.id);
   }
   const body = await requestJson('litellm', endpointForLitellm(config, '/models'), {
-    headers: { authorization: `Bearer ${config.key}` }
+    headers: bearer(config.key)
   }, config);
   return (body.data || []).map(model => model.id);
 }
@@ -308,19 +329,36 @@ function endpointForLitellm(config, path) {
   return (config.base.endsWith('/v1') ? config.base : `${config.base}/v1`) + path;
 }
 
+function bearer(key) {
+  return key ? { authorization: `Bearer ${key}` } : {};
+}
+
+/** OpenAI-compatible request body shared by DeepSeek, LiteLLM and Gemini's /openai route. */
+function openaiBody(model, messages, options) {
+  return JSON.stringify({
+    model,
+    messages,
+    temperature: options.temperature,
+    max_tokens: options.maxTokens,
+    ...(options.responseFormat ? { response_format: options.responseFormat } : {})
+  });
+}
+
 async function litellmChat(config, messages, options, model) {
   return requestJson('litellm', endpointForLitellm(config, '/chat/completions'), {
     method: 'POST',
-    headers: { 'content-type': 'application/json', authorization: `Bearer ${config.key}` },
-    body: JSON.stringify({ model, messages, temperature: options.temperature, max_tokens: options.maxTokens })
+    signal: options.signal,
+    headers: { 'content-type': 'application/json', ...bearer(config.key) },
+    body: openaiBody(model, messages, options)
   }, config);
 }
 
 async function deepseekChat(config, messages, options, model) {
   return requestJson('deepseek', openaiEndpoint(config.base, '/chat/completions'), {
     method: 'POST',
+    signal: options.signal,
     headers: { 'content-type': 'application/json', authorization: `Bearer ${config.key}` },
-    body: JSON.stringify({ model, messages, temperature: options.temperature, max_tokens: options.maxTokens })
+    body: openaiBody(model, messages, options)
   }, config);
 }
 
@@ -332,8 +370,9 @@ async function geminiChat(config, messages, options, model) {
     const base = config.base.endsWith('/openai') ? config.base : `${config.base}/openai`;
     const body = await requestJson('gemini', `${base}/chat/completions`, {
       method: 'POST',
+      signal: options.signal,
       headers: { 'content-type': 'application/json', authorization: `Bearer ${config.key}` },
-      body: JSON.stringify({ model, messages, temperature: options.temperature, max_tokens: options.maxTokens })
+      body: openaiBody(model, messages, options)
     }, config);
     return { ...body, provider: 'gemini', transport: 'openai' };
   }
@@ -343,11 +382,14 @@ async function geminiChat(config, messages, options, model) {
     ...(system ? { systemInstruction: { parts: [{ text: system }] } } : {}),
     generationConfig: {
       ...(options.temperature === undefined ? {} : { temperature: options.temperature }),
-      ...(options.maxTokens === undefined ? {} : { maxOutputTokens: options.maxTokens })
+      ...(options.maxTokens === undefined ? {} : { maxOutputTokens: options.maxTokens }),
+      // Native Gemini has its own schema dialect; ask for JSON and let the caller validate it.
+      ...(options.responseFormat ? { responseMimeType: 'application/json' } : {})
     }
   };
   const body = await geminiRequest(`/models/${encodeURIComponent(model)}:generateContent`, {
     method: 'POST',
+    signal: options.signal,
     body: JSON.stringify(payload)
   }, config);
   return fromGeminiResponse(body, model, config);
@@ -356,6 +398,7 @@ async function geminiChat(config, messages, options, model) {
 /**
  * Chat completion. `messages` is the OpenAI array form; resolves to an
  * OpenAI-shaped response regardless of provider.
+ * Options: { provider, model, temperature, maxTokens, responseFormat, signal }.
  */
 export async function chat(messages, options = {}) {
   const provider = options.provider || activeProvider();
@@ -402,7 +445,7 @@ function usage(provider) {
     configured: {
       deepseek: { apiKey: Boolean(deepseek.key), model: deepseek.model, baseUrl: deepseek.base },
       gemini: { apiKey: Boolean(gemini.key), model: gemini.model, baseUrl: gemini.base, transport: gemini.transport },
-      litellm: { baseUrl: Boolean(litellm.base), apiKey: Boolean(litellm.key), model: litellm.model || '(unset)' }
+      litellm: { baseUrl: Boolean(litellm.base), apiKey: Boolean(litellm.key), loopback: litellm.loopback, model: litellm.model || '(unset)' }
     }
   };
 }

@@ -98,13 +98,17 @@ snapshot and the save.
 
 The assistant (`岚 · LAN`) first talks to the loopback LLM bridge, then falls back to the
 built-in recovery core. The repository never holds an API key; the bridge reads it from
-the local `.env`.
+the local `.env`. The lawn's Vibe Console uses the same model connection
+(`src/opening/modelTransport.ts`); see [LLM endpoint setup](../LLM-ENDPOINT.md).
 
 ```js
 // optional, in the browser devtools of the game page
 localStorage['hku.opening.agent.endpoint'] = 'http://127.0.0.1:8790/api/chat'; // local bridge
 localStorage['hku.opening.agent.model']    = 'deepseek-flash';                // label only; the bridge picks the model
 localStorage['hku.opening.agent.offline']  = '1';  // force the built-in core
+// or a locally installed Ollama model instead of the bridge:
+// localStorage['hku.opening.agent.endpoint'] = 'http://127.0.0.1:11434/api/chat';
+// localStorage['hku.opening.agent.model']    = 'deepseek-r1:8b';
 ```
 
 The character sheet lives in `src/opening/persona.ts`: who 岚 is, how it speaks, what it
