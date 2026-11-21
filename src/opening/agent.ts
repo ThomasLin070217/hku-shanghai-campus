@@ -137,7 +137,7 @@ function builtinReply(text:string,ctx:AgentContext):string{
  }
  if(/(who are you|你是谁|agent|助手|你能做什么|你的名字|你叫什么)/.test(t)){
   return zh
-   ?personaIdentity(true)+'\n• 现在云端模型不可用，我用本机规则回答。'
+   ?personaIdentity(true)+'\n• The cloud model is unavailable right now, so I answer from local rules.'
    :personaIdentity(false)+'\n• The cloud model is unreachable right now, so I answer from the local rules.';
  }
  if(/(stage|objective|status|状态|任务|现在|next|下一步)/.test(t)){

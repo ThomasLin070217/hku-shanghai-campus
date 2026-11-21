@@ -45,19 +45,19 @@ export function createBossMacBook(options:BossMacOptions) {
     const active=combat.phase==='helperRun'||combat.phase==='lured';
     const rule=localVibe.getFieldRule('lure');
     const distance=Math.hypot(player[0]-combat.lion.x,player[2]-combat.lion.z);
-    const check=rule?evaluateSkill(rule,{phase:combat.phase,distance,cooldown:combat.cooldown.lure,helperReady:!active}):{ok:false,message:'请先部署 Robot Hijack。'};
-    return [{id:'lawn/ashu',name:'阿树 · 草坪助手',status:active?'执行牵制':'在线',permission:rule?'已装备侧翼牵制程序。':'可读遥测；牵制程序未部署。',
+    const check=rule?evaluateSkill(rule,{phase:combat.phase,distance,cooldown:combat.cooldown.lure,helperReady:!active}):{ok:false,message:'Deploy Robot Hijack first.'};
+    return [{id:'lawn/ashu',name:'Ashu · Lawn assistant',status:active?'Distracting':'Online',permission:rule?'Flank distraction program equipped.':'Telemetry available; distraction program not deployed.',
       remainingSeconds:active?combat.remaining:undefined,lastResult:lastHelperResult,
-      commands:[{id:'telemetry',label:'读取遥测',enabled:true},
-        {id:'distract',label:'Distract',enabled:canAct&&check.ok,reason:rule&&!canAct?'进入草坪后按 '+(localVibe.slots().equipped.lure??'技能键')+' 接管阿树。':check.ok?'':check.message}]},
-      {id:'L001',name:'草坪防御单元',status:combat.repaired===3?'已停机':'防御协议激活',permission:'仅开放观测遥测。',commands:[]}];
+      commands:[{id:'telemetry',label:'Read telemetry',enabled:true},
+        {id:'distract',label:'Distract',enabled:canAct&&check.ok,reason:rule&&!canAct?'After entering the lawn, press '+(localVibe.slots().equipped.lure??'the skill key')+' to take over Ashu.':check.ok?'':check.message}]},
+      {id:'L001',name:'Lawn defense unit',status:combat.repaired===3?'Shut down':'Defense protocol active',permission:'Observation telemetry only.',commands:[]}];
   }
-  const localSession:CampusComputeSession={vibe:localVibe,energy:()=>{const b=localVibe.slots().budget;return b?'B4 · '+b.available+' / '+b.total+' 算力':'B4 备用供电';},robotics:{devices,async execute(id,cmd){
+  const localSession:CampusComputeSession={vibe:localVibe,energy:()=>{const b=localVibe.slots().budget;return b?'B4 · '+b.available+' / '+b.total+' compute':'B4 backup power';},robotics:{devices,async execute(id,cmd){
     const device=devices().find(d=>d.id===id),command=device?.commands.find(c=>c.id===cmd);
-    if(!command?.enabled)return {ok:false,message:command?.reason||'当前未获得设备指令权限。'};
+    if(!command?.enabled)return {ok:false,message:command?.reason||'No device command permission right now.'};
     if(cmd==='telemetry'){
       const {helper,phase}=options.status().combat;
-      const reply='阿树已应答 · x '+helper.x.toFixed(1)+' / z '+helper.z.toFixed(1)+' m · '+phase;
+      const reply='Ashu responded · x '+helper.x.toFixed(1)+' / z '+helper.z.toFixed(1)+' m · '+phase;
       lastHelperResult=reply;return {ok:true,value:reply};
     }
     const result=options.requestDistract();lastHelperResult=result.message;
@@ -68,22 +68,22 @@ export function createBossMacBook(options:BossMacOptions) {
   const apps=createDeviceApps(session,()=>goDesktop(),options.onDeploy);
   function objective() {
     const repaired=options.status().repaired;
-    return NODES[repaired] ? '节点 '+(repaired+1)+' · '+NODES[repaired].name : '草坪修复完成';
+    return NODES[repaired] ? 'Node '+(repaired+1)+' · '+NODES[repaired].name : 'Lawn repair complete';
   }
   function instruction() {
     const node=NODES[options.status().repaired];
-    if(!node)return 'L001 已安全关机。';
-    if(Object.keys(session().vibe.slots().equipped).length<2)return '在 Vibe Console 编写项目、检查方案、测试并部署到两个槽位。';
-    if(session().field)return '查看 HUD 上的已编译技能和合法目标。选择合适的施放时机，然后在节点光圈内长按 F。';
-    return '走到'+node.name+'的光圈，施放任一已装备技能。狮子冻结或转移目标后，长按 F 操作装置。';
+    if(!node)return 'L001 is safely shut down.';
+    if(Object.keys(session().vibe.slots().equipped).length<2)return 'In Vibe Console, write a project, review the plan, test it, and deploy to both slots.';
+    if(session().field)return 'Check the compiled skills and valid targets on the HUD. Pick the right moment to cast, then hold F inside the node ring.';
+    return 'Walk to the ring at '+node.name+', then cast any equipped skill. Once the lion is frozen or distracted, hold F to operate the device.';
   }
   const agent=createLocalAgent({
     prompt:ctx=>'You are the campus MacBook recovery assistant in the L001 lawn encounter. Answer concisely in the player’s language. Current objective: '+objective()+'. '+instruction()+' Hearts: '+ctx.runtime.hearts+'/'+ctx.runtime.maxHearts+'.',
-    greeting:()=>'已连接草坪维护端。'+objective()+'。'+instruction(),
-    suggestions:['我现在要做什么？','怎么部署技能？','我的心值是多少？'],
+    greeting:()=>'Connected to the lawn maintenance terminal. '+objective()+'. '+instruction(),
+    suggestions:['What do I do now?','How do I deploy a skill?','What is my health?'],
     reply(text,ctx){
-      if(/心|体力|heart|health/i.test(text))return '当前心值 '+ctx.runtime.hearts+'/'+ctx.runtime.maxHearts+'，已提交的修复 '+options.status().repaired+'/3。';
-      if(/技能|部署|deploy|skill/i.test(text))return '在程序坞打开技能工作台，用一句话写明施放条件与效果。点击生成规则，测试有效时机和失败条件，再部署到对应技能槽。';
+      if(/心|体力|heart|health/i.test(text))return 'Health '+ctx.runtime.hearts+'/'+ctx.runtime.maxHearts+', repairs submitted '+options.status().repaired+'/3.';
+      if(/技能|部署|deploy|skill/i.test(text))return 'Open the skill workbench from the dock and state the cast condition and effect in one sentence. Generate the rule, test the valid timing and failure cases, then deploy it to the matching skill slot.';
       return objective()+'。'+instruction();
     },
   });
@@ -97,18 +97,18 @@ export function createBossMacBook(options:BossMacOptions) {
       drawCampusMap(canvas,options.game,{
         target,route:[],focus:{x:BOSS.x,z:BOSS.z+2,width:39,depth:43},
         markers:[
-          {...SAFE,label:'维护区'},{...BOSS,label:'L001'},
+          {...SAFE,label:'Maintenance area'},{...BOSS,label:'L001'},
           ...NODES.map((n,i)=>({...n,label:'0'+(i+1)+' '+n.name})),
         ],
       },large);
     },
     mission:{
-      title:'Vibe Console',location:'L001 · 草坪维护区',mapLegend:'上方为北。蓝色箭头标出你的位置，橙色标记是当前维护节点。',
+      title:'Vibe Console',location:'L001 · Lawn maintenance area',mapLegend:'North is up. The blue arrow is you; the orange markers are the current maintenance nodes.',
       terminal:()=>[
         'HKU-SHANGHAI-MACBOOK — lawn recovery shell',
         'external network .... offline', 'local maintenance ... connected',
-        '', 'L001  '+objective(),'修复进度  '+options.status().repaired+' / 3',
-        'L001 状态  '+options.status().combat.phase,'心值  '+options.status().runtime.hearts+' / '+options.status().runtime.maxHearts,
+        '', 'L001  '+objective(),'Repair progress  '+options.status().repaired+' / 3',
+        'L001 status  '+options.status().combat.phase,'Health  '+options.status().runtime.hearts+' / '+options.status().runtime.maxHearts,
         ...Object.entries(session().vibe.slots().equipped).map(([project,key])=>key+'  '+project),
         '', 'recovery@macbook ~ %',
       ],
