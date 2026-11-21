@@ -4,13 +4,13 @@
 import {COLUMN_X} from './scaleCalibration';
 export interface BuildingSpec {id:string;label:string;kind:'frameTower'|'bandTower'|'amenities'|'auditorium';x:number;z:number;width:number;depth:number;height:number;floors:number;bays:number;rotation:number;source:string;confidence:string;usage:string;}
 export const BUILDINGS:BuildingSpec[]=[
- {id:'B01',label:'1号楼 · 西侧北塔',kind:'frameTower',x:-COLUMN_X,z:-2,width:59.5,depth:45,height:79.6,floors:17,bays:25,rotation:0,source:'SM06（列位置推断）,P01,A02,A04,A07',confidence:'外形可靠；楼号位置由用户导览图复核；水平量级经卫星核对、列位置推断；高度仍估计',usage:'三期范围，启用状态未独立确认'},
- {id:'B02',label:'2号楼 · 西侧南塔',kind:'frameTower',x:-COLUMN_X,z:70,width:59.5,depth:35.5,height:79.6,floors:17,bays:25,rotation:0,source:'SM06（列位置推断）,P01,A02,A04,A05',confidence:'外形可靠；楼号位置由用户导览图复核；水平量级经卫星核对、列位置推断；高度仍估计',usage:'三期范围，具体功能待核实'},
- {id:'B03',label:'CDS-2 · 3号楼',kind:'bandTower',x:COLUMN_X,z:70,width:59.7,depth:37.3,height:66.15,floors:14,bays:25,rotation:0,source:'SM03,SM04,SM06（列位置推断）,P01,A01,A04,C02',confidence:'外形可靠；楼号位置由用户导览图复核；水平量级经卫星核对、列位置推断；高度仍估计',usage:'校方确认3号楼承担AI与合作科研；定位依候选总图'},
- {id:'B04',label:'CDS-1 · 4号楼',kind:'bandTower',x:COLUMN_X,z:-2,width:59.7,depth:45,height:66.15,floors:14,bays:25,rotation:0,source:'SM01,SM02,SM06（列位置推断）,R01,R02,R04,P01,T02',confidence:'入口身份可靠；宽深经卫星测距核对；高度暂定',usage:'计算与数据科学学院教学科研'},
- {id:'B05',label:'5号楼 · 学生活动',kind:'amenities',x:COLUMN_X,z:-70,width:59.7,depth:30,height:23.95,floors:5,bays:25,rotation:0,source:'SM05,SM06,R02,A06,P01,C02,C03,U02（用户实录）',confidence:'外观可靠；宽度及东西列间距经卫星核对；高度与其余尺寸推断',usage:'校方确认5号楼学生活动及大学雅堂；用户确认4楼阶梯休闲区（独立参考资产）'},
- {id:'B06',label:'6号楼 · 礼堂',kind:'auditorium',x:0,z:-70,width:34.15,depth:34.15,height:23.95,floors:6,bays:14,rotation:0,source:'R02,R06,A06,P01',confidence:'礼堂身份可靠；6号楼对应由用户图确认；尺寸估计',usage:'Auditorium；层数仅作为外形参数'},
- {id:'B07',label:'7号楼 · 西北配套楼',kind:'amenities',x:-COLUMN_X,z:-70,width:59.5,depth:30,height:23.95,floors:5,bays:25,rotation:0,source:'SM06,SM07,A06,P01,M01',confidence:'外形可靠；宽度及东西列间距经卫星核对；用途、高度与隐藏立面待核实',usage:'三期范围，具体功能待核实'},
+ {id:'B01',label:'Building 1 · West north tower',kind:'frameTower',x:-COLUMN_X,z:-2,width:59.5,depth:45,height:79.6,floors:17,bays:25,rotation:0,source:'SM06（列位置推断）,P01,A02,A04,A07',confidence:'外形可靠；楼号位置由用户导览图复核；水平量级经卫星核对、列位置推断；高度仍估计',usage:'三期范围，启用状态未独立确认'},
+ {id:'B02',label:'Building 2 · West south tower',kind:'frameTower',x:-COLUMN_X,z:70,width:59.5,depth:35.5,height:79.6,floors:17,bays:25,rotation:0,source:'SM06（列位置推断）,P01,A02,A04,A05',confidence:'外形可靠；楼号位置由用户导览图复核；水平量级经卫星核对、列位置推断；高度仍估计',usage:'三期范围，具体功能待核实'},
+ {id:'B03',label:'CDS-2 · Building 3',kind:'bandTower',x:COLUMN_X,z:70,width:59.7,depth:37.3,height:66.15,floors:14,bays:25,rotation:0,source:'SM03,SM04,SM06（列位置推断）,P01,A01,A04,C02',confidence:'外形可靠；楼号位置由用户导览图复核；水平量级经卫星核对、列位置推断；高度仍估计',usage:'校方确认3号楼承担AI与合作科研；定位依候选总图'},
+ {id:'B04',label:'CDS-1 · Building 4',kind:'bandTower',x:COLUMN_X,z:-2,width:59.7,depth:45,height:66.15,floors:14,bays:25,rotation:0,source:'SM01,SM02,SM06（列位置推断）,R01,R02,R04,P01,T02',confidence:'入口身份可靠；宽深经卫星测距核对；高度暂定',usage:'计算与数据科学学院教学科研'},
+ {id:'B05',label:'Building 5 · Student activities',kind:'amenities',x:COLUMN_X,z:-70,width:59.7,depth:30,height:23.95,floors:5,bays:25,rotation:0,source:'SM05,SM06,R02,A06,P01,C02,C03,U02（用户实录）',confidence:'外观可靠；宽度及东西列间距经卫星核对；高度与其余尺寸推断',usage:'校方确认5号楼学生活动及大学雅堂；用户确认4楼阶梯休闲区（独立参考资产）'},
+ {id:'B06',label:'Building 6 · Auditorium',kind:'auditorium',x:0,z:-70,width:34.15,depth:34.15,height:23.95,floors:6,bays:14,rotation:0,source:'R02,R06,A06,P01',confidence:'礼堂身份可靠；6号楼对应由用户图确认；尺寸估计',usage:'Auditorium；层数仅作为外形参数'},
+ {id:'B07',label:'Building 7 · Northwest support building',kind:'amenities',x:-COLUMN_X,z:-70,width:59.5,depth:30,height:23.95,floors:5,bays:25,rotation:0,source:'SM06,SM07,A06,P01,M01',confidence:'外形可靠；宽度及东西列间距经卫星核对；用途、高度与隐藏立面待核实',usage:'三期范围，具体功能待核实'},
 ];
 export const SITE={width:208,depth:256,centerZ:-14,plazaX:0,plazaZ:-9,plazaRadiusX:15,plazaRadiusZ:15,plazaDepth:4.2,bridgeHeight:5.3,bridgeWidth:4.4,treeHeight:5.4,sportsZ:-117,sportsWidth:190,sportsDepth:31};
 export type SiteParameters=typeof SITE;
