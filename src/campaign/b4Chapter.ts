@@ -128,10 +128,13 @@ export function createB4Chapter():Chapter{
   const litCaps=new Set<T.Group>();
   for(const ch of keyboard.typed){const cap=phraseCaps.find(c=>c.userData.label===ch&&!litCaps.has(c));if(cap)litCaps.add(cap);}
   for(const [cap,m] of capGlow){
-   if(keyboard.solved){m.emissive.setHex(cap.userData.enter?0x4aa3ff:cap.userData.phrase?0xffc24a:0x6dffb0);m.emissiveIntensity=.9;}
+   if(keyboard.solved){m.emissive.setHex(cap.userData.enter?0x4aa3ff:cap.userData.phrase?0xffb648:0x6dffb0);m.emissiveIntensity=.9;}
    else if(error&&cap.userData.phrase){m.emissive.setHex(0xff3322);m.emissiveIntensity=1.2;}
-   else if(litCaps.has(cap)){m.emissive.setHex(0xffb43a);m.emissiveIntensity=1.1;}
+   else if(litCaps.has(cap)){m.emissive.setHex(0x74e6b4);m.emissiveIntensity=1.15;}
    else if(cap===enterCap&&keyboard.typed===B4_PHRASE){m.emissive.setHex(0x4aa3ff);m.emissiveIntensity=1.0;}
+   // The hint says "click the gold caps": the targets must read gold under the
+   // red emergency light, before any key is typed. Typed caps above are mint.
+   else if(cap.userData.phrase){m.emissive.setHex(0xffb648);m.emissiveIntensity=1.1;}
    else{m.emissive.setHex(0x000000);m.emissiveIntensity=0;}
   }
  }
@@ -321,6 +324,8 @@ export function createB4Chapter():Chapter{
  const debug={
   complete(){for(const e of EVENTS)ctx?.emit(e);return ctx?.stage();},
   state(){return{stage:ctx?.stage(),typed:keyboard.typed,solved:keyboard.solved,flipped:flipCount(flip),tiles:tiles.length,focus,near:nearest(),light:+lightLevel.toFixed(2),door:+doorOpen.toFixed(2),hum:humWanted};},
+  /** Read-only view of the keyboard wall glow, for the style check. */
+  caps(){return [...capGlow].map(([cap,m])=>({label:cap.userData.label as string,phrase:!!cap.userData.phrase,enter:!!cap.userData.enter,emissive:m.emissive.getHex(),intensity:m.emissiveIntensity}));},
   /** Same paths as the focus view: type keys, sweep tiles, pull, connect. */
   type(text:string){for(const ch of text)press(ch);return keyboard.typed;},
   enter(){return press('Enter');},
@@ -349,6 +354,7 @@ export function createB4Chapter():Chapter{
    world()?.setDoorOpen(B4_DOOR_OBSTACLE,true);
    if(typeof window!=='undefined'){window.addEventListener('keydown',onKey,true);window.addEventListener('pointerdown',onDown);window.addEventListener('pointermove',onMove);window.addEventListener('pointerup',onUp);}
    applyStage(c.stage());
+   paintCaps();
   },
   update(dt){
    if(!ctx||!group)return;applyStage(ctx.stage());

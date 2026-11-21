@@ -13,7 +13,7 @@ export function createInventoryUI(getGame:()=>CampusGame,open:()=>void,close:()=
  document.body.append(hud,modal);let heldTimer:ReturnType<typeof setTimeout>|undefined;let idleTimer:ReturnType<typeof setTimeout>|undefined;let source:number|null=null,revision=-1,priorGame:CampusGame|null=null,wasOpen=false,lastSelected=-1;
  // The compact dock fades to low opacity when the selection has not changed for
  // ~2 s; scroll, number keys and E wake it (owner review, 2026-11-22).
- const wake=()=>{hud.classList.remove('is-idle');if(idleTimer)clearTimeout(idleTimer);idleTimer=setTimeout(()=>{if(document.body.classList.contains('exploring')&&!getGame().inventoryOpen)hud.classList.add('is-idle');},2000);};
+ const wake=()=>{hud.classList.remove('is-idle');if(idleTimer)clearTimeout(idleTimer);idleTimer=setTimeout(()=>{if(document.body.classList.contains('exploring')&&document.body.classList.contains('opening-mode')&&!getGame().inventoryOpen)hud.classList.add('is-idle');},2000);};
  const wakeKeys=(e:KeyboardEvent)=>{if(e.code===KEYS.inventory||/^Digit[1-9]$/.test(e.code))wake();};
  if(typeof window!=='undefined')window.addEventListener('keydown',wakeKeys);
  const hotbar=hud.querySelector('.hotbar')!,storage=modal.querySelector('.storage-grid')!,bagbar=modal.querySelector('.bag-hotbar')!;

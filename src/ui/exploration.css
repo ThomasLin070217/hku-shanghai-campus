@@ -19,7 +19,7 @@ body.exploring[data-ai-control="active"] #control-badge{border-color:#e0b357;bac
 body.exploring[data-ai-control="active"] #takeover{background:#e0b357;color:#241a06;font-weight:bold}
 .inventory-dock{display:flex;align-items:stretch;gap:8px}
 body.exploring .bag-open{position:static;white-space:nowrap;font-size:12px}
-body.exploring #inventory-hud{bottom:6px}
+body.exploring #inventory-hud{bottom:48px}
 .item-slot.empty:not(.selected):not(.picked){background:#9ba797}
 body.exploring #held-name,body.exploring .slot-number{font-size:12px}
 #campus-panel #terminal-content{scroll-padding:20px;padding-top:28px}

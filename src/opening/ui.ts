@@ -196,6 +196,7 @@ export function createOpeningUI(
   let lastSaveStatus = '';
   let saveToastTimer: number | undefined;
   let saveToastHide: number | undefined;
+  let lastSaveTick = -1;
 
   function dialogShell(sectionKind: DialogKind): HTMLElement {
     const shell = node('section', 'opening-dialog opening-dialog--' + sectionKind);
@@ -816,11 +817,15 @@ export function createOpeningUI(
   },{capture:true,signal:events.signal});
 
   // ------------------------------------------------------------- Update.
-  /** A save is a short toast ("Saved on this device"), never a permanent line. */
-  function updateSaveToast(text: string): void {
-    if (text === lastSaveStatus) return;
+  /** A save is a short toast ("Saved on this device"), never a permanent line.
+   *  Only a successful device write raises it: a load, a checkpoint start or
+   *  another status message changes the text but not the save tick. */
+  function updateSaveToast(text: string, tick: number): void {
+    const first = lastSaveTick < 0;
+    const saved = !first && tick > lastSaveTick;
+    lastSaveTick = Math.max(lastSaveTick, tick);
     lastSaveStatus = text;
-    if (!text) return;
+    if (!saved || text !== 'Saved on this device.') return;
     saveToast.textContent = text.replace(/\.$/, '');
     saveToast.hidden = false;
     saveToast.classList.remove('is-visible');
@@ -916,7 +921,7 @@ export function createOpeningUI(
     }
     // HUD text only: no modal rebuild on per-frame state such as elapsed time.
     setText(objective, view.objective);
-    updateSaveToast(view.saveStatus);
+    updateSaveToast(view.saveStatus, view.saveTick ?? 0);
     setHidden(promptEl, !view.prompt);
     if (view.prompt) {
       if (promptEl.dataset.text !== view.prompt) {

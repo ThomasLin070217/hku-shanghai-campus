@@ -95,6 +95,9 @@ export function createFirstPersonArms(a:Appearance=STUDENT){
   const hand=new T.Mesh(handGeometry,skin);hand.name='First_person_hand';hand.position.y=-handY;hand.castShadow=hand.receiveShadow=false;arm.add(hand);
   root.add(arm);
  }
- const socket=new T.Group();socket.name='First_person_item_socket';socket.position.set(0,-.22,-.30);socket.rotation.x=.10;root.add(socket);let id:string|null=null,held:T.Group|null=null;
- return{root,socket,equip(next:string|null){if(next===id)return;held?.removeFromParent();if(held)disposeOwned(held);held=null;id=next;if(next){const def=ITEMS[next],h=def.hold.firstPerson;held=def.createModel();socket.position.fromArray(h.position);socket.rotation.fromArray(h.rotation);socket.scale.setScalar(h.scale);socket.add(held);}},dispose(){disposeOwned(root,true);},get held(){return held;}};
+ const socket=new T.Group();socket.name='First_person_item_socket';socket.position.set(0,-.22,-.30);socket.rotation.x=.10;root.add(socket);let id:string|null=null,held:T.Group|null=null;const holdPos=new T.Vector3(0,-.22,-.30);let holdScale=1;
+ return{root,socket,equip(next:string|null){if(next===id)return;held?.removeFromParent();if(held)disposeOwned(held);held=null;id=next;if(next){const def=ITEMS[next],h=def.hold.firstPerson;held=def.createModel();socket.position.fromArray(h.position);socket.rotation.fromArray(h.rotation);socket.scale.setScalar(h.scale);holdPos.fromArray(h.position);holdScale=h.scale;socket.add(held);}},
+  /** Walking carry sits lower and 30% smaller; opening the MacBook (C) restores the authored pose. */
+  setCarry(open:boolean){socket.position.copy(holdPos);socket.scale.setScalar(holdScale*(open?1:.7));if(!open)socket.position.y-=.12;},
+  dispose(){disposeOwned(root,true);},get held(){return held;}};
 }

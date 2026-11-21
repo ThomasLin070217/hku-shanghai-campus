@@ -90,6 +90,13 @@ def is_paper(bg, image=''):
     return False
 
 
+def rgb_triplet(value):
+    try:
+        return tuple(int(part) for part in value[value.index('(') + 1:value.index(')')].split(',')[:3])
+    except Exception:
+        return None
+
+
 STYLE = """sel => {
   const el = document.querySelector(sel);
   if (!el) return null;
@@ -110,8 +117,9 @@ VISIBLE = """sel => {
   if (!el) return false;
   const cs = getComputedStyle(el);
   const r = el.getBoundingClientRect();
+  const onScreen = r.right > 0 && r.bottom > 0 && r.left < innerWidth && r.top < innerHeight;
   return !el.hidden && cs.display !== 'none' && cs.visibility !== 'hidden' &&
-    Number(cs.opacity) > 0.02 && r.width > 1 && r.height > 1;
+    Number(cs.opacity) > 0.05 && r.width > 1 && r.height > 1 && onScreen;
 }"""
 
 BAD_FONTS = """arg => {
@@ -217,6 +225,27 @@ def assert_hotbar(page, checkpoint):
     check(checkpoint + ': hotbar sits inside the bottom 16% of the viewport',
           bool(bar) and bar['bottom'] <= VIEW['height'] and bar['top'] >= VIEW['height'] * 0.84,
           bar and (bar['top'], bar['bottom']))
+    # The slot tiles are what the player actually sees: the dark paper and the
+    # small soft-ink numbers, not the survey mode's light 52 px tiles. Their
+    # background has a 0.15 s transition; software WebGL can stall it mid-way,
+    # so read the rule's target with the transition off.
+    page.evaluate("() => { for (const s of document.querySelectorAll('#inventory-hud .item-slot'))"
+                  " s.style.transition = 'none'; }")
+    slot_style = page.evaluate("""() => {
+      const slots = [...document.querySelectorAll('#inventory-hud .item-slot')];
+      return slots.map(s => {
+        const cs = getComputedStyle(s), num = s.querySelector('.slot-number');
+        const ns = num ? getComputedStyle(num) : null;
+        return {bg: cs.backgroundColor, numberColor: ns && ns.color, numberSize: ns && ns.fontSize};
+      });
+    }""")
+    slot_bgs = [rgb_triplet(s['bg']) for s in slot_style]
+    check(checkpoint + ': hotbar slots wear the opening dark paper',
+          bool(slot_style) and all(c and max(c) <= 60 for c in slot_bgs),
+          [s['bg'] for s in slot_style])
+    check(checkpoint + ': slot numbers wear the opening soft ink at 8 px',
+          bool(slot_style) and all(s['numberColor'] == INK_SOFT and s['numberSize'] == '8px' for s in slot_style),
+          slot_style[:3])
     # ~2 s after a selection change the bar fades; a number key brings it back.
     # Software WebGL can spend longer than the 0.35 s transition on one frame, so
     # disable the animation and read the rule's target opacity instead.
@@ -232,6 +261,24 @@ def assert_hotbar(page, checkpoint):
         faded = style(page, '#inventory-hud')
     check(checkpoint + ': hotbar fades to low opacity when idle',
           bool(faded) and faded['opacity'] <= 0.35, faded and faded['opacity'])
+    # The walking controls hint must not sit under the dock (nor show through
+    # it while it is faded).
+    boxes = page.evaluate("""() => {
+      const bar = document.querySelector('#inventory-hud .hotbar');
+      const hint = document.querySelector('.stage-bottom > span:first-child');
+      if (!bar || !hint) return null;
+      const b = bar.getBoundingClientRect(), h = hint.getBoundingClientRect();
+      const hs = getComputedStyle(hint);
+      return {
+        bar: [Math.round(b.top), Math.round(b.bottom)],
+        hint: [Math.round(h.top), Math.round(h.bottom)],
+        hintVisible: hs.display !== 'none' && hs.visibility !== 'hidden'
+          && Number(hs.opacity) > 0.05 && h.width > 1 && h.height > 1,
+        overlap: !(h.right <= b.left || h.left >= b.right || h.bottom <= b.top || h.top >= b.bottom),
+      };
+    }""")
+    check(checkpoint + ': the controls hint stays clear of the faded hotbar',
+          bool(boxes) and boxes['hintVisible'] and not boxes['overlap'], boxes)
     # Press the digit of the slot that is already selected: the selection does not
     # change, so only the hotbar's own number-key listener can wake the dock.
     # The keydown handler runs synchronously, so read before the next idle timer.
@@ -259,6 +306,111 @@ def assert_chapter_card(page, checkpoint):
           is_paper(card['bg'], card['image']), card)
 
 
+def toast_checks(page):
+    """A save toast belongs to a real save, never to a load or a checkpoint start."""
+    page.evaluate("() => { const t = document.querySelector('.opening-save-toast');"
+                  " if (t) t.style.transition = 'none'; }")
+    page.wait_for_timeout(700)
+    check('toast: no save toast on load or checkpoint start',
+          not visible(page, '.opening-save-toast'), style(page, '.opening-save-toast'))
+    # The checkpoint toast is brief and can expire before this function runs, so
+    # the init script on the page records every appearance from the first frame.
+    log = page.evaluate("() => window.__toastLog || []")
+    spurious = [text for text in log if not text.startswith('Saved on this device')]
+    check('toast: no save toast before a real save', not spurious, log)
+    saved = page.evaluate(
+        "() => { try { window.__CAMPUS.experience.persist(true); return true; } catch (e) { return false; } }")
+    shown = False
+    try:
+        page.wait_for_function(
+            "() => { const t = document.querySelector('.opening-save-toast');"
+            " return !!t && !t.hidden && t.classList.contains('is-visible')"
+            " && (t.textContent || '').indexOf('Saved on this device') >= 0; }", timeout=10000)
+        shown = True
+    except Exception:
+        pass
+    check('toast: a real save raises the save toast',
+          saved and shown and visible(page, '.opening-save-toast'), style(page, '.opening-save-toast'))
+    # The fade is a fixed 2.4 s + 260 ms timer, not a per-frame animation, so the
+    # rule's target is read with the transition disabled.
+    page.wait_for_timeout(4000)
+    check('toast: the save toast is gone 4 s after it appears',
+          not visible(page, '.opening-save-toast'), style(page, '.opening-save-toast'))
+
+
+def held_model_checks(page):
+    """The held MacBook and arms drop out of the lower centre third while walking."""
+    def pose():
+        return page.evaluate("""() => {
+          try { const s = window.__CAMPUS.explorer.firstPerson.socket;
+            return {pos: s.position.toArray(), scale: s.scale.toArray()}; } catch (e) { return null; }
+        }""")
+
+    walking = pose()
+    check('b4: the carried MacBook rides lower and ~30% smaller while walking',
+          bool(walking) and walking['scale'][0] <= 0.75 and walking['pos'][1] <= -0.4, walking)
+    page.evaluate("() => { try { window.__CAMPUS.explorer.openPanel('computer', true); } catch (e) {} }")
+    page.wait_for_timeout(600)
+    opened = pose()
+    check('b4: opening the MacBook restores the carry pose',
+          bool(opened) and abs(opened['scale'][0] - 1) <= 0.02 and abs(opened['pos'][1] + 0.30) <= 0.03,
+          opened)
+    page.evaluate("() => { try { window.__CAMPUS.explorer.closePanel(); } catch (e) {} }")
+    page.evaluate("() => { try { window.__CAMPUS.explorer.enterCompat(); } catch (e) {} }")
+    page.wait_for_timeout(400)
+
+
+def pause_bag_checks(page):
+    """Esc and E are campaign overlays too: both wear the opening dark HUD."""
+    page.keyboard.press('Escape')
+    try:
+        page.wait_for_function(
+            "() => { const p = document.getElementById('pause-panel'); return !!p && !p.hidden; }",
+            timeout=8000)
+    except Exception:
+        pass
+    card = style(page, '.pause-card')
+    check('pause: the Esc card opens', visible(page, '.pause-card'), card)
+    assert_body_font('pause', 'card', card)
+    assert_paper('pause', 'card', card)
+    heading = style(page, '.pause-card h2')
+    check('pause: card heading uses Georgia',
+          bool(heading) and first_family(heading['font']) == 'georgia', heading and heading['font'])
+    guide = style(page, '.pause-card .key-guide')
+    check('pause: the key guide is the opening soft ink',
+          bool(guide) and guide['color'] == INK_SOFT, guide and guide['color'])
+    assert_surfaces_fonts(page, 'pause', root='#pause-panel')
+    shot(page, 'check-pause.png')
+    page.evaluate("() => { try { window.__CAMPUS.explorer.enterCompat(); } catch (e) {} }")
+    page.wait_for_timeout(400)
+    page.keyboard.press('e')
+    try:
+        page.wait_for_function(
+            "() => { const m = document.getElementById('inventory-modal'); return !!m && !m.hidden; }",
+            timeout=8000)
+    except Exception:
+        pass
+    panel = style(page, '.bag-panel')
+    check('bag: the E panel opens', visible(page, '.bag-panel'), panel)
+    assert_body_font('bag', 'panel', panel)
+    assert_paper('bag', 'panel', panel)
+    heading = style(page, '.bag-panel h2')
+    check('bag: panel heading uses Georgia',
+          bool(heading) and first_family(heading['font']) == 'georgia', heading and heading['font'])
+    bag_slots = page.evaluate("""() => {
+      const slots = [...document.querySelectorAll('#inventory-modal .item-slot')].slice(0, 9);
+      for (const s of slots) s.style.transition = 'none';
+      return slots.map(s => getComputedStyle(s).backgroundColor);
+    }""")
+    check('bag: slots wear the opening dark paper',
+          bool(bag_slots) and all(c and max(c) <= 60 for c in (rgb_triplet(bg) for bg in bag_slots)),
+          bag_slots)
+    assert_surfaces_fonts(page, 'bag', root='#inventory-modal')
+    shot(page, 'check-bag.png')
+    page.keyboard.press('e')
+    page.wait_for_timeout(300)
+
+
 def focus_checks(page):
     page.evaluate("() => window.__CAMPUS.campaign.debug.b4.focus('keyboard')")
     page.wait_for_timeout(500)
@@ -272,7 +424,23 @@ def focus_checks(page):
     hearts = style(page, '.opening-hearts')
     check('b4 focus: vitals shrink to one compact row (<= 30 px)',
           bool(hearts) and hearts['height'] <= 30, hearts and hearts['height'])
+    read_caps = """() => {
+      try { const b = window.__CAMPUS.campaign.debug.b4; return b && b.caps ? b.caps() : null; }
+      catch (e) { return null; }
+    }"""
+    caps = page.evaluate(read_caps)
+    targets = [c for c in (caps or []) if c.get('phrase')]
+    others = [c for c in (caps or []) if not c.get('phrase') and not c.get('enter')]
+    check('b4 focus: every target cap glows gold under the red light',
+          len(targets) == 8 and all(c['emissive'] == 0xffb648 and c['intensity'] >= 0.8 for c in targets),
+          targets)
+    check('b4 focus: non-target caps stay unlit',
+          bool(others) and all(c['emissive'] == 0 for c in others), others[:4])
     shot(page, 'check-b4-focus.png')
+    page.evaluate("() => { try { window.__CAMPUS.campaign.debug.b4.type('i'); } catch (e) {} }")
+    typed = [c for c in (page.evaluate(read_caps) or []) if c['emissive'] == 0x74e6b4]
+    check('b4 focus: a typed cap reads distinct from the gold targets',
+          len(typed) == 1, typed)
     page.evaluate('() => window.__CAMPUS.campaign.debug.b4.leave()')
     page.wait_for_timeout(300)
     check('b4 focus: minimap returns after stepping back', visible(page, '.opening-mapcard'), style(page, '.opening-mapcard'))
@@ -360,6 +528,19 @@ def credits_checks(page):
                       " r.setPixelRatio(0.5); r.setSize(480, 270, false); }")
     except Exception:
         pass
+    # The Mac panel runs before the credits; its visible copy names the machine once.
+    try:
+        page.wait_for_function(
+            "() => { const o = document.getElementById('ending-overlay');"
+            " return !!o && !o.hidden && Number(getComputedStyle(o).opacity) > 0.05"
+            " && o.getBoundingClientRect().width > 1; }", timeout=120000)
+    except Exception:
+        pass
+    ending_text = page.evaluate(
+        "() => { const o = document.getElementById('ending-overlay');"
+        " return o ? o.innerText.toUpperCase() : ''; }")
+    check('ending: the Mac panel shows HKU SUPERCOMPUTER once',
+          ending_text.count('HKU SUPERCOMPUTER') == 1, ending_text)
     try:
         page.wait_for_function("() => !!document.getElementById('ending-credits')", timeout=150000)
         # The card's own fade is a transition; frames are scarce here, so the
@@ -400,11 +581,11 @@ def credits_checks(page):
         " return c ? c.textContent.toUpperCase() : ''; }")
     check('ending: the credits name HKU SHANGHAI · CDS once',
           credits_text.count('HKU SHANGHAI · CDS') == 1, credits_text)
-    ending_text = page.evaluate(
-        "() => { const o = document.getElementById('ending-overlay');"
-        " return o ? o.textContent.toUpperCase() : ''; }")
-    check('ending: the Mac panel shows HKU SUPERCOMPUTER once',
-          ending_text.count('HKU SUPERCOMPUTER') == 1, ending_text)
+    # What the player can see, not what the DOM holds: innerText skips the hidden
+    # pause card, ending overlay and barrier line.
+    visible_text = page.evaluate("() => document.body.innerText.toUpperCase()")
+    check('ending: HKU SHANGHAI · CDS appears once on the visible screen',
+          visible_text.count('HKU SHANGHAI · CDS') == 1, visible_text)
     shot(page, 'check-ending-credits.png')
 
 
@@ -426,7 +607,19 @@ def handoff_checks(page):
         " return c ? c.textContent.trim() : null; }")
     check('handoff: the completion dialog names the chapter the campaign names',
           chapter == 'Chapter 1', chapter)
-    page.locator('.opening-handoff-dialog .opening-button--primary').first.click()
+    # Task 6 made "Continue to Chapter 2" the primary action, so the epilogue is
+    # reached through Close; find the button by its label, never by its classes.
+    labels = page.evaluate(
+        "() => [...document.querySelectorAll('.opening-handoff-dialog button')]"
+        ".map(b => b.textContent.trim())")
+    check('handoff: the dialog offers Close and Continue to Chapter 2',
+          {'Close', 'Continue to Chapter 2'}.issubset(set(labels)), labels)
+    page.evaluate("""() => {
+      const dialog = document.querySelector('.opening-handoff-dialog');
+      const close = [...(dialog ? dialog.querySelectorAll('button') : [])]
+        .find(b => b.textContent.trim().toLowerCase() === 'close');
+      if (close) close.click();
+    }""")
     page.wait_for_function(
         "() => { const e = document.querySelector('.opening-epilogue'); return !!e && !e.hidden; }",
         timeout=20000)
@@ -481,11 +674,59 @@ def menu_checks(page):
     shot(page, 'check-menu.png')
 
 
+def survey_checks(page):
+    """Survey mode keeps the hotbar it had before the campaign restyle."""
+    page.goto(ORIGIN + '?experience=survey', wait_until='load')
+    page.wait_for_function('() => window.__CAMPUS && document.getElementById("inventory-hud")', timeout=90000)
+    page.wait_for_timeout(2600)
+    body = page.evaluate('() => document.body.className')
+    check('survey: the story-mode body class is absent', 'opening-mode' not in body.split(), body)
+    hud = style(page, '#inventory-hud')
+    dock = page.evaluate("() => getComputedStyle(document.getElementById('inventory-hud')).bottom")
+    check('survey: the hotbar keeps its survey dock (bottom 48 px)',
+          dock == '48px', {'css bottom': dock, 'box': hud and (hud['top'], hud['bottom'])})
+    slot = page.evaluate("""() => {
+      const e = document.querySelector('#inventory-hud .item-slot');
+      if (!e) return null;
+      const cs = getComputedStyle(e), n = e.querySelector('.slot-number');
+      return {bg: cs.backgroundColor, width: cs.width, number: n ? getComputedStyle(n).fontSize : null};
+    }""")
+    check('survey: the hotbar keeps its 52 px slots',
+          bool(slot) and slot['width'] == '52px', slot)
+    check('survey: the hotbar keeps the light slot colour',
+          bool(slot) and min(rgb_triplet(slot['bg']) or (0, 0, 0)) >= 120, slot)
+    check('survey: the hotbar keeps 12 px numbers',
+          bool(slot) and slot['number'] == '12px', slot)
+    idle = page.evaluate("() => document.getElementById('inventory-hud').classList.contains('is-idle')")
+    check('survey: the survey dock never takes the story idle fade', not idle, idle)
+    shot(page, 'check-survey.png')
+
+
 def main():
     with sync_playwright() as p:
         browser = p.chromium.launch(executable_path=CHROME if os.path.exists(CHROME) else None, args=ARGS, headless=True)
         try:
             page = browser.new_page(viewport=VIEW)
+            # Every toast that ever shows, from the first frame: the checkpoint
+            # toast is short-lived and would otherwise expire before it is read.
+            page.add_init_script("""(() => {
+              window.__toastLog = [];
+              const start = () => {
+                const tick = () => {
+                  const t = document.querySelector('.opening-save-toast');
+                  if (t && !t.hidden && t.classList.contains('is-visible')) {
+                    const text = (t.textContent || '').trim();
+                    if (text && window.__toastLog[window.__toastLog.length - 1] !== text) {
+                      window.__toastLog.push(text);
+                    }
+                  }
+                  requestAnimationFrame(tick);
+                };
+                requestAnimationFrame(tick);
+              };
+              if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+              else start();
+            })();""")
             for checkpoint in CHECKPOINTS:
                 print('\n==', checkpoint)
                 open_checkpoint(page, checkpoint)
@@ -494,6 +735,9 @@ def main():
                 assert_chapter_card(page, checkpoint)
                 assert_surfaces_fonts(page, checkpoint)
                 if checkpoint == 'b4-inside':
+                    toast_checks(page)
+                    held_model_checks(page)
+                    pause_bag_checks(page)
                     focus_checks(page)
                 if checkpoint == 'sports':
                     sports_lock_checks(page)
@@ -504,6 +748,8 @@ def main():
             handoff_checks(page)
             print('\n== menu')
             menu_checks(page)
+            print('\n== survey')
+            survey_checks(page)
         finally:
             browser.close()
     print('\n%d passed, %d failed' % (passed, len(failures)))
