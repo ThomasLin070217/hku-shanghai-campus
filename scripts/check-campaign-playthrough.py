@@ -295,15 +295,64 @@ def handoff_dialog(browser):
     context.close()
 
 
+NO_CINEMA = """() => { const c = document.querySelector('.opening-cinema');
+  return {cinemaShown: !!c && !c.hidden, bodyClass: document.body.classList.contains('opening-cinema-active'),
+    title: c && !c.hidden ? c.innerText.trim().slice(0, 80) : '', hudHidden: document.body.classList.contains('opening-cinema-active')}; }"""
+
+
+def lawn_cinema(browser):
+    """Chapter 1 rushed through its hooks right after the wake starts, then the lawn:
+    no opening letterbox or title (wake, showTitle) may show while the campaign runs,
+    also after a lawn capture."""
+    context = browser.new_context(viewport={'width': 1440, 'height': 810})
+    context.add_init_script(COUNT_CARDS)
+    page = context.new_page()
+    errors = []
+    page.on('pageerror', lambda e: errors.append(str(e)))
+    boot(page, '?experience=opening')
+    D = 'window.__CAMPUS.openingDebug'
+    page.evaluate(f'() => {{ {D}.readInvitation(); {D}.exitBus(); {D}.acceptErrand(); {D}.takeLaptop(); {D}.triggerIncident(); {D}.reachB5(); {D}.openComputer("tasks"); {D}.readAlert(); }}')
+    page.wait_for_timeout(400)
+    for key in ('c', 'Escape', 'Escape', 'c'):
+        if page.evaluate(f'() => {D}.state().modal') is None:
+            break
+        page.keyboard.press(key)
+        until(page, f'() => {D}.state().modal === null', 8)
+    resume(page)
+    page.evaluate(f'() => {D}.arriveB4()')
+    until(page, "() => window.__CAMPUS.campaign.state()?.stage === 'b4_enter'", 30)
+    page.evaluate('() => window.__CAMPUS.campaign.debug.b4.complete()')
+    until(page, "() => window.__CAMPUS.campaign.state()?.stage === 'to_lawn'", 30)
+    resume(page)
+    entry = page.evaluate("() => window.__CAMPUS.campaign.objective().target")
+    page.evaluate(f'() => window.__t6.place({entry[0]}, {entry[2]})')
+    until(page, "() => window.__CAMPUS.campaign.state()?.stage === 'lawn'", 60)
+    page.wait_for_timeout(2500)
+    at_lawn = page.evaluate(NO_CINEMA)
+    check('lawn: no opening letterbox or title while the campaign runs', not at_lawn['cinemaShown'] and not at_lawn['bodyClass'], at_lawn)
+    shot(page, '09-lawn-no-cinema.png')
+    hearts = page.evaluate('() => window.__CAMPUS.campaign.debug.lawn.hearts()')
+    page.evaluate('() => window.__CAMPUS.campaign.debug.lawn.capture()')
+    page.wait_for_timeout(2500)
+    after = page.evaluate(NO_CINEMA)
+    check('lawn: a capture happened', page.evaluate('() => window.__CAMPUS.campaign.debug.lawn.hearts()') < hearts)
+    check('lawn: no opening letterbox or title after a capture', not after['cinemaShown'] and not after['bodyClass'], after)
+    shot(page, '10-lawn-after-capture.png')
+    check('lawn cinema: no page errors', not errors, errors)
+    context.close()
+
+
 with sync_playwright() as p:
     os.makedirs(SHOTS, exist_ok=True)
     browser = p.chromium.launch(executable_path=CHROME, args=ARGS, headless=True) if CHROME else p.chromium.launch(args=ARGS, headless=True)
     started = time.time()
     try:
-        if os.environ.get('ONLY') != 'handoff':
+        if os.environ.get('ONLY') in (None, '', 'main'):
             main_run(browser)
-        if os.environ.get('ONLY') != 'main':
+        if os.environ.get('ONLY') in (None, '', 'handoff'):
             handoff_dialog(browser)
+        if os.environ.get('ONLY') in (None, '', 'lawn'):
+            lawn_cinema(browser)
     finally:
         browser.close()
     print(f'\ncheck-campaign-playthrough: {passed} passed, {len(failures)} failed ({time.time() - started:.0f} s)')

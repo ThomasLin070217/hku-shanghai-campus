@@ -72,7 +72,7 @@ export function createOpeningExperience(
  let robotState='patrol',robotWarning=0;
  const atmo=()=>getAtmosphere?.();
  function showSubtitle(text:string,seconds:number){subtitleText=text;subtitleSeconds=seconds;}
- function showTitle(title:string,subtitle:string,seconds:number){titleText=title;titleSubtitle=subtitle;titleSeconds=seconds;}
+ function showTitle(title:string,subtitle:string,seconds:number){if(campaign())return;titleText=title;titleSubtitle=subtitle;titleSeconds=seconds;}
  function startWake(){wakeStarted=true;wakeDone=false;wakeClock=0;g.pitch=.52;g.yaw=2.24;audio.openingCue('wake');}
 
  function staffLineFor(clock:number){
@@ -412,6 +412,10 @@ export function createOpeningExperience(
  function update(dt:number){
   if(disposed)return;
   if(completePending){completePending=false;if(story.stage==='complete'&&!campaign()&&!failed&&!modal)open('complete');}
+  // The chapter card is the campaign's only title: a wake or title still pending from
+  // Chapter 1 ends here, so it never letterboxes the HUD or holds the player still.
+  const inCampaign=!!campaign();
+  if(inCampaign){if(wakeStarted&&!wakeDone){wakeDone=true;wakeClock=WAKE_SECONDS;}titleSeconds=0;}
   if(!wakeStarted&&!wakeDone&&story.stage==='bus'&&!story.invitation_read&&!g.paused&&!modal&&!g.inventoryOpen&&explorer.enabled)startWake();
   if(wakeStarted&&!wakeDone&&!g.paused){
    wakeClock+=dt;
@@ -463,7 +467,9 @@ export function createOpeningExperience(
   const prompt=active&&!g.paused&&!(wakeStarted&&!wakeDone)?(item?'F · '+item.label:story.laptop_acquired&&story.stage!=='complete'?'C · Open the MacBook':''):'';
   const sound=audio.diagnostics;
   let cinema:OpeningCinema;
-  if(titleSeconds>0){
+  if(inCampaign){
+   cinema={mode:'off',title:'',subtitle:'',hint:'',opacity:0,letterbox:false};
+  }else if(titleSeconds>0){
    cinema={mode:'title',title:titleText,subtitle:titleSubtitle,hint:'',opacity:0,letterbox:true};
   }else if(wakeStarted&&!wakeDone){
    const early=wakeClock<2.1;

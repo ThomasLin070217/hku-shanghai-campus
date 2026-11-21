@@ -164,6 +164,8 @@ export function createLawnChapter():Chapter{
    rig:()=>visuals?{meshes:visuals.rig.meshes,clips:visuals.rig.clips}:null,
    state:()=>combat?structuredClone(combat.state):null,
    hearts:()=>hearts.get(),
+   /** Caught by L001 now (same path as a hit in the fight). */
+   capture(){if(fighting())capture();return hearts.get();},
   },
  };
 }
