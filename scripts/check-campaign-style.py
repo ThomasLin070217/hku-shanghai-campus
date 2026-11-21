@@ -465,6 +465,9 @@ def focus_checks(page):
           targets)
     check('b4 focus: non-target caps stay unlit',
           bool(others) and all(c['emissive'] == 0 for c in others), others[:4])
+    enter_zero = [c for c in (caps or []) if c.get('enter')]
+    check('b4 focus: Enter is not gold before any cap is typed',
+          len(enter_zero) == 1 and enter_zero[0]['emissive'] != 0xffb648, enter_zero)
     shot(page, 'check-b4-focus.png')
     page.evaluate("() => { try { window.__CAMPUS.campaign.debug.b4.type('i'); } catch (e) {} }")
     typed = [c for c in (page.evaluate(read_caps) or []) if c['emissive'] == 0x74e6b4]
