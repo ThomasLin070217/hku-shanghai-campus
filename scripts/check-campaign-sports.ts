@@ -128,7 +128,9 @@ group('(b) the sports chapter attaches the door in opening mode with collision',
  const {host}=makeHost();
  host.start('mac-device','to_sports');
  host.update(1/120);
- assert.deepEqual(host.attached(),['sports'],'the walking leg attaches the sports chapter');
+ assert.ok(host.attached().includes('sports'),'the walking leg attaches the sports chapter');
+ // A run past B4 and the lawn keeps those chapters' aftermath in the world (Task 6, reload past the lawn).
+ assert.deepEqual(host.attached(),['b4','lawn','sports'],'passed chapters stay attached, in story order');
  assert.equal(host.chapter(),null,'to_sports is a walking leg');
  assert.equal(nav.doorOpen(SPORTS_DOOR.id),false,'the campaign door starts closed');
  assert.equal(nav.blocked(centre.x,centre.z,0),true,'closed door blocks the campaign body');

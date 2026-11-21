@@ -58,6 +58,7 @@ export function createB4Chapter():Chapter{
  const body=()=>(ctx?.explorer as {game?:{body:{position:T.Vector3}}}|undefined)?.game?.body.position??null;
  const step=(stage=ctx?.stage()):B4Step|null=>stage?b4StepOf(stage):null;
  const reached=(stage:CampaignStage)=>ctx!==null&&stageIndex(ctx.stage())>=stageIndex(stage);
+ const playerInRoom=()=>{const p=body();return !!p&&inRoom(p.x,p.z);};
  const own=<M extends T.Material>(m:M)=>{owned.push(m);return m;};
 
  function build(c:ChapterContext){
@@ -118,7 +119,8 @@ export function createB4Chapter():Chapter{
   if(reached('b4_flip')){keyboard={typed:B4_PHRASE,solved:true};paintCaps();}
   if(reached('b4_breaker')){flip=createFlipState(tiles.length,true);for(const t of tiles)t.target=Math.PI;flipDone=true;}
   const w=world();if(w)setB4FlipPanel(w,!reached('b4_breaker'));
-  if(campaignChapterOf(stage)==='b4')addLights();else removeLights();
+  // After the MacBook connects the room stays lit until the player has walked out of B04.
+  if(campaignChapterOf(stage)==='b4')addLights();else if(!playerInRoom())removeLights();
   // The supercomputer runs from the breaker on, also after a reload.
   humWanted=reached('b4_connect');if(humWanted)playHum();
  }
@@ -350,6 +352,7 @@ export function createB4Chapter():Chapter{
   },
   update(dt){
    if(!ctx||!group)return;applyStage(ctx.stage());
+   if(lights&&campaignChapterOf(ctx.stage())!=='b4'&&!playerInRoom())removeLights();
    if(!raf)animate(dt);
    applyFocus();
   },
