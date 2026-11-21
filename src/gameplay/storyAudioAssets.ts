@@ -25,7 +25,6 @@ export const STORY_AUDIO_URLS:Record<string,URL>={
  'ui_error':new URL('../../assets/audio/story/synth/sfx/ui_error.wav',import.meta.url),
  'invitation_open':new URL('../../assets/audio/story/synth/sfx/invitation_open.wav',import.meta.url),
  'invitation_page':new URL('../../assets/audio/story/synth/sfx/invitation_page.wav',import.meta.url),
- 'invitation_close':new URL('../../assets/audio/story/synth/sfx/invitation_close.wav',import.meta.url),
  'macbook_open':new URL('../../assets/audio/story/synth/sfx/macbook_open.wav',import.meta.url),
  'macbook_close':new URL('../../assets/audio/story/synth/sfx/macbook_close.wav',import.meta.url),
  'macbook_type':new URL('../../assets/audio/story/synth/sfx/macbook_type.wav',import.meta.url),

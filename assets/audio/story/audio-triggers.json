@@ -333,15 +333,6 @@
       "priority": "medium"
     },
     {
-      "id": "invitation_close",
-      "file": "synth/sfx/invitation_close.wav",
-      "bus": "ui",
-      "spatial": false,
-      "loop": false,
-      "gain": 0.85,
-      "priority": "medium"
-    },
-    {
       "id": "macbook_open",
       "file": "synth/sfx/macbook_open.wav",
       "bus": "ui",
