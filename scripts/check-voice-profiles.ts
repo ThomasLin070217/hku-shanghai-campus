@@ -88,9 +88,18 @@ for (const id of ['npc.student.guide', 'npc.campus.tech', 'npc.terminal.echo']) 
 }
 const player = profiles.profiles.find((profile) => profile.npcId === 'player.student-ambassador');
 assert.ok(player, 'player profile');
-assert.equal(player.status, 'existing-local-synth');
-assert.match(player.provider, /macOS/);
+assert.equal(player.status, 'generated-local-neural');
+assert.match(player.provider, /Piper/);
+assert.equal(player.model, 'en_US-kristin-medium');
 assert.equal(player.clips[0]?.text, STAFF_DIALOGUE.playerAccept);
+assert.equal(player.clips[0]?.file, 'assets/audio/npc/player/player-accept-kristin.wav');
+const playerWav = wavInfo(player.clips[0]!.file);
+assert.equal(playerWav.sampleRate, 22050);
+assert.equal(playerWav.channels, 1);
+assert.ok(Math.abs(playerWav.duration - player.clips[0]!.duration) < 0.02);
+assert.equal(sha256(bytes(player.clips[0]!.file)), player.clips[0]!.sha256);
+assert.equal(player.sourceFile, 'assets/audio/npc/player/source/player-accept-kristin-raw.wav');
+assert.equal(sha256(bytes(player.sourceFile)), player.sourceFileHash);
 
 assert.equal(planned.npcs.length, 3, 'three planned NPCs');
 assert.deepEqual(planned.npcs.map((npc) => npc.lines.length), [8, 11, 12]);

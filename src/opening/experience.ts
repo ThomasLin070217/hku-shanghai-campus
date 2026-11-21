@@ -215,7 +215,7 @@ export function createOpeningExperience(
  function action(action:string){
   if(failed&&!'retry recover restart'.split(' ').includes(action))return;
   if(action==='read_invitation'){transition('read_invitation');close();}
-  else if(action==='accept_errand'&&story.stage==='to_b5'){runtime={...runtime,staff_task_received:true};if(transition('accept_errand')){close();playAcceptanceVoices();notify('You: Yeah, I will collect it.');}}
+  else if(action==='accept_errand'&&story.stage==='to_b5'){runtime={...runtime,staff_task_received:true};if(transition('accept_errand')){close();playAcceptanceVoices();notify(`You: ${STAFF_DIALOGUE.playerAccept}`);}}
   else if(action==='read_alert'){transition('read_alert');runtime={...runtime,agent_chat_unlocked:true,go_to_building4_objective_unlocked:true};modal='computer';computerPage='agent';audio.openingCue('unlock');persist(true);}
   else if(action==='retry')recoverFromCatch(false);
   else if(action==='recover')recoverFromCatch(true);

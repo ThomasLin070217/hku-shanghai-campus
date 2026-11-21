@@ -9,6 +9,7 @@
 - 没有找到 DaVinci 官方公开的语音生成 API 文档；本轮只使用已登录网页的正常 UI，没有调用未公开接口、没有充值、没有升级、没有购买 credits、没有克隆真人声音。
 - 一次免费语音生成已经用掉，账号页面随后显示 **Audio 0/1**。因此本轮没有重试、没有换声音试听，也没有为 Michael / Ruibang / Lam 生成音频。
 - 已生成 Staff 的五句英文，并拆成五个游戏内固定音频。游戏运行时不调用在线 TTS。
+- 玩家接受句也从旧的 macOS Samantha 换成了本地 Piper 神经声线 Kristin（不是 DaVinci，因为 Audio 0/1）；生成句为 “Yeah, I'll collect it.”，可在 evidence 页面试听和对比其他本地声线（Kristin 为当前，Bryce/Amy/Lessac/Ryan 为备选）。
 
 ## 2. 生成前检查
 
@@ -83,7 +84,7 @@ DaVinci 帮助中心说明新账号“前三次生成请求免费”，但本账
 
 可试听页面：`evidence/voice/index.html`（开发服务器打开 `http://127.0.0.1:5184/evidence/voice/index.html`）。页面包含两次实际游戏混音录音、五张字幕截图和 trace 摘要。
 
-最终一次 20.58 s 的游戏内录音 trace：
+最终一次 20.58 s 的游戏内录音 trace（Staff = DaVinci Asher；玩家句 = 本地 Piper Kristin）：
 
 | 时间 | Staff line | 字幕 | npc-voice | 任务 / 混音 |
 | --- | --- | --- | --- | --- |
@@ -91,8 +92,8 @@ DaVinci 帮助中心说明新账号“前三次生成请求免费”，但本账
 | 2.4 s | 1 | Could you do me a quick favour? … | 2 | `to_b5`；duck 0.084 |
 | 8.4 s | 2 | It's on the office table. Mind picking it up? … | 3 | `to_b5`；duck 0.084 |
 | ~13.2 s | 2 | objective banner | 0 | `to_b6`；duck 回到 0.2 |
-| 14.4 s | 2 | YOU — Yeah, I will collect it. | 4 | accepted；duck 0.084 |
-| 15.6–19.2 s | 2 | COORDINATOR — Perfect, thanks! … | 5 | accepted；duck 0.084 → 0.2 |
+| 13.8 s | 2 | YOU — Yeah, I'll collect it. | 4 | accepted；duck 0.108 → 0.084 |
+| 15.0–18.6 s | 2 | COORDINATOR — Perfect, thanks! … | 5 | accepted；duck 0.084 → 0.2 |
 
 重复询问单独录音 3.0 s：目标 `opening-staff-repeat`，字幕 `COORDINATOR — Hey — any luck with that laptop?`，`npc-voice` 6。
 
@@ -123,14 +124,30 @@ DaVinci 帮助中心说明新账号“前三次生成请求免费”，但本账
 
 建议人工试听顺序：`assets/audio/npc/staff/staff-line1.wav` → line2 → line3 → line4 → line5，或直接听 `source/staff-take1.mp3`。如果人耳认为 Asher 太成熟/太年轻/太慢，本轮已经没有免费 Audio 额度，不应偷偷重试；应在下一轮先确认额度，再决定是否换声音。
 
-## 8. 未完成与下一步
+## 8. 玩家接受句的补充修复
+
+原 `player-accept-english.wav` 是 macOS Samantha，保留为历史文件，但游戏已不再加载。新的玩家句：
+
+| 字段 | 值 |
+| --- | --- |
+| 文本 | Yeah, I'll collect it. |
+| Provider | Piper（本地神经 TTS，不是 DaVinci） |
+| Model / voice | `en_US-kristin-medium`，Kristin |
+| 参数 | length_scale 1.0；峰值归一化到 -3 dBFS |
+| 时长 | 1.37 s；22.05 kHz mono |
+| 许可 | public-domain LibriVox-derived Piper voice；没有克隆未授权真人，也没有付费调用 |
+| 文件 | `assets/audio/npc/player/player-accept-kristin.wav` |
+
+选 Kristin 的原因：原玩家句是女声 Samantha，保留女声连续性；Kristin 的 model card 写明训练语料来自 LibriVox、许可为 public domain，比 Amy（Cori Samuel 的 Hi-Fi TTS 声线）在“未授权真人克隆”上更稳妥。Staff 已经是 DaVinci 男声 Asher，玩家女声也形成清晰区分。
+
+## 9. 未完成与下一步
 
 - Michael Zhang、Ruibang、Lam：已在 `content/voice/profiles.json` 建立 planned profile，包含推荐声音方向、稳定性和风格；原始中文台词清单在 `content/voice/planned-dialogue.json`，共 8 + 11 + 12 条，英文改编仍待确认。没有生成音频。原因：Audio 0/1，且本轮禁止付费。
 - 背景 guest/student：没有正式对白，不新增配音，避免给背景 NPC 编造剧情。
 - 若下一轮获得新的免费额度，建议顺序：Michael 的 firstMeeting → assignment → repeat；Ruibang 的 firstMeeting/hint；Lam 的 firstMeeting/status。每条先生成 1 句试听，确认后再批量。
-- 不要用 macOS `say` 或其他 TTS 冒充 DaVinci 结果。现有玩家接受句仍是历史 macOS Samantha 本地合成，已在 profile 中明确标注为 `existing-local-synth`，与本轮 DaVinci Staff 声音区分。
+- 玩家接受句也不再使用旧的 macOS Samantha。因为 DaVinci Audio 已是 0/1，本轮改用**本地 Piper 神经 TTS** 重新生成 `Yeah, I'll collect it.`（`en_US-kristin-medium`，public-domain LibriVox voice，length_scale 1.0）。这不是 DaVinci 结果，也不是付费 API；profile 中标记为 `generated-local-neural`，与 Staff 的 DaVinci 声音明确区分。若下一轮拿到 DaVinci 免费额度，可以再把玩家句换成 DaVinci 声线。
 
-## 9. 复现与文件
+## 10. 复现与文件
 
 - 生成请求：`work/voice-generation/generation-request.json`
 - 生成日志：`work/voice-generation/generation-log.json`（同时复制到 `assets/audio/npc/staff/source/`）
@@ -138,6 +155,7 @@ DaVinci 帮助中心说明新账号“前三次生成请求免费”，但本账
 - 音频清单：`assets/audio/npc/staff/clips.json`
 - Voice profiles：`content/voice/profiles.json`
 - 共享台词：`content/voice/staff-dialogue.ts`
+- 玩家句：`assets/audio/npc/player/`、`scripts/audio/prepare-player-voice.py`
 - 运行时：`src/opening/voice.ts`
 - 接入：`src/opening/experience.ts`
 - 混音：`src/gameplay/audio.ts` 的 `playVoice` / `setDialogueDuck`

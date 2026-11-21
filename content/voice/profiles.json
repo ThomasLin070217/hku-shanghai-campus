@@ -49,7 +49,7 @@
     {
       "npcId": "opening-staff",
       "displayName": "Dinner coordinator",
-      "role": "HKU campus staff \u00b7 Building 5 dinner coordinator",
+      "role": "HKU campus staff · Building 5 dinner coordinator",
       "fictional": true,
       "status": "generated",
       "provider": "DaVinci AI",
@@ -62,7 +62,7 @@
       "age": "Middle Aged",
       "descriptive": "Casual",
       "stability": 0.4,
-      "style": "Friendly university staff member, 25\u201340, natural conversational English, slightly rushed but warm, subtle pauses, relaxed tone, authentic human delivery, no announcer voice, no exaggerated acting.",
+      "style": "Friendly university staff member, 25–40, natural conversational English, slightly rushed but warm, subtle pauses, relaxed tone, authentic human delivery, no announcer voice, no exaggerated acting.",
       "takeId": "staff-take1",
       "takeContentHash": "f01f8876bf96fb8f719d132d8330e3ebab74e89d285548acb729546a71df7578",
       "sourceFile": "assets/audio/npc/staff/source/staff-take1.mp3",
@@ -73,7 +73,7 @@
         {
           "dialogueId": "staff.act1.line1",
           "id": "staff-line1",
-          "text": "Hey \u2014 you're one of the Student Ambassadors, right?",
+          "text": "Hey — you're one of the Student Ambassadors, right?",
           "file": "assets/audio/npc/staff/staff-line1.wav",
           "sourceStart": 0,
           "sourceEnd": 2.55,
@@ -125,7 +125,7 @@
         {
           "dialogueId": "staff.act1.line5",
           "id": "staff-line5",
-          "text": "Hey \u2014 any luck with that laptop?",
+          "text": "Hey — any luck with that laptop?",
           "file": "assets/audio/npc/staff/staff-line5.wav",
           "sourceStart": 19.05,
           "sourceEnd": 21.159,
@@ -205,30 +205,40 @@
     },
     {
       "npcId": "player.student-ambassador",
-      "displayName": "Player \u00b7 Student Ambassador",
-      "role": "Player acceptance reply (existing local synthesis, not a DaVinci generation)",
+      "displayName": "Player · Student Ambassador",
+      "role": "Player acceptance reply (local neural TTS; not a DaVinci generation)",
       "fictional": true,
-      "status": "existing-local-synth",
-      "provider": "macOS Samantha (existing asset)",
-      "model": "macOS speech synthesis",
-      "voiceId": null,
-      "voiceName": "Samantha",
+      "status": "generated-local-neural",
+      "provider": "Piper (local neural TTS)",
+      "model": "en_US-kristin-medium",
+      "voiceId": "en_US-kristin-medium",
+      "voiceName": "Kristin",
       "language": "en",
       "accent": "American",
-      "age": "Young",
-      "descriptive": "Soft / neutral",
+      "age": "Young Adult",
+      "descriptive": "Natural / warm",
       "stability": null,
-      "style": "Existing 1.53 s player acceptance line; retained for continuity and clearly labelled as local synthesis, not a cloned or DaVinci voice.",
-      "takeId": null,
-      "sourceFile": "assets/audio/opening-foley/player-accept-english.wav",
+      "style": "Young Student Ambassador; natural, warm, slightly relieved. Local neural TTS used because the DaVinci free audio quota was 0/1. Public-domain LibriVox-derived Piper voice; not a paid API and not an unauthorized clone of a real person.",
+      "takeId": "player-accept-kristin",
+      "sourceFile": "assets/audio/npc/player/source/player-accept-kristin-raw.wav",
       "clips": [
         {
           "dialogueId": "player.act1.accept",
-          "text": "Yeah, I will collect it.",
-          "file": "assets/audio/opening-foley/player-accept-english.wav",
-          "duration": 1.53
+          "text": "Yeah, I'll collect it.",
+          "file": "assets/audio/npc/player/player-accept-kristin.wav",
+          "duration": 1.37,
+          "sampleRate": 22050,
+          "sha256": "2e8a80a678fd3a13f834046b034e172c227cd53c281a4a0b47faf6f53b5e647f",
+          "rmsDb": -20.09,
+          "peakDb": -3,
+          "tts": "Piper (local neural TTS), en_US-kristin-medium, length_scale 1.0",
+          "voiceLicense": "public domain, LibriVox voice (see Piper model card)"
         }
-      ]
+      ],
+      "modelKey": "piper-en_US-kristin-medium",
+      "sourceFileHash": "0c0a9214dbb89fc2606acf25f873b005e9b4ea096198fe81c3781dfe9b0ec96b",
+      "sourceDurationSeconds": 1.37,
+      "clipManifest": "assets/audio/npc/player/clip.json"
     }
   ],
   "backgroundCast": {
@@ -246,5 +256,17 @@
       "opening-guest-8",
       "opening-guest-9"
     ]
+  },
+  "localTools": {
+    "piper": {
+      "version": "1.2.0 (Python package, local)",
+      "voice": "en_US-kristin-medium",
+      "lengthScale": 1,
+      "purpose": "Player acceptance line only; DaVinci Audio was 0/1.",
+      "paidApi": false,
+      "clonedVoice": false,
+      "voiceLicense": "public domain, LibriVox voice (Piper model card)",
+      "modelSource": "https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US/kristin/medium"
+    }
   }
 }
