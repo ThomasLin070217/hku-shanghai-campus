@@ -1,0 +1,35 @@
+{
+  "schemaStatus": "draft-awaiting-runtime-schema",
+  "schemaVersion": 1,
+  "id": "npc.campus.tech",
+  "displayName": "Ruibang",
+  "fictional": true,
+  "role": "校园设施技术员",
+  "appearance": "蓝灰工装、工具腰包、橙色识别灯；本章可只通过语音出现",
+  "motivation": "恢复本地控制并阻止恶意指令再次进入",
+  "knows": [
+    "控制台离线恢复规则",
+    "宇树助手正在充电",
+    "紧急关闭装置的用途"
+  ],
+  "doesNotKnow": [
+    "黑客身份",
+    "入侵来源",
+    "玩家路线上的具体障碍"
+  ],
+  "speechStyle": "准确、务实、解释因果",
+  "dialogue": {
+    "firstMeeting": "我是 Ruibang。控制台还能离线恢复，先看看旁边的应急说明。",
+    "repeat": "三步都在控制台上，重点是先后关系。",
+    "offTopic": "入侵来源还查不到，先恢复本地控制。",
+    "locked": "控制台还没通电。靠近主面板并启动离线程序。",
+    "wrongAnswer": "顺序不对。现在恢复控制，会让外部恶意指令重新进来。",
+    "hint0": "先读应急说明，答案就在控制台旁边。",
+    "hint1": "备用电源必须最先启动，外部网络不能留到最后处理。",
+    "hint2": "正确顺序是先启动电源，再隔离外部网络，最后恢复本地控制。",
+    "puzzleComplete": "本地权限回来了。充电舱里有一台没被感染的四足机器人，启动它。",
+    "chapterComplete": "三处关闭装置全部响应，狮子已经安全停机。",
+    "fallback": "如果操作失败，控制台不会锁死，重新排列就行。"
+  }
+}
+

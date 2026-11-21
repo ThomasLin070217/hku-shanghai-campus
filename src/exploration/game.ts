@@ -16,9 +16,11 @@ const idle=():Intent=>({forward:0,right:0,sprint:false});
 /** Authoritative state + input arbiter. RPCs never advance simulation. */
 export class CampusGame {
  scenario:GameplayScenario|null=null;
- inventory=new Inventory();inventoryOpen=false;panel:'computer'|'settings'|null=null;survey:Survey;
+ inventory=new Inventory();inventoryOpen=false;panel:'computer'|'settings'|'door'|null=null;survey:Survey;
  body:CharacterPhysics;frame=0;timeMs=0;yaw=0;pitch=0;view:ViewMode='first';paused=true;pauseReason:string|null=null;
  epoch=Date.now();armed=false;owner:string|null=null;human=idle();humanJump=false;
+ /** Game-play door states by stable door id; the model and navigation stay source-authored. */
+ doors:Record<string,boolean>={};
  records=new Map<string,CommandRecord>();last:CommandRecord|null=null;active:{action:Action;record:CommandRecord;consumed:boolean;runner?:DirectiveRunner;startDistance?:number}|null=null;
  events:GameEvent[]=[];eventSeq=0;eventSink:((events:GameEvent[])=>void)|null=null;
  /** Optional scene-registry lookup so any stable scene ID can be a directive target. */
@@ -33,7 +35,7 @@ export class CampusGame {
  selectHotbar(index:number){const ok=this.inventory.select(index);this.event('hotbar','快捷栏已切换',{index,ok,itemId:this.inventory.equipped?.itemId??null});return ok;}
  openInventory(){this.pause('inventory_open');this.inventoryOpen=true;this.body.velocity.set(0,0,0);this.event('inventory','背包已打开',{open:true});}
  closeInventory(){this.inventoryOpen=false;this.paused=true;this.pauseReason='inventory_closed';this.event('inventory','背包已收起',{open:false});}
- openPanel(panel:'computer'|'settings'){this.pause(panel+'_open');this.panel=panel;this.inventoryOpen=false;this.body.velocity.set(0,0,0);this.event('panel','面板已打开',{panel});}
+ openPanel(panel:'computer'|'settings'|'door'){this.pause(panel+'_open');this.panel=panel;this.inventoryOpen=false;this.body.velocity.set(0,0,0);this.event('panel','面板已打开',{panel});}
  closePanel(){this.panel=null;this.paused=true;this.pauseReason='panel_closed';this.event('panel','面板已关闭',{panel:null});}
  enableAI(){if(this.inventoryOpen||this.panel)return;this.takeover('user_enabled_ai');this.armed=true;this.paused=false;this.pauseReason=null;this.event('ai_enabled','用户已开启 AI 控制',{});}
  acquireControl(agentId:string){if(this.paused||!this.armed)return{ok:false,error:'ai_not_enabled'};if(this.owner)return{ok:false,error:'control_busy'};this.owner=agentId;this.epoch++;this.event('control_acquired','AI 已取得控制权',{agentId,controlEpoch:this.epoch});return{ok:true,controlEpoch:this.epoch,protocolVersion:PROTOCOL_VERSION};}

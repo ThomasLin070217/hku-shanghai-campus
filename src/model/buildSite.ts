@@ -10,6 +10,7 @@ import {addNov14Details} from './nov14Details';
 import {addObservedCourtyard} from './courtyard';
 import {addLandscapeDetails} from './landscapeDetails';
 import {glassMaterial,pane,shallowDepth,clippedPane,GLAZING_DEPTH as GD,GLASS_PROFILES,type Cutout} from './glazing';
+import {buildSportsDoor,SPORTS_DOOR,SPORTS_HALL} from './sportsDoor';
 import {NOV13 as N} from './nov13Parameters';
 import {addNov13Details} from './nov13Details';
 import {addVideoDetails} from './videoDetails';
@@ -174,7 +175,13 @@ function buildSports(g:T.Group,s:SiteParameters,m:M){const z=s.sportsZ;g.userDat
  for(const yy of [1,2,3,4])for(const side of [-1,1])box(g,'Fence_wire',w,.025,.025,x,yy,z+side*13,m.mesh);
  }
  const hall=group(g,'Sports_Hall','C03 sports-1; R02 planning','confirmed-enclosure-type_provisional-exterior');hall.position.set(-68,0,z);
- box(hall,'Hall_base',39,.2,26,0,.2,0,m.concrete);for(const side of [-1,1])box(hall,'Hall_wall',.18,7,26,side*19.5,3.5,0,m.white);
+ box(hall,'Hall_base',39,.2,26,0,.2,0,m.concrete);
+ // West end stays solid; the east elevation is split around the game-play glazed door.
+ box(hall,'Hall_wall',.18,7,26,-SPORTS_HALL.eastX,3.5,0,m.white);
+ const eastSegment=(SPORTS_HALL.depth-SPORTS_DOOR.width)/2,eastOffset=(SPORTS_HALL.depth+SPORTS_DOOR.width)/4;
+ for(const dz of [-eastOffset,eastOffset])box(hall,'Hall_wall',.18,SPORTS_HALL.wallHeight,eastSegment,SPORTS_HALL.eastX,SPORTS_HALL.wallHeight/2,dz,m.white);
+ box(hall,'Hall_lintel',.18,SPORTS_HALL.wallHeight-SPORTS_DOOR.height,SPORTS_DOOR.width,SPORTS_HALL.eastX,(SPORTS_HALL.wallHeight+SPORTS_DOOR.height)/2,0,m.white);
+ buildSportsDoor(hall,m);
  for(const side of [-1,1]){const roof=box(hall,'Pitched_membrane_roof',20.5,.18,26,side*9.75,8.75,0,m.white);roof.rotation.z=-side*Math.atan2(3.5,19.5);}
  for(const side of [-1,1]){box(hall,'Hall_end',39,7,.18,0,3.5,side*13,m.white);pane(hall,'Closed_sports_glass_door',5,3,0,1.5,side*13.15,m.clear,side<0?Math.PI:0);}
  for(let zz=-12;zz<=12;zz+=6){beam(hall,new T.Vector3(-19.5,7,zz),new T.Vector3(0,10.5,zz),.10,m.frame);beam(hall,new T.Vector3(0,10.5,zz),new T.Vector3(19.5,7,zz),.10,m.frame);}
