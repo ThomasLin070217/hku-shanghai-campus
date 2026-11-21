@@ -92,7 +92,7 @@ export function findPath(world:Navigation,from:readonly number[],to:readonly num
   const goalIdx=indexOf(goalIx,goalIz),startCell=cellOf(fx,fz),startIdx=indexOf(startCell.ix,startCell.iz);
   const startPoint:CellPoint=[fx,startY,fz];
 
-  const size=W*H,gScore=new Float64Array(size).fill(Infinity),parent=new Int32Array(size).fill(-1),heights=new Float64Array(size).fill(NaN),closed=new Uint8Array(size);
+  const size=W*H,gScore=new Float64Array(size).fill(Infinity),parent=new Int32Array(size).fill(-1),heights=new Float64Array(size).fill(NaN),closed=new Float64Array(size).fill(NaN);
   const heuristic=(ix:number,iz:number)=>{const dx=Math.abs(ix-goalIx),dz=Math.abs(iz-goalIz);return (Math.max(dx,dz)+(SQRT2-1)*Math.min(dx,dz))*cs;};
   const direct=(ix:number,iz:number)=>Math.hypot(centerX(ix)-tx,centerZ(iz)-tz);
   // Edge walkability: cheap endpoint test, midpoint probe, then 0.25 m sub-sampling only
@@ -118,13 +118,17 @@ export function findPath(world:Navigation,from:readonly number[],to:readonly num
   const open=new MinHeap();
   gScore[startIdx]=0;heights[startIdx]=startY;open.push(startIdx,heuristic(startCell.ix,startCell.iz));
   let visited=0,bestIdx=startIdx,bestD=direct(startCell.ix,startCell.iz),found=false,limit=false;
+  // The sunken court floor and the curved flight over it share the same 1 m cells, so one
+  // cell can be walkable at more than one height. Re-open a cell when a higher surface is
+  // reached; tread heights are a finite ladder, so this terminates.
   const relax=(ci:number,ix:number,iz:number,h:number,tent:number)=>{
-   const nb=indexOf(ix,iz);if(tent>=gScore[nb]-1e-12)return;
+   const nb=indexOf(ix,iz),prev=heights[nb];
+   if(Number.isFinite(prev)&&h<=prev+1e-9)return;
    gScore[nb]=tent;parent[nb]=ci;heights[nb]=h;open.push(nb,tent+heuristic(ix,iz)*1.0001);
   };
   while(open.size){
    if(visited>=maxNodes){limit=true;break;}
-   const ci=open.pop();if(closed[ci])continue;closed[ci]=1;visited++;
+   const ci=open.pop();const ph=heights[ci];if(Number.isFinite(closed[ci])&&ph<=closed[ci]+1e-9)continue;closed[ci]=ph;visited++;
    const ix=ci%W,iz=(ci-ix)/W,cx=centerX(ix),cz=centerZ(iz);
    const d=direct(ix,iz);if(d<bestD-EPS){bestD=d;bestIdx=ci;}
    if(ci===goalIdx){found=true;break;}

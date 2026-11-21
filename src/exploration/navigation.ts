@@ -69,7 +69,9 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters,opening=f
   const x0=s.plazaX+s.plazaRadiusX*Math.cos(a),z0=s.plazaZ+s.plazaRadiusZ*Math.sin(a);
   const x1=s.plazaX+s.plazaRadiusX*Math.cos(b),z1=s.plazaZ+s.plazaRadiusZ*Math.sin(b);
   if(!courtyardGate(s,(x0+x1)/2,(z0+z1)/2))box('plaza-guard',(x0+x1)/2,(z0+z1)/2,Math.hypot(x1-x0,z1-z0),.12,1.12,-.08,-Math.atan2(z1-z0,x1-x0));
-  box('plaza-retaining-wall',(x0+x1)/2,(z0+z1)/2,Math.hypot(x1-x0,z1-z0),.35,.05,-s.plazaDepth-.1,-Math.atan2(z1-z0,x1-x0));
+  // Top at grade, not 5 cm proud: blocked() has no step-over, so a proud lip would seal
+  // the two courtyard gates. The guard above still fences every non-gate segment.
+  box('plaza-retaining-wall',(x0+x1)/2,(z0+z1)/2,Math.hypot(x1-x0,z1-z0),.35,0,-s.plazaDepth-.1,-Math.atan2(z1-z0,x1-x0));
  }
  // Conservative visible site boundary; no exploration beyond the referenced rectangle.
  for(const x of [-1,1])box('site-boundary',x*(s.width/2-.5),s.centerZ,.3,s.depth,1.1);
@@ -88,8 +90,9 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters,opening=f
  for(const x of CL.eastKerbX)for(const [z,d]of [[-16,22],[13,14],[61,16]])box('promenade-kerb',x,z,.22,d,.14);
  // Geometry and collisions share the same curved flight parameters.
  for(let f=0;f<2;f++)for(let i=0;i<COURTYARD.steps;i++){
-  const a=stairPoint(s,f,i/COURTYARD.steps),b=stairPoint(s,f,(i+1)/COURTYARD.steps),mid=a.clone().add(b).multiplyScalar(.5),len=Math.hypot(b.x-a.x,b.z-a.z),angle=-Math.atan2(b.z-a.z,b.x-a.x),y=-s.plazaDepth*(i+1)/COURTYARD.steps;
-  box('curved-stair-tread',mid.x,mid.z,len+.015,COURTYARD.width,y,y-.18,angle);
+  const a=stairPoint(s,f,i/COURTYARD.steps),b=stairPoint(s,f,(i+1)/COURTYARD.steps);
+  // The tread surface is modelled by support()/courtyardHeight; a solid box here would
+  // make the flight unwalkable for the grid pathfinder (each 1 m cell straddles two treads).
   for(const side of [-1,1]){if(side===1&&i<2||side===-1&&i>=COURTYARD.steps-2)continue;const p0=stairPoint(s,f,i/COURTYARD.steps,side*(COURTYARD.width/2-.04)),p1=stairPoint(s,f,(i+1)/COURTYARD.steps,side*(COURTYARD.width/2-.04));box('curved-stair-guard',(p0.x+p1.x)/2,(p0.z+p1.z)/2,Math.hypot(p1.x-p0.x,p1.z-p0.z),.055,Math.max(a.y,b.y)+1.05,Math.min(a.y,b.y),-Math.atan2(p1.z-p0.z,p1.x-p0.x));}
  }
  const planted=landscapeLayout(specs,s);for(const bed of planted.beds)if(bed.kerb)box(bed.id,bed.x,bed.z,bed.w,bed.d,bed.y+bed.kerb,bed.y);for(const tree of planted.trees)circle(tree.id,tree.x,tree.z,.13,tree.y+tree.height*.8);
@@ -103,7 +106,9 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters,opening=f
   let h=0;
   if(drives.some(r=>contains(r,x,z)))h=.05;
   if(walks.some(r=>contains(r,x,z)))h=.07;
-  if(Math.abs(x)<2&&z> -27&&z<2)h=Math.max(h,.04);
+  // R011 North_court_stair_link: the 4x3 m paved slab at z -27..-24 rendered in
+  // nov14Details.ts, top y=.04. The old -27<z<2 axis strip was its pre-move extent.
+  if(Math.abs(x)<2&&z>=-27&&z<=-24)h=Math.max(h,.04);
   const dx=x-s.plazaX,dz=z-s.plazaZ,q=Math.hypot(dx/s.plazaRadiusX,dz/s.plazaRadiusZ);
   if(q<1){
    h=-s.plazaDepth;
