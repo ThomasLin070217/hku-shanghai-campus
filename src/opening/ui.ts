@@ -52,6 +52,7 @@ export function createOpeningUI(
 ): {update(view: OpeningView): void; dispose(): void} {
   const events = new AbortController();
   let currentView:OpeningView|null=null;
+  const sound=(kind:'hover'|'confirm'|'cancel'|'notify'|'alert')=>actions.sound?.(kind);
 
   // ---------------------------------------------------------------- HUD.
   const hud = node('section', 'opening-hud');
@@ -81,6 +82,16 @@ export function createOpeningUI(
   const promptEl = node('p', 'opening-prompt');
   promptEl.hidden = true;
   promptEl.setAttribute('role', 'status');
+  const promptKey = node('kbd', 'opening-prompt-key');
+  const promptText = node('span', 'opening-prompt-text');
+  promptEl.append(promptKey, promptText);
+  function setPrompt(text: string): void {
+    // "F · Pick up the invitation" -> keycap + label. Any other copy stays plain.
+    const keyed = /^([A-Z0-9]) · (.*)$/.exec(text);
+    promptKey.hidden = !keyed;
+    promptText.textContent = keyed ? keyed[2] : text;
+    if (keyed) promptKey.textContent = keyed[1];
+  }
 
   const warningEl = node('div', 'opening-warning');
   warningEl.hidden = true;
@@ -116,6 +127,56 @@ export function createOpeningUI(
   const cinemaSpeech = node('p', 'opening-cinema-speech');
   cinema.append(cinemaBlack, cinemaBarTop, cinemaBarBottom, cinemaCopy, cinemaSpeech);
   stage.append(cinema);
+
+  // ----------------------------------------------------------- Epilogue.
+  // Shown once the Building 4 handoff modal is closed. This is the end of the
+  // current slice, not the full students-freed / lights-show ending.
+  const epilogue = node('section', 'opening-epilogue');
+  epilogue.hidden = true;
+  epilogue.setAttribute('role', 'region');
+  epilogue.setAttribute('aria-label', T.epilogue.aria);
+  const epilogueBarTop = node('i', 'opening-epilogue-bar top');
+  const epilogueBarBottom = node('i', 'opening-epilogue-bar bottom');
+  epilogueBarTop.setAttribute('aria-hidden', 'true');
+  epilogueBarBottom.setAttribute('aria-hidden', 'true');
+  const epilogueInner = node('div', 'opening-epilogue-inner');
+  const epilogueTitle = node('h2', 'opening-epilogue-title');
+  epilogueTitle.append(
+    node('span', 'opening-epilogue-zh', T.game.titleZh),
+    node('span', 'opening-epilogue-en', T.game.titleEn),
+  );
+  epilogueTitle.querySelector('.opening-epilogue-zh')!.setAttribute('lang', 'zh-Hans');
+  const epilogueTicker = node('div', 'opening-epilogue-ticker');
+  epilogueTicker.append(node('p', 'opening-epilogue-ticker-label', T.epilogue.tickerLabel));
+  const epilogueList = node('ul', 'opening-epilogue-ticker-list');
+  T.epilogue.ticker.forEach((entry, index) => {
+    const item = node('li', 'opening-epilogue-ticker-item');
+    const dot = node('i', 'opening-epilogue-ticker-dot');
+    dot.setAttribute('aria-hidden', 'true');
+    item.style.setProperty('--epilogue-delay', `${0.55 + index * 0.22}s`);
+    item.append(dot, node('span', '', entry));
+    epilogueList.append(item);
+  });
+  epilogueTicker.append(epilogueList);
+  const epilogueActions = node('div', 'opening-epilogue-actions');
+  const epilogueContinue = makeButton(T.epilogue.continue, 'primary', () => hideEpilogue(true));
+  epilogueContinue.dataset.autofocus = 'true';
+  const epilogueReplay = makeButton(T.epilogue.replay, 'secondary', () => {
+    hideEpilogue(true);
+    actions.action('restart');
+  });
+  epilogueActions.append(epilogueContinue, epilogueReplay);
+  epilogueInner.append(
+    node('p', 'opening-epilogue-eyebrow', T.epilogue.eyebrow),
+    epilogueTitle,
+    node('p', 'opening-epilogue-line', T.epilogue.line),
+    epilogueTicker,
+    node('p', 'opening-epilogue-meta', T.epilogue.meta),
+    node('p', 'opening-epilogue-note', T.epilogue.note),
+    epilogueActions,
+  );
+  epilogue.append(epilogueBarTop, epilogueBarBottom, epilogueInner);
+  stage.append(epilogue);
 
   // -------------------------------------------------------------- Modal.
   const modalRoot = node('div', 'opening-modal-root');
@@ -471,28 +532,46 @@ export function createOpeningUI(
     no.focus({ preventScroll: true });
   }
 
+  function brandLockup(className = 'opening-brandlock'): HTMLElement {
+    const brand = node('div', className);
+    brand.append(
+      node('span', 'opening-brandlock-zh', T.game.titleZh),
+      node('span', 'opening-brandlock-en', T.game.titleEn),
+      node('span', 'opening-brandlock-chapter', T.game.chapterShort),
+    );
+    return brand;
+  }
+
   function completeDialog(): HTMLElement {
     const shell = dialogShell('complete');
+    shell.classList.add('opening-handoff-dialog');
     shell.append(head(T.complete.eyebrow, T.complete.title, true));
     const body = node('div', 'opening-dialog-body');
-    body.append(node('p', 'opening-copy', T.complete.body));
+    body.append(brandLockup(), node('p', 'opening-copy', T.complete.body));
     const facts = node('dl', 'opening-complete-facts');
     for (const [label, value] of T.complete.facts) {
       const row = node('div', 'opening-complete-fact');
       row.append(node('dt', '', label), node('dd', '', value));
       facts.append(row);
     }
-    body.append(facts, node('p', 'opening-muted', T.complete.note));
+    body.append(facts, node('p', 'opening-endofslice', T.game.endOfSlice), node('p', 'opening-muted', T.complete.note));
+    const other = node('details', 'opening-other-slices');
+    const otherRow = node('div', 'opening-other-slices-row');
+    otherRow.append(
+      makeButton('L001 lawn encounter', 'secondary', () => {
+        location.assign('?experience=lion-boss');
+      }),
+      makeButton('Sports hall encounter', 'secondary', () => {
+        location.assign('?experience=sports-hall');
+      }),
+    );
+    other.append(node('summary', '', 'Other playable encounters'), otherRow);
+    body.append(other);
     shell.append(body);
     const close = makeButton(T.complete.close, 'primary', requestClose);
     close.dataset.autofocus = 'true';
-    const lawn = makeButton('Play L001 lawn encounter', 'secondary', () => {
-      location.assign('?experience=lion-boss');
-    });
-    const rescue = makeButton('Rescue the sports hall students', 'secondary', () => {
-      location.assign('?experience=sports-hall');
-    });
-    shell.append(actionRow(close, rescue, lawn));
+    const replay = makeButton(T.epilogue.replay, 'secondary', () => actions.action('restart'));
+    shell.append(actionRow(close, replay));
     return shell;
   }
 
@@ -645,6 +724,22 @@ export function createOpeningUI(
   document.addEventListener('keyup',event=>{if(event.code===dismissedKey){dismissedKey=null;event.stopImmediatePropagation();}},{capture:true,signal:events.signal});
   function onKeyDown(event: KeyboardEvent): void {
     if(event.code===dismissedKey){event.preventDefault();event.stopImmediatePropagation();return;}
+    // The handoff epilogue owns Escape once the completion modal is gone.
+    if (epilogueVisible && !dialog) {
+      if (event.key === 'Tab') {
+        const items = [epilogueContinue, epilogueReplay];
+        const index = items.indexOf(document.activeElement as HTMLButtonElement);
+        event.preventDefault();
+        items[(index + (event.shiftKey ? items.length - 1 : 1)) % items.length].focus({preventScroll: true});
+        return;
+      }
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        event.stopPropagation();
+        hideEpilogue(true);
+      }
+      return;
+    }
     if (!dialog || modalRoot.hidden) return;
     if(kind==='invitation'){
       event.preventDefault();event.stopImmediatePropagation();
@@ -672,6 +767,31 @@ export function createOpeningUI(
   }
   document.addEventListener('keydown', onKeyDown, {capture:true,signal: events.signal});
 
+  // ------------------------------------------------ Interface feedback.
+  // One delegated pair of listeners covers the HUD, every opening modal and the
+  // MacBook chrome without touching the macOS UI implementation.
+  let hovered:Element|null=null,lastHover=0;
+  const controlAt=(target:EventTarget|null):Element|null=>
+    target instanceof Element?target.closest('button, summary, [role="button"], input[type="range"], .opening-mac-dockitem'):null;
+  document.addEventListener('pointerover',event=>{
+    const control=controlAt(event.target);
+    if(!control||control===hovered)return;
+    if(event.relatedTarget instanceof Node&&control.contains(event.relatedTarget))return;
+    hovered=control;
+    const now=performance.now();
+    if(now-lastHover<60)return;
+    lastHover=now;
+    sound('hover');
+  },{passive:true,signal:events.signal});
+  document.addEventListener('pointerout',event=>{
+    const control=controlAt(event.target);
+    if(control&&control===hovered&&!(event.relatedTarget instanceof Node&&control.contains(event.relatedTarget)))hovered=null;
+  },{passive:true,signal:events.signal});
+  document.addEventListener('pointerdown',event=>{
+    const control=controlAt(event.target);
+    if(control&&!(control instanceof HTMLButtonElement&&control.disabled))sound('confirm');
+  },{capture:true,signal:events.signal});
+
   // ------------------------------------------------------------- Update.
   function updateWarning(view: OpeningView): void {
     const state = view.robotState;
@@ -692,6 +812,29 @@ export function createOpeningUI(
     warningFillEl.style.width = Math.max(6, Math.round(level * 100)) + '%';
   }
 
+  let epilogueVisible = false;
+  let epilogueSeen = false;
+  let epilogueDismissed = false;
+  function showEpilogue(): void {
+    if (epilogueVisible || epilogueSeen || epilogueDismissed) return;
+    epilogueSeen = true;
+    epilogueVisible = true;
+    epilogue.hidden = false;
+    stage.classList.add('opening-epilogue-active');
+    document.body.classList.add('opening-epilogue-active');
+    sound('confirm');
+    epilogueContinue.focus({ preventScroll: true });
+  }
+  function hideEpilogue(dismiss: boolean): void {
+    if (dismiss) epilogueDismissed = true;
+    if (!epilogueVisible) return;
+    epilogueVisible = false;
+    epilogue.hidden = true;
+    stage.classList.remove('opening-epilogue-active');
+    document.body.classList.remove('opening-epilogue-active');
+    document.querySelector<HTMLElement>('.stage canvas')?.focus({ preventScroll: true });
+  }
+
   function updateCinema(view: OpeningView): void {
     const c = view.cinema;
     if (!c || c.mode === 'off') {
@@ -709,6 +852,8 @@ export function createOpeningUI(
     cinema.classList.toggle('is-letter', isLetter);
     document.body.classList.toggle('opening-cinema-letter', isLetter);
     setText(cinemaTitle, c.title);
+    if (/[㐀-鿿]/.test(c.title)) cinemaTitle.setAttribute('lang', 'zh-Hans');
+    else cinemaTitle.removeAttribute('lang');
     setText(cinemaSubtitle, c.subtitle);
     setText(cinemaHint, c.hint);
     const speak = c.mode === 'subtitle';
@@ -720,13 +865,28 @@ export function createOpeningUI(
   }
   function update(view: OpeningView): void {
     currentView=view;
+    // The handoff epilogue appears once, after the completion modal is closed.
+    if (view.story.stage === 'complete' && !view.modal) showEpilogue();
+    else if (view.story.stage !== 'complete') {
+      if (epilogueVisible) hideEpilogue(false);
+      epilogueSeen = false;
+      epilogueDismissed = false;
+    }
     // HUD text only: no modal rebuild on per-frame state such as elapsed time.
     setText(objective, view.objective);
     setText(detailText, view.detail);
     setHidden(details, !view.detail);
     setText(saveLine, view.saveStatus);
     setHidden(promptEl, !view.prompt);
-    if (view.prompt) setText(promptEl, view.prompt);
+    if (view.prompt) {
+      if (promptEl.dataset.text !== view.prompt) {
+        promptEl.dataset.text = view.prompt;
+        setPrompt(view.prompt);
+        promptEl.classList.remove('is-new');
+        void promptEl.offsetWidth;
+        promptEl.classList.add('is-new');
+      }
+    } else delete promptEl.dataset.text;
     updateWarning(view);
     vitals.update(view.runtime.hearts);
     const target = view.target;
@@ -787,7 +947,9 @@ export function createOpeningUI(
     promptEl.remove();
     warningEl.remove();
     cinema.remove();
-    stage.classList.remove('opening-cinema-active');
+    epilogue.remove();
+    stage.classList.remove('opening-cinema-active', 'opening-epilogue-active');
+    document.body.classList.remove('opening-epilogue-active');
     dangerVignette.remove();
     vitals.dispose();
   }

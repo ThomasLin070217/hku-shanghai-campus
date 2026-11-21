@@ -487,10 +487,15 @@ function clearSelection() {
 function selectTile(tile: Tile, event: {metaKey: boolean; ctrlKey: boolean; shiftKey: boolean}) {
   const additive = event.metaKey || event.ctrlKey;
   if (event.shiftKey && selectionAnchor) {
-    const a = tiles.indexOf(selectionAnchor), b = tiles.indexOf(tile);
-    const [lo, hi] = a < b ? [a, b] : [b, a];
+    // Finder/Excel range: extend a rectangle from the anchor, not a flat slice of the row-major list.
+    const row0 = Math.min(selectionAnchor.row, tile.row);
+    const row1 = Math.max(selectionAnchor.row, tile.row);
+    const column0 = Math.min(selectionAnchor.column, tile.column);
+    const column1 = Math.max(selectionAnchor.column, tile.column);
     if (!additive) selectedTiles.clear();
-    for (let i = lo; i <= hi; i++) selectedTiles.add(tiles[i]);
+    for (const item of tiles) {
+      if (item.row >= row0 && item.row <= row1 && item.column >= column0 && item.column <= column1) selectedTiles.add(item);
+    }
   } else if (additive) {
     if (selectedTiles.has(tile)) selectedTiles.delete(tile); else selectedTiles.add(tile);
     selectionAnchor = tile;

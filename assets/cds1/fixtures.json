@@ -4,14 +4,14 @@
   "coordinateSystem": "+X right, +Y up, +Z toward the room; panel centre at origin",
   "sourceRepo": "ThomasLin070217/hku-shanghai-campus",
   "sourceBranch": "feat/cds1-keyboard-detach",
-  "generatedAt": "2026-11-21T06:59:26.560Z",
+  "generatedAt": "2026-11-21T07:46:25.442Z",
   "fixtures": [
     {
       "id": "CDS1-keyboard-wall",
       "file": "CDS1-Keyboard-Wall.glb",
       "node": "CDS1_Keyboard_Wall",
-      "bytes": 4726220,
-      "sha256": "639e6a90aff82bc0776055d5da8132228115a8cf4b4d03bc9bf4a3be65ef3bb4",
+      "bytes": 4726248,
+      "sha256": "f2366cb63382d3ff2cf89a13ee4cc9d9af6ceea3f9587fb3f6dc2e5d66cb47b5",
       "stats": {
         "meshes": 330,
         "triangles": 47108,
@@ -39,7 +39,7 @@
       "file": "CDS1-HKU-Flip-Wall.glb",
       "node": "CDS1_HKU_Flip_Wall",
       "bytes": 2069252,
-      "sha256": "c838945d2d22b4b8ac94c89d9428ad7b02f592c4bfa32448bbcf9807cdf1a633",
+      "sha256": "4d01db7f049d650e72b63ba44e0fceab714f9452f89c0b5e020ff30ff136c1d8",
       "stats": {
         "meshes": 3368,
         "triangles": 6792,
@@ -65,8 +65,8 @@
       "id": "CDS1-aux-power",
       "file": "CDS1-Aux-Power-Closet.glb",
       "node": "CDS1_Aux_Power_Closet",
-      "bytes": 71784,
-      "sha256": "d85f9502c4737a666761a277828d19f3330945708f969c4cae83c5f3ee53f4d0",
+      "bytes": 71788,
+      "sha256": "318dede9723be2995eda649209330fadb1958e4463a34973ed90e0028cda6f7e",
       "stats": {
         "meshes": 8,
         "triangles": 516,

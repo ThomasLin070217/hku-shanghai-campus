@@ -53,6 +53,7 @@ export function createOpeningExperience(
  let staffTalkStarted=false,staffTalkDone=false,staffTalkClock=0,staffTalkLine=0,staffVoiceStarted=false,acceptVoicePlayed=false,acceptVoiceBusy=false,repeatVoiceBusy=false;
  let fleet=createOpeningFleet(explorer.world);scene.add(fleet.root);
  const npcs=createOpeningNPCs();scene.add(npcs.root);const audio=new CampusAudio(settings);audio.enableStory();const voice=createStaffVoice(audio);
+ const notifyBase=notify;notify=(message)=>{audio.story?.ui('notify');notifyBase(message);};
  const writerToken=crypto.randomUUID(),writerKey=OPENING_SAVE_KEY+'.writer',events=new AbortController();
  let robotState='patrol',robotWarning=0;
  const atmo=()=>getAtmosphere?.();
@@ -231,7 +232,7 @@ export function createOpeningExperience(
   else if(action==='preview_sfx')void audio.preview('sfx');
   else if(action==='preview_music')void audio.preview('music');
  }
- const ui=createOpeningUI(stage,{action,close,setting(key,value){if(key==='muted'||key==='bob')settings[key]=Boolean(value);else settings[key]=Number(value);applySettings();persist(true);},drawMap:(canvas,large)=>drawOpeningMap(canvas,g,story,large)},{
+ const ui=createOpeningUI(stage,{action,close,setting(key,value){if(key==='muted'||key==='bob')settings[key]=Boolean(value);else settings[key]=Number(value);applySettings();persist(true);},drawMap:(canvas,large)=>drawOpeningMap(canvas,g,story,large),sound:(kind)=>audio.story?.ui(kind)},{
   instanceId:()=>g.inventory.slots.find(slot=>slot?.itemId==='macbook-air-13-silver')?.instanceId,
   units:()=>fleet.units.map((unit,index)=>({
     id:String(unit.root.userData.fleetId),name:'Campus guard '+(index+1),
@@ -287,6 +288,7 @@ export function createOpeningExperience(
   }
   if(!failed&&story.stage==='to_b4'&&g.body.position.distanceTo(new T.Vector3(...O.handoff))<2.2){
    transition('reach_b4');open('complete');runtime={...runtime,go_to_building4_objective_unlocked:true,agent_chat_unlocked:true};
+   audio.story?.ending();
    window.dispatchEvent(new CustomEvent('campus-opening-handoff',{detail:{event:'opening.building4_reached',flags:{invitation_read:story.invitation_read,laptop_acquired:story.laptop_acquired,campus_alert_triggered:story.campus_alert_triggered},laptopInstanceId:g.inventory.slots.find(s=>s?.itemId==='macbook-air-13-silver')?.instanceId,anchor:'opening-building4-entrance'}}));
    persist(true);
   }
@@ -369,7 +371,7 @@ export function createOpeningExperience(
    cinema={mode:'title',title:titleText,subtitle:titleSubtitle,hint:'',opacity:0,letterbox:true};
   }else if(wakeStarted&&!wakeDone){
    const early=wakeClock<2.1;
-   cinema={mode:'wake',title:early?'HKU SHANGHAI':'BUILDING 4 FORECOURT',subtitle:early?'2030 · STUDENT AMBASSADOR':'18:12 · HIGH TABLE DINNER',hint:early?'Sit up and look around':'' ,opacity:wakeClock<1.55?Math.max(.08,1-wakeClock/1.55*.92):.08,letterbox:true};
+   cinema={mode:'wake',title:early?'屏 障':'BUILDING 4 FORECOURT',subtitle:early?'BARRIER 2030 · STUDENT AMBASSADOR':'18:12 · HIGH TABLE DINNER',hint:early?'Sit up and look around':'' ,opacity:wakeClock<1.55?Math.max(.08,1-wakeClock/1.55*.92):.08,letterbox:true};
   }else if(story.stage==='bus'&&!story.invitation_read&&wakeDone){
    cinema={mode:'subtitle',title:'',subtitle:modal==='invitation'?'':'An invitation is on the seat beside you.  Press F to pick it up.',hint:'',opacity:0,letterbox:true};
   }else if(staffTalkStarted&&!staffTalkDone){

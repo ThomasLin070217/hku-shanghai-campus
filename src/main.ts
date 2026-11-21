@@ -7,7 +7,7 @@ const publicPlaytest=import.meta.env.MODE==='playtest';
 import {createSceneInspector} from './scene/inspector';
 import {createSceneService} from './scene/service';
 import {sceneRegistry} from './scene/registry';
-import {prepareModelTextures} from './model/deferredTextures';
+import {prepareModelTextures,deferredTextureStats} from './model/deferredTextures';
 import {createExperience} from './gameplay/experience';
 import {createSportsDoor,createSportsRescueExperience} from './gameplay/sportsDoor';
 import {createStudentCrowd} from './gameplay/studentCrowd';
@@ -24,7 +24,7 @@ import * as T from 'three';
 import {buildSite} from './model/buildSite';
 import {SCALE_CALIBRATION} from './model/scaleCalibration';
 import {cloneBuildings,SITE,parseCampusConfig,type BuildingSpec} from './model/campusParameters';
-import {modelStats,disposeAsset} from './model/buildCampus';
+import {modelStats,disposeAsset,resourceReport} from './model/buildCampus';
 import {createSiteViewer,type CampusView} from './viewer/siteViewer';
 import {exportGLB,reloadGLB,download} from './viewer/export';
 let specs=cloneBuildings(),site={...SITE},asset=buildSite(specs,site,openingMode),imported:T.Object3D|null=null,selected='B04';
@@ -78,7 +78,10 @@ function index(){el('building-list').innerHTML=specs.map(b=>`<button data-buildi
 function sync(){el('export-glb').textContent=loungeView?'导出 4F 休闲区 GLB ↓':'导出 GLB ↓';(el('export-scope') as HTMLSelectElement).disabled=loungeView;el('transparent').parentElement!.lastChild!.textContent=loungeView?'透明 PNG · 保留休闲区结构地板':'透明 PNG · 隐藏地面和绿化';const source=imported||asset.root;asset.root.visible=!imported&&!loungeView;if(imported)imported.visible=!loungeView;lounge.visible=loungeView;const isolated=checked('isolate');for(const id of ['environment','circulation','sports']){const name={environment:'Environment',circulation:'Circulation',sports:'Sports'}[id]!;const obj=source.getObjectByName(name);if(obj)obj.visible=checked(id)&&(id==='environment'||!isolated);}
  for(const b of specs){const obj=source.getObjectByName(b.id);if(obj)obj.visible=!isolated||b.id===selected;}el('labels-layer').style.display=checked('labels')&&!imported&&!loungeView?'block':'none';}
 function setView(v:CampusView){if(loungeView){loungeView=false;sync();lighting.set(nightRequested,imported||asset.root);stats();}viewer.view(v,(imported||asset.root).getObjectByName(selected));document.querySelectorAll<HTMLButtonElement>('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));el('mode-label').textContent='正交 · '+({iso:'校园总览',top:'总平面',north:'北侧运动区',south:'南侧入口',plaza:'中央庭院',selected:specs.find(b=>b.id===selected)!.label}[v]);}
-function rebuild(next:BuildingSpec[]){const a=buildSite(next,site,openingMode);if(imported){viewer.scene.remove(imported);disposeAsset(imported);imported=null;}viewer.scene.remove(asset.root);disposeAsset(asset.root);asset=a;specs=next.map(s=>({...s}));viewer.scene.add(asset.root);loadAssetTextures(asset.root);explorer.rebuild(specs,site);experience.relocate();lighting.apply(asset.root);index();sync();stats();}
+function rebuild(next:BuildingSpec[]){const before=debugMemory();const a=buildSite(next,site,openingMode);if(imported){viewer.scene.remove(imported);disposeAsset(imported);imported=null;}viewer.scene.remove(asset.root);disposeAsset(asset.root);asset=a;specs=next.map(s=>({...s}));viewer.scene.add(asset.root);loadAssetTextures(asset.root);explorer.rebuild(specs,site);experience.relocate();lighting.apply(asset.root);index();sync();stats();debugMemory('rebuild',before);}
+/** Dev/review only: renderer resource counters before and after a rebuild. A repeated
+ * rebuild that keeps growing these numbers is the leak signal; a flat line is the pass. */
+function debugMemory(label?:string,before?:{geometries:number;textures:number;programs:number}){const info=viewer.renderer.info,now={geometries:info.memory.geometries,textures:info.memory.textures,programs:info.programs?.length??0};if(label&&(import.meta.env.DEV||import.meta.env.MODE==='review'))console.debug('[campus] '+label,before,'->',now);return now;}
 for(const id of ['environment','circulation','sports','labels','isolate'])el(id).onchange=()=>{sync();if(id==='isolate')setView(checked('isolate')?'selected':'iso');};
 document.querySelectorAll<HTMLButtonElement>('[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view as CampusView));
 el('apply').onclick=()=>{try{const next=specs.map(b=>({...b})),s=next.find(b=>b.id===selected)!;document.querySelectorAll<HTMLInputElement>('.param-grid input').forEach(i=>{(s as unknown as Record<string,number>)[i.name]=Number(i.value);});rebuild(next);notify('已重新生成选中建筑及场景');}catch(e){notify(String(e));}};
@@ -109,7 +112,7 @@ let nightRequested=false;
 el('night-toggle').onclick=()=>{if(loungeView){notify('休闲区采用室内照明；返回校园后可切换夜景');return;}nightRequested=!nightRequested;lighting.set(nightRequested,imported||asset.root);el('night-toggle').textContent=openingMode?(nightRequested?'Day mode':'Night mode'):(nightRequested?'切换日景':'切换夜景');};
 function showLounge(){mode(false);loungeView=true;sync();lighting.set(false,asset.root);viewer.view('selected',lounge);el('mode-label').textContent='5号楼 · 4F 阶梯休闲区 / 独立剖视 · 尺寸估算';stats();notify('已确认楼栋与楼层。此为独立参考资产；点击返回室外探索可回到校园。');}
 el('lounge-toggle').onclick=()=>showLounge();
-index();stats();mode(true);if(openingMode){atmosphere=createOpeningAtmosphere(viewer.scene,viewer.renderer,viewer.lights);if((experience as {runtime?:{curtain_deployed:boolean}}).runtime?.curtain_deployed)atmosphere.startIncident();document.getElementById('night-toggle')?.style.setProperty('display','none');}if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign(window,{__CAMPUS:{viewer,explorer,experience,door,crowd,openingDebug:(experience as {debug?:unknown}).debug,mode,showLounge,lighting,atmosphere,lounge,get asset(){return asset;},get imported(){return imported;},stats,select,setView,rebuild,exportTarget,ready:true}});
+index();stats();mode(true);if(openingMode){atmosphere=createOpeningAtmosphere(viewer.scene,viewer.renderer,viewer.lights);if((experience as {runtime?:{curtain_deployed:boolean}}).runtime?.curtain_deployed)atmosphere.startIncident();document.getElementById('night-toggle')?.style.setProperty('display','none');}if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign(window,{__CAMPUS:{viewer,explorer,experience,door,crowd,openingDebug:(experience as {debug?:unknown}).debug,mode,showLounge,lighting,atmosphere,lounge,get asset(){return asset;},get imported(){return imported;},stats,select,setView,rebuild,exportTarget,perf:()=>viewer.perf(),memory:()=>debugMemory(),resources:()=>resourceReport(viewer.scene),deferred:()=>deferredTextureStats(),ready:true}});
 
 el('enter-game').onclick=()=>explorer.enter();
 el('takeover').onclick=()=>explorer.takeover();
@@ -143,13 +146,13 @@ window.addEventListener('pagehide',event=>{experience.persist(true);explorer.pau
 if(!import.meta.env.DEV&&import.meta.env.MODE!=='review'){document.querySelectorAll('a[href*="evidence/"],.evidence-note').forEach(n=>n.remove());dialog.remove();}
 
 if(openingMode){
- document.title='HKU Shanghai · High Table';document.body.classList.add('opening-mode');
+ document.title='《屏障》BARRIER 2030 · High Table';document.body.classList.add('opening-mode');
  const copy:Record<string,string>={'mode-label':'Building 4 · Shanghai Campus','reset':'Return to checkpoint','mode-toggle':'Campus model tools','takeover':'Take control','night-toggle':'Night / Day','experience-settings':'Settings & save','new-game':'Restart opening…','enable-ai':'Enable AI control','bridge-status':'Local control service','enter-compat':'Drag controls','scene-index-toggle':'Scene index'};
  for(const [id,text]of Object.entries(copy)){const node=document.getElementById(id);if(node)node.textContent=text;}
- const pause=document.querySelector('.pause-card');if(pause){pause.querySelector('h2')!.textContent='High Table';pause.querySelector('p')!.textContent='2030 · You are a Student Ambassador on your way to High Table Dinner. Begin on the campus shuttle.';pause.querySelector('.key-guide')!.textContent='WASD move · Shift run · Space jump · F interact · E backpack · C MacBook · V view';pause.querySelector('.desktop-note')!.textContent='Keyboard and mouse · Continue to look around and move';pause.querySelector('summary')!.textContent='Restart / AI control';}
+ const pause=document.querySelector('.pause-card');if(pause){const eyebrow=pause.querySelector('.eyebrow');if(eyebrow)eyebrow.textContent='屏障 / BARRIER 2030';pause.querySelector('h2')!.textContent='屏障';pause.querySelector('p')!.textContent='BARRIER 2030 · You are a Student Ambassador on your way to the High Table Dinner. Begin on the campus shuttle.';pause.querySelector('.key-guide')!.textContent='WASD move · Shift run · Space jump · F interact · E backpack · C MacBook · V view';pause.querySelector('.desktop-note')!.textContent='Keyboard and mouse · Continue to look around and move';pause.querySelector('summary')!.textContent='Restart / AI control';}
  const help=document.querySelector('.header-right > button:not(#scene-index-toggle):not(#night-toggle)');if(help)help.textContent='Help';
  toolsMenu.querySelector('summary')!.textContent='Campus tools';advanced.querySelector('summary')!.textContent='Restart / AI control';
- document.querySelector('.brand-copy > span')!.textContent='HIGH TABLE · 2030';
+ document.querySelector('.brand-copy > span')!.textContent='屏障 · BARRIER 2030';
  document.querySelector('.stage-bottom > span')!.textContent='WASD move · Shift run · F interact · C MacBook · E backpack';
  for(const node of Array.from(document.querySelectorAll<HTMLElement>('.header-right > span'))){if(node.textContent==='正常校园')node.textContent='Campus';if(node.textContent==='张江基地')node.textContent='Shanghai';}
  const header=document.querySelector('.header-right');for(const node of Array.from(header?.childNodes??[]))if(node.nodeType===Node.TEXT_NODE){if(node.textContent?.includes('正常校园'))node.textContent='Campus';else if(node.textContent?.includes('张江基地'))node.textContent='Shanghai';}
