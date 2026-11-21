@@ -17,12 +17,7 @@ export function cutOpeningBuildings(root:T.Group){
  function tag(o:T.Object3D){if(o instanceof T.Group)tagChildren(o);for(const c of o.children)tag(c);}tag(root);root.updateMatrixWorld(true);
  for(const room of [OPENING.b5,OPENING.b6]){
   const building=root.getObjectByName(room.id);if(!building)continue;
-  // B06 authors explicit apertures because its office no longer opens onto the
-  // stair landing; B05 keeps the generated room cavity and south doorway.
-  const custom='cuts' in room?room.cuts:null;
-  const boxes=custom
-   ?custom.map(c=>new T.Box3(new T.Vector3(c.x0,c.y0,c.z0),new T.Vector3(c.x1,c.y1,c.z1)))
-   :[new T.Box3(new T.Vector3(room.x0+.01,room.floor+.015,room.z0+.12),new T.Vector3(room.x1-.01,room.floor+room.clearHeight,room.z1-.24)),new T.Box3(new T.Vector3(room.door-room.doorWidth/2,room.floor-.02,room.z1-3.3),new T.Vector3(room.door+room.doorWidth/2,room.floor+room.doorHeight,room.z1+.9))];
+  const boxes=[new T.Box3(new T.Vector3(room.x0+.01,room.floor+.015,room.z0+.12),new T.Vector3(room.x1-.01,room.floor+room.clearHeight,room.z1-.24)),new T.Box3(new T.Vector3(room.door-room.doorWidth/2,room.floor-.02,room.z1-3.3),new T.Vector3(room.door+room.doorWidth/2,room.floor+room.doorHeight,room.z1+.9))];
   const meshes:T.Mesh[]=[];building.traverse(o=>{if(o instanceof T.Mesh)meshes.push(o);});
   for(const mesh of meshes){const old=mesh.geometry;old.computeBoundingBox();const bounds=old.boundingBox!.clone().applyMatrix4(mesh.matrixWorld);if(!boxes.some(b=>b.intersectsBox(bounds)))continue;
    const g=old.index?old.toNonIndexed():old.clone(),p=g.getAttribute('position'),n=g.getAttribute('normal'),uv=g.getAttribute('uv'),positions:number[]=[],normals:number[]=[],uvs:number[]=[],inverse=mesh.matrixWorld.clone().invert();

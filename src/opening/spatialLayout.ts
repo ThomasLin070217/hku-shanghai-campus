@@ -5,7 +5,7 @@
  * body runs along +X, its passenger door faces north onto the entrance forecourt.
  * That is why `width` is the road-width across Z and `length` runs along X.
  */
-export const OPENING_WORLD_REVISION='opening-2030-v6-b6-lift-route';
+export const OPENING_WORLD_REVISION='opening-2030-v5-b5-full-hall';
 export const OPENING={
  bus:{
   x:64.4,z:30.9,
@@ -23,31 +23,7 @@ export const OPENING={
  invitation:[65.5,1.05,31.55] as [number,number,number],
  busExit:[63.4,0,27.8] as [number,number,number],
  b5:{id:'B05',x0:54,x1:82,z0:-80,door:58,doorWidth:2.4,floor:.02,z1:-54.7,clearHeight:4.55,doorHeight:3.2},
- /* The principal's office is on the presentation floor. The grand stair now ends
-  * at a sealed 4F terrace, so the office is reached from the ground east door and
-  * the lift; its south wall no longer opens onto the stair landing. */
- b6:{id:'B06',x0:1,x1:10.8,z0:-62,door:4,doorWidth:2.4,floor:5.1,z1:-57.6,clearHeight:2.65,doorHeight:2.6,doorSealed:true,
-  /* Opening-only apertures. `cuts` replaces the generic room/door cutter: the
-   * office cavity stops at its new south wall, while the ground lobby and the east
-   * side door are additional apertures in the base glazing/core. */
-  cuts:[
-   {x0:1.01,y0:5.115,z0:-61.88,x1:10.79,y1:7.75,z1:-57.62},
-   {x0:10.78,y0:.015,z0:-61.12,x1:14.02,y1:3.0,z1:-54.96},
-   {x0:13.9,y0:-.02,z0:-57.0,x1:14.4,y1:2.64,z1:-55.2},
-  ]},
- /** Ground east side door of Building 6, set in the base glazing. */
- b6SideDoor:{x:14.17,z:-56.1,width:1.8,height:2.62},
- /** Ground lift lobby inside the base recess; the floor top is the support height. */
- b6Lobby:{x0:10.8,x1:14.17,z0:-61.1,z1:-54.97,floor:.02,clearHeight:3.0},
- /** Small through-car lift: it opens east to the lobby at ground and west to the
-  * office at 5.1 m. `carY` is the walkable car-floor top. */
- b6Lift:{x0:8.6,x1:10.8,z0:-61.1,z1:-58.9,doorZ0:-60.6,doorZ1:-59.4,ground:.02,upper:5.1,clearHeight:2.32,top:7.75},
- b6SideDoorApproach:[15.2,.02,-56.1] as [number,number,number],
- liftLobbyPoint:[12.6,.02,-60] as [number,number,number],
- liftGroundPoint:[9.7,1.0,-60] as [number,number,number],
- liftUpperPoint:[9.7,6.1,-60] as [number,number,number],
- liftPanelGround:[11.30,1.25,-59.15] as [number,number,number],
- liftPanelUpper:[8.20,6.35,-59.15] as [number,number,number],
+ b6:{id:'B06',x0:1,x1:10,z0:-62,door:4,doorWidth:2.4,floor:5.1,z1:-52.625,clearHeight:2.65,doorHeight:2.6},
  staff:[64,.02,-61] as [number,number,number],
  laptop:[7.3,5.9,-58.2] as [number,number,number],
  returnPoint:[62,.02,-60] as [number,number,number],
@@ -58,7 +34,7 @@ export const OPENING={
  checkpoints:{
   bus:[66.6,.54,30.6] as [number,number,number],
   b5:[58,0,-52] as [number,number,number],
-  b6:[7.0,5.1,-59.5] as [number,number,number],
+  b6:[4,5.1,-56] as [number,number,number],
   b5safe:[58,0,-53.8] as [number,number,number],
   handoff:[58,.08,25] as [number,number,number],
  },
@@ -83,9 +59,7 @@ export const OPENING={
   [[63,0,32.9],[50,0,32.9],[50,0,30.6]],
  ] as [number,number,number][][],
  routeB5:[[63.4,27.8],[52,27.8],[52,33.5],[24,33.5],[24,-48],[58,-48],[58,-61.5],[64,-61]],
- routeB6:[[64,-61],[58,-61.5],[58,-48],[24,-48],[20,-48],[20,-56.1],[16,-56.1],[13.8,-56.1],[12.4,-57.6],[11.6,-59.4],[11.15,-60]],
- /** 5F leg: step out of the lift's west door and cross the office to the desk. */
- routeB6Office:[[9.7,-60],[8.0,-60],[7.3,-59.4]],
+ routeB6:[[64,-61],[58,-61.5],[58,-48],[24,-48],[18,-48],[18,-26],[4,-26],[4,-52.2],[4,-58],[7.3,-58.2]],
  routeB4:[[64,-61],[58,-61.5],[58,-48],[24,-48],[24,33.5],[58,33.5],[58,25]],
 } as const;
 
@@ -100,7 +74,7 @@ export const DINNER_LAYOUT={
  archCenters:[63.15,68.45,73.75,79.05],archHalfWidth:2.65,
  archPiers:[60.5,65.8,71.1,76.4,81.7],
  crossWidth:23.2,crossCenter:71.9,longLength:21.4,longCenterZ:-70.7,endZ:-81.32,
- archSpring:2.72,archRise:1.6,archStations:[-62,-66,-70,-74,-78],
+ archSpring:2.72,archRise:1.6,archStations:[-62,-70,-78],
 };
 
 /** Quarter-turn of the authored hall: its long axis is east–west, parallel to B5.

@@ -8,8 +8,6 @@ import dinnerArms from '../model/dinner-arms.json';
 import shield from '../model/hall-crest.json';
 import {createMacBook} from '../items/macbook';
 import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H} from './spatialLayout';
-import {openingLift} from './navigation';
-import {OPENING_STAIR_PASSAGE as SP} from '../model/groundLayout';
 
 /**
  * Thomas opening scenery: the campus shuttle, the Building 5 ground-floor dinner
@@ -438,54 +436,28 @@ function buildDinner(root:T.Group){
 /* Building 6 presentation room                                        */
 /* ------------------------------------------------------------------ */
 
-function signText(parent:T.Object3D,key:string,label:string,size:number,x:number,y:number,z:number,material:T.Material,yaw=0){
- const geo=new TextGeometry(label,{font:campusFont,size,depth:.02,curveSegments:1});
- geo.computeBoundingBox();
- geo.translate(-(geo.boundingBox!.max.x+geo.boundingBox!.min.x)/2,0,0);
- const mesh=new T.Mesh(geo,material);
- mesh.position.set(x,y,z);mesh.rotation.y=yaw;parent.add(mesh);
- return tag(mesh,key,key);
-}
-
 function buildOffice(root:T.Group){
- const room=O.b6,L=O.b6Lift;
+ const room=O.b6;
  const group=tag(new T.Group(),'opening-b6-office','Opening_b6_office');
  root.add(group);
- const floorTop=room.floor,wallT=.12,wallH=room.clearHeight;
- const midX=(room.x0+room.x1)/2,midZ=(room.z0+room.z1)/2,w=room.x1-room.x0,d=room.z1-room.z0;
+ const floorTop=room.floor;
  const materials={
   floor:std('Opening_b6_floor',0xdfe3dd),
   wall:std('Opening_b6_wall',0xe4e7e2),
-  ceiling:std('Opening_b6_ceiling',0xf0f1ec),
-  trim:std('Opening_b6_trim',0x8b9189),
   desk:std('Opening_b6_desk_top',0x9c7c52),
   leg:std('Opening_b6_desk_leg',0x8a8f86),
   case:std('Opening_b6_cabinet',0x6f7f70),
   greenery:std('Opening_b6_greenery',0x4e7f4a),
   lamp:std('Opening_b6_ceiling_lamp',0xfff1cd,0xffe3a8,.5),
   paper:std('Opening_b6_paper',0xf3f1e8),
-  rug:std('Opening_b6_rug',0x6d7f86),
-  art:std('Opening_b6_art',0x40525a),
  };
- // The floor is split around the lift shaft; its top is exactly room.floor.
- box(group,'opening-b6-floor',L.x0-room.x0,.18,d,(room.x0+L.x0)/2,floorTop-.09,midZ,materials.floor);
- box(group,'opening-b6-floor-north',L.x1-L.x0,.18,L.z0-room.z0,(L.x0+L.x1)/2,floorTop-.09,(room.z0+L.z0)/2,materials.floor);
- box(group,'opening-b6-floor-south',L.x1-L.x0,.18,room.z1-L.z1,(L.x0+L.x1)/2,floorTop-.09,(L.z1+room.z1)/2,materials.floor);
- // A lined room: the old cavity opened straight onto the stair landing.
- box(group,'opening-b6-wall-north',w,wallH,wallT,midX,floorTop+wallH/2,room.z0+wallT/2,materials.wall);
- box(group,'opening-b6-wall-south',w,wallH,wallT,midX,floorTop+wallH/2,room.z1-wallT/2,materials.wall);
- box(group,'opening-b6-wall-west',wallT,wallH,d,room.x0+wallT/2,floorTop+wallH/2,midZ,materials.wall);
- box(group,'opening-b6-wall-east-north',wallT,wallH,L.z0-room.z0,room.x1-wallT/2,floorTop+wallH/2,(room.z0+L.z0)/2,materials.wall);
- box(group,'opening-b6-wall-east-south',wallT,wallH,room.z1-L.z1,room.x1-wallT/2,floorTop+wallH/2,(L.z1+room.z1)/2,materials.wall);
- box(group,'opening-b6-ceiling',w,.12,d,midX,floorTop+wallH-.06,midZ,materials.ceiling);
- box(group,'opening-b6-skirting',w,.10,.03,midX,floorTop+.05,room.z1-wallT-.015,materials.trim);
+ const w=room.x1-room.x0,d=room.z1-room.z0;
+ box(group,'opening-b6-floor',w,.18,d,(room.x0+room.x1)/2,floorTop-.09,(room.z0+room.z1)/2,materials.floor);
+ box(group,'opening-b6-ceiling-light',5.2,.10,.34,5.5,floorTop+2.48,-57.6,materials.lamp);
  // Credenza along the north wall and a planter in the far corner.
  box(group,'opening-b6-credenza',5.0,.90,.55,4.5,floorTop+.45,-61.45,materials.case);
- const roomLight=new T.PointLight(0xffe9c0,20,10,2);roomLight.position.set(5.2,floorTop+2.2,-59.6);group.add(roomLight);
+ const roomLight=new T.PointLight(0xffe9c0,20,10,2);roomLight.position.set(5.2,floorTop+2.2,-57.4);group.add(roomLight);
  box(group,'opening-b6-planter',.44,.44,.44,1.9,floorTop+.22,-60.6,materials.greenery);
- box(group,'opening-b6-ceiling-light',4.4,.08,.30,5.4,floorTop+2.56,-59.5,materials.lamp);
- box(group,'opening-b6-rug',4.4,.018,2.5,5.6,floorTop+.009,-59.3,materials.rug);
- box(group,'opening-b6-picture',1.45,.95,.05,4.6,floorTop+1.65,room.z1-wallT-.03,materials.art);
  // Presentation desk; the MacBook sits on it at OPENING.laptop.
  const desk=box(group,'opening-b6-desk',1.90,.09,.84,O.laptop[0],O.laptop[1]-.045,O.laptop[2],materials.desk);
  tag(desk,'opening-b6-desk','opening-b6-desk');
@@ -503,148 +475,6 @@ function buildOffice(root:T.Group){
 }
 
 /* ------------------------------------------------------------------ */
-/* Building 6 ground side door, lift lobby and car                     */
-/* ------------------------------------------------------------------ */
-
-function buildLift(root:T.Group){
- const LO=O.b6Lobby,L=O.b6Lift,SD=O.b6SideDoor;
- const group=tag(new T.Group(),'opening-b6-lift','Opening_b6_lift');
- root.add(group);
- const materials={
-  floor:std('Opening_b6_lobby_floor',0xd6d3c7),
-  wall:std('Opening_b6_lobby_wall',0xe6e3d8),
-  ceiling:std('Opening_b6_lobby_ceiling',0xf1efe8),
-  steel:std('Opening_b6_lift_steel',0x98a29e,.35,.25),
-  car:std('Opening_b6_lift_car',0xc7cec8),
-  trim:std('Opening_b6_lift_trim',0x5f6b68),
-  lamp:std('Opening_b6_lift_lamp',0xfff1cd,0xffe3a8,.55),
-  glass:glassMaterial('clear'),
-  indicator:std('Opening_b6_lift_indicator',0x8a9a90,0x38a35a,.8),
- };
- const lw=LO.x1-LO.x0,ld=LO.z1-LO.z0,lx=(LO.x0+LO.x1)/2,lz=(LO.z0+LO.z1)/2;
- // Ground lobby: floor top exactly LO.floor, ceiling below the base glass head.
- box(group,'opening-b6-lobby-floor',lw,.18,ld,lx,LO.floor-.09,lz,materials.floor);
- box(group,'opening-b6-lobby-ceiling',lw,.10,ld,lx,LO.clearHeight-.05,lz,materials.ceiling);
- box(group,'opening-b6-lobby-wall-north',lw,LO.clearHeight,.12,lx,LO.clearHeight/2,LO.z0+.06,materials.wall);
- box(group,'opening-b6-lobby-wall-south',lw,LO.clearHeight,.12,lx,LO.clearHeight/2,LO.z1-.06,materials.wall);
- box(group,'opening-b6-lobby-wall-west',.12,LO.clearHeight,LO.z1-L.z1,LO.x0+.06,LO.clearHeight/2,(L.z1+LO.z1)/2,materials.wall);
- box(group,'opening-b6-lobby-floor-inlay',.90,.010,ld-1.0,lx,LO.floor+.005,lz,materials.trim);
- // Side door: frame and two parked sliding leaves keep the 1.8 m opening clear.
- for(const s of [-1,1]){
-  box(group,'opening-b6-side-door-jamb-'+s,.18,2.72,.16,SD.x,1.36,SD.z+s*(SD.width/2+.06),materials.steel);
- }
- box(group,'opening-b6-side-door-header',.18,.16,SD.width+.28,SD.x,2.72,SD.z,materials.steel);
- box(group,'opening-b6-side-door-threshold',.26,.032,SD.width,SD.x-.06,.016,SD.z,materials.trim);
- for(const s of [-1,1]){
-  const leafZ=SD.z+s*(SD.width/2+.48);
-  pane(group,'opening-b6-side-door-leaf-'+s,.86,2.46,SD.x-.10,1.25,leafZ,materials.glass,Math.PI/2);
-  box(group,'opening-b6-side-door-leaf-stile-'+s,.06,2.50,.07,SD.x-.08,1.25,leafZ-s*.42,materials.steel);
- }
- box(group,'opening-b6-side-door-canopy',1.35,.12,2.35,SD.x+.66,3.22,SD.z,materials.steel);
- box(group,'opening-b6-side-door-lamp',.18,.06,1.2,SD.x-.16,2.64,SD.z,materials.lamp);
- const signMat=std('Opening_b6_sign',0xeeeadd,0x222222,.15);
- box(group,'opening-b6-side-door-sign-plate',.04,.40,2.02,SD.x+.075,2.95,SD.z,materials.trim);
- signText(group,'opening-b6-side-door-sign','B6 · EAST LOBBY',.21,SD.x+.10,2.95,SD.z,signMat,Math.PI/2);
- signText(group,'opening-b6-side-door-lift-sign','LIFT · 5F',.13,SD.x+.10,2.38,SD.z-1.03,signMat,Math.PI/2);
- // Shaft walls; the east side opens to the lobby at ground, the west side to the office at 5F.
- const shaftTop=L.top;
- box(group,'opening-b6-lift-east-north-wall',.12,shaftTop,.5,L.x1-.06,shaftTop/2,L.z0+.25,materials.wall);
- box(group,'opening-b6-lift-east-south-wall',.12,shaftTop,.5,L.x1-.06,shaftTop/2,L.z1-.25,materials.wall);
- box(group,'opening-b6-lift-east-lintel-wall',.12,shaftTop-(L.ground+2.62),L.doorZ1-L.doorZ0,L.x1-.06,(shaftTop+L.ground+2.62)/2,(L.doorZ0+L.doorZ1)/2,materials.wall);
- box(group,'opening-b6-lift-west-north-wall',.12,shaftTop,.5,L.x0+.06,shaftTop/2,L.z0+.25,materials.wall);
- box(group,'opening-b6-lift-west-south-wall',.12,shaftTop,.5,L.x0+.06,shaftTop/2,L.z1-.25,materials.wall);
- box(group,'opening-b6-lift-west-below-wall',.12,L.upper,L.doorZ1-L.doorZ0,L.x0+.06,L.upper/2,(L.doorZ0+L.doorZ1)/2,materials.wall);
- box(group,'opening-b6-lift-west-above-wall',.12,shaftTop-(L.upper+2.3),L.doorZ1-L.doorZ0,L.x0+.06,(shaftTop+L.upper+2.3)/2,(L.doorZ0+L.doorZ1)/2,materials.wall);
- box(group,'opening-b6-lift-shaft-north-wall',L.x1-L.x0,shaftTop,.12,lx,shaftTop/2,L.z0+.06,materials.wall);
- box(group,'opening-b6-lift-shaft-south-wall',L.x1-L.x0,shaftTop,.12,lx,shaftTop/2,L.z1-.06,materials.wall);
- box(group,'opening-b6-lift-shaft-ceiling',L.x1-L.x0,.10,L.z1-L.z0,lx,shaftTop-.05,lz,materials.ceiling);
- signText(group,'opening-b6-lobby-lift-sign','LIFT · 5F PRINCIPAL\'S OFFICE',.17,LO.x0+.13,2.82,(L.doorZ0+L.doorZ1)/2,signMat,Math.PI/2);
- // Landing doors: two leaves per floor, parked into the wall pockets when open.
- type Leaf={mesh:T.Mesh;base:number;shift:number;floor:'ground'|'upper'};
- const leaves:Leaf[]=[];
- const door=(floor:'ground'|'upper',x:number,y0:number,h:number,sign:number)=>{
-  for(const i of [0,1]){
-   const base=(L.doorZ0+L.doorZ1)/2+(i?1:-1)*(L.doorZ1-L.doorZ0)/4;
-   const mesh=box(group,'opening-b6-lift-door-'+floor+'-'+i,.06,h,(L.doorZ1-L.doorZ0)/2,x,y0+h/2,base,materials.steel);
-   leaves.push({mesh,base,shift:(i?1:-1)*.56,floor});
-  }
- };
- door('ground',L.x1-.06,L.ground,2.58,1);
- door('upper',L.x0+.06,L.upper,2.28,-1);
- // Call panels and landing indicators.
- // Freestanding call posts beside each landing door (the interaction targets).
- box(group,'opening-b6-lift-call-post-ground',.06,1.09,.06,11.30,.565,-59.15,materials.trim);
- box(group,'opening-b6-lift-call-ground',.12,.28,.10,11.30,1.25,-59.15,materials.lamp);
- box(group,'opening-b6-lift-call-post-upper',.06,1.09,.06,8.20,L.upper+.545,-59.15,materials.trim);
- box(group,'opening-b6-lift-call-upper',.12,.28,.10,8.20,L.upper+1.25,-59.15,materials.lamp);
- const indicators:{material:T.MeshStandardMaterial;floor:'ground'|'upper'}[]=[];
- const indicator=(key:string,floor:'ground'|'upper',x:number,y:number,z:number)=>{
-  const material=materials.indicator.clone();
-  box(group,key,.06,.14,.24,x,y,z,material);
-  indicators.push({material,floor});
- };
- indicator('opening-b6-lift-indicator-ground','ground',LO.x0+.02,2.82,(L.doorZ0+L.doorZ1)/2);
- indicator('opening-b6-lift-indicator-upper','upper',L.x0-.02,L.upper+2.44,(L.doorZ0+L.doorZ1)/2);
- // The car is a through-car: open on the east at ground and west at 5F.
- const car=tag(new T.Group(),'opening-b6-lift-car','Opening_b6_lift_car');
- car.position.set(lx,L.ground,lz);group.add(car);
- box(car,'opening-b6-lift-car-floor',2.0,.12,2.0,0,-.06,0,materials.floor);
- box(car,'opening-b6-lift-car-ceiling',2.0,.08,2.0,0,2.24,0,materials.ceiling);
- box(car,'opening-b6-lift-car-north',2.0,2.24,.08,0,1.12,-.96,materials.car);
- box(car,'opening-b6-lift-car-south',2.0,2.24,.08,0,1.12,.96,materials.car);
- box(car,'opening-b6-lift-car-light',1.15,.03,.30,0,2.19,0,materials.lamp);
- box(car,'opening-b6-lift-car-button',.12,.20,.04,0,1.25,-.90,materials.lamp);
- for(const s of [-1,1])box(car,'opening-b6-lift-car-handrail-'+s,1.9,.05,.05,0,.92,s*.90,materials.trim);
- return{group,car,leaves,indicators,materials};
-}
-
-/* ------------------------------------------------------------------ */
-/* Stair underpass and the sealed 4F terrace                           */
-/* ------------------------------------------------------------------ */
-
-function buildUnderpass(root:T.Group){
- const group=tag(new T.Group(),'opening-stair-underpass','Opening_stair_underpass');
- root.add(group);
- const wall=std('Opening_underpass_wall',0xb9b6aa),dark=std('Opening_underpass_trim',0x6f746c),lamp=std('Opening_underpass_lamp',0xfff1cd,0xffdda0,.8),metal=std('Opening_underpass_metal',0x87908c);
- const half=SP.depth/2;
- for(let x=-12;x<=12;x+=4)box(group,'opening-underpass-light-'+x,.9,.04,.16,x,SP.clearHeight-.11,SP.z,lamp);
- for(const x of [-12,-8,-4,0,4,8,12]){
-  for(const s of [-1,1])box(group,'opening-underpass-pier-'+x+'-'+s,.28,2.9,.22,x,1.45,SP.z+s*(half-.11),wall);
-  box(group,'opening-underpass-beam-'+x,.28,.24,SP.depth-.02,x,2.95,SP.z,wall);
- }
- for(const s of [-1,1]){
-  box(group,'opening-underpass-skirting-'+s,SP.width-.4,.18,.05,0,.09,SP.z+s*(half-.03),dark);
-  box(group,'opening-underpass-service-'+s,1.1,2.1,.05,7*s,1.05,SP.z-half+.035,dark);
-  box(group,'opening-underpass-service-frame-'+s,1.22,.08,.06,7*s,2.14,SP.z-half+.04,metal);
-  const x=s*(SP.width/2-.15);
-  for(const k of [-1,1])box(group,'opening-underpass-portal-jamb-'+s+'-'+k,.30,3.08,.34,x,1.54,SP.z+k*(half-.02),metal);
-  box(group,'opening-underpass-portal-lintel-'+s,.30,.28,SP.depth-.02,x,3.06,SP.z,metal);
- }
- const light=new T.PointLight(0xffe3b0,12,16,2);light.position.set(0,2.7,SP.z);group.add(light);
- const signMat=std('Opening_underpass_sign',0xeeeadd,0x222222,.1);
- signText(group,'opening-underpass-sign-east','B6 · EAST LIFT →',.17,12.1,2.45,SP.z-half+.05,signMat);
- signText(group,'opening-underpass-sign-west','← CENTRAL PLAZA',.17,-12.1,2.45,SP.z-half+.05,signMat);
- return{group};
-}
-
-function buildTerrace(root:T.Group){
- const group=tag(new T.Group(),'opening-b6-terrace','Opening_b6_terrace');
- root.add(group);
- const guard=glassMaterial('guard'),steel=std('Opening_terrace_steel',0x9aa39e,.4,.3);
- const top=5.1,z=-52.72;
- pane(group,'opening-b6-terrace-guard',29.8,1.05,0,top+.55,z,guard);
- box(group,'opening-b6-terrace-handrail',29.8,.06,.08,0,top+1.12,z,steel);
- for(let x=-14.5;x<=14.5;x+=2.9)box(group,'opening-b6-terrace-post-'+x,.06,1.12,.06,x,top+.56,z,steel);
- for(const s of [-1,1])pane(group,'opening-b6-terrace-guard-side-'+s,1.24,1.05,s*14.9,top+.55,z+.62,guard,Math.PI/2);
- const signMat=std('Opening_terrace_sign',0xeeeadd,0x222222,.15);
- signText(group,'opening-b6-terrace-sign','4F · TERRACE',.30,0,top+1.40,z+.05,signMat);
- box(group,'opening-b6-terrace-planter',.60,.46,.60,-13.3,top+.23,-52.15,std('Opening_terrace_planter',0x7f8b74));
- box(group,'opening-b6-terrace-planter-top',.58,.12,.58,-13.3,top+.52,-52.15,std('Opening_terrace_green',0x4e7f4a));
- return{group};
-}
-
-
-/* ------------------------------------------------------------------ */
 /* Public module                                                       */
 /* ------------------------------------------------------------------ */
 
@@ -653,9 +483,6 @@ export function createOpeningWorld(){
  const bus=buildBus(root,busMaterials());
  const dinner=buildDinner(root);
  const office=buildOffice(root);
- const lift=buildLift(root);
- buildUnderpass(root);
- buildTerrace(root);
 
  let doorT=0;         // 0 closed, 1 fully open
  let incident=false;
@@ -696,12 +523,6 @@ export function createOpeningWorld(){
    laptopTaken=state.laptopAcquired;
    office.laptop.root.visible=!laptopTaken;
   }
-  // The car and both landing doors follow the shared lift state. No animation is
-  // integrated here: the fixed-step controller owns the deterministic travel.
-  const car=openingLift();
-  lift.car.position.y=car.carY;
-  for(const leaf of lift.leaves)leaf.mesh.position.z=leaf.base+leaf.shift*(leaf.floor==='ground'?car.doorGround:car.doorUpper);
-  for(const indicator of lift.indicators)indicator.material.emissiveIntensity=(indicator.floor==='ground'?car.doorGround:car.doorUpper)>.5?.95:.18;
  }
  function dispose(){
   const geometries=new Set<T.BufferGeometry>(),materials=new Set<T.Material>();
