@@ -13,7 +13,7 @@ export function recordCorePowerCut(instanceId:string){
   if(!instanceId||hasCorePowerCut(instanceId))return false;
   memory.add(instanceId);
   try{localStorage.setItem(prefix+instanceId,CORE_EVENT);}catch{/* The current session can still finish. */}
-  window.dispatchEvent(new CustomEvent(CORE_EVENT,{detail:{event:CORE_EVENT,source:'L001',macInstanceId:instanceId,next:'sports-hall'}}));
+  if(typeof window!=='undefined')window.dispatchEvent(new CustomEvent(CORE_EVENT,{detail:{event:CORE_EVENT,source:'L001',macInstanceId:instanceId,next:'sports-hall'}}));
   return true;
 }
 

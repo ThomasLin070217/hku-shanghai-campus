@@ -14,11 +14,12 @@ import {CampusAudio} from '../gameplay/audio';
 import {DEFAULT_SETTINGS} from '../gameplay/save';
 import {setText} from '../ui/dom';
 import {restoreKitLayout} from './kit';
-import {createCombat, BOSS, NODES, SAFE, canSubmit, SUBMIT_RADIUS} from './combat';
+import {createCombat, NODES, SAFE, canSubmit} from './combat';
+import {INTERRUPT_LABEL,INTERRUPT_RULE,SHUTDOWN_LABEL,distanceToNode,lawnHint,placeAtShelter,shutDownGuardian} from './encounter';
 import {createBossScene} from './scene';
 import {batchLawnScenery} from './scenery';
 import {attachLawnAgent} from './agentControl';
-import {hasCorePowerCut,recordCorePowerCut,sportsRescueLink} from './mission';
+import {hasCorePowerCut,sportsRescueLink} from './mission';
 import {createOpeningAtmosphere} from '../opening/atmosphere';
 import {loadWorldThreat,markLionDefeated,markPowerCut,markLocalModelCleared,resetWorldThreat,tryPurgeWorld,type WorldThreat} from '../gameplay/worldThreat';
 import {KEYS} from '../exploration/config';
@@ -36,7 +37,7 @@ document.querySelector('#app')!.innerHTML = `
     <div id="boss-waypoint" hidden></div>
     <div id="boss-black" hidden role="status">Connection lost · Returning to the maintenance area</div>
     <div id="boss-live" hidden><div id="boss-hint"></div><div id="boss-feedback" role="status"></div>
-      <div id="boss-actions"><span id="boss-q" class="boss-skill">Q · Interrupt charge</span><span id="boss-f"></span></div>
+      <div id="boss-actions"><span id="boss-q" class="boss-skill">Q · ${INTERRUPT_LABEL}</span><span id="boss-f"></span></div>
       <div class="boss-controls" id="boss-controls">WASD Move · Drag to look · Shift Run · V Camera</div></div>
     <section id="boss-brief"><div class="boss-card"><small>2030 / Campus security network</small><h1 id="boss-title"></h1>
       <p id="boss-story"></p><div class="boss-buttons">
@@ -129,8 +130,8 @@ try {
   }
 } catch { /* Storage is optional for one session. */ }
 function finishMission() {
-  const coreCut=recordCorePowerCut(mac.instanceId);
-  markLionDefeated();markPowerCut();tryPurgeWorld();syncWorldThreat();
+  const coreCut=shutDownGuardian(mac.instanceId);
+  tryPurgeWorld();syncWorldThreat();
   return coreCut;
 }
 if(restored===1)finishMission();
@@ -157,18 +158,12 @@ function saveProgress() {
 }
 function place(at:{x:number;z:number}) {
   redrawUntil=performance.now()+1800;
-  const floor = explorer.world.support(at.x,at.z,0.3) ?? 0;
-  game.body.position.set(at.x,floor,at.z);
-  game.body.velocity.set(0,0,0);
-  game.body.grounded = true;
-  game.yaw = Math.atan2(at.x-BOSS.x,at.z-BOSS.z);
-  game.pitch = 0;
+  placeAtShelter(explorer.world,game,at);
 }
 function feedback(message:string) {
   notice = message; noticeTime = 2.4;
   setText(element('feedback'),message);
 }
-const distanceTo = (point:{x:number;z:number}) => Math.hypot(game.body.position.x-point.x,game.body.position.z-point.z);
 function resetToShelter(){
   holding=false;playing=false;combat.reset(0);place(SAFE);
   explorer.pause('maintenance');visuals.syncCollision(state);refresh();
@@ -186,7 +181,7 @@ function canAct(){
 }
 function freeze() {
   if(!canAct())return {ok:false,message:'Resume the encounter to use Q.'};
-  const result=combat.cast({kind:'stun',side:'left'},game.body.position);
+  const result=combat.cast(INTERRUPT_RULE,game.body.position);
   feedback(result.message);
   if(result.ok){
     lastCast={skill:'stun',message:result.message,frame:game.frame};
@@ -194,11 +189,6 @@ function freeze() {
   }
   return result;
 }
-const phases:Record<string,string>={
-  patrol:'Approach the shutdown device',alert:'L001 has spotted you',chase:'Get ready to press Q',
-  chargeWarn:'Charge wind-up · Press Q now',charge:'Sidestep the charge',chargeRecover:'Wait for the next wind-up',
-  stunned:'L001 is frozen',return:'Wait for the next charge'
-};
 function damage(){
   if(respawnGrace>0)return;
   const hit=damageOpeningHearts(runtime);runtime=hit.runtime;holding=false;
@@ -291,14 +281,12 @@ function refresh() {
     element('next').hidden=!done;
   }
   if(!live)return;
-  const node=NODES[0],range=distanceTo(node),open=canSubmit(state);
-  const hint=open?(range>SUBMIT_RADIUS?'Step into the glowing ring':'Hold F to shut down L001')+
-    ' · '+state.remaining.toFixed(1)+' s':phases[state.phase]??'Approach the shutdown device';
-  setText(element('hint'),hint);
+  const node=NODES[0],range=distanceToNode(game.body.position),open=canSubmit(state);
+  setText(element('hint'),lawnHint(state,range));
   setText(element('feedback'),noticeTime>0?notice:'');
   element('q').classList.toggle('can-cast',state.phase==='chargeWarn');
   element('f').hidden=!open;
-  setText(element('f'),state.submit>0?'F · '+Math.round(state.submit*100)+'%':'F · Hold to shut down');
+  setText(element('f'),state.submit>0?'F · '+Math.round(state.submit*100)+'%':'F · '+SHUTDOWN_LABEL);
   point.set(node.x,1.15,node.z).project(explorer.camera);
   const behind=point.z>1;
   const x=behind?(point.x>0?.08:.92):Math.max(.08,Math.min(.92,point.x*.5+.5));
