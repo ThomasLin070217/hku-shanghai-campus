@@ -179,6 +179,12 @@ def assert_surfaces_fonts(page, checkpoint, root=None):
     check(checkpoint + ': no visible overlay element starts with Segoe UI / system-ui', not bad, bad)
 
 
+def assert_no_stale_copy(page, label):
+    text = page.evaluate("() => (document.body.innerText || '').toLowerCase()")
+    hits = [phrase for phrase in ('current slice', 'not implemented') if phrase in text]
+    check(label + ': no stale "current slice" / "not implemented" copy', not hits, text[:240])
+
+
 def assert_hud(page, checkpoint):
     hud = style(page, '.opening-hud')
     check(checkpoint + ': objective card is visible', visible(page, '.opening-hud'), hud)
@@ -586,6 +592,12 @@ def credits_checks(page):
           and not visible(page, '.shell-chapters'),
           {'hint': style(page, '.stage-bottom > span:first-child'), 'esc': style(page, '.shell-hint'),
            'chapters': style(page, '.shell-chapters')})
+    # The credits own the whole screen: no HUD element may peek through the dim layer.
+    hud_selectors = ['.opening-hud', '.opening-hearts', '.opening-mapcard', '#inventory-hud',
+                     '.stage-bottom', '.stage-top', '.shell-hint', '.shell-chapters',
+                     '.pause-card', '#ending-overlay', '.ending-barrier']
+    visible_hud = [selector for selector in hud_selectors if visible(page, selector)]
+    check('ending: every HUD element is hidden under the credits', not visible_hud, visible_hud)
     credits_text = page.evaluate(
         "() => { const c = document.getElementById('ending-credits-card');"
         " return c ? c.textContent.toUpperCase() : ''; }")
@@ -596,6 +608,7 @@ def credits_checks(page):
     visible_text = page.evaluate("() => document.body.innerText.toUpperCase()")
     check('ending: HKU SHANGHAI · CDS appears once on the visible screen',
           visible_text.count('HKU SHANGHAI · CDS') == 1, visible_text)
+    assert_no_stale_copy(page, 'ending')
     shot(page, 'check-ending-credits.png')
 
 
@@ -657,6 +670,16 @@ def handoff_checks(page):
     check('handoff: epilogue note is the opening gold',
           bool(note) and note['color'] == GOLD, note and note['color'])
     assert_surfaces_fonts(page, 'handoff', root='.opening-epilogue')
+    ticker = page.evaluate("""() => [...document.querySelectorAll('.opening-epilogue-ticker-item')].map(e => {
+      const dot = e.querySelector('.opening-epilogue-ticker-dot');
+      return {text: e.textContent.trim(), color: getComputedStyle(e).color,
+              dot: dot ? getComputedStyle(dot).backgroundColor : null};
+    })""")
+    check('handoff: the core status chips read OFFLINE at the Building 4 handoff',
+          len(ticker) == 4 and all(t['text'].endswith('OFFLINE') for t in ticker), ticker)
+    check('handoff: the offline chips wear the opening gold, not the online green',
+          bool(ticker) and all(t['color'] == GOLD and t['dot'] == GOLD for t in ticker), ticker)
+    assert_no_stale_copy(page, 'handoff')
     shot(page, 'check-epilogue.png')
 
 
@@ -681,6 +704,7 @@ def menu_checks(page):
           (bool(accent) and accent['color'] == GREEN) or (bool(gold) and gold['color'] == GOLD),
           accent and accent['color'])
     assert_surfaces_fonts(page, 'menu', root='.levels')
+    assert_no_stale_copy(page, 'menu')
     shot(page, 'check-menu.png')
 
 
@@ -709,6 +733,7 @@ def survey_checks(page):
           bool(slot) and slot['number'] == '12px', slot)
     idle = page.evaluate("() => document.getElementById('inventory-hud').classList.contains('is-idle')")
     check('survey: the survey dock never takes the story idle fade', not idle, idle)
+    assert_no_stale_copy(page, 'survey')
     shot(page, 'check-survey.png')
 
 
@@ -744,6 +769,7 @@ def main():
                 assert_hotbar(page, checkpoint)
                 assert_chapter_card(page, checkpoint)
                 assert_surfaces_fonts(page, checkpoint)
+                assert_no_stale_copy(page, checkpoint)
                 if checkpoint == 'b4-inside':
                     toast_checks(page)
                     held_model_checks(page)

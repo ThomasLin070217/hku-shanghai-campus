@@ -131,8 +131,8 @@ export function createOpeningUI(
   stage.append(cinema);
 
   // ----------------------------------------------------------- Epilogue.
-  // Shown once the Building 4 handoff modal is closed. This is the end of the
-  // current slice, not the full students-freed / lights-show ending.
+  // Shown once the Building 4 handoff modal is closed. Chapter 1 ends here; the
+  // run continues in-page into Chapter 2 (the lawn and the full ending).
   const epilogue = node('section', 'opening-epilogue');
   epilogue.hidden = true;
   epilogue.setAttribute('role', 'region');

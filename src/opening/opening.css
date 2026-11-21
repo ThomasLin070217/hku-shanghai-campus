@@ -3024,18 +3024,20 @@ body.opening-mode .opening-modal-root {
   padding: 0;
   list-style: none;
 }
+/* The cores are offline until Chapter 2 boots them in B4: gold, never the
+   green online chip. */
 .opening-epilogue-ticker-item {
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 5px 9px;
-  border: 1px solid rgba(116, 230, 180, 0.3);
-  background: rgba(116, 230, 180, 0.07);
+  border: 1px solid rgba(255, 182, 72, 0.3);
+  background: rgba(255, 182, 72, 0.07);
   font-family: var(--opening-mono);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
-  color: var(--opening-green);
+  color: var(--opening-gold);
   opacity: 0;
   animation: opening-ticker-in 0.42s ease forwards;
   animation-delay: var(--epilogue-delay, 0s);
@@ -3048,8 +3050,8 @@ body.opening-mode .opening-modal-root {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--opening-green);
-  box-shadow: 0 0 8px var(--opening-green);
+  background: var(--opening-gold);
+  box-shadow: 0 0 8px var(--opening-gold);
 }
 .opening-epilogue-meta {
   margin: 0;

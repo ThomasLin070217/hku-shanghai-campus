@@ -14,7 +14,6 @@ export const OPENING_UI = {
     titleEn: 'BARRIER 2030',
     chapter: 'CHAPTER 1 · HANDOFF',
     chapterShort: 'Chapter 1',
-    endOfSlice: 'End of the current slice',
   },
   hud: {
     objectiveLabel: 'Current objective',
@@ -152,7 +151,8 @@ export const OPENING_UI = {
     /** The line under the title; the only narrative sentence in the epilogue. */
     line: 'The MacBook is warm in your backpack. Behind you the campus is sealed; ahead, the control room is still dark.',
     tickerLabel: 'Core status',
-    ticker: ['CPU 01 ONLINE', 'CPU 02 ONLINE', 'CPU 03 ONLINE', 'CPU 04 ONLINE'],
+    /** The supercomputer is still offline at the Chapter 1 handoff; B4 boots it. */
+    ticker: ['CPU 01 OFFLINE', 'CPU 02 OFFLINE', 'CPU 03 OFFLINE', 'CPU 04 OFFLINE'],
     meta: 'MacBook retained · Building 4 main entrance',
     note: 'Press F to continue to Chapter 2.',
     continue: 'Continue',
