@@ -759,7 +759,7 @@
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 1036820
+          "byteLength": 805900
         },
         {
           "pointer": "/images/0",
@@ -795,7 +795,7 @@
       "hasTextures": true,
       "hasDefaultScene": true,
       "drawCallCount": 31,
-      "totalVertexCount": 32364,
+      "totalVertexCount": 23524,
       "totalTriangleCount": 10796,
       "maxUVs": 1,
       "maxInfluences": 0,
@@ -932,7 +932,7 @@
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 2266160
+          "byteLength": 2208128
         },
         {
           "pointer": "/images/0",
@@ -981,7 +981,7 @@
       "hasTextures": true,
       "hasDefaultScene": true,
       "drawCallCount": 37,
-      "totalVertexCount": 70704,
+      "totalVertexCount": 68508,
       "totalTriangleCount": 23692,
       "maxUVs": 1,
       "maxInfluences": 0,
@@ -1022,7 +1022,7 @@
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 685844
+          "byteLength": 500828
         },
         {
           "pointer": "/images/0",
@@ -1058,7 +1058,7 @@
       "hasTextures": true,
       "hasDefaultScene": true,
       "drawCallCount": 9,
-      "totalVertexCount": 21396,
+      "totalVertexCount": 14280,
       "totalTriangleCount": 7140,
       "maxUVs": 1,
       "maxInfluences": 0,
@@ -1207,7 +1207,7 @@
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 274392
+          "byteLength": 244312
         },
         {
           "pointer": "/images/0",
@@ -1256,7 +1256,7 @@
       "hasTextures": true,
       "hasDefaultScene": true,
       "drawCallCount": 33,
-      "totalVertexCount": 8500,
+      "totalVertexCount": 7356,
       "totalTriangleCount": 2874,
       "maxUVs": 1,
       "maxInfluences": 0,
@@ -1321,7 +1321,7 @@
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 112924
+          "byteLength": 98052
         },
         {
           "pointer": "/images/0",
@@ -1370,7 +1370,7 @@
       "hasTextures": true,
       "hasDefaultScene": true,
       "drawCallCount": 18,
-      "totalVertexCount": 3468,
+      "totalVertexCount": 2896,
       "totalTriangleCount": 1172,
       "maxUVs": 1,
       "maxInfluences": 0,
@@ -2893,7 +2893,7 @@
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 393064
+          "byteLength": 287608
         },
         {
           "pointer": "/images/0",
@@ -2942,7 +2942,7 @@
       "hasTextures": true,
       "hasDefaultScene": true,
       "drawCallCount": 20,
-      "totalVertexCount": 12216,
+      "totalVertexCount": 8160,
       "totalTriangleCount": 4080,
       "maxUVs": 1,
       "maxInfluences": 0,
@@ -4045,7 +4045,7 @@
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 1021520
+          "byteLength": 748208
         },
         {
           "pointer": "/images/0",
@@ -4081,7 +4081,7 @@
       "hasTextures": true,
       "hasDefaultScene": true,
       "drawCallCount": 76,
-      "totalVertexCount": 31860,
+      "totalVertexCount": 21348,
       "totalTriangleCount": 10674,
       "maxUVs": 1,
       "maxInfluences": 0,
@@ -4242,7 +4242,7 @@
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 935504
+          "byteLength": 685488
         },
         {
           "pointer": "/images/0",
@@ -4278,7 +4278,7 @@
       "hasTextures": true,
       "hasDefaultScene": true,
       "drawCallCount": 76,
-      "totalVertexCount": 29172,
+      "totalVertexCount": 19556,
       "totalTriangleCount": 9778,
       "maxUVs": 1,
       "maxInfluences": 0,
@@ -4685,7 +4685,7 @@
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 3123648
+          "byteLength": 2285200
         },
         {
           "pointer": "/images/0",
@@ -4734,7 +4734,7 @@
       "hasTextures": true,
       "hasDefaultScene": true,
       "drawCallCount": 135,
-      "totalVertexCount": 97492,
+      "totalVertexCount": 65244,
       "totalTriangleCount": 32622,
       "maxUVs": 1,
       "maxInfluences": 0,
@@ -5249,7 +5249,7 @@
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 3775820
+          "byteLength": 2902768
         },
         {
           "pointer": "/images/0",
@@ -5298,7 +5298,7 @@
       "hasTextures": true,
       "hasDefaultScene": true,
       "drawCallCount": 167,
-      "totalVertexCount": 117854,
+      "totalVertexCount": 84300,
       "totalTriangleCount": 39442,
       "maxUVs": 1,
       "maxInfluences": 0,
@@ -5429,7 +5429,7 @@
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 534440
+          "byteLength": 392012
         },
         {
           "pointer": "/images/0",
@@ -5478,7 +5478,7 @@
       "hasTextures": true,
       "hasDefaultScene": true,
       "drawCallCount": 63,
-      "totalVertexCount": 16630,
+      "totalVertexCount": 11152,
       "totalTriangleCount": 5576,
       "maxUVs": 1,
       "maxInfluences": 0,
@@ -5652,7 +5652,7 @@
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 632508
+          "byteLength": 430744
         },
         {
           "pointer": "/images/0",
@@ -5688,7 +5688,7 @@
       "hasTextures": true,
       "hasDefaultScene": true,
       "drawCallCount": 88,
-      "totalVertexCount": 19385,
+      "totalVertexCount": 12051,
       "totalTriangleCount": 6551,
       "maxUVs": 1,
       "maxInfluences": 0,
@@ -5819,7 +5819,7 @@
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 534440
+          "byteLength": 392012
         },
         {
           "pointer": "/images/0",
@@ -5868,7 +5868,7 @@
       "hasTextures": true,
       "hasDefaultScene": true,
       "drawCallCount": 63,
-      "totalVertexCount": 16630,
+      "totalVertexCount": 11152,
       "totalTriangleCount": 5576,
       "maxUVs": 1,
       "maxInfluences": 0,

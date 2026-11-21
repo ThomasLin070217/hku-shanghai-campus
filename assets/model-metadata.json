@@ -188,7 +188,7 @@
   },
   "assets": {
     "HKU-Shanghai-Campus": {
-      "bytes": 25449280,
+      "bytes": 19142196,
       "before": {
         "triangles": 200042,
         "meshes": 1115,
@@ -230,7 +230,7 @@
       "reload": "passed"
     },
     "HKU-Shanghai-Opening": {
-      "bytes": 28722484,
+      "bytes": 22181360,
       "before": {
         "triangles": 221626,
         "meshes": 1769,
@@ -272,7 +272,7 @@
       "reload": "passed"
     },
     "HKU-Shanghai-Campus-no-ground": {
-      "bytes": 18804664,
+      "bytes": 14661368,
       "before": {
         "triangles": 141101,
         "meshes": 1032,
@@ -314,7 +314,7 @@
       "reload": "passed"
     },
     "buildings/B01": {
-      "bytes": 1578552,
+      "bytes": 1315300,
       "before": {
         "triangles": 10674,
         "meshes": 76,
@@ -356,7 +356,7 @@
       "reload": "passed"
     },
     "buildings/B02": {
-      "bytes": 1447724,
+      "bytes": 1207744,
       "before": {
         "triangles": 9778,
         "meshes": 76,
@@ -398,7 +398,7 @@
       "reload": "passed"
     },
     "buildings/B03": {
-      "bytes": 4409000,
+      "bytes": 3587676,
       "before": {
         "triangles": 32622,
         "meshes": 135,
@@ -440,7 +440,7 @@
       "reload": "passed"
     },
     "buildings/B04": {
-      "bytes": 5124928,
+      "bytes": 4271680,
       "before": {
         "triangles": 39442,
         "meshes": 167,
@@ -482,7 +482,7 @@
       "reload": "passed"
     },
     "buildings/B05": {
-      "bytes": 797236,
+      "bytes": 663788,
       "before": {
         "triangles": 5576,
         "meshes": 63,
@@ -524,7 +524,7 @@
       "reload": "passed"
     },
     "buildings/B06": {
-      "bytes": 856736,
+      "bytes": 665372,
       "before": {
         "triangles": 6551,
         "meshes": 88,
@@ -566,7 +566,7 @@
       "reload": "passed"
     },
     "buildings/B07": {
-      "bytes": 791880,
+      "bytes": 658432,
       "before": {
         "triangles": 5576,
         "meshes": 63,
@@ -650,7 +650,7 @@
       "reload": "passed"
     },
     "B05-4F-Stepped-Lounge": {
-      "bytes": 486692,
+      "bytes": 384220,
       "before": {
         "triangles": 4080,
         "meshes": 20,
@@ -692,7 +692,7 @@
       "reload": "passed"
     },
     "CDS1-Observed-Lobby": {
-      "bytes": 337360,
+      "bytes": 309072,
       "before": {
         "triangles": 2874,
         "meshes": 33,
@@ -734,7 +734,7 @@
       "reload": "passed"
     },
     "CDS1-13F-Public-Area": {
-      "bytes": 148000,
+      "bytes": 134908,
       "before": {
         "triangles": 1172,
         "meshes": 18,
@@ -776,7 +776,7 @@
       "reload": "passed"
     },
     "Observed-Keyboard-Wall-Lounge": {
-      "bytes": 2384108,
+      "bytes": 2328732,
       "before": {
         "triangles": 23692,
         "meshes": 37,
@@ -818,7 +818,7 @@
       "reload": "passed"
     },
     "Observed-HKU-Flip-Wall-Corridor": {
-      "bytes": 834916,
+      "bytes": 651056,
       "before": {
         "triangles": 7140,
         "meshes": 9,
@@ -860,7 +860,7 @@
       "reload": "passed"
     },
     "Observed-Ring-Display-Room": {
-      "bytes": 1254048,
+      "bytes": 1027820,
       "before": {
         "triangles": 10796,
         "meshes": 31,
