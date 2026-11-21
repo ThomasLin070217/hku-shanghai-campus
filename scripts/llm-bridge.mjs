@@ -11,6 +11,11 @@
 // Provider choice: HKU_LLM_PROVIDER, else deepseek when DEEPSEEK_API_KEY is
 // present, else scripts/llm.mjs's default. If the primary provider fails, one
 // configured fallback provider is tried before reporting the error.
+//
+// The lawn skill compiler sends the same body plus an optional OpenAI
+// `response_format` (structured skill JSON) and `temperature`. If a provider
+// rejects response_format (HTTP 400/415/422) the request is retried once as
+// plain text; the game validates the JSON either way.
 import http from 'node:http';
 import { spawn } from 'node:child_process';
 import { chat, activeProvider, configured, proxyUrl } from './llm.mjs';
@@ -98,6 +103,15 @@ function validMessages(input) {
   }
   return messages.some(row => row.role === 'user') ? messages : null;
 }
+const RESPONSE_FORMATS = ['json_schema', 'json_object', 'text'];
+function validResponseFormat(input) {
+  if (input === undefined || input === null) return null;
+  if (typeof input !== 'object' || Array.isArray(input) || !RESPONSE_FORMATS.includes(input.type)) return undefined;
+  return input;
+}
+function validTemperature(input) {
+  return typeof input === 'number' && Number.isFinite(input) && input >= 0 && input <= 1 ? input : 0.4;
+}
 function readableError(error) {
   const message = error instanceof Error ? error.message : String(error);
   return message.replace(/\s+/g, ' ').slice(0, 400);
@@ -149,6 +163,9 @@ const server = http.createServer(async (req, res) => {
   try { body = JSON.parse(raw || '{}'); } catch { return send(res, 400, { ok: false, error: 'invalid_json' }, origin); }
   const messages = validMessages(body?.messages);
   if (!messages) return send(res, 400, { ok: false, error: 'invalid_messages' }, origin);
+  const responseFormat = validResponseFormat(body?.response_format);
+  if (responseFormat === undefined) return send(res, 400, { ok: false, error: 'invalid_response_format' }, origin);
+  const temperature = validTemperature(body?.temperature);
   if (inFlight >= MAX_IN_FLIGHT) return send(res, 429, { ok: false, error: 'busy' }, origin);
 
   inFlight += 1;
@@ -156,16 +173,29 @@ const server = http.createServer(async (req, res) => {
   let primary = 'gemini';
   try { primary = primaryProvider(); } catch { /* fall back below */ }
   const fallback = fallbackProvider(primary);
+  // Stop the upstream call when the page gives up (closed MacBook, new draft).
+  const cancel = new AbortController();
+  res.on('close', () => cancel.abort());
+  async function ask(provider) {
+    const options = { temperature, maxTokens: 700, provider, signal: cancel.signal };
+    if (!responseFormat) return chat(messages, options);
+    try {
+      return await chat(messages, { ...options, responseFormat });
+    } catch (error) {
+      if (![400, 415, 422].includes(error?.status)) throw error;
+      return chat(messages, options);
+    }
+  }
   try {
     let result;
     let used = primary;
     if (!configured(primary)) throw new Error(`${primary} is not configured (missing API key); add it to .env`);
     try {
-      result = await chat(messages, { temperature: 0.4, maxTokens: 700, provider: primary });
+      result = await ask(primary);
     } catch (error) {
-      if (!fallback) throw error;
+      if (!fallback || cancel.signal.aborted) throw error;
       console.warn(`[llm] ${primary} failed: ${readableError(error)}; trying ${fallback}`);
-      result = await chat(messages, { temperature: 0.4, maxTokens: 700, provider: fallback });
+      result = await ask(fallback);
       used = fallback;
     }
     send(res, 200, {

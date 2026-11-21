@@ -1,5 +1,7 @@
 /** One metre world units; keys shared by first and third person. */
 export const KEYS={forward:'KeyW',back:'KeyS',left:'KeyA',right:'KeyD',sprint:'ShiftLeft',jump:'Space',view:'KeyV',interact:'KeyF',inventory:'KeyE',computer:'KeyC',pause:'Escape',zoomIn:'BracketLeft',zoomOut:'BracketRight'} as const;
+// These remappable device keys are separate from movement, interaction and inventory.
+export const BOSS_SKILL_KEYS={first:'Q',second:'R',choices:['Q','R','T','G','X','Z']} as const;
 export const EXPLORATION={
  speed:2.6, sprintSpeed:5.2, radius:.28, height:1.80, eyeHeight:1.64,
  maxStep:.24,maxDrop:.30,gravity:22,jumpSpeed:7.2,fixedStep:1/120,

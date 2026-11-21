@@ -11,7 +11,13 @@ import {DirectiveRunner,type Directive} from './directives';
 import {perceive} from '../agent/perception';
 import type {BuildingSpec} from '../model/campusParameters';
 import {PROTOCOL_VERSION,validateAction,type Action,type Observation,type CommandRecord,type ViewMode,type GameEvent,type GameEventKind,type DirectiveSpec,type DirectiveSnapshot} from '../agent/protocol';
-export interface GameplayScenario {interact:(id?:string)=>import('../gameplay/survey').Outcome;computer:(page:'map'|'tasks'|'clues'|'submit')=>import('../gameplay/survey').Outcome;tick:(dt:number)=>void;snapshot:()=>unknown;spawn:()=>void}
+import type {BossAction} from '../agent/protocol';
+import type {Outcome} from '../gameplay/survey';
+export interface GameplayScenario {
+ interact:(id?:string)=>Outcome;computer:(page:'map'|'tasks'|'clues'|'submit')=>Outcome;
+ tick:(dt:number)=>void;snapshot:()=>unknown;spawn:()=>void;
+ bossAction?:(action:BossAction,stillCurrent:()=>boolean)=>Promise<Outcome>;
+}
 const idle=():Intent=>({forward:0,right:0,sprint:false});
 /** Authoritative state + input arbiter. RPCs never advance simulation. */
 export class CampusGame {
@@ -21,7 +27,7 @@ export class CampusGame {
  epoch=Date.now();armed=false;owner:string|null=null;human=idle();humanJump=false;
  /** Game-play door states by stable door id; the model and navigation stay source-authored. */
  doors:Record<string,boolean>={};
- records=new Map<string,CommandRecord>();last:CommandRecord|null=null;active:{action:Action;record:CommandRecord;consumed:boolean;runner?:DirectiveRunner;startDistance?:number}|null=null;
+ records=new Map<string,CommandRecord>();last:CommandRecord|null=null;active:{action:Action;record:CommandRecord;consumed:boolean;bossStarted?:boolean;runner?:DirectiveRunner;startDistance?:number}|null=null;
  events:GameEvent[]=[];eventSeq=0;eventSink:((events:GameEvent[])=>void)|null=null;
  /** Optional scene-registry lookup so any stable scene ID can be a directive target. */
  entityResolver:((id:string)=>[number,number,number]|null)|null=null;
@@ -64,6 +70,7 @@ export class CampusGame {
   if(value.controlEpoch!==this.epoch)return{ok:false,error:'stale_epoch',controlEpoch:this.epoch};
   if(!this.owner||!this.armed||this.paused)return{ok:false,error:'no_control'};
   const seen=this.records.get(value.commandId);if(seen)return{ok:true,duplicate:true,command:{...seen}};
+  if(value.boss&&!this.scenario?.bossAction)return{ok:false,error:'boss_unavailable'};
   if(this.records.size>=10000)return{ok:false,error:'session_command_limit'};
   let runner:DirectiveRunner|undefined,startDistance=0;
   if(value.directive){
@@ -82,14 +89,27 @@ export class CampusGame {
  }
  stop(epoch:number){if(epoch!==this.epoch)return{ok:false,error:'stale_epoch'};if(!this.owner)return{ok:false,error:'no_control'};this.finish('interrupted','stop');this.human=idle();this.humanJump=false;return{ok:true};}
  releaseControl(epoch:number){const r=this.stop(epoch);if(r.ok){this.takeover('released');this.event('control_released','Control released',{});}return{...r,controlEpoch:this.epoch};}
+ private async runBossAction(action:BossAction,record:CommandRecord,epoch:number){
+  const scenario=this.scenario;
+  const current=()=>this.scenario===scenario&&this.active?.record===record&&this.epoch===epoch
+   &&!!this.owner&&this.armed&&!this.paused&&Date.now()<record.expiresAt;
+  if(!scenario?.bossAction||!current())return;
+  let result:Outcome;
+  try{result=await scenario.bossAction(action,current);}
+  catch{result={ok:false,code:'boss_action_failed',message:'The device did not respond. Check the connection and try again.'};}
+  if(!current())return;
+  record.operation=result;this.event('boss',result.message,{commandId:record.commandId,action:action.type,code:result.code});
+  this.finish(result.ok?'completed':'blocked',result.code);
+ }
  step(dt:number,now=Date.now()){
   if(this.paused)return;let intent=this.human,jump=this.humanJump;this.humanJump=false;
   if(this.owner){intent=idle();jump=false;if(this.active){
    const {action:a,record:r,runner}=this.active;
-   if(now>=r.expiresAt)this.finish(runner?'expired':!this.active.consumed?'expired':r.collisionIds.length?'blocked':'completed',runner?'directive_timeout':'duration_elapsed');
+   if(now>=r.expiresAt)this.finish(runner||a.boss?'expired':!this.active.consumed?'expired':r.collisionIds.length?'blocked':'completed',runner?'directive_timeout':'duration_elapsed');
    else{
     if(!this.active.consumed){this.active.consumed=true;r.status='running';r.startedFrame=this.frame+1;this.event('command_running','Action started',{commandId:r.commandId});if(a.lookDelta)this.look(a.lookDelta.yawDeg,a.lookDelta.pitchDeg);if(a.selectHotbar!==undefined)this.selectHotbar(a.selectHotbar);if(a.interact!==undefined){r.operation=this.interact(a.interact);this.event('survey',r.operation.message,{code:r.operation.code,id:r.operation.id??null});if(this.paused)return;}if(a.computer){r.operation=this.computer(a.computer);this.event('survey',r.operation.message,{code:r.operation.code,page:r.operation.page??a.computer});if(this.paused)return;}if(a.switchView)this.view=this.view==='first'?'third':'first';jump=!!a.jump;if(jump){r.jumpResult=this.body.grounded?'jumped':'airborne_ignored';this.event('jump',r.jumpResult==='jumped'?'Jumped':'Cannot jump again in mid-air',{result:r.jumpResult});}}
     else intent={forward:a.move?.forward??0,right:a.move?.right??0,sprint:a.sprint??false};
+    if(a.boss&&this.active && !this.active.bossStarted){this.active.bossStarted=true;void this.runBossAction(a.boss,r,a.controlEpoch);}
     // Directives own the intent every fixed step until they finish; raw input is not consulted.
     if(runner){const s=runner.step(dt,{world:this.body.world,body:this.body,yaw:this.yaw,pitch:this.pitch});this.yaw=s.yaw;this.pitch=s.pitch;intent=s.intent;jump=s.jump;
      const snap=runner.snapshot();r.directive={commandId:r.commandId,type:snap.type,reached:snap.reached,distanceRemaining:Math.round(snap.distanceRemaining*1000)/1000,lookErrorDeg:Math.round(snap.lookErrorDeg*10)/10,waypoints:snap.waypoints,progress:this.active?.startDistance?Math.min(1,Math.max(0,1-snap.distanceRemaining/Math.max(.001,this.active.startDistance))):0,...(snap.reason?{reason:snap.reason}:{})};
@@ -103,5 +123,5 @@ export class CampusGame {
  }
  event(kind:GameEventKind,message:string,data?:Record<string,unknown>){const e:GameEvent={seq:++this.eventSeq,frame:this.frame,timeMs:Math.round(this.timeMs),kind,message,...(data?{data}:{})};this.events.push(e);if(this.events.length>512)this.events.shift();this.eventSink?.([e]);return e;}
  drainEvents(afterSeq:number,limit=100){return this.events.filter(e=>e.seq>afterSeq).slice(0,limit);}
- observe(now=Date.now(),afterSeq?:number):Observation{return{...(this.scenario?{opening:this.scenario.snapshot()}:{}),protocolVersion:PROTOCOL_VERSION,frame:this.frame,timeMs:this.timeMs,wallTimeMs:now,mode:this.owner?'ai':'human',controlEpoch:this.epoch,aiEnabled:this.armed,owner:this.owner,paused:this.paused,pausedReason:this.paused?this.pauseReason:null,player:{id:'PLAYER',position:this.body.position.toArray(),velocity:this.body.velocity.toArray(),yawDeg:T.MathUtils.radToDeg(this.yaw),pitchDeg:T.MathUtils.radToDeg(this.pitch),grounded:this.body.grounded},view:this.view,survey:this.survey.snapshot(),panel:this.panel,world:{units:'metres',revision:NOV13.revision,scaleCalibration:SCALE_CALIBRATION},inventory:{...this.inventory.snapshot(),open:this.inventoryOpen},landmarks:[...this.buildings,{id:NOV13.lion.id,label:'Entrance lawn lion cub',x:NOV13.lion.x,z:NOV13.lion.z},...this.survey.landmarks.map(l=>({id:l.id,label:l.name,x:l.position[0],y:l.position[1],z:l.position[2]}))].map(b=>{const y='y' in b?Number(b.y):0;const r=new T.Vector3(b.x,y,b.z).sub(this.body.position);return{id:b.id,name:b.label,position:[b.x,y,b.z],relativePosition:r.toArray(),distance:r.length()};}).sort((a,b)=>a.distance-b.distance).filter(b=>b.distance<160),lastCommand:this.last?structuredClone(this.last):null,collisions:this.body.contacts.map(c=>({...c})),eventSeq:this.eventSeq,...(typeof afterSeq==='number'?{events:this.drainEvents(afterSeq)}:{}),perception:perceive(this),directive:this.active?.record.directive??this.last?.directive??null};}
+ observe(now=Date.now(),afterSeq?:number):Observation{return{...(this.scenario?.bossAction?{boss:this.scenario.snapshot()}:this.scenario?{opening:this.scenario.snapshot()}:{}),protocolVersion:PROTOCOL_VERSION,frame:this.frame,timeMs:this.timeMs,wallTimeMs:now,mode:this.owner?'ai':'human',controlEpoch:this.epoch,aiEnabled:this.armed,owner:this.owner,paused:this.paused,pausedReason:this.paused?this.pauseReason:null,player:{id:'PLAYER',position:this.body.position.toArray(),velocity:this.body.velocity.toArray(),yawDeg:T.MathUtils.radToDeg(this.yaw),pitchDeg:T.MathUtils.radToDeg(this.pitch),grounded:this.body.grounded},view:this.view,survey:this.survey.snapshot(),panel:this.panel,world:{units:'metres',revision:NOV13.revision,scaleCalibration:SCALE_CALIBRATION},inventory:{...this.inventory.snapshot(),open:this.inventoryOpen},landmarks:[...this.buildings,{id:NOV13.lion.id,label:'入口草坪小狮子',x:NOV13.lion.x,z:NOV13.lion.z},...this.survey.landmarks.map(l=>({id:l.id,label:l.name,x:l.position[0],y:l.position[1],z:l.position[2]}))].map(b=>{const y='y' in b?Number(b.y):0;const r=new T.Vector3(b.x,y,b.z).sub(this.body.position);return{id:b.id,name:b.label,position:[b.x,y,b.z],relativePosition:r.toArray(),distance:r.length()};}).sort((a,b)=>a.distance-b.distance).filter(b=>b.distance<160),lastCommand:this.last?structuredClone(this.last):null,collisions:this.body.contacts.map(c=>({...c})),eventSeq:this.eventSeq,...(typeof afterSeq==='number'?{events:this.drainEvents(afterSeq)}:{}),perception:perceive(this),directive:this.active?.record.directive??this.last?.directive??null};}
 }

@@ -5,6 +5,7 @@ import {DEFAULT_SETTINGS} from '../gameplay/save';
 import {setHidden, setText} from '../ui/dom';
 import {createLocalAgent} from './agent';
 import {createMacBookExperience} from './macbook';
+import {bindBackupRelay} from './backupRelay';
 import {OPENING_CAPTURE_DAMAGE} from './runtime';
 import {createVitalsHud} from '../ui/vitals';
 
@@ -570,8 +571,15 @@ export function createOpeningUI(
     shell.append(body);
     const close = makeButton(T.complete.close, 'primary', requestClose);
     close.dataset.autofocus = 'true';
+    // B4 handoff: the chapter's recovery procedure pairs this MacBook with the
+    // backup supercomputer before the lawn entry carries the save forward.
+    const lawn = makeButton('Play L001 lawn encounter', 'secondary', () => {
+      location.assign('?experience=lion-boss');
+    });
+    lawn.disabled = true;
+    body.append(bindBackupRelay(device.instanceId(), () => { lawn.disabled = false; }));
     const replay = makeButton(T.epilogue.replay, 'secondary', () => actions.action('restart'));
-    shell.append(actionRow(close, replay));
+    shell.append(actionRow(close, lawn, replay));
     return shell;
   }
 

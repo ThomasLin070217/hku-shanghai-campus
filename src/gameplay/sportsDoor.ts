@@ -6,6 +6,7 @@ import {SPORTS_DOOR,sportsDoorWorld} from '../model/sportsDoor';
 import {SPORTS_HALL_PUZZLE,checkCode,checkPassword} from './sudokuPuzzle';
 import {CampusAudio} from './audio';
 import {DEFAULT_SETTINGS} from './save';
+import {hasCorePowerCut} from '../lionBoss/mission';
 import './sportsDoor.css';
 
 /** A short, replayable rescue. Each visit begins at the east door and has no save writer. */
@@ -19,7 +20,8 @@ export function createSportsRescueExperience(explorer:ReturnType<typeof createEx
  start.before(next);
  const brief=pause.querySelector('p')!;
  pause.querySelector('h2')!.textContent='Sports Hall Rescue';
- brief.textContent='100 students are trapped in the sports hall. You are facing the east door. Press F to inspect the lock, complete the sudoku, then enter the four-digit password.';
+ const restored=hasCorePowerCut(new URLSearchParams(location.search).get('device')??'');
+ brief.textContent=(restored?'Core power is cut and the rescue route to the sports hall is open. ':'')+'100 students are trapped in the sports hall. You are facing the east door. Press F to inspect the lock, complete the sudoku, then enter the four-digit password.';
  start.textContent='Start the rescue';
  pause.querySelector<HTMLElement>('#session-save')!.textContent='Each visit starts again at the east door.';
  pause.querySelector<HTMLElement>('#experience-settings')!.hidden=true;

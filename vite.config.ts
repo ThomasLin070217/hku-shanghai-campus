@@ -18,6 +18,10 @@ export default defineConfig(({mode})=>{
    cpSync(resolve('THIRD-PARTY-NOTICES.md'),resolve(out,'THIRD-PARTY-NOTICES.md'));
    for(const file of ['assets/audio/SOURCES.md','assets/audio/LICENSE.txt','assets/audio/kenney/License.txt','assets/audio/story/SOURCES.md','assets/audio/story/IMPORT.json','assets/audio/story/audio-triggers.json','assets/characters/kenney/LICENSE.txt','docs/ASSET-LICENSES-V8.md']){mkdirSync(resolve(out,file,'..'),{recursive:true});cpSync(resolve(file),resolve(out,file));}
    mkdirSync(resolve(out,'licenses'),{recursive:true});cpSync(resolve('node_modules/three/LICENSE'),resolve(out,'licenses/three.txt'));
+   if(mode==='playtest'){
+    mkdirSync(resolve(out,'media'),{recursive:true});
+    cpSync(resolve('evidence/lawn-battle/full-demo.mp4'),resolve(out,'media/l001-battle.mp4'));
+   }
    if(!review)return; // Runtime dependencies are emitted by Vite; evidence is opt-in.
    for(const directory of ['references','assets','evidence','docs'])
     cpSync(resolve(directory),resolve(out,directory),{recursive:true,filter:src=>basename(src)!=='video'});
