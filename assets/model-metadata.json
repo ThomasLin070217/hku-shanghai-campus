@@ -188,10 +188,10 @@
   },
   "assets": {
     "HKU-Shanghai-Campus": {
-      "bytes": 25150868,
+      "bytes": 25449280,
       "before": {
-        "triangles": 197600,
-        "meshes": 1102,
+        "triangles": 200042,
+        "meshes": 1115,
         "size": [
           208,
           85.59999848008155,
@@ -209,8 +209,8 @@
         ]
       },
       "after": {
-        "triangles": 197600,
-        "meshes": 1102,
+        "triangles": 200042,
+        "meshes": 1115,
         "size": [
           208,
           85.59999848008155,
@@ -230,10 +230,10 @@
       "reload": "passed"
     },
     "HKU-Shanghai-Opening": {
-      "bytes": 28413560,
+      "bytes": 28722484,
       "before": {
-        "triangles": 219104,
-        "meshes": 1753,
+        "triangles": 221626,
+        "meshes": 1769,
         "size": [
           208,
           85.59999848008155,
@@ -251,8 +251,8 @@
         ]
       },
       "after": {
-        "triangles": 219104,
-        "meshes": 1753,
+        "triangles": 221626,
+        "meshes": 1769,
         "size": [
           208,
           85.59999848008155,
@@ -272,10 +272,10 @@
       "reload": "passed"
     },
     "HKU-Shanghai-Campus-no-ground": {
-      "bytes": 18506252,
+      "bytes": 18804664,
       "before": {
-        "triangles": 138659,
-        "meshes": 1019,
+        "triangles": 141101,
+        "meshes": 1032,
         "size": [
           190,
           85.59999848008155,
@@ -293,8 +293,8 @@
         ]
       },
       "after": {
-        "triangles": 138659,
-        "meshes": 1019,
+        "triangles": 141101,
+        "meshes": 1032,
         "size": [
           190,
           85.59999848008155,
