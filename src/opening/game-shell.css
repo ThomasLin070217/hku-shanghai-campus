@@ -1,0 +1,65 @@
+/*
+ * Player shell for the opening chapter.
+ *
+ * The canvas page still doubles as the campus authoring tool: scene index,
+ * chapter switcher, breadcrumb, "Campus tools" and the atlas view label all
+ * live in the same header as the game. Those are staff furniture, not game
+ * interface, so the shipped opening hides them and keeps the in-world HUD
+ * (hearts, objective, prompts) plus the Esc menu.
+ *
+ * Authoring access is preserved through `?tools=1` and review builds, which
+ * never load this class. The HTML is untouched: everything stays reachable
+ * for the tooling, only the player-facing shell is stripped.
+ */
+
+body.game-shell .header,
+body.game-shell .sidebar {
+  display: none;
+}
+
+body.game-shell .layout {
+  display: block;
+  height: 100dvh;
+  min-height: 0;
+}
+
+body.game-shell .stage {
+  height: 100%;
+  min-height: 0;
+}
+
+/* The atlas label and the floating checkpoint button belong to the authoring
+   view; the checkpoint action moves into the Esc menu instead. */
+body.game-shell .stage-top {
+  display: none;
+}
+
+/* AI handoff stays available, but a human player never sees a staff badge:
+   it only announces itself while a remote driver owns the body. */
+body.game-shell.exploring[data-ai-control="human"] #control-badge {
+  display: none;
+}
+
+/* One quiet Esc affordance, below the pause overlay so the menu covers it. */
+body.game-shell .shell-hint {
+  position: absolute;
+  right: 20px;
+  bottom: 18px;
+  z-index: 8;
+  padding: 7px 9px;
+  border: 1px solid #7d9a8866;
+  background: #0d211bc4;
+  color: #e6efe6d9;
+  font: 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* The checkpoint action keeps its own line in the pause card. */
+.pause-card .pause-checkpoint {
+  color: #2f5546;
+  background: #e7ecdc;
+}
