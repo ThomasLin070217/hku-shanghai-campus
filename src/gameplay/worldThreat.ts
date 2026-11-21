@@ -159,8 +159,14 @@ export function loadWorldThreat(options:LoadWorldThreatOptions={}):WorldThreat{
  return migrated;
 }
 
+/** Bumped by every state write in this page, so readers notice a same-page write without a storage read. */
+let writeEpoch=0;
+/** In-memory count of world-threat writes made by this page (not persisted; other tabs are seen by reading). */
+export function worldThreatWriteEpoch():number{return writeEpoch;}
+
 export function writeWorldThreat(threat:WorldThreat,storage:WorldThreatStorage|null=defaultStorage()):WorldThreat{
  if(storage){try{storage.setItem(WORLD_THREAT_KEY,JSON.stringify(threat));}catch{/* session-only state */}}
+ writeEpoch++;
  return threat;
 }
 
@@ -209,5 +215,6 @@ export function tryPurgeWorld(now=Date.now(),storage:WorldThreatStorage|null=def
 export function resetWorldThreat(storage:WorldThreatStorage|null=defaultStorage()):WorldThreat{
  const clear=createClearWorldThreat();
  if(storage){try{storage.setItem(WORLD_THREAT_KEY,JSON.stringify(clear));}catch{/* session-only state */}}
+ writeEpoch++;
  return clear;
 }
