@@ -1,4 +1,5 @@
 import {createOpeningExperience} from './opening/experience';
+import {openingCheckpoint,CHECKPOINT_LABELS} from './opening/checkpoint';
 import {createOpeningAtmosphere,type OpeningAtmosphere} from './opening/atmosphere';
 import {loadWorldThreat,sealWorld} from './gameplay/worldThreat';
 const route=new URLSearchParams(location.search).get('experience');
@@ -150,7 +151,8 @@ if(openingMode){
  document.title='BARRIER 2030 · Chapter 1 · High Table';document.body.classList.add('opening-mode');
  const copy:Record<string,string>={'mode-label':'Building 4 · Shanghai Campus','reset':'Return to checkpoint','mode-toggle':'Campus model tools','takeover':'Take control','night-toggle':'Night / Day','experience-settings':'Settings & save','new-game':'Restart opening…','enable-ai':'Enable AI control','bridge-status':'Local control service','enter-compat':'Drag controls','scene-index-toggle':'Scene index'};
  for(const [id,text]of Object.entries(copy)){const node=document.getElementById(id);if(node)node.textContent=text;}
- const pause=document.querySelector('.pause-card');if(pause){const eyebrow=pause.querySelector('.eyebrow');if(eyebrow)eyebrow.textContent='BARRIER 2030';pause.querySelector('h2')!.textContent='BARRIER 2030';pause.querySelector('p')!.textContent='BARRIER 2030 · You are a Student Ambassador on your way to the High Table Dinner. Begin on the campus shuttle.';pause.querySelector('.key-guide')!.textContent='WASD move · Shift run · Space jump · F interact · E backpack · C MacBook · V view';pause.querySelector('.desktop-note')!.textContent='Keyboard and mouse · Continue to look around and move';pause.querySelector('summary')!.textContent='Restart / AI control';}
+ const checkpointStart=openingCheckpoint(new URLSearchParams(location.search).get('checkpoint'));
+ const pause=document.querySelector('.pause-card');if(pause){const eyebrow=pause.querySelector('.eyebrow');if(eyebrow)eyebrow.textContent='BARRIER 2030';pause.querySelector('h2')!.textContent='BARRIER 2030';pause.querySelector('p')!.textContent=checkpointStart?`Checkpoint: ${CHECKPOINT_LABELS[checkpointStart]}. Continue from here.`:'BARRIER 2030 · You are a Student Ambassador on your way to the High Table Dinner. Begin on the campus shuttle.';pause.querySelector('.key-guide')!.textContent='WASD move · Shift run · Space jump · F interact · E backpack · C MacBook · V view';pause.querySelector('.desktop-note')!.textContent='Keyboard and mouse · Continue to look around and move';pause.querySelector('summary')!.textContent='Restart / AI control';}
  const help=document.querySelector('.header-right > button:not(#scene-index-toggle):not(#night-toggle)');if(help)help.textContent='Help';
  toolsMenu.querySelector('summary')!.textContent='Campus tools';advanced.querySelector('summary')!.textContent='Restart / AI control';
  document.querySelector('.brand-copy > span')!.textContent='BARRIER 2030';

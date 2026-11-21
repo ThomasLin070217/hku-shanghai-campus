@@ -7,6 +7,7 @@ import type {Outcome} from '../gameplay/survey';
 import type {OpeningModal,OpeningSave,OpeningState,OpeningEvent,OpeningView,OpeningCinema} from './contracts';
 import {createOpeningState,reduceOpening} from './state';
 import {OPENING_SAVE_KEY,captureOpeningSave,parseOpeningSave} from './persistence';
+import {checkpointState,checkpointPose,openingCheckpoint,CHECKPOINT_LABELS,type OpeningCheckpoint} from './checkpoint';
 import {createOpeningRuntime,damageOpeningHearts,healOpeningHearts,syncRuntimeWithStory,OPENING_RESPAWN_GRACE_SECONDS,OPENING_MAX_HEARTS,type OpeningRuntime} from './runtime';
 import {loadWorldThreat,sealWorld,resetWorldThreat,tryPurgeWorld,markLionDefeated,markPowerCut,markLocalModelCleared,cloneWorldThreat,type WorldThreat} from '../gameplay/worldThreat';
 import {OPENING as O,OPENING_WORLD_REVISION} from './spatialLayout';
@@ -207,6 +208,27 @@ export function createOpeningExperience(
   persist(true);
   notify(`Caught by campus security · −${damage.lost} hearts`);
  }
+ /**
+  * Chapter-select start: replay the story machine to the checkpoint stage, hand
+  * over the MacBook the story would already have given, and place the body at the
+  * stage checkpoint with the same pose()/respawn path the game uses.
+  */
+ function startAtCheckpoint(id:OpeningCheckpoint){
+  const next=checkpointState(id);if(!next)return;
+  story=next;runtime=syncRuntimeWithStory(createOpeningRuntime(),story);
+  g.inventory.slots.fill(null);g.inventory.selectedHotbar=0;g.inventory.revision++;
+  if(story.laptop_acquired){g.inventory.slots[0]={itemId:'macbook-air-13-silver',instanceId:'opening-macbook-'+crypto.randomUUID(),count:1};g.inventory.select(0);}
+  g.view='first';modal=null;failed=false;respawnGrace=OPENING_RESPAWN_GRACE_SECONDS;
+  wakeStarted=true;wakeDone=true;wakeClock=WAKE_SECONDS;busClock=8;busReady=true;
+  introCompleted=true;introPromptClock=0;introAutoOpened=false;
+  staffTalkStarted=false;staffTalkDone=story.stage!=='to_b5';staffTalkClock=0;staffTalkLine=0;staffVoiceStarted=false;acceptVoicePlayed=false;acceptVoiceBusy=false;
+  incidentQueued=false;incidentClock=0;disturbancePlayed=false;
+  npcs.reset();fleet.reset();
+  const at=checkpointPose(id);pose(at.position,at.yaw);
+  setBusDoor(explorer.world,false);
+  saveMessage='Checkpoint: '+CHECKPOINT_LABELS[id]+'.';
+  if(runtime.curtain_deployed){atmo()?.startIncident();audio.openingAmbience('dark');}
+ }
  function restart(){
   try{const raw=localStorage.getItem(OPENING_SAVE_KEY);if(raw)localStorage.setItem(OPENING_SAVE_KEY+'.backup.'+Date.now(),raw);localStorage.removeItem(INTRO_KEY);localStorage.setItem(writerKey,writerToken);protectedSave=false;ownsSave=true;}catch{notify('Could not back up the save. Restart cancelled.');return;}
   audio.story?.reset();audio.stopPreviews();
@@ -319,7 +341,9 @@ export function createOpeningExperience(
    saveMessage='New cinematic intro. Read the invitation to continue.';
   }
  }catch{}
- applySettings();setBusDoor(explorer.world,story.stage==='bus'&&!busReady);worldThreat=loadWorldThreat();if(worldThreat.phase==='sealed'){runtime={...runtime,curtain_deployed:true};atmo()?.restoreSealed();audio.openingAmbience('dark');}else if(worldThreat.phase==='purged'){runtime={...runtime,curtain_deployed:false};audio.openingAmbience('day');}
+ const requestedCheckpoint=openingCheckpoint(new URLSearchParams(location.search).get('checkpoint'));
+ if(requestedCheckpoint)startAtCheckpoint(requestedCheckpoint);
+ applySettings();setBusDoor(explorer.world,story.stage==='bus'&&!busReady);worldThreat=loadWorldThreat();if(requestedCheckpoint){if(runtime.curtain_deployed){atmo()?.startIncident();audio.openingAmbience('dark');}}else if(worldThreat.phase==='sealed'){runtime={...runtime,curtain_deployed:true};atmo()?.restoreSealed();audio.openingAmbience('dark');}else if(worldThreat.phase==='purged'){runtime={...runtime,curtain_deployed:false};audio.openingAmbience('day');}
  const humanInteract=()=>{const r=g.interact();if(!r.ok)notify(r.message);},humanComputer=()=>{const r=g.computer('tasks');if(!r.ok)notify(r.message);};explorer.interactions.add(humanInteract);explorer.computers.add(humanComputer);
  document.addEventListener('pointerdown',e=>{if(e.isTrusted)claimSave();},{capture:true,signal:events.signal});document.addEventListener('keydown',e=>{if(e.isTrusted)claimSave();},{capture:true,signal:events.signal});
  window.addEventListener('storage',e=>{if(e.key===writerKey&&e.newValue!==writerToken&&ownsSave){ownsSave=false;explorer.pause('save_owner_changed');saveMessage='Another window owns this save. Click to continue here.';}},{signal:events.signal});

@@ -17,6 +17,15 @@ body {margin:0}
 .levels-list b {display:block;font-size:clamp(18px,1.6vw,24px);line-height:1.4}
 .levels-list small {font:500 .73em/1 Georgia,serif;margin-left:.18em}
 .levels-list a span {display:block;font-size:1rem;line-height:1.6;color:#465b50;margin-top:4px}
+.levels-checkpoints {padding:10px 4px 12px;border-bottom:1px solid #b6c1b6;background:#e9eee5}
+.levels-checkpoints-label {display:block;padding:0 0 6px;font:700 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.18em;text-transform:uppercase;color:#475e53}
+.levels-list a.levels-checkpoint {padding:8px 0;border-bottom:1px solid #c6d0c3}
+.levels-list a.levels-checkpoint:last-child {border-bottom:0}
+.levels-list a.levels-checkpoint b {font-size:15px;line-height:1.35}
+.levels-list a.levels-checkpoint span {font-size:.85rem;line-height:1.45;margin-top:1px}
+.levels-reset {display:flex;align-items:center;gap:12px;margin-top:22px;font-size:12px;line-height:1.4;color:#475e53}
+.levels-reset button {padding:8px 12px;border:1px solid #7d9280;background:#eef2e9;color:#27483a;font:600 13px/1 system-ui;cursor:pointer}
+.levels-reset button:hover,.levels-reset button:focus-visible {background:#dde6d7;outline:2px solid #166449;outline-offset:2px}
 .levels figure {margin:0;align-self:stretch;display:flex;flex-direction:column}
 .levels figure img {width:100%;height:0;min-height:260px;flex:1;object-fit:cover;object-position:50% 50%;background:#cbd7c1}
 .levels figcaption {margin-top:9px}
