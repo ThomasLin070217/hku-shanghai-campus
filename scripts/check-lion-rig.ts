@@ -9,12 +9,10 @@ import * as T from 'three';
 import {createLion} from '../src/model/nov13Details';
 import {compact} from '../src/model/buildCampus';
 import {AWAKEN_SECONDS, createCombat, type CombatState} from '../src/lionBoss/combat';
-import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {
   createLionRig, LION_BONE_NAMES, LION_CLIP_NAMES,
   type LionBoneName, type LionClipName, type LionRig,
 } from '../src/lionBoss/lionRig';
-import {mergedTraces, tagChildren} from '../src/scene/authoring';
 import type {PrimitiveTrace} from '../src/scene/authoring';
 
 let failures = 0;
@@ -381,47 +379,16 @@ const DT = 1 / 60;
 /* ------------------------------------------------------------------ */
 /* Indexed layout                                                      */
 /* ------------------------------------------------------------------ */
-// Mirror of compact() on main after dfc7935: a material bucket keeps its index buffer when
-// every member mesh is indexed, and mergedTraces() then records start/count in index space.
-// This branch's compact() always flattens, so the rig is exercised against both layouts.
-function compactKeepingIndex(g: T.Group) {
-  tagChildren(g);
-  for (const child of [...g.children]) if (child instanceof T.Group) compactKeepingIndex(child);
-  const buckets = new Map<T.Material, T.Mesh[]>();
-  for (const c of g.children) if (c instanceof T.Mesh && !Array.isArray(c.material)) {
-    const list = buckets.get(c.material) || [];
-    list.push(c);
-    buckets.set(c.material, list);
-  }
-  for (const [material, meshes] of buckets) {
-    if (meshes.length < 2) continue;
-    const allIndexed = meshes.every(m => !!m.geometry.index);
-    const geometries = meshes.map(m => {
-      m.updateMatrix();
-      const geom = m.geometry.clone().applyMatrix4(m.matrix);
-      if (allIndexed || !geom.index) return geom;
-      const flat = geom.toNonIndexed();
-      geom.dispose();
-      return flat;
-    });
-    const geometry = mergeGeometries(geometries, false);
-    geometries.forEach(x => x.dispose());
-    if (!geometry) throw new Error(`Cannot merge ${g.name}`);
-    const combined = new T.Mesh(geometry, material);
-    combined.name = `${g.name}__${material.name}`;
-    combined.userData = {...g.userData, ...meshes[0].userData, authorParts: mergedTraces(meshes)};
-    meshes.forEach(m => { g.remove(m); m.geometry.dispose(); });
-    g.add(combined);
-  }
-}
+// The real compact() keeps a material bucket's index buffer when every member mesh is
+// indexed, and mergedTraces() then records start/count in index space.
 {
   const indexedLion = createLion();
-  compactKeepingIndex(indexedLion as T.Group);
+  compact(indexedLion as T.Group);
   const indexedBody = indexedLion.getObjectByName(BODY_NAME) as T.Group;
   const indexedMeshes = indexedBody.children.filter((child): child is T.Mesh => child instanceof T.Mesh);
   const eyes = indexedMeshes.find(mesh => mesh.name.endsWith('Lion eyes and whiskers'));
   const withIndex = indexedMeshes.filter(mesh => !!mesh.geometry.index);
-  check('[indexed] compact mirror keeps index buffers like main',
+  check('[indexed] compact() keeps index buffers',
     withIndex.length > 0 && !!eyes?.geometry.index,
     `${withIndex.length}/${indexedMeshes.length} indexed; eyes ${eyes?.geometry.getAttribute('position').count} verts / ${eyes?.geometry.index?.count} indices`);
   const indexedRig = createLionRig(indexedBody);
