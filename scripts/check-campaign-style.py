@@ -266,19 +266,24 @@ def assert_hotbar(page, checkpoint):
     boxes = page.evaluate("""() => {
       const bar = document.querySelector('#inventory-hud .hotbar');
       const hint = document.querySelector('.stage-bottom > span:first-child');
+      const held = document.getElementById('held-name');
       if (!bar || !hint) return null;
       const b = bar.getBoundingClientRect(), h = hint.getBoundingClientRect();
+      const heldBox = held ? held.getBoundingClientRect() : null;
       const hs = getComputedStyle(hint);
       return {
         bar: [Math.round(b.top), Math.round(b.bottom)],
         hint: [Math.round(h.top), Math.round(h.bottom)],
+        held: heldBox && [Math.round(heldBox.top), Math.round(heldBox.bottom)],
         hintVisible: hs.display !== 'none' && hs.visibility !== 'hidden'
           && Number(hs.opacity) > 0.05 && h.width > 1 && h.height > 1,
         overlap: !(h.right <= b.left || h.left >= b.right || h.bottom <= b.top || h.top >= b.bottom),
+        heldOverlap: !!heldBox && heldBox.height > 1
+          && !(h.right <= heldBox.left || h.left >= heldBox.right || h.bottom <= heldBox.top || h.top >= heldBox.bottom),
       };
     }""")
     check(checkpoint + ': the controls hint stays clear of the faded hotbar',
-          bool(boxes) and boxes['hintVisible'] and not boxes['overlap'], boxes)
+          bool(boxes) and boxes['hintVisible'] and not boxes['overlap'] and not boxes['heldOverlap'], boxes)
     # Press the digit of the slot that is already selected: the selection does not
     # change, so only the hotbar's own number-key listener can wake the dock.
     # The keydown handler runs synchronously, so read before the next idle timer.

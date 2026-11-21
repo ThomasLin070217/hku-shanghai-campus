@@ -42,7 +42,7 @@ body.opening-mode .slot-count{right:2px;bottom:0;font:bold 9px/1 ui-monospace,SF
 body.opening-mode.exploring .slot-number{font-size:8px}
 body.opening-mode.exploring #held-name{font-size:10px;height:14px}
 body.opening-mode.exploring .bag-open{font-size:10px;padding:6px;background:rgba(8,18,15,.92);color:#e8f4ee;border:1px solid rgba(116,230,180,.46)}
-body.opening-mode.exploring .stage-bottom{bottom:62px}
+body.opening-mode.exploring .stage-bottom{bottom:86px}
 body.opening-mode #inventory-modal{background:rgba(5,13,11,.78)}
 body.opening-mode .bag-panel{background:linear-gradient(180deg,#0b1814,#050d0b);border:1px solid rgba(116,230,180,.46);box-shadow:0 24px 60px rgba(0,0,0,.6);color:#e8f4ee;font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif}
 body.opening-mode .bag-panel h2{font-family:Georgia,"Times New Roman",serif;font-weight:400;color:#e8f4ee}
