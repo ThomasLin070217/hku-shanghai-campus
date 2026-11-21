@@ -3,6 +3,7 @@ import {createSceneService} from './scene/service';
 import {prepareModelTextures} from './model/deferredTextures';
 import {createExperience} from './gameplay/experience';
 import {createSportsDoor} from './gameplay/sportsDoor';
+import {createStudentCrowd} from './gameplay/studentCrowd';
 import {CONTROL_GUIDE,KEYS,keyLabel} from './exploration/config';
 import {buildLounge} from './model/buildLounge';
 import {createGlassEnvironment} from './viewer/glassEnvironment';
@@ -37,6 +38,7 @@ let exploring=false;const explorer=createExplorer(viewer.renderer.domElement,vie
 let viewportWidth=host.clientWidth,viewportHeight=host.clientHeight;const viewportObserver=new ResizeObserver(([entry])=>{viewportWidth=entry.contentRect.width;viewportHeight=entry.contentRect.height;explorer.resize(viewportWidth,viewportHeight);});viewportObserver.observe(host);explorer.resize(viewportWidth,viewportHeight);viewer.beforeRender.add(dt=>explorer.update(dt));
 const elements=new Map<string,HTMLElement>();const el=(id:string)=>{let node=elements.get(id);if(!node){node=document.getElementById(id)!;elements.set(id,node);}return node;};const checked=(id:string)=>(el(id) as HTMLInputElement).checked;let timer:ReturnType<typeof setTimeout>;
 function notify(message:string){el('toast').textContent=message;el('toast').classList.add('show');clearTimeout(timer);timer=setTimeout(()=>el('toast').classList.remove('show'),4500);}
+const crowd=createStudentCrowd();viewer.scene.add(crowd.root);
 let door:ReturnType<typeof createSportsDoor>|null=null;
 const experience=createExperience(viewer.scene,explorer,notify,{beforeInteract:()=>door?.interact()??false});
 door=createSportsDoor({root:()=>asset.root,game:()=>explorer.game,notify,openPanel:()=>explorer.openPanel('door'),closePanel:()=>explorer.closePanel(),resume:()=>explorer.enter(),persist:()=>experience.persist(true)});viewer.beforeRender.add(dt=>door?.update(dt));
@@ -85,7 +87,7 @@ let nightRequested=false;
 el('night-toggle').onclick=()=>{if(loungeView){notify('休闲区采用室内照明；返回校园后可切换夜景');return;}nightRequested=!nightRequested;lighting.set(nightRequested,imported||asset.root);el('night-toggle').textContent=nightRequested?'切换日景':'切换夜景';};
 function showLounge(){mode(false);loungeView=true;sync();lighting.set(false,asset.root);viewer.view('selected',lounge);el('mode-label').textContent='5号楼 · 4F 阶梯休闲区 / 独立剖视 · 尺寸估算';stats();notify('已确认楼栋与楼层。此为独立参考资产；点击返回室外探索可回到校园。');}
 el('lounge-toggle').onclick=()=>showLounge();
-index();stats();mode(true);if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign(window,{__CAMPUS:{viewer,explorer,experience,door,mode,showLounge,lighting,lounge,get asset(){return asset;},get imported(){return imported;},stats,select,setView,rebuild,exportTarget,ready:true}});
+index();stats();mode(true);if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign(window,{__CAMPUS:{viewer,explorer,experience,door,crowd,mode,showLounge,lighting,lounge,get asset(){return asset;},get imported(){return imported;},stats,select,setView,rebuild,exportTarget,ready:true}});
 
 el('enter-game').onclick=()=>explorer.enter();
 el('takeover').onclick=()=>explorer.takeover();
@@ -110,6 +112,6 @@ const agentBridge=connectAgent(()=>explorer.game,()=>viewer.screenshot(),s=>el('
 if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign((window as unknown as {__CAMPUS:object}).__CAMPUS,{inspector});
 
 // pagehide with BFCache keeps a paused, resumable page; only final unload disposes resources.
-window.addEventListener('pagehide',event=>{experience.persist(true);explorer.pause('page_hidden');if(event.persisted)return;clearTimeout(timer);viewportObserver.disconnect();agentBridge.dispose();inspector.dispose();door?.dispose();experience.dispose();explorer.dispose();lighting.dispose();glassEnvironment.dispose();disposeAsset(asset.root);disposeAsset(lounge);if(imported)disposeAsset(imported);viewer.dispose();});
+window.addEventListener('pagehide',event=>{experience.persist(true);explorer.pause('page_hidden');if(event.persisted)return;clearTimeout(timer);viewportObserver.disconnect();agentBridge.dispose();inspector.dispose();door?.dispose();crowd.dispose();experience.dispose();explorer.dispose();lighting.dispose();glassEnvironment.dispose();disposeAsset(asset.root);disposeAsset(lounge);if(imported)disposeAsset(imported);viewer.dispose();});
 
 if(!import.meta.env.DEV&&import.meta.env.MODE!=='review'){document.querySelectorAll('a[href*="evidence/"],.evidence-note').forEach(n=>n.remove());dialog.remove();}

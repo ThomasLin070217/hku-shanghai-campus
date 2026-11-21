@@ -16,6 +16,13 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
  const panel=document.createElement('div');panel.id='door-lock-panel';panel.hidden=true;
  panel.innerHTML=`<section role="dialog" aria-modal="true" aria-labelledby="door-lock-title"><header><div><span class="eyebrow">SPORTS HALL · EAST DOOR</span><h2 id="door-lock-title">${puzzle.title}</h2></div><button id="door-lock-close" aria-label="关闭门锁">关闭</button></header><div id="door-lock-sudoku-step"><p class="door-lock-lead">${puzzle.lead}</p><div id="door-lock-grid" role="group" aria-label="9 乘 9 数独，4 个空格"></div><div class="door-lock-actions"><button id="door-lock-hint">提示</button><button id="door-lock-confirm">确认</button></div><p id="door-lock-status" role="status"></p></div><div id="door-lock-password-step" hidden><p class="door-lock-lead">${pass.lead}</p><p class="door-lock-hint">提示：<b>${pass.hint}</b></p><div id="door-lock-code" role="group" aria-label="${pass.length} 位数字密码"></div><div id="door-lock-keypad" role="group" aria-label="数字键盘"></div><p id="door-lock-code-status" role="status"></p></div></section>`;
  document.body.append(panel);
+ const banner=document.createElement('div');banner.id='rescue-banner';banner.hidden=true;
+ banner.innerHTML=`<div role="status" aria-live="polite"><span class="eyebrow">SPORTS HALL · EAST DOOR</span><h2>You have successfully rescued the students!</h2><p>100 students are safe. The hall is clear.</p><small>Click anywhere to dismiss</small></div>`;
+ document.body.append(banner);
+ let bannerTimer=0;
+ function hideRescue(){banner.classList.remove('show');bannerTimer=window.setTimeout(()=>{banner.hidden=true;},420);}
+ function showRescue(){banner.hidden=false;requestAnimationFrame(()=>banner.classList.add('show'));clearTimeout(bannerTimer);bannerTimer=window.setTimeout(hideRescue,8000);}
+ banner.addEventListener('click',()=>{clearTimeout(bannerTimer);hideRescue();});
  const card=panel.querySelector('section')!,title=panel.querySelector<HTMLElement>('#door-lock-title')!,sudokuStep=panel.querySelector<HTMLElement>('#door-lock-sudoku-step')!,passwordStep=panel.querySelector<HTMLElement>('#door-lock-password-step')!;
  const grid=panel.querySelector<HTMLElement>('#door-lock-grid')!,statusLine=panel.querySelector<HTMLElement>('#door-lock-status')!;
  const codeBox=panel.querySelector<HTMLElement>('#door-lock-code')!,keypad=panel.querySelector<HTMLElement>('#door-lock-keypad')!,codeStatus=panel.querySelector<HTMLElement>('#door-lock-code-status')!;
@@ -122,7 +129,7 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
   if(isOpen()){notify('玻璃门已开启，可以直接通过。');return true;}
   flash=1;openLock();return true;
  }
- function unlock(){if(isOpen())return;game().doors[SPORTS_DOOR.id]=true;options.persist?.();notify('两道校验通过，玻璃门正在打开。');audio(true);}
+ function unlock(){if(isOpen())return;game().doors[SPORTS_DOOR.id]=true;options.persist?.();notify('两道校验通过，玻璃门正在打开。');audio(true);showRescue();}
  function lock(){game().doors[SPORTS_DOOR.id]=false;options.persist?.();notify('门禁锁已重新锁定。');}
  function update(dt:number){
   ensure();const g=game(),open=isOpen();
@@ -137,6 +144,6 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
   if(show)prompt.textContent=`${keyLabel(KEYS.interact)}  检查门禁锁 · 玻璃门已锁定`;
   if(opened&&!g.panel)closeLock();
  }
- function dispose(){panel.remove();prompt.remove();}
+ function dispose(){clearTimeout(bannerTimer);banner.remove();panel.remove();prompt.remove();}
  return{update,interact,unlock,lock,dispose,get open(){return isOpen();},get swing(){return swing;},get state(){return{id:SPORTS_DOOR.id,open:isOpen(),swing:Number(swing.toFixed(3)),panel:opened,stage,sudokuSolved};}};
 }

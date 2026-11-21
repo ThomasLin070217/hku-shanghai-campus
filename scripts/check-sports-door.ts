@@ -7,6 +7,7 @@ import {BUILDINGS,SITE} from '../src/model/campusParameters';
 import {SPORTS_DOOR,SPORTS_HALL,sportsDoorWorld} from '../src/model/sportsDoor';
 import {SPORTS_HALL_PUZZLE,checkCode,checkPassword,parseSudoku,solvedRows} from '../src/gameplay/sudokuPuzzle';
 import {disposeAsset} from '../src/model/buildCampus';
+import {CROWD,createStudentCrowd,crowdPlacements} from '../src/gameplay/studentCrowd';
 
 const asset=buildSite(),registry=sceneRegistry(asset.root),nav=createNavigation(BUILDINGS,SITE),centre=sportsDoorWorld(SITE.sportsZ);
 
@@ -46,5 +47,26 @@ assert.throws(()=>parseSudoku({...base,size:8}),/size/,'wrong size is rejected')
 assert.throws(()=>parseSudoku({...base,password:{...pw,answer:'191'}}),/password.answer/,'short password is rejected');
 assert.throws(()=>parseSudoku({...base,password:{...pw,length:5}}),/password.answer/,'password length must match');
 
-console.log('PASS east door geometry/碰撞门洞一致, 可开关; sudoku 4 blanks → 1911; 第二道 4 位密码 1911, 错误/残缺密码被拒绝', {centre,sudoku:puzzle.answer,password:pw.answer,entities:registry.entities.length});
+// The crowd inside the hall: exactly 100 students, all on the floor, none in the walls or the aisle.
+const placements=crowdPlacements();assert.equal(placements.length,100,'100 students');
+const crowd=createStudentCrowd(placements);
+const innerX=SPORTS_HALL.width/2-.35,innerZ=SPORTS_HALL.depth/2-.35;
+for(const p of placements){
+ assert.ok(Math.abs(p.x-SPORTS_HALL.x)<innerX,`student x ${p.x} inside the hall`);
+ assert.ok(Math.abs(p.z-SITE.sportsZ)<innerZ,`student z ${p.z} inside the hall`);
+ assert.ok(Math.abs(p.z-SITE.sportsZ)>1.2,'centre aisle stays walkable');
+ assert.ok(p.scale>=.9&&p.scale<=1.1,'scale stays near the protagonist');
+ assert.ok(Math.abs(p.yaw-CROWD.yaw)<.3,'students face the door');
+}
+assert.equal(crowd.count,100,'crowd reports 100');
+assert.ok(crowd.meshes.every(m=>m.isInstancedMesh&&m.count===100),'one instanced draw call per material');
+assert.ok(crowd.meshes.length<=12,`instancing keeps draw calls low (${crowd.meshes.length})`);
+assert.ok(crowd.triangles<40000,`crowd triangles stay small (${crowd.triangles})`);
+const drawCalls=crowd.meshes.length,crowdTriangles=crowd.triangles;
+const first=crowd.meshes[0].instanceMatrix.array;
+assert.ok(Math.abs(first[13]-SPORTS_HALL.floorTop)<1e-4,'students stand on the hall floor');
+const matrix=new T.Matrix4();crowd.meshes[0].getMatrixAt(0,matrix);const euler=new T.Euler().setFromRotationMatrix(matrix);
+assert.ok(Math.abs(euler.y-CROWD.yaw)<.25,'instances keep the authored facing');
+crowd.dispose();
+console.log('PASS east door geometry/碰撞门洞一致, 可开关; sudoku 4 blanks → 1911; 第二道 4 位密码 1911, 错误/残缺密码被拒绝; 馆内 100 名学生就位', {centre,sudoku:puzzle.answer,password:pw.answer,students:crowd.count,drawCalls,crowdTriangles,entities:registry.entities.length});
 nav.dispose();disposeAsset(asset.root);
