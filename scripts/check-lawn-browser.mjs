@@ -59,7 +59,7 @@ try{
     await pause(650);await wb('test').click();
     await page.waitForFunction(()=>!document.querySelector('[data-wb=deploy]').disabled);
     await pause(600);await wb('deploy').click();
-    await page.waitForFunction(()=>document.querySelector('[data-wb=deploy]').disabled&&document.querySelector('[data-wb=deploy]').textContent.includes('已部署'));
+    await page.waitForFunction(()=>document.querySelector('[data-wb=deploy]').disabled&&document.querySelector('[data-wb=deploy]').textContent.includes('Deployed'));
     await pause(600);
     const loaded=await snap();
     assert.ok(loaded.equipped[id],id+' was not equipped after compilation');
@@ -93,8 +93,8 @@ try{
     await page.keyboard.up('f');s=await snap();assert.equal(s.combat.repaired,i+1);console.log('Committed',stageNodes[i].id,s.hearts);
   }
   await pause(2200);assert.equal((await snap()).combat.phase,'complete');
-  const next=page.locator('a[href*="experience=sports-hall"]').filter({hasText:/体育馆/}).first();
-  await next.click();await page.getByRole('button',{name:'开始营救'}).waitFor();await pause(900);
+  const next=page.locator('a[href*="experience=sports-hall"]').filter({hasText:/Sports Hall/}).first();
+  await next.click();await page.getByRole('button',{name:'Start the rescue'}).waitFor();await pause(900);
   assert.deepEqual(errors,[]);await stopRecording();
   console.log('PASS browser: awakening, preparation, two deployments, three held operations, shutdown, rescue');
 }finally{await browser.close();}
