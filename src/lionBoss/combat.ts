@@ -8,9 +8,9 @@ export const BOSS:Point={x:LION.x,z:LION.z};
 const offset=(x:number,z:number):Point=>({x:BOSS.x+x,z:BOSS.z+z});
 export const SAFE=offset(1,11);
 export const NODES=[
-  {...offset(-2,6),id:'defense_lock_a',name:'防御锁 A',hold:1.35},
-  {...offset(5,1),id:'defense_lock_b',name:'防御锁 B',hold:1.35},
-  {...offset(1,-6.5),id:'ai_core_power',name:'AI 核心电源',hold:1.8},
+  {...offset(-2,6),id:'defense_lock_a',name:'Defense lock A',hold:1.35},
+  {...offset(5,1),id:'defense_lock_b',name:'Defense lock B',hold:1.35},
+  {...offset(1,-6.5),id:'ai_core_power',name:'AI core power',hold:1.8},
 ] as const;
 export function checkpoint(repaired:number):Point {
   return [offset(-1,7),offset(4.8,3),offset(1,-7)][repaired]??{...SAFE};
@@ -88,12 +88,12 @@ export function createCombat(repaired=0) {
     if(state.phase==='safe'){state.awakened=true;transition('patrol');}
   }
   function check(rule:SkillRule,player:Point,signalPoint?:Point) {
-    if(atMaintenance(player))return {ok:false,message:'走出维护区后才能向草坪设备发送技能。'};
+    if(atMaintenance(player))return {ok:false,message:'Leave the maintenance area before sending skills to the lawn devices.'};
     const result=evaluateSkill(rule,{phase:state.phase,distance:distance(state.lion,player),cooldown:state.cooldown[rule.kind],
       helperReady:distance(state.helper,player)<=(rule.maxRange??DEFAULT_RANGE)&&state.target!=='helper'});
     if(result.ok&&rule.kind==='ghost'&&signalPoint&&
        (!Number.isFinite(signalPoint.x)||!Number.isFinite(signalPoint.z)||distance(signalPoint,BOSS)>LEASH||distance(signalPoint,player)>(rule.maxRange??DEFAULT_RANGE)+1e-6)){
-      return {ok:false,message:'信标必须落在技能射程内的草坪上。'};
+      return {ok:false,message:'The beacon must land on the lawn within the skill range.'};
     }
     return result;
   }
