@@ -2,23 +2,24 @@ import './menu.css';
 import lawnPhoto from './lawn.webp';
 import {getGraphicsQuality,setGraphicsQuality,type GraphicsQuality} from '../viewer/graphicsQuality';
 
-document.title = 'HKU Shanghai · 校园试玩';
+document.title = 'BARRIER 2030 · HKU Shanghai';
 document.querySelector('#app')!.innerHTML = `
   <main class="levels">
-    <header class="levels-heading"><span>HKU Shanghai</span><span>校园试玩</span></header>
+    <header class="levels-heading"><span>HKU Shanghai</span><span>Chapters</span></header>
     <div class="levels-layout">
       <section aria-labelledby="levels-title">
-        <h1 id="levels-title">选择关卡</h1>
-        <p class="levels-hint">用电脑键盘和鼠标游玩。按 Esc 暂停。</p>
-        <label class="levels-quality"><input type="checkbox" id="low-graphics"> 低画质模式（降低三维分辨率，关闭阴影）</label>
-        <nav class="levels-list" aria-label="可试玩的关卡">
-          <a href="?experience=opening"><b>校园开场 <small lang="en">High Table</small></b><span>从校园巴士出发，取回 MacBook，前往 4 号楼。</span></a>
-          <a href="?experience=sports-hall"><b>体育馆营救</b><span>解开东门的数独和密码锁，救出馆内学生。</span></a>
-          <a href="?experience=lion-boss"><b>草坪上的守卫 <small>L001</small></b><span>在 MacBook 上写技能，反制机械狮子并修复系统。</span></a>
-          <a href="?experience=survey"><b>校园数字巡检</b><span>走访三个室外地标，在电脑上同步校园档案。</span></a>
+        <h1 id="levels-title">BARRIER 2030</h1>
+        <p class="levels-hint">HKU Shanghai</p>
+        <p class="levels-hint">Play with a keyboard and mouse. Press Esc to pause.</p>
+        <label class="levels-quality"><input type="checkbox" id="low-graphics"> Low graphics mode (lower 3D resolution, shadows off)</label>
+        <nav class="levels-list" aria-label="Playable chapters">
+          <a href="?experience=opening"><b>Chapter 1 · High Table</b><span>Start on the campus shuttle, recover the MacBook, and reach Building 4. The keyboard wall is inside this chapter, at B4.</span></a>
+          <a href="?experience=lion-boss"><b>Chapter 2 · The Lawn Guardian (L001)</b><span>Write skills on the MacBook to counter the mechanical lion and repair the system.</span></a>
+          <a href="?experience=sports-hall"><b>Chapter 3 · Sports Hall Rescue</b><span>Solve the sudoku and combination lock at the east door, and rescue the students inside.</span></a>
+          <a href="?experience=survey"><b>Side mission · Campus Survey</b><span>Visit three outdoor landmarks and sync the campus records on the computer.</span></a>
         </nav>
       </section>
-      <figure><img src="${lawnPhoto}" alt="校园草坪与守卫狮子 L001 的游戏实景"><figcaption>校园草坪 / L001</figcaption></figure>
+      <figure><img src="${lawnPhoto}" alt="The campus lawn and the Guardian lion L001 in game"><figcaption>Campus lawn / L001</figcaption></figure>
     </div>
   </main>`;
 
