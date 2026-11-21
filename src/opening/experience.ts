@@ -57,6 +57,8 @@ export function createOpeningExperience(
  let worldThreat:WorldThreat=loadWorldThreat();
  let busClock=0,busReady=false,saveMessage='Progress saves on this device.',protectedSave=false,ownsSave=false,storageOkay=true,lastSave=0,stamp='',disposed=false,failed=false,scanClock=0,wasPaused=true;
  let incidentClock=0,disturbancePlayed=false,incidentQueued=false,autoInvitationShown=false,heartbeatClock=0,chaseCueClock=0,respawnGrace=0,compatBeforePanel=false;
+ /** A restored save at `complete`: the completion dialog is decided on the next frame, once the campaign host has loaded. */
+ let completePending=false;
  let wakeStarted=false,wakeClock=0,wakeDone=false,subtitleText='',subtitleSeconds=0,titleText='',titleSubtitle='',titleSeconds=0,introPromptClock=0,introAutoOpened=false,introCompleted=false;
  let staffTalkStarted=false,staffTalkDone=false,staffTalkClock=0,staffTalkLine=0,staffVoiceStarted=false,acceptVoicePlayed=false,acceptVoiceBusy=false,repeatVoiceBusy=false;
  let fleet=createOpeningFleet(explorer.world);scene.add(fleet.root);
@@ -128,7 +130,7 @@ export function createOpeningExperience(
   if(validPose(s)&&story.stage!=='incident'&&story.stage!=='to_b4')pose(s.position,s.yaw);else safePose();
   g.pitch=s.pitch;busClock=8;busReady=story.invitation_read;setBusDoor(explorer.world,story.stage==='bus'&&!busReady);applySettings();
   if(failed)open('caught');
-  else if(story.stage==='complete')open('complete');
+  else if(story.stage==='complete')completePending=true;
   incidentQueued=story.stage==='return_b5';
   if(worldThreat.phase==='sealed'){atmo()?.restoreSealed();audio.openingAmbience('dark');}
   else if(worldThreat.phase==='purged'){audio.openingAmbience('day');}
@@ -140,12 +142,17 @@ export function createOpeningExperience(
  /** Chapter 1 robots hunt until Building 4; in the campaign they hunt until the relay hands them over (`to_lawn`). */
  function fleetHunts(){if(story.stage!=='complete')return true;const c=campaign();return !!c&&!fleetStandsDown(c.stage());}
  /** Chapter 1 complete with the relay still offline: hand straight over to the campaign in this page. */
- function startCampaign(deviceId:string,at:'b4_enter'|'to_lawn'='b4_enter'){
+ /**
+  * The completion dialog's hand-over. A campaign that is already running is
+  * never restarted (that would rewind its save): the dialog just closes. Play
+  * resumes only when the call comes from the player's click (`gesture`);
+  * otherwise the pause card's Continue does it, because pointer lock needs a gesture.
+  */
+ function startCampaign(deviceId:string,options:{stage?:'b4_enter'|'to_lawn';gesture?:boolean}={}){
   const c=getCampaign?.();if(!c||!deviceId||story.stage!=='complete'||modal!=='complete')return false;
-  voice.stop();modal=null;explorer.closePanel();
-  if(!c.start(deviceId,at))return false;
-  persist(true);
-  if(compatBeforePanel)explorer.enterCompat();else explorer.enter();
+  if(!c.active&&!c.start(deviceId,options.stage??'b4_enter'))return false;
+  voice.stop();modal=null;explorer.closePanel();persist(true);
+  if(options.gesture){if(compatBeforePanel)explorer.enterCompat();else explorer.enter();}
   compatBeforePanel=false;
   return true;
  }
@@ -395,6 +402,7 @@ export function createOpeningExperience(
  }
  function update(dt:number){
   if(disposed)return;
+  if(completePending){completePending=false;if(story.stage==='complete'&&!campaign()&&!failed&&!modal)open('complete');}
   if(!wakeStarted&&!wakeDone&&story.stage==='bus'&&!story.invitation_read&&!g.paused&&!modal&&!g.inventoryOpen&&explorer.enabled)startWake();
   if(wakeStarted&&!wakeDone&&!g.paused){
    wakeClock+=dt;
@@ -456,7 +464,7 @@ export function createOpeningExperience(
   }else{
    cinema={mode:'off',title:'',subtitle:'',hint:'',opacity:0,letterbox:false};
   }
-  const view:OpeningView={story,runtime,modal:active?modal:null,objective:objectiveFor(),detail:detailFor(),prompt,saveStatus:saveMessage,busReady,computerPage,robotState,robotWarning,settings,audioStatus:sound.failed?`${sound.failedFiles.length} sounds unavailable. Retry audio to load them again.`:sound.loading.length?'Loading audio…':sound.state==='uninitialized'?'Use a preview or start the opening to enable audio.':sound.resumeError||'Audio ready.',handoffEvent:'opening.building4_reached',player:g.body.position.toArray() as [number,number,number],yaw:g.yaw,target:goal?[...goal] as [number,number,number]:null,campaign:!!campaignGoal,voiceLine:staffTalkLine,cinema};
+  const view:OpeningView={story,runtime,modal:active?modal:null,objective:objectiveFor(),detail:detailFor(),prompt,saveStatus:saveMessage,busReady,computerPage,robotState,robotWarning,settings,audioStatus:sound.failed?`${sound.failedFiles.length} sounds unavailable. Retry audio to load them again.`:sound.loading.length?'Loading audio…':sound.state==='uninitialized'?'Use a preview or start the opening to enable audio.':sound.resumeError||'Audio ready.',handoffEvent:'opening.building4_reached',player:g.body.position.toArray() as [number,number,number],yaw:g.yaw,target:goal?[...goal] as [number,number,number]:null,campaign:!!campaign(),voiceLine:staffTalkLine,cinema};
   ui.update(view);
   const next=[story.stage,story.events.length,story.invitation_read,g.inventory.revision,g.view,runtime.curtain_deployed,runtime.robot_chase_started,runtime.agent_chat_unlocked,runtime.hearts].join(':');
   if(stamp!==next){stamp=next;persist(true);}else if(!g.paused)persist();
