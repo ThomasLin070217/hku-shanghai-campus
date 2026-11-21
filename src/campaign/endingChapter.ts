@@ -141,6 +141,8 @@ export function createEndingChapter():Chapter{
   document.body.append(credits);
   requestAnimationFrame(()=>credits?.classList.add('show'));
   credits.querySelector('#ending-play-again')?.addEventListener('click',()=>{try{clearAllProgress(localStorage);}catch{/* storage blocked: the reload still clears the session */}location.reload();});
+  // The story is over: pause and release pointer lock so the two buttons are clickable.
+  try{ctx?.explorer.pause('ending');}catch{/* an absent explorer must not hide the credits */}
  }
 
  function attach(c:ChapterContext){
@@ -150,7 +152,9 @@ export function createEndingChapter():Chapter{
   markLocalModelCleared();
   tryPurgeWorld();
   dom();
-  try{c.explorer.pause('ending');}catch{/* a paused/absent explorer must not stop the epilogue */}
+  // Deliberately not paused here: the host may skip chapter.update while the game
+  // is paused, and the sequence must keep its own clock. The overlay covers the
+  // frame; the game pauses only once the credits are on screen.
  }
 
  function update(dt:number){
