@@ -1,6 +1,7 @@
 import * as T from 'three';
 import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H,OFFICE_LAYOUT as B6,dinnerHallPoint} from './spatialLayout';
 import type {Obstacle} from '../exploration/navigation';
+import {B4_OBSTACLES} from './b4Layout';
 
 /** Door clearance is shared by the scenery, collision and the step transition. */
 export function openingBusDoorSpan(){
@@ -10,13 +11,16 @@ export function openingBusDoorSpan(){
 
 export function openingObstacles(obstacles:Obstacle[]){
  const box=(name:string,x0:number,x1:number,z0:number,z1:number,bottom:number,top:number):Obstacle=>({name,x:(x0+x1)/2,z:(z0+z1)/2,w:x1-x0,d:z1-z0,bottom,top,angle:0});
- for(const r of [O.b5,O.b6]){
-  const index=obstacles.findIndex(o=>o.name===r.id+'/closed-exterior');if(index<0)continue;
+ for(const r of [O.b4,O.b5,O.b6]){
+  // B04 is a band tower: its rooms open the +z wing box instead of a closed exterior.
+  const index=obstacles.findIndex(o=>o.name===r.id+'/closed-exterior'||(r.id===O.b4.id&&o.name===r.id+'/wing'&&o.z-o.d/2<r.z1&&o.z+o.d/2>r.z0));if(index<0)continue;
   const old=obstacles[index],x0=old.x-old.w/2,x1=old.x+old.w/2,z0=old.z-old.d/2,z1=old.z+old.d/2,l=r.door-r.doorWidth/2,h=r.door+r.doorWidth/2;
   const inside=r.id===O.b6.id?B6.interior:r;
   obstacles.splice(index,1,box(r.id+'/opening-left',x0,inside.x0,z0,z1,0,old.top),box(r.id+'/opening-right',inside.x1,x1,z0,z1,0,old.top),box(r.id+'/opening-back',inside.x0,inside.x1,z0,inside.z0,0,old.top),box(r.id+'/opening-front-left',r.x0,l,z1-.2,z1,0,old.top),box(r.id+'/opening-front-right',h,r.x1,z1-.2,z1,0,old.top),box(r.id+'/opening-lintel',l,h,z1-.2,z1,r.floor+r.doorHeight,old.top));
   if(r.floor>0)obstacles.push(box(r.id+'/opening-floor',r.x0,r.x1,r.z0,z1,0,r.floor));
  }
+ // B04 room shell, stations and racks: the same rects the chapter renders.
+ for(const b of B4_OBSTACLES)obstacles.push(box(b.name,b.x0,b.x1,b.z0,b.z1,b.bottom,b.top));
  // Keep the observed lobby/hall separation and furniture solid in the same world.
  const r=O.b5;
  for(const [a,b] of [[r.z0,D.doorZ0],[D.doorZ1,r.z1]])obstacles.push(box('opening-b5-partition',D.partitionX-.12,D.partitionX+.12,a,b,0,r.clearHeight));
@@ -69,6 +73,7 @@ export function openingSupport(x:number,z:number,y:number,base:number|null){
  const hall=O.b5;if(x>=hall.x0&&x<=hall.x1&&z>=hall.z0&&z<=hall.z1&&hall.floor<=y+.242)h=Math.max(h??-Infinity,hall.floor);
  const dais=H.stage,[dx,dz]=dinnerHallPoint(dais.x,dais.z),daisTop=hall.floor+dais.h;
  if(Math.abs(x-dx)<=dais.d/2&&Math.abs(z-dz)<=dais.w/2&&daisTop<=y+.242)h=Math.max(h??-Infinity,daisTop);
+ const k=O.b4;if(x>=k.x0&&x<=k.x1&&z>=k.z0&&z<=k.z1&&k.floor<=y+.242)h=Math.max(h??-Infinity,k.floor);
  const r=O.b6;if(x>=r.x0&&x<=r.x1&&z>=r.z0&&z<=r.z1&&r.floor<=y+.242)h=Math.max(h??-Infinity,r.floor);
  const b=O.bus,x0=b.x-b.length/2,x1=b.x+b.length/2,z0=b.z-b.width/2,z1=b.z+b.width/2;
  if(x>=x0&&x<=x1&&z>=z0&&z<=z1&&b.floor<=y+.242)h=Math.max(h??-Infinity,b.floor);
