@@ -1,6 +1,6 @@
 {
   "schema": "hku-scene/1",
-  "revision": "7747e3f3885d",
+  "revision": "0cfcd2db11fd",
   "units": "metres",
   "axes": "+X east-ish, -Z north-ish, +Y up; not georeferenced",
   "entities": [
@@ -52455,25 +52455,25 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1",
       "bounds": {
         "min": [
-          -1.75,
+          -1.8639,
           0,
           -27
         ],
         "max": [
           28.76,
-          5.05,
-          77.1609
+          6.5666,
+          78.0567
         ]
       },
       "center": [
-        13.505,
-        2.525,
-        25.0804
+        13.4481,
+        3.2833,
+        25.5283
       ],
       "size": [
-        30.51,
-        5.05,
-        104.1609
+        30.6239,
+        6.5666,
+        105.0567
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Nov13_Observed_Corrections",
@@ -97262,6 +97262,146 @@
       "editMode": "source"
     },
     {
+      "id": "A014-G-0c8b2fc13593",
+      "name": "Leaf_Right",
+      "kind": "group",
+      "parentId": "A014-G-cccb234fca54",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Right#1",
+      "bounds": {
+        "min": [
+          -48.595,
+          0.005,
+          -116.96
+        ],
+        "max": [
+          -48.405,
+          2.705,
+          -115.4
+        ]
+      },
+      "center": [
+        -48.5,
+        1.355,
+        -116.18
+      ],
+      "size": [
+        0.19,
+        2.7,
+        1.56
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Leaf_Right",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source"
+    },
+    {
+      "id": "A014-G-3315ceeee49d",
+      "name": "Door_Lock",
+      "kind": "group",
+      "parentId": "A014-G-cccb234fca54",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Door_Lock#1",
+      "bounds": {
+        "min": [
+          -48.395,
+          0.95,
+          -115
+        ],
+        "max": [
+          -48.28,
+          1.51,
+          -114.64
+        ]
+      },
+      "center": [
+        -48.3375,
+        1.23,
+        -114.82
+      ],
+      "size": [
+        0.115,
+        0.56,
+        0.36
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_Lock",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source"
+    },
+    {
+      "id": "A014-G-955ed910d737",
+      "name": "Leaf_Left",
+      "kind": "group",
+      "parentId": "A014-G-cccb234fca54",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Left#1",
+      "bounds": {
+        "min": [
+          -48.595,
+          0.005,
+          -118.6
+        ],
+        "max": [
+          -48.405,
+          2.705,
+          -117.04
+        ]
+      },
+      "center": [
+        -48.5,
+        1.355,
+        -117.82
+      ],
+      "size": [
+        0.19,
+        2.7,
+        1.56
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Leaf_Left",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source"
+    },
+    {
+      "id": "A014-G-cccb234fca54",
+      "name": "体育馆东门 · 玻璃门与门禁锁",
+      "kind": "group",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1",
+      "bounds": {
+        "min": [
+          -48.63,
+          0,
+          -118.72
+        ],
+        "max": [
+          -48.28,
+          2.86,
+          -114.64
+        ]
+      },
+      "center": [
+        -48.455,
+        1.43,
+        -116.68
+      ],
+      "size": [
+        0.35,
+        2.86,
+        4.08
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Sports_East_Door",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source"
+    },
+    {
       "id": "A014-G-d441abf09f03",
       "name": "Sports_Hall",
       "kind": "group",
@@ -97295,6 +97435,42 @@
       "reference": "C03 sports-1; R02 planning",
       "confidence": "confirmed-enclosure-type_provisional-exterior",
       "editMode": "source"
+    },
+    {
+      "id": "A014-P-003a2eae6d78",
+      "name": "Lock_key",
+      "kind": "part",
+      "parentId": "A014-G-3315ceeee49d",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Door_Lock#1/Lock_key#3",
+      "bounds": {
+        "min": [
+          -48.31,
+          1.235,
+          -114.745
+        ],
+        "max": [
+          -48.29,
+          1.285,
+          -114.695
+        ]
+      },
+      "center": [
+        -48.3,
+        1.26,
+        -114.72
+      ],
+      "size": [
+        0.02,
+        0.05,
+        0.05
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Lock_key",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
     },
     {
       "id": "A014-P-010aa6764262",
@@ -97331,6 +97507,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Fence steel"
+    },
+    {
+      "id": "A014-P-013a3041f363",
+      "name": "Lock_key",
+      "kind": "part",
+      "parentId": "A014-G-3315ceeee49d",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Door_Lock#1/Lock_key#2",
+      "bounds": {
+        "min": [
+          -48.31,
+          1.235,
+          -114.845
+        ],
+        "max": [
+          -48.29,
+          1.285,
+          -114.795
+        ]
+      },
+      "center": [
+        -48.3,
+        1.26,
+        -114.82
+      ],
+      "size": [
+        0.02,
+        0.05,
+        0.05
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Lock_key",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
     },
     {
       "id": "A014-P-01d0d32a85cd",
@@ -97405,6 +97617,186 @@
       "material": "Fence steel"
     },
     {
+      "id": "A014-P-023a31d4794f",
+      "name": "Lock_key",
+      "kind": "part",
+      "parentId": "A014-G-3315ceeee49d",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Door_Lock#1/Lock_key#5",
+      "bounds": {
+        "min": [
+          -48.31,
+          1.125,
+          -114.845
+        ],
+        "max": [
+          -48.29,
+          1.175,
+          -114.795
+        ]
+      },
+      "center": [
+        -48.3,
+        1.15,
+        -114.82
+      ],
+      "size": [
+        0.02,
+        0.05,
+        0.05
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Lock_key",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-033a3367ff3b",
+      "name": "Lock_key",
+      "kind": "part",
+      "parentId": "A014-G-3315ceeee49d",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Door_Lock#1/Lock_key#4",
+      "bounds": {
+        "min": [
+          -48.31,
+          1.125,
+          -114.945
+        ],
+        "max": [
+          -48.29,
+          1.175,
+          -114.895
+        ]
+      },
+      "center": [
+        -48.3,
+        1.15,
+        -114.92
+      ],
+      "size": [
+        0.02,
+        0.05,
+        0.05
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Lock_key",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-0423baa033ca",
+      "name": "Door_leaf_rail",
+      "kind": "part",
+      "parentId": "A014-G-0c8b2fc13593",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Right#1/Door_leaf_rail#1",
+      "bounds": {
+        "min": [
+          -48.53,
+          0.005,
+          -116.96
+        ],
+        "max": [
+          -48.47,
+          0.075,
+          -115.4
+        ]
+      },
+      "center": [
+        -48.5,
+        0.04,
+        -116.18
+      ],
+      "size": [
+        0.06,
+        0.07,
+        1.56
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_leaf_rail",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-043a34fa8527",
+      "name": "Lock_key",
+      "kind": "part",
+      "parentId": "A014-G-3315ceeee49d",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Door_Lock#1/Lock_key#7",
+      "bounds": {
+        "min": [
+          -48.31,
+          1.015,
+          -114.945
+        ],
+        "max": [
+          -48.29,
+          1.065,
+          -114.895
+        ]
+      },
+      "center": [
+        -48.3,
+        1.04,
+        -114.92
+      ],
+      "size": [
+        0.02,
+        0.05,
+        0.05
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Lock_key",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-053a368d0b13",
+      "name": "Lock_key",
+      "kind": "part",
+      "parentId": "A014-G-3315ceeee49d",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Door_Lock#1/Lock_key#6",
+      "bounds": {
+        "min": [
+          -48.31,
+          1.125,
+          -114.745
+        ],
+        "max": [
+          -48.29,
+          1.175,
+          -114.695
+        ]
+      },
+      "center": [
+        -48.3,
+        1.15,
+        -114.72
+      ],
+      "size": [
+        0.02,
+        0.05,
+        0.05
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Lock_key",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-070aafe865e9",
       "name": "Fence_wire",
       "kind": "part",
@@ -97439,6 +97831,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Fence steel"
+    },
+    {
+      "id": "A014-P-0723bf59c58d",
+      "name": "Door_leaf_rail",
+      "kind": "part",
+      "parentId": "A014-G-0c8b2fc13593",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Right#1/Door_leaf_rail#2",
+      "bounds": {
+        "min": [
+          -48.53,
+          2.635,
+          -116.96
+        ],
+        "max": [
+          -48.47,
+          2.705,
+          -115.4
+        ]
+      },
+      "center": [
+        -48.5,
+        2.67,
+        -116.18
+      ],
+      "size": [
+        0.06,
+        0.07,
+        1.56
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_leaf_rail",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
     },
     {
       "id": "A014-P-080ab17bebd5",
@@ -98845,6 +99273,42 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-2c2093ec7aa9",
+      "name": "Door_handle",
+      "kind": "part",
+      "parentId": "A014-G-955ed910d737",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Left#1/Door_handle#1",
+      "bounds": {
+        "min": [
+          -48.455,
+          0.9,
+          -117.165
+        ],
+        "max": [
+          -48.405,
+          1.2,
+          -117.115
+        ]
+      },
+      "center": [
+        -48.43,
+        1.05,
+        -117.14
+      ],
+      "size": [
+        0.05,
+        0.3,
+        0.05
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_handle",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-2c3c0f0a3968",
       "name": "Fine_vertical_court_mesh",
       "kind": "part",
@@ -99133,6 +99597,42 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-2f2098a50c6c",
+      "name": "Door_handle",
+      "kind": "part",
+      "parentId": "A014-G-955ed910d737",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Left#1/Door_handle#2",
+      "bounds": {
+        "min": [
+          -48.595,
+          0.9,
+          -117.165
+        ],
+        "max": [
+          -48.545,
+          1.2,
+          -117.115
+        ]
+      },
+      "center": [
+        -48.57,
+        1.05,
+        -117.14
+      ],
+      "size": [
+        0.05,
+        0.3,
+        0.05
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_handle",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-2f4b1e4df2b5",
       "name": "Fine_vertical_court_mesh",
       "kind": "part",
@@ -99241,6 +99741,42 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-30abfbe3e852",
+      "name": "Door_leaf_rail",
+      "kind": "part",
+      "parentId": "A014-G-955ed910d737",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Left#1/Door_leaf_rail#1",
+      "bounds": {
+        "min": [
+          -48.53,
+          0.005,
+          -118.6
+        ],
+        "max": [
+          -48.47,
+          0.075,
+          -117.04
+        ]
+      },
+      "center": [
+        -48.5,
+        0.04,
+        -117.82
+      ],
+      "size": [
+        0.06,
+        0.07,
+        1.56
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_leaf_rail",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-314d600ace92",
       "name": "Fine_vertical_court_mesh",
       "kind": "part",
@@ -99275,6 +99811,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Video dark fence steel"
+    },
+    {
+      "id": "A014-P-31abfd766e3e",
+      "name": "Door_leaf_rail",
+      "kind": "part",
+      "parentId": "A014-G-955ed910d737",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Left#1/Door_leaf_rail#2",
+      "bounds": {
+        "min": [
+          -48.53,
+          2.635,
+          -118.6
+        ],
+        "max": [
+          -48.47,
+          2.705,
+          -117.04
+        ]
+      },
+      "center": [
+        -48.5,
+        2.67,
+        -117.82
+      ],
+      "size": [
+        0.06,
+        0.07,
+        1.56
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_leaf_rail",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
     },
     {
       "id": "A014-P-324d619d547e",
@@ -99347,6 +99919,42 @@
       "confidence": "confirmed-enclosure-type_provisional-exterior",
       "editMode": "source",
       "material": "Glazing_clear"
+    },
+    {
+      "id": "A014-P-3920b5cf330f",
+      "name": "Door_kick_plate",
+      "kind": "part",
+      "parentId": "A014-G-955ed910d737",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Left#1/Door_kick_plate#1",
+      "bounds": {
+        "min": [
+          -48.51,
+          0.08,
+          -118.55
+        ],
+        "max": [
+          -48.49,
+          0.38,
+          -117.09
+        ]
+      },
+      "center": [
+        -48.5,
+        0.23,
+        -117.82
+      ],
+      "size": [
+        0.02,
+        0.3,
+        1.46
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_kick_plate",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Opaque structural core"
     },
     {
       "id": "A014-P-39eadb86adff",
@@ -99565,6 +100173,42 @@
       "material": "Jogging surface"
     },
     {
+      "id": "A014-P-56942da29929",
+      "name": "Door_glass_leaf",
+      "kind": "part",
+      "parentId": "A014-G-0c8b2fc13593",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Right#1/Door_glass_leaf#1",
+      "bounds": {
+        "min": [
+          -48.5,
+          0.07,
+          -116.96
+        ],
+        "max": [
+          -48.5,
+          2.63,
+          -115.4
+        ]
+      },
+      "center": [
+        -48.5,
+        1.35,
+        -116.18
+      ],
+      "size": [
+        0,
+        2.56,
+        1.56
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_glass_leaf",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Glazing_clear"
+    },
+    {
       "id": "A014-P-5bf504fb5771",
       "name": "Goal_crossbar",
       "kind": "part",
@@ -99635,6 +100279,114 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Ivory signage"
+    },
+    {
+      "id": "A014-P-5e6f300b95e9",
+      "name": "Door_head",
+      "kind": "part",
+      "parentId": "A014-G-cccb234fca54",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Door_head#1",
+      "bounds": {
+        "min": [
+          -48.63,
+          2.7,
+          -118.67
+        ],
+        "max": [
+          -48.37,
+          2.86,
+          -115.33
+        ]
+      },
+      "center": [
+        -48.5,
+        2.78,
+        -117
+      ],
+      "size": [
+        0.26,
+        0.16,
+        3.34
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_head",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-5ee5e27cdbe8",
+      "name": "Door_leaf_stile",
+      "kind": "part",
+      "parentId": "A014-G-955ed910d737",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Left#1/Door_leaf_stile#1",
+      "bounds": {
+        "min": [
+          -48.53,
+          0.07,
+          -118.6
+        ],
+        "max": [
+          -48.47,
+          2.63,
+          -118.54
+        ]
+      },
+      "center": [
+        -48.5,
+        1.35,
+        -118.57
+      ],
+      "size": [
+        0.06,
+        2.56,
+        0.06
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_leaf_stile",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-61e5e7356dac",
+      "name": "Door_leaf_stile",
+      "kind": "part",
+      "parentId": "A014-G-955ed910d737",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Left#1/Door_leaf_stile#2",
+      "bounds": {
+        "min": [
+          -48.53,
+          0.07,
+          -117.1
+        ],
+        "max": [
+          -48.47,
+          2.63,
+          -117.04
+        ]
+      },
+      "center": [
+        -48.5,
+        1.35,
+        -117.07
+      ],
+      "size": [
+        0.06,
+        2.56,
+        0.06
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_leaf_stile",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
     },
     {
       "id": "A014-P-69d5f41024cb",
@@ -99815,6 +100567,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Fence steel"
+    },
+    {
+      "id": "A014-P-6dbd664c8e95",
+      "name": "Night_door_lock_led",
+      "kind": "part",
+      "parentId": "A014-G-3315ceeee49d",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Door_Lock#1/Night_door_lock_led#1",
+      "bounds": {
+        "min": [
+          -48.32,
+          1.39,
+          -114.85
+        ],
+        "max": [
+          -48.28,
+          1.45,
+          -114.79
+        ]
+      },
+      "center": [
+        -48.3,
+        1.42,
+        -114.82
+      ],
+      "size": [
+        0.04,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Night_door_lock_led",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Night_door_lock_led"
     },
     {
       "id": "A014-P-6dd5fa5c3c7a",
@@ -101111,6 +101899,78 @@
       "confidence": "confirmed-enclosure-type_provisional-exterior",
       "editMode": "source",
       "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-899b1b8d164a",
+      "name": "Lock_panel",
+      "kind": "part",
+      "parentId": "A014-G-3315ceeee49d",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Door_Lock#1/Lock_panel#1",
+      "bounds": {
+        "min": [
+          -48.395,
+          1.05,
+          -115
+        ],
+        "max": [
+          -48.305,
+          1.51,
+          -114.64
+        ]
+      },
+      "center": [
+        -48.35,
+        1.28,
+        -114.82
+      ],
+      "size": [
+        0.09,
+        0.46,
+        0.36
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Lock_panel",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Opaque structural core"
+    },
+    {
+      "id": "A014-P-9340d78384ba",
+      "name": "Hall_lintel",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_lintel#1",
+      "bounds": {
+        "min": [
+          -48.59,
+          2.7,
+          -118.6
+        ],
+        "max": [
+          -48.41,
+          7,
+          -115.4
+        ]
+      },
+      "center": [
+        -48.5,
+        4.85,
+        -117
+      ],
+      "size": [
+        0.18,
+        4.3,
+        3.2
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_lintel",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Ivory signage"
     },
     {
       "id": "A014-P-974373403015",
@@ -102532,18 +103392,18 @@
         "max": [
           -48.41,
           7,
-          -104
+          -118.6
         ]
       },
       "center": [
         -48.5,
         3.5,
-        -117
+        -124.3
       ],
       "size": [
         0.18,
         7,
-        26
+        11.4
       ],
       "sourceFile": "src/model/buildSite.ts",
       "sourceAnchor": "Hall_wall",
@@ -102623,6 +103483,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Video dark fence steel"
+    },
+    {
+      "id": "A014-P-b2564131aa6c",
+      "name": "Hall_wall",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_wall#3",
+      "bounds": {
+        "min": [
+          -48.59,
+          0,
+          -115.4
+        ],
+        "max": [
+          -48.41,
+          7,
+          -104
+        ]
+      },
+      "center": [
+        -48.5,
+        3.5,
+        -109.7
+      ],
+      "size": [
+        0.18,
+        7,
+        11.4
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_wall",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Ivory signage"
     },
     {
       "id": "A014-P-b33494ca5fa9",
@@ -102731,6 +103627,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Video dark fence steel"
+    },
+    {
+      "id": "A014-P-c1bc619744bb",
+      "name": "Lock_card_reader",
+      "kind": "part",
+      "parentId": "A014-G-3315ceeee49d",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Door_Lock#1/Lock_card_reader#1",
+      "bounds": {
+        "min": [
+          -48.32,
+          0.95,
+          -114.9
+        ],
+        "max": [
+          -48.28,
+          1.05,
+          -114.74
+        ]
+      },
+      "center": [
+        -48.3,
+        1,
+        -114.82
+      ],
+      "size": [
+        0.04,
+        0.1,
+        0.16
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Lock_card_reader",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
     },
     {
       "id": "A014-P-c463334fedf3",
@@ -102875,6 +103807,222 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Fence steel"
+    },
+    {
+      "id": "A014-P-ced3cb085ae5",
+      "name": "Door_handle",
+      "kind": "part",
+      "parentId": "A014-G-0c8b2fc13593",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Right#1/Door_handle#2",
+      "bounds": {
+        "min": [
+          -48.455,
+          0.9,
+          -116.885
+        ],
+        "max": [
+          -48.405,
+          1.2,
+          -116.835
+        ]
+      },
+      "center": [
+        -48.43,
+        1.05,
+        -116.86
+      ],
+      "size": [
+        0.05,
+        0.3,
+        0.05
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_handle",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-d1d3cfc1eca9",
+      "name": "Door_handle",
+      "kind": "part",
+      "parentId": "A014-G-0c8b2fc13593",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Right#1/Door_handle#1",
+      "bounds": {
+        "min": [
+          -48.595,
+          0.9,
+          -116.885
+        ],
+        "max": [
+          -48.545,
+          1.2,
+          -116.835
+        ]
+      },
+      "center": [
+        -48.57,
+        1.05,
+        -116.86
+      ],
+      "size": [
+        0.05,
+        0.3,
+        0.05
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_handle",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-dc1de15304c5",
+      "name": "Door_jamb",
+      "kind": "part",
+      "parentId": "A014-G-cccb234fca54",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Door_jamb#1",
+      "bounds": {
+        "min": [
+          -48.63,
+          0,
+          -118.67
+        ],
+        "max": [
+          -48.37,
+          2.7,
+          -118.53
+        ]
+      },
+      "center": [
+        -48.5,
+        1.35,
+        -118.6
+      ],
+      "size": [
+        0.26,
+        2.7,
+        0.14
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_jamb",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-dd1de2e68ab1",
+      "name": "Door_jamb",
+      "kind": "part",
+      "parentId": "A014-G-cccb234fca54",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Door_jamb#2",
+      "bounds": {
+        "min": [
+          -48.63,
+          0,
+          -115.47
+        ],
+        "max": [
+          -48.37,
+          2.7,
+          -115.33
+        ]
+      },
+      "center": [
+        -48.5,
+        1.35,
+        -115.4
+      ],
+      "size": [
+        0.26,
+        2.7,
+        0.14
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_jamb",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-de769e97710b",
+      "name": "Door_glass_leaf",
+      "kind": "part",
+      "parentId": "A014-G-955ed910d737",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Left#1/Door_glass_leaf#1",
+      "bounds": {
+        "min": [
+          -48.5,
+          0.07,
+          -118.6
+        ],
+        "max": [
+          -48.5,
+          2.63,
+          -117.04
+        ]
+      },
+      "center": [
+        -48.5,
+        1.35,
+        -117.82
+      ],
+      "size": [
+        0,
+        2.56,
+        1.56
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_glass_leaf",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Glazing_clear"
+    },
+    {
+      "id": "A014-P-e14d6af865c6",
+      "name": "Door_threshold",
+      "kind": "part",
+      "parentId": "A014-G-cccb234fca54",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Door_threshold#1",
+      "bounds": {
+        "min": [
+          -48.63,
+          0.25,
+          -118.72
+        ],
+        "max": [
+          -48.37,
+          0.31,
+          -115.28
+        ]
+      },
+      "center": [
+        -48.5,
+        0.28,
+        -117
+      ],
+      "size": [
+        0.26,
+        0.06,
+        3.44
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_threshold",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
     },
     {
       "id": "A014-P-e2c6a8b04974",
@@ -103669,6 +104817,78 @@
       "material": "Fence steel"
     },
     {
+      "id": "A014-P-f63a1ef03242",
+      "name": "Lock_key",
+      "kind": "part",
+      "parentId": "A014-G-3315ceeee49d",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Door_Lock#1/Lock_key#9",
+      "bounds": {
+        "min": [
+          -48.31,
+          1.015,
+          -114.745
+        ],
+        "max": [
+          -48.29,
+          1.065,
+          -114.695
+        ]
+      },
+      "center": [
+        -48.3,
+        1.04,
+        -114.72
+      ],
+      "size": [
+        0.02,
+        0.05,
+        0.05
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Lock_key",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-f73a2083b82d",
+      "name": "Lock_key",
+      "kind": "part",
+      "parentId": "A014-G-3315ceeee49d",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Door_Lock#1/Lock_key#8",
+      "bounds": {
+        "min": [
+          -48.31,
+          1.015,
+          -114.845
+        ],
+        "max": [
+          -48.29,
+          1.065,
+          -114.795
+        ]
+      },
+      "center": [
+        -48.3,
+        1.04,
+        -114.82
+      ],
+      "size": [
+        0.02,
+        0.05,
+        0.05
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Lock_key",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-f873c3385863",
       "name": "Fine_vertical_court_mesh",
       "kind": "part",
@@ -103777,6 +104997,42 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-fada543057be",
+      "name": "Door_leaf_stile",
+      "kind": "part",
+      "parentId": "A014-G-0c8b2fc13593",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Right#1/Door_leaf_stile#2",
+      "bounds": {
+        "min": [
+          -48.53,
+          0.07,
+          -116.96
+        ],
+        "max": [
+          -48.47,
+          2.63,
+          -116.9
+        ]
+      },
+      "center": [
+        -48.5,
+        1.35,
+        -116.93
+      ],
+      "size": [
+        0.06,
+        2.56,
+        0.06
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_leaf_stile",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-fb73c7f1ea27",
       "name": "Fine_vertical_court_mesh",
       "kind": "part",
@@ -103847,6 +105103,114 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Video dark fence steel"
+    },
+    {
+      "id": "A014-P-fdd4669ed721",
+      "name": "Door_kick_plate",
+      "kind": "part",
+      "parentId": "A014-G-0c8b2fc13593",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Right#1/Door_kick_plate#1",
+      "bounds": {
+        "min": [
+          -48.51,
+          0.08,
+          -116.91
+        ],
+        "max": [
+          -48.49,
+          0.38,
+          -115.45
+        ]
+      },
+      "center": [
+        -48.5,
+        0.23,
+        -116.18
+      ],
+      "size": [
+        0.02,
+        0.3,
+        1.46
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_kick_plate",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Opaque structural core"
+    },
+    {
+      "id": "A014-P-fdda58e9e981",
+      "name": "Door_leaf_stile",
+      "kind": "part",
+      "parentId": "A014-G-0c8b2fc13593",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Leaf_Right#1/Door_leaf_stile#1",
+      "bounds": {
+        "min": [
+          -48.53,
+          0.07,
+          -115.46
+        ],
+        "max": [
+          -48.47,
+          2.63,
+          -115.4
+        ]
+      },
+      "center": [
+        -48.5,
+        1.35,
+        -115.43
+      ],
+      "size": [
+        0.06,
+        2.56,
+        0.06
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Door_leaf_stile",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-fe3a2b8861a0",
+      "name": "Lock_key",
+      "kind": "part",
+      "parentId": "A014-G-3315ceeee49d",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Sports_East_Door#1/Door_Lock#1/Lock_key#1",
+      "bounds": {
+        "min": [
+          -48.31,
+          1.235,
+          -114.945
+        ],
+        "max": [
+          -48.29,
+          1.285,
+          -114.895
+        ]
+      },
+      "center": [
+        -48.3,
+        1.26,
+        -114.92
+      ],
+      "size": [
+        0.02,
+        0.05,
+        0.05
+      ],
+      "sourceFile": "src/model/sportsDoor.ts",
+      "sourceAnchor": "Lock_key",
+      "reference": "2026-11-20 client request: east glass door + keypad lock",
+      "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
     },
     {
       "id": "A014-P-fe73ccaa4c8c",
@@ -630220,29 +631584,29 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1",
       "bounds": {
         "min": [
-          -1.75,
+          -1.8639,
           0.13,
-          75.12
+          73.9431
         ],
         "max": [
-          1.75,
-          5.05,
-          77.1609
+          1.8639,
+          6.5666,
+          78.0567
         ]
       },
       "center": [
         0,
-        2.59,
-        76.1404
+        3.3483,
+        75.9999
       ],
       "size": [
-        3.5,
-        4.92,
-        2.0409
+        3.7277,
+        6.4366,
+        4.1136
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "entrance-lion",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
       "editMode": "source"
     },
@@ -630255,29 +631619,29 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1",
       "bounds": {
         "min": [
-          -1.6169,
-          0.25,
-          75.3186
+          -1.8639,
+          0.168,
+          73.9431
         ],
         "max": [
-          1.6169,
-          5.05,
-          77.1609
+          1.8639,
+          6.5666,
+          78.0567
         ]
       },
       "center": [
         0,
-        2.65,
-        76.2397
+        3.3673,
+        75.9999
       ],
       "size": [
-        3.2338,
-        4.8,
-        1.8423
+        3.7277,
+        6.3986,
+        4.1136
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Lion_body_uniform_scale",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
       "editMode": "source"
     },
@@ -630290,31 +631654,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_pixel_tuft#12",
       "bounds": {
         "min": [
-          -1.6169,
-          3.45,
-          75.682
+          -1.8876,
+          4.3268,
+          75.3289
         ],
         "max": [
-          -0.9025,
-          4.0049,
-          76.318
+          -0.6689,
+          5.3621,
+          76.4398
         ]
       },
       "center": [
-        -1.2597,
-        3.7274,
-        76
+        -1.2783,
+        4.8445,
+        75.8843
       ],
       "size": [
-        0.7144,
-        0.5549,
-        0.636
+        1.2187,
+        1.0353,
+        1.1109
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Mane_pixel_tuft",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion orange mane"
     },
     {
       "id": "L001-P-193d0d1e3e31",
@@ -630325,31 +631690,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Smile#1",
       "bounds": {
         "min": [
-          -0.1615,
-          2.8544,
-          77.0246
+          -0.2828,
+          3.6772,
+          77.2726
         ],
         "max": [
-          0.1615,
-          2.9554,
-          77.0549
+          0.2828,
+          3.96,
+          77.5296
         ]
       },
       "center": [
         0,
-        2.9049,
-        77.0397
+        3.8186,
+        77.4011
       ],
       "size": [
-        0.323,
-        0.1009,
-        0.0303
+        0.5656,
+        0.2828,
+        0.2571
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Smile",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion eyes and whiskers"
     },
     {
       "id": "L001-P-19db9873b6eb",
@@ -630360,31 +631726,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_pixel_tuft#13",
       "bounds": {
         "min": [
-          -1.391,
-          3.8815,
-          75.682
+          -1.6484,
+          4.7566,
+          75.3477
         ],
         "max": [
-          -0.6294,
-          4.6095,
-          76.318
+          -0.4017,
+          6.0353,
+          76.4209
         ]
       },
       "center": [
-        -1.0102,
-        4.2455,
-        76
+        -1.0251,
+        5.396,
+        75.8843
       ],
       "size": [
-        0.7616,
-        0.728,
-        0.636
+        1.2467,
+        1.2787,
+        1.0732
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Mane_pixel_tuft",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion amber mane"
     },
     {
       "id": "L001-P-1adb9a063cd7",
@@ -630395,31 +631762,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_pixel_tuft#10",
       "bounds": {
         "min": [
-          -1.391,
-          2.2703,
-          75.682
+          -1.7288,
+          3.0415,
+          75.2757
         ],
         "max": [
-          -0.6294,
-          2.9983,
-          76.318
+          -0.3213,
+          4.3202,
+          76.4929
         ]
       },
       "center": [
-        -1.0102,
-        2.6343,
-        76
+        -1.0251,
+        3.6809,
+        75.8843
       ],
       "size": [
-        0.7616,
-        0.728,
-        0.636
+        1.4075,
+        1.2787,
+        1.2171
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Mane_pixel_tuft",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion orange mane"
     },
     {
       "id": "L001-P-1bdb9b99c2c2",
@@ -630430,31 +631798,140 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_pixel_tuft#11",
       "bounds": {
         "min": [
-          -1.6169,
-          2.875,
-          75.682
+          -1.8928,
+          3.7147,
+          75.3056
         ],
         "max": [
-          -0.9025,
-          3.4298,
-          76.318
+          -0.6637,
+          4.75,
+          76.463
         ]
       },
       "center": [
-        -1.2597,
-        3.1524,
-        76
+        -1.2783,
+        4.2324,
+        75.8843
       ],
       "size": [
-        0.7144,
-        0.5549,
-        0.636
+        1.2291,
+        1.0353,
+        1.1575
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Mane_pixel_tuft",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-1bdd597058fb",
+      "name": "Mane_rear_layer",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_rear_layer#3",
+      "bounds": {
+        "min": [
+          -0.379,
+          4.684,
+          74.1536
+        ],
+        "max": [
+          0.379,
+          6.0639,
+          75.1727
+        ]
+      },
+      "center": [
+        0,
+        5.3739,
+        74.6632
+      ],
+      "size": [
+        0.758,
+        1.3799,
+        1.0192
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_rear_layer",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-1cdd5b03dee7",
+      "name": "Mane_rear_layer",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_rear_layer#2",
+      "bounds": {
+        "min": [
+          -1.1123,
+          4.6083,
+          74.2079
+        ],
+        "max": [
+          -0.088,
+          6.1396,
+          75.3057
+        ]
+      },
+      "center": [
+        -0.6002,
+        5.3739,
+        74.7568
+      ],
+      "size": [
+        1.0244,
+        1.5312,
+        1.0978
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_rear_layer",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion orange mane"
+    },
+    {
+      "id": "L001-P-1ddd5c9664d3",
+      "name": "Mane_rear_layer",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_rear_layer#1",
+      "bounds": {
+        "min": [
+          -1.8165,
+          4.5874,
+          74.37
+        ],
+        "max": [
+          -0.3656,
+          6.1605,
+          75.6712
+        ]
+      },
+      "center": [
+        -1.091,
+        5.3739,
+        75.0206
+      ],
+      "size": [
+        1.451,
+        1.5731,
+        1.3012
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_rear_layer",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion amber mane"
     },
     {
       "id": "L001-P-1edba0525486",
@@ -630465,31 +631942,68 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_pixel_tuft#14",
       "bounds": {
         "min": [
-          -0.8896,
-          4.2256,
-          75.682
+          -1.1816,
+          4.956,
+          75.3229
         ],
         "max": [
-          -0.2317,
-          4.9825,
-          76.318
+          0.0439,
+          6.5992,
+          76.4457
         ]
       },
       "center": [
-        -0.5606,
-        4.6041,
-        76
+        -0.5689,
+        5.7776,
+        75.8843
       ],
       "size": [
-        0.6579,
-        0.7569,
-        0.636
+        1.2255,
+        1.6432,
+        1.1229
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Mane_pixel_tuft",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion orange mane"
+    },
+    {
+      "id": "L001-P-1fdd5fbc70ab",
+      "name": "Mane_rear_layer",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_rear_layer#7",
+      "bounds": {
+        "min": [
+          -1.0231,
+          3.9688,
+          74.1037
+        ],
+        "max": [
+          0.119,
+          5.468,
+          75.3145
+        ]
+      },
+      "center": [
+        -0.452,
+        4.7184,
+        74.7091
+      ],
+      "size": [
+        1.1422,
+        1.4992,
+        1.2109
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_rear_layer",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion amber mane"
     },
     {
       "id": "L001-P-208320902994",
@@ -630500,31 +632014,68 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_toe#2",
       "bounds": {
         "min": [
-          -0.8883,
-          0.7446,
-          77.0095
+          -1.2083,
+          0.6307,
+          77.6453
         ],
         "max": [
-          -0.6864,
-          0.9667,
-          77.0902
+          -0.7455,
+          1.1963,
+          78.031
         ]
       },
       "center": [
-        -0.7874,
-        0.8557,
-        77.0498
+        -0.9769,
+        0.9135,
+        77.8381
       ],
       "size": [
-        0.2019,
-        0.2221,
-        0.0808
+        0.4628,
+        0.5656,
+        0.3856
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Paw_toe",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-20dd614ff696",
+      "name": "Mane_rear_layer",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_rear_layer#6",
+      "bounds": {
+        "min": [
+          -1.7129,
+          3.9343,
+          74.2811
+        ],
+        "max": [
+          -0.3272,
+          5.5025,
+          75.5693
+        ]
+      },
+      "center": [
+        -1.0201,
+        4.7184,
+        74.9252
+      ],
+      "size": [
+        1.3857,
+        1.5682,
+        1.2882
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_rear_layer",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion orange mane"
     },
     {
       "id": "L001-P-21832223af80",
@@ -630535,31 +632086,104 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_toe#3",
       "bounds": {
         "min": [
-          -0.6864,
-          0.7446,
-          77.0095
+          -0.9126,
+          0.6307,
+          77.5478
         ],
         "max": [
-          -0.4845,
-          0.9667,
-          77.0902
+          -0.4499,
+          1.1963,
+          77.9334
         ]
       },
       "center": [
-        -0.5855,
-        0.8557,
-        77.0498
+        -0.6813,
+        0.9135,
+        77.7406
       ],
       "size": [
-        0.2019,
-        0.2221,
-        0.0808
+        0.4628,
+        0.5656,
+        0.3856
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Paw_toe",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-21dd62e27c82",
+      "name": "Mane_rear_layer",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_rear_layer#5",
+      "bounds": {
+        "min": [
+          0.3656,
+          4.5874,
+          74.37
+        ],
+        "max": [
+          1.8165,
+          6.1605,
+          75.6712
+        ]
+      },
+      "center": [
+        1.091,
+        5.3739,
+        75.0206
+      ],
+      "size": [
+        1.451,
+        1.5731,
+        1.3012
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_rear_layer",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-22dd6475026e",
+      "name": "Mane_rear_layer",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_rear_layer#4",
+      "bounds": {
+        "min": [
+          0.088,
+          4.6083,
+          74.2079
+        ],
+        "max": [
+          1.1123,
+          6.1396,
+          75.3057
+        ]
+      },
+      "center": [
+        0.6002,
+        5.3739,
+        74.7568
+      ],
+      "size": [
+        1.0244,
+        1.5312,
+        1.0978
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_rear_layer",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion orange mane"
     },
     {
       "id": "L001-P-23832549bb57",
@@ -630570,31 +632194,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_toe#1",
       "bounds": {
         "min": [
-          -1.0902,
-          0.7446,
-          77.0095
+          -1.5039,
+          0.6307,
+          77.5478
         ],
         "max": [
-          -0.8883,
-          0.9667,
-          77.0902
+          -1.0412,
+          1.1963,
+          77.9334
         ]
       },
       "center": [
-        -0.9893,
-        0.8557,
-        77.0498
+        -1.2726,
+        0.9135,
+        77.7406
       ],
       "size": [
-        0.2019,
-        0.2221,
-        0.0808
+        0.4628,
+        0.5656,
+        0.3856
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Paw_toe",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion amber mane"
     },
     {
       "id": "L001-P-248326dc11e5",
@@ -630605,31 +632230,68 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_toe#6",
       "bounds": {
         "min": [
-          0.8883,
-          0.7446,
-          77.0095
+          1.0412,
+          0.6307,
+          77.5478
         ],
         "max": [
-          1.0902,
-          0.9667,
-          77.0902
+          1.5039,
+          1.1963,
+          77.9334
         ]
       },
       "center": [
-        0.9893,
-        0.8557,
-        77.0498
+        1.2726,
+        0.9135,
+        77.7406
       ],
       "size": [
-        0.2019,
-        0.2221,
-        0.0808
+        0.4628,
+        0.5656,
+        0.3856
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Paw_toe",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-25dd692e3575",
+      "name": "Mane_rear_layer",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_rear_layer#9",
+      "bounds": {
+        "min": [
+          0.1954,
+          3.942,
+          74.2079
+        ],
+        "max": [
+          1.4296,
+          5.4947,
+          75.4325
+        ]
+      },
+      "center": [
+        0.8125,
+        4.7184,
+        74.8202
+      ],
+      "size": [
+        1.2342,
+        1.5527,
+        1.2246
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_rear_layer",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion amber mane"
     },
     {
       "id": "L001-P-26832a021dbc",
@@ -630640,31 +632302,68 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_toe#4",
       "bounds": {
         "min": [
-          0.4845,
-          0.7446,
-          77.0095
+          0.4499,
+          0.6307,
+          77.5478
         ],
         "max": [
-          0.6864,
-          0.9667,
-          77.0902
+          0.9126,
+          1.1963,
+          77.9334
         ]
       },
       "center": [
-        0.5855,
-        0.8557,
-        77.0498
+        0.6813,
+        0.9135,
+        77.7406
       ],
       "size": [
-        0.2019,
-        0.2221,
-        0.0808
+        0.4628,
+        0.5656,
+        0.3856
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Paw_toe",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-26dd6ac1bb60",
+      "name": "Mane_rear_layer",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_rear_layer#8",
+      "bounds": {
+        "min": [
+          -0.3695,
+          3.9987,
+          74.0132
+        ],
+        "max": [
+          0.7661,
+          5.438,
+          75.3305
+        ]
+      },
+      "center": [
+        0.1983,
+        4.7184,
+        74.6718
+      ],
+      "size": [
+        1.1356,
+        1.4393,
+        1.3173
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_rear_layer",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion orange mane"
     },
     {
       "id": "L001-P-27832b95a3a8",
@@ -630675,31 +632374,140 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_toe#5",
       "bounds": {
         "min": [
-          0.6864,
-          0.7446,
-          77.0095
+          0.7455,
+          0.6307,
+          77.6453
         ],
         "max": [
-          0.8883,
-          0.9667,
-          77.0902
+          1.2083,
+          1.1963,
+          78.031
         ]
       },
       "center": [
-        0.7874,
-        0.8557,
-        77.0498
+        0.9769,
+        0.9135,
+        77.8381
       ],
       "size": [
-        0.2019,
-        0.2221,
-        0.0808
+        0.4628,
+        0.5656,
+        0.3856
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Paw_toe",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-34492dc8b282",
+      "name": "Tail",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Tail#1",
+      "bounds": {
+        "min": [
+          0.1297,
+          0.2572,
+          74.0065
+        ],
+        "max": [
+          1.4324,
+          0.7069,
+          75.0716
+        ]
+      },
+      "center": [
+        0.7811,
+        0.482,
+        74.5391
+      ],
+      "size": [
+        1.3027,
+        0.4497,
+        1.0651
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Tail",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion golden fabric"
+    },
+    {
+      "id": "L001-P-3ffd29dbd63d",
+      "name": "Gown_cuff",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Gown_cuff#2",
+      "bounds": {
+        "min": [
+          0.9898,
+          1.3683,
+          76.1357
+        ],
+        "max": [
+          1.8639,
+          2.5154,
+          77.3811
+        ]
+      },
+      "center": [
+        1.4268,
+        1.9419,
+        76.7584
+      ],
+      "size": [
+        0.8741,
+        1.1471,
+        1.2455
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Gown_cuff",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion pale shirt and cuffs"
+    },
+    {
+      "id": "L001-P-40fd2b6e5c28",
+      "name": "Gown_cuff",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Gown_cuff#1",
+      "bounds": {
+        "min": [
+          -1.8639,
+          1.3683,
+          76.1357
+        ],
+        "max": [
+          -0.9898,
+          2.5154,
+          77.3811
+        ]
+      },
+      "center": [
+        -1.4268,
+        1.9419,
+        76.7584
+      ],
+      "size": [
+        0.8741,
+        1.1471,
+        1.2455
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Gown_cuff",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion pale shirt and cuffs"
     },
     {
       "id": "L001-P-419794e3a126",
@@ -630710,31 +632518,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Shirt_vertical_stripe#1",
       "bounds": {
         "min": [
-          -0.5552,
-          1.0172,
-          76.6829
+          -0.397,
+          1.2729,
+          76.4355
         ],
         "max": [
-          -0.4543,
-          2.6323,
-          76.698
+          -0.1907,
+          3.3846,
+          76.9624
         ]
       },
       "center": [
-        -0.5047,
-        1.8248,
-        76.6905
+        -0.2939,
+        2.3288,
+        76.699
       ],
       "size": [
-        0.1009,
-        1.6151,
-        0.0151
+        0.2063,
+        2.1116,
+        0.5269
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Shirt_vertical_stripe",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion cream muzzle"
     },
     {
       "id": "L001-P-429796762712",
@@ -630745,31 +632554,68 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Shirt_vertical_stripe#2",
       "bounds": {
         "min": [
-          -0.3028,
-          1.0172,
-          76.6829
+          -0.2032,
+          1.273,
+          76.4526
         ],
         "max": [
-          -0.2019,
-          2.6323,
-          76.698
+          -0.0932,
+          3.3847,
+          76.9963
         ]
       },
       "center": [
-        -0.2524,
-        1.8248,
-        76.6905
+        -0.1482,
+        2.3288,
+        76.7244
       ],
       "size": [
-        0.1009,
-        1.6151,
-        0.0151
+        0.11,
+        2.1117,
+        0.5437
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Shirt_vertical_stripe",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion cream muzzle"
+    },
+    {
+      "id": "L001-P-432bceafe697",
+      "name": "Gown_sleeve",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Gown_sleeve#2",
+      "bounds": {
+        "min": [
+          0.4798,
+          1.2157,
+          75.3649
+        ],
+        "max": [
+          1.9625,
+          3.5679,
+          77.3549
+        ]
+      },
+      "center": [
+        1.2211,
+        2.3918,
+        76.3599
+      ],
+      "size": [
+        1.4827,
+        2.3522,
+        1.99
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Gown_sleeve",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion teal gown"
     },
     {
       "id": "L001-P-43979809acfe",
@@ -630780,31 +632626,68 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Shirt_vertical_stripe#3",
       "bounds": {
         "min": [
-          -0.0505,
-          1.0172,
-          76.6829
+          -0.0052,
+          1.273,
+          76.4582
         ],
         "max": [
-          0.0505,
-          2.6323,
-          76.698
+          0.0064,
+          3.3849,
+          77.0076
         ]
       },
       "center": [
-        0,
-        1.8248,
-        76.6905
+        0.0006,
+        2.329,
+        76.7329
       ],
       "size": [
-        0.1009,
-        1.6151,
-        0.0151
+        0.0116,
+        2.112,
+        0.5494
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Shirt_vertical_stripe",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion teal gown"
+    },
+    {
+      "id": "L001-P-442bd0426c83",
+      "name": "Gown_sleeve",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Gown_sleeve#1",
+      "bounds": {
+        "min": [
+          -1.9625,
+          1.2157,
+          75.3649
+        ],
+        "max": [
+          -0.4798,
+          3.5679,
+          77.3549
+        ]
+      },
+      "center": [
+        -1.2211,
+        2.3918,
+        76.3599
+      ],
+      "size": [
+        1.4827,
+        2.3522,
+        1.99
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Gown_sleeve",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion teal gown"
     },
     {
       "id": "L001-P-4497999c32ea",
@@ -630815,31 +632698,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Shirt_vertical_stripe#4",
       "bounds": {
         "min": [
-          0.2019,
-          1.0172,
-          76.6829
+          0.0943,
+          1.273,
+          76.4524
         ],
         "max": [
-          0.3028,
-          2.6323,
-          76.698
+          0.2044,
+          3.3851,
+          76.9963
         ]
       },
       "center": [
-        0.2524,
-        1.8248,
-        76.6905
+        0.1493,
+        2.3291,
+        76.7243
       ],
       "size": [
-        0.1009,
-        1.6151,
-        0.0151
+        0.1101,
+        2.1121,
+        0.5438
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Shirt_vertical_stripe",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion cream muzzle"
     },
     {
       "id": "L001-P-45979b2fb8d6",
@@ -630850,31 +632734,716 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Shirt_vertical_stripe#5",
       "bounds": {
         "min": [
-          0.4543,
-          1.0172,
-          76.6829
+          0.1917,
+          1.273,
+          76.4353
         ],
         "max": [
-          0.5552,
-          2.6323,
-          76.698
+          0.3983,
+          3.3852,
+          76.9624
         ]
       },
       "center": [
-        0.5047,
-        1.8248,
-        76.6905
+        0.295,
+        2.3291,
+        76.6989
       ],
       "size": [
-        0.1009,
-        1.6151,
-        0.0151
+        0.2065,
+        2.1121,
+        0.5271
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Shirt_vertical_stripe",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion cream muzzle"
+    },
+    {
+      "id": "L001-P-515181d0f7e5",
+      "name": "Paw_HKU_lettering",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_HKU_lettering#7",
+      "bounds": {
+        "min": [
+          1.0988,
+          0.8744,
+          78.0156
+        ],
+        "max": [
+          1.1121,
+          1.0041,
+          78.0399
+        ]
+      },
+      "center": [
+        1.1055,
+        0.9392,
+        78.0277
+      ],
+      "size": [
+        0.0134,
+        0.1296,
+        0.0244
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Paw_HKU_lettering",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion pale shirt and cuffs"
+    },
+    {
+      "id": "L001-P-525183637dd1",
+      "name": "Paw_HKU_lettering",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_HKU_lettering#6",
+      "bounds": {
+        "min": [
+          0.9589,
+          0.8438,
+          78.0315
+        ],
+        "max": [
+          1.0592,
+          0.9319,
+          78.0548
+        ]
+      },
+      "center": [
+        1.0091,
+        0.8878,
+        78.0432
+      ],
+      "size": [
+        0.1004,
+        0.0881,
+        0.0233
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Paw_HKU_lettering",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion pale shirt and cuffs"
+    },
+    {
+      "id": "L001-P-535184f603bc",
+      "name": "Paw_HKU_lettering",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_HKU_lettering#5",
+      "bounds": {
+        "min": [
+          0.9583,
+          0.9206,
+          78.0259
+        ],
+        "max": [
+          1.0598,
+          1.0093,
+          78.0553
+        ]
+      },
+      "center": [
+        1.0091,
+        0.965,
+        78.0406
+      ],
+      "size": [
+        0.1015,
+        0.0887,
+        0.0294
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Paw_HKU_lettering",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion pale shirt and cuffs"
+    },
+    {
+      "id": "L001-P-5451868989a8",
+      "name": "Paw_HKU_lettering",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_HKU_lettering#4",
+      "bounds": {
+        "min": [
+          0.9574,
+          0.8493,
+          78.0348
+        ],
+        "max": [
+          0.9707,
+          1.0035,
+          78.0502
+        ]
+      },
+      "center": [
+        0.9641,
+        0.9264,
+        78.0425
+      ],
+      "size": [
+        0.0134,
+        0.1543,
+        0.0154
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Paw_HKU_lettering",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion pale shirt and cuffs"
+    },
+    {
+      "id": "L001-P-5551881ce036",
+      "name": "Paw_HKU_lettering",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_HKU_lettering#3",
+      "bounds": {
+        "min": [
+          0.8211,
+          0.9184,
+          78.0146
+        ],
+        "max": [
+          0.9143,
+          0.9344,
+          78.0486
+        ]
+      },
+      "center": [
+        0.8677,
+        0.9264,
+        78.0316
+      ],
+      "size": [
+        0.0932,
+        0.016,
+        0.034
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Paw_HKU_lettering",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion pale shirt and cuffs"
+    },
+    {
+      "id": "L001-P-564b6dd80e16",
+      "name": "Trouser_leg",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Trouser_leg#2",
+      "bounds": {
+        "min": [
+          0.1671,
+          0.168,
+          76.09
+        ],
+        "max": [
+          1.6325,
+          1.4277,
+          77.6839
+        ]
+      },
+      "center": [
+        0.8998,
+        0.7979,
+        76.8869
+      ],
+      "size": [
+        1.4654,
+        1.2597,
+        1.5939
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Trouser_leg",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion dark trousers"
+    },
+    {
+      "id": "L001-P-565189af6621",
+      "name": "Paw_HKU_lettering",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_HKU_lettering#2",
+      "bounds": {
+        "min": [
+          0.906,
+          0.8493,
+          78.0284
+        ],
+        "max": [
+          0.9193,
+          1.0035,
+          78.0438
+        ]
+      },
+      "center": [
+        0.9126,
+        0.9264,
+        78.0361
+      ],
+      "size": [
+        0.0134,
+        0.1543,
+        0.0154
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Paw_HKU_lettering",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion pale shirt and cuffs"
+    },
+    {
+      "id": "L001-P-57518b42ec0d",
+      "name": "Paw_HKU_lettering",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_HKU_lettering#1",
+      "bounds": {
+        "min": [
+          0.816,
+          0.8493,
+          78.0117
+        ],
+        "max": [
+          0.8293,
+          1.0035,
+          78.0271
+        ]
+      },
+      "center": [
+        0.8227,
+        0.9264,
+        78.0194
+      ],
+      "size": [
+        0.0134,
+        0.1543,
+        0.0154
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Paw_HKU_lettering",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion pale shirt and cuffs"
+    },
+    {
+      "id": "L001-P-594b72919fd9",
+      "name": "Trouser_leg",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Trouser_leg#1",
+      "bounds": {
+        "min": [
+          -1.6325,
+          0.168,
+          76.09
+        ],
+        "max": [
+          -0.1671,
+          1.4277,
+          77.6839
+        ]
+      },
+      "center": [
+        -0.8998,
+        0.7979,
+        76.8869
+      ],
+      "size": [
+        1.4654,
+        1.2597,
+        1.5939
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Trouser_leg",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion dark trousers"
+    },
+    {
+      "id": "L001-P-5f5197da1b6b",
+      "name": "Paw_HKU_lettering",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_HKU_lettering#9",
+      "bounds": {
+        "min": [
+          1.1397,
+          0.8416,
+          77.9994
+        ],
+        "max": [
+          1.1997,
+          0.8826,
+          78.0303
+        ]
+      },
+      "center": [
+        1.1697,
+        0.8621,
+        78.0149
+      ],
+      "size": [
+        0.06,
+        0.041,
+        0.0309
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Paw_HKU_lettering",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion pale shirt and cuffs"
+    },
+    {
+      "id": "L001-P-5fcb6f0e50b4",
+      "name": "Paw_crest_book",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_crest_book#1",
+      "bounds": {
+        "min": [
+          -1.0058,
+          0.8988,
+          78.0502
+        ],
+        "max": [
+          -0.948,
+          0.9592,
+          78.0502
+        ]
+      },
+      "center": [
+        -0.9769,
+        0.929,
+        78.0502
+      ],
+      "size": [
+        0.0578,
+        0.0604,
+        0
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Paw_crest_book",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion pale shirt and cuffs"
+    },
+    {
+      "id": "L001-P-6016e640d1ef",
+      "name": "Whisker_dot",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Whisker_dot#6",
+      "bounds": {
+        "min": [
+          0.6183,
+          4.077,
+          77.5361
+        ],
+        "max": [
+          0.6671,
+          4.1258,
+          77.5695
+        ]
+      },
+      "center": [
+        0.6427,
+        4.1014,
+        77.5528
+      ],
+      "size": [
+        0.0488,
+        0.0488,
+        0.0334
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Whisker_dot",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion eyes and whiskers"
+    },
+    {
+      "id": "L001-P-6051996da157",
+      "name": "Paw_HKU_lettering",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_HKU_lettering#8",
+      "bounds": {
+        "min": [
+          1.0996,
+          0.8422,
+          78.0125
+        ],
+        "max": [
+          1.1499,
+          0.8821,
+          78.0417
+        ]
+      },
+      "center": [
+        1.1247,
+        0.8621,
+        78.0271
+      ],
+      "size": [
+        0.0503,
+        0.0399,
+        0.0293
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Paw_HKU_lettering",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion pale shirt and cuffs"
+    },
+    {
+      "id": "L001-P-6216e966ddc7",
+      "name": "Whisker_dot",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Whisker_dot#4",
+      "bounds": {
+        "min": [
+          0.2584,
+          4.077,
+          77.5721
+        ],
+        "max": [
+          0.3072,
+          4.1258,
+          77.6055
+        ]
+      },
+      "center": [
+        0.2828,
+        4.1014,
+        77.5888
+      ],
+      "size": [
+        0.0488,
+        0.0488,
+        0.0334
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Whisker_dot",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion eyes and whiskers"
+    },
+    {
+      "id": "L001-P-6316eaf963b3",
+      "name": "Whisker_dot",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Whisker_dot#5",
+      "bounds": {
+        "min": [
+          0.4383,
+          4.1348,
+          77.5541
+        ],
+        "max": [
+          0.4872,
+          4.1836,
+          77.5875
+        ]
+      },
+      "center": [
+        0.4628,
+        4.1592,
+        77.5708
+      ],
+      "size": [
+        0.0488,
+        0.0488,
+        0.0334
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Whisker_dot",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion eyes and whiskers"
+    },
+    {
+      "id": "L001-P-6416ec8ce99f",
+      "name": "Whisker_dot",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Whisker_dot#2",
+      "bounds": {
+        "min": [
+          -0.4872,
+          4.1348,
+          77.5541
+        ],
+        "max": [
+          -0.4383,
+          4.1836,
+          77.5875
+        ]
+      },
+      "center": [
+        -0.4628,
+        4.1592,
+        77.5708
+      ],
+      "size": [
+        0.0488,
+        0.0488,
+        0.0334
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Whisker_dot",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion eyes and whiskers"
+    },
+    {
+      "id": "L001-P-6516ee1f6f8a",
+      "name": "Whisker_dot",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Whisker_dot#3",
+      "bounds": {
+        "min": [
+          -0.6671,
+          4.077,
+          77.5361
+        ],
+        "max": [
+          -0.6183,
+          4.1258,
+          77.5695
+        ]
+      },
+      "center": [
+        -0.6427,
+        4.1014,
+        77.5528
+      ],
+      "size": [
+        0.0488,
+        0.0488,
+        0.0334
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Whisker_dot",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion eyes and whiskers"
+    },
+    {
+      "id": "L001-P-6716f1457b62",
+      "name": "Whisker_dot",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Whisker_dot#1",
+      "bounds": {
+        "min": [
+          -0.3072,
+          4.077,
+          77.5721
+        ],
+        "max": [
+          -0.2584,
+          4.1258,
+          77.6055
+        ]
+      },
+      "center": [
+        -0.2828,
+        4.1014,
+        77.5888
+      ],
+      "size": [
+        0.0488,
+        0.0488,
+        0.0334
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Whisker_dot",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion eyes and whiskers"
+    },
+    {
+      "id": "L001-P-6761818da827",
+      "name": "Lower_lip",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Lower_lip#1",
+      "bounds": {
+        "min": [
+          -0.2956,
+          3.6129,
+          77.2957
+        ],
+        "max": [
+          0.2956,
+          3.7929,
+          77.5322
+        ]
+      },
+      "center": [
+        0,
+        3.7029,
+        77.414
+      ],
+      "size": [
+        0.5913,
+        0.18,
+        0.2365
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Lower_lip",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion cream muzzle"
     },
     {
       "id": "L001-P-705e50687118",
@@ -630885,31 +633454,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Arm#1",
       "bounds": {
         "min": [
-          -1.3426,
-          1.2645,
-          75.9192
+          -1.8639,
+          1.2992,
+          76.6684
         ],
         "max": [
-          -0.6763,
-          2.1226,
-          76.6461
+          -1.0669,
+          2.0704,
+          77.414
         ]
       },
       "center": [
-        -1.0095,
-        1.6935,
-        76.2826
+        -1.4654,
+        1.6848,
+        77.0412
       ],
       "size": [
-        0.6662,
-        0.858,
-        0.7268
+        0.797,
+        0.7713,
+        0.7455
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Arm",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion golden fabric"
     },
     {
       "id": "L001-P-706e40f71e9e",
@@ -630920,31 +633490,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Face#1",
       "bounds": {
         "min": [
-          -1.0095,
-          2.4557,
-          75.8284
+          -1.3754,
+          3.2659,
+          75.3959
         ],
         "max": [
-          1.0095,
-          4.4241,
-          76.7369
+          1.3754,
+          5.7853,
+          77.3754
         ]
       },
       "center": [
         0,
-        3.4399,
-        76.2826
+        4.5256,
+        76.3856
       ],
       "size": [
-        2.0189,
-        1.9685,
-        0.9085
+        2.7508,
+        2.5194,
+        1.9795
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Face",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion golden fabric"
     },
     {
       "id": "L001-P-735e552102dc",
@@ -630955,31 +633526,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Arm#2",
       "bounds": {
         "min": [
-          0.6763,
-          1.2645,
-          75.9192
+          1.0669,
+          1.2992,
+          76.6684
         ],
         "max": [
-          1.3426,
-          2.1226,
-          76.6461
+          1.8639,
+          2.0704,
+          77.414
         ]
       },
       "center": [
-        1.0095,
-        1.6935,
-        76.2826
+        1.4654,
+        1.6848,
+        77.0412
       ],
       "size": [
-        0.6662,
-        0.858,
-        0.7268
+        0.797,
+        0.7713,
+        0.7455
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Arm",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion golden fabric"
     },
     {
       "id": "L001-P-8642bb603592",
@@ -630990,31 +633562,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Ear_inner#2",
       "bounds": {
         "min": [
-          0.7874,
-          4.091,
-          75.9697
+          0.7648,
+          5.0911,
+          76.4242
         ],
         "max": [
-          1.1306,
-          4.4443,
-          76.3937
+          1.3947,
+          5.7596,
+          76.6813
         ]
       },
       "center": [
-        0.959,
-        4.2677,
-        76.1817
+        1.0798,
+        5.4254,
+        76.5527
       ],
       "size": [
-        0.3432,
-        0.3533,
-        0.424
+        0.6299,
+        0.6684,
+        0.2571
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Ear_inner",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion plum nose and ears"
     },
     {
       "id": "L001-P-8942c019c756",
@@ -631025,31 +633598,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Ear_inner#1",
       "bounds": {
         "min": [
-          -1.1306,
-          4.091,
-          75.9697
+          -1.3947,
+          5.0911,
+          76.4242
         ],
         "max": [
-          -0.7874,
-          4.4443,
-          76.3937
+          -0.7648,
+          5.7596,
+          76.6813
         ]
       },
       "center": [
-        -0.959,
-        4.2677,
-        76.1817
+        -1.0798,
+        5.4254,
+        76.5527
       ],
       "size": [
-        0.3432,
-        0.3533,
-        0.424
+        0.6299,
+        0.6684,
+        0.2571
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Ear_inner",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion plum nose and ears"
     },
     {
       "id": "L001-P-8e01e4e7a567",
@@ -631060,31 +633634,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Eye#1",
       "bounds": {
         "min": [
-          -0.4845,
-          3.6115,
-          76.747
+          -0.626,
+          4.6181,
+          77.2276
         ],
         "max": [
-          -0.3634,
-          3.7932,
-          76.7874
+          -0.3509,
+          4.9986,
+          77.3433
         ]
       },
       "center": [
-        -0.424,
-        3.7024,
-        76.7672
+        -0.4885,
+        4.8084,
+        77.2854
       ],
       "size": [
-        0.1211,
-        0.1817,
-        0.0404
+        0.2751,
+        0.3805,
+        0.1157
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Eye",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion eyes and whiskers"
     },
     {
       "id": "L001-P-8e03d3bfbd81",
@@ -631095,31 +633670,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Seated_body#1",
       "bounds": {
         "min": [
-          -0.858,
-          0.8405,
-          75.3186
+          -1.4254,
+          0.2837,
+          74.7518
         ],
         "max": [
-          0.858,
-          2.708,
-          76.6814
+          1.4254,
+          1.2606,
+          76.6384
         ]
       },
       "center": [
         0,
-        1.7743,
-        76
+        0.7721,
+        75.6951
       ],
       "size": [
-        1.7161,
-        1.8675,
-        1.3628
+        2.8508,
+        0.9769,
+        1.8866
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Seated_body",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion teal gown"
     },
     {
       "id": "L001-P-8f01e67a2b53",
@@ -631130,31 +633706,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Eye#2",
       "bounds": {
         "min": [
-          0.3634,
-          3.6115,
-          76.747
+          0.3509,
+          4.6181,
+          77.2276
         ],
         "max": [
-          0.4845,
-          3.7932,
-          76.7874
+          0.626,
+          4.9986,
+          77.3433
         ]
       },
       "center": [
-        0.424,
-        3.7024,
-        76.7672
+        0.4885,
+        4.8084,
+        77.2854
       ],
       "size": [
-        0.1211,
-        0.1817,
-        0.0404
+        0.2751,
+        0.3805,
+        0.1157
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Eye",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion eyes and whiskers"
     },
     {
       "id": "L001-P-92fe445741f3",
@@ -631165,31 +633742,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Ear#2",
       "bounds": {
         "min": [
-          0.636,
-          3.9396,
-          75.9394
+          0.5399,
+          4.9112,
+          76.0386
         ],
         "max": [
-          1.282,
-          4.5957,
-          76.3432
+          1.5425,
+          5.9395,
+          76.6299
         ]
       },
       "center": [
-        0.959,
-        4.2677,
-        76.1413
+        1.0412,
+        5.4254,
+        76.3342
       ],
       "size": [
-        0.6461,
-        0.6562,
-        0.4038
+        1.0026,
+        1.0283,
+        0.5913
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Ear",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion golden fabric"
     },
     {
       "id": "L001-P-93fe45eac7df",
@@ -631200,31 +633778,284 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Ear#1",
       "bounds": {
         "min": [
-          -1.282,
-          3.9396,
-          75.9394
+          -1.5425,
+          4.9112,
+          76.0386
         ],
         "max": [
-          -0.636,
-          4.5957,
-          76.3432
+          -0.5399,
+          5.9395,
+          76.6299
         ]
       },
       "center": [
-        -0.959,
-        4.2677,
-        76.1413
+        -1.0412,
+        5.4254,
+        76.3342
       ],
       "size": [
-        0.6461,
-        0.6562,
-        0.4038
+        1.0026,
+        1.0283,
+        0.5913
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Ear",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion golden fabric"
+    },
+    {
+      "id": "L001-P-9836a7609910",
+      "name": "Whisker",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Whisker#6",
+      "bounds": {
+        "min": [
+          0.5726,
+          4.1515,
+          77.4684
+        ],
+        "max": [
+          1.1215,
+          4.3006,
+          77.587
+        ]
+      },
+      "center": [
+        0.8471,
+        4.2261,
+        77.5277
+      ],
+      "size": [
+        0.5489,
+        0.1492,
+        0.1186
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Whisker",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion plum nose and ears"
+    },
+    {
+      "id": "L001-P-9a36aa86a4e8",
+      "name": "Whisker",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Whisker#4",
+      "bounds": {
+        "min": [
+          0.3964,
+          4.0151,
+          77.4681
+        ],
+        "max": [
+          0.9662,
+          4.0849,
+          77.5874
+        ]
+      },
+      "center": [
+        0.6813,
+        4.05,
+        77.5277
+      ],
+      "size": [
+        0.5698,
+        0.0698,
+        0.1193
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Whisker",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion plum nose and ears"
+    },
+    {
+      "id": "L001-P-9b36ac192ad3",
+      "name": "Whisker",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Whisker#5",
+      "bounds": {
+        "min": [
+          0.485,
+          4.1089,
+          77.4682
+        ],
+        "max": [
+          1.0434,
+          4.1672,
+          77.5872
+        ]
+      },
+      "center": [
+        0.7642,
+        4.138,
+        77.5277
+      ],
+      "size": [
+        0.5585,
+        0.0583,
+        0.119
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Whisker",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion plum nose and ears"
+    },
+    {
+      "id": "L001-P-9c36adacb0bf",
+      "name": "Whisker",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Whisker#2",
+      "bounds": {
+        "min": [
+          -1.0434,
+          4.1089,
+          77.4682
+        ],
+        "max": [
+          -0.485,
+          4.1672,
+          77.5872
+        ]
+      },
+      "center": [
+        -0.7642,
+        4.138,
+        77.5277
+      ],
+      "size": [
+        0.5585,
+        0.0583,
+        0.119
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Whisker",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion plum nose and ears"
+    },
+    {
+      "id": "L001-P-9d36af3f36ab",
+      "name": "Whisker",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Whisker#3",
+      "bounds": {
+        "min": [
+          -1.1215,
+          4.1515,
+          77.4684
+        ],
+        "max": [
+          -0.5726,
+          4.3006,
+          77.587
+        ]
+      },
+      "center": [
+        -0.8471,
+        4.2261,
+        77.5277
+      ],
+      "size": [
+        0.5489,
+        0.1492,
+        0.1186
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Whisker",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion plum nose and ears"
+    },
+    {
+      "id": "L001-P-9db68e635a76",
+      "name": "Shirt_front_panel",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Shirt_front_panel#1",
+      "bounds": {
+        "min": [
+          -0.48,
+          1.2735,
+          76.4227
+        ],
+        "max": [
+          0.48,
+          3.3815,
+          76.9954
+        ]
+      },
+      "center": [
+        0,
+        2.3275,
+        76.7091
+      ],
+      "size": [
+        0.96,
+        2.1081,
+        0.5727
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Shirt_front_panel",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion pale shirt and cuffs"
+    },
+    {
+      "id": "L001-P-9f36b2654283",
+      "name": "Whisker",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Whisker#1",
+      "bounds": {
+        "min": [
+          -0.9662,
+          4.0151,
+          77.4681
+        ],
+        "max": [
+          -0.3964,
+          4.0849,
+          77.5874
+        ]
+      },
+      "center": [
+        -0.6813,
+        4.05,
+        77.5277
+      ],
+      "size": [
+        0.5698,
+        0.0698,
+        0.1193
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Whisker",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion plum nose and ears"
     },
     {
       "id": "L001-P-a301b7f3d817",
@@ -631235,31 +634066,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw#2",
       "bounds": {
         "min": [
-          0.2574,
-          0.25,
-          76.1514
+          0.2571,
+          0.1809,
+          76.617
         ],
         "max": [
-          1.3174,
-          1.1585,
-          77.0599
+          1.6968,
+          1.492,
+          78.0567
         ]
       },
       "center": [
-        0.7874,
-        0.7043,
-        76.6057
+        0.9769,
+        0.8364,
+        77.3368
       ],
       "size": [
-        1.0599,
-        0.9085,
-        0.9085
+        1.4397,
+        1.3111,
+        1.4397
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Paw",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion golden fabric"
     },
     {
       "id": "L001-P-a401b9865e03",
@@ -631270,31 +634102,284 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw#1",
       "bounds": {
         "min": [
-          -1.3174,
-          0.25,
-          76.1514
+          -1.6968,
+          0.1809,
+          76.617
         ],
         "max": [
-          -0.2574,
-          1.1585,
-          77.0599
+          -0.2571,
+          1.492,
+          78.0567
         ]
       },
       "center": [
-        -0.7874,
-        0.7043,
-        76.6057
+        -0.9769,
+        0.8364,
+        77.3368
       ],
       "size": [
-        1.0599,
-        0.9085,
-        0.9085
+        1.4397,
+        1.3111,
+        1.4397
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Paw",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion golden fabric"
+    },
+    {
+      "id": "L001-P-a578d3066c4a",
+      "name": "Mane_rear_layer",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_rear_layer#14",
+      "bounds": {
+        "min": [
+          0.163,
+          3.2972,
+          74.2079
+        ],
+        "max": [
+          1.1874,
+          4.8284,
+          75.3057
+        ]
+      },
+      "center": [
+        0.6752,
+        4.0628,
+        74.7568
+      ],
+      "size": [
+        1.0244,
+        1.5312,
+        1.0978
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_rear_layer",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion orange mane"
+    },
+    {
+      "id": "L001-P-a678d499f236",
+      "name": "Mane_rear_layer",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_rear_layer#15",
+      "bounds": {
+        "min": [
+          0.5019,
+          3.2762,
+          74.37
+        ],
+        "max": [
+          1.9529,
+          4.8494,
+          75.6712
+        ]
+      },
+      "center": [
+        1.2274,
+        4.0628,
+        75.0206
+      ],
+      "size": [
+        1.451,
+        1.5731,
+        1.3012
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_rear_layer",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-a776ebbe67b4",
+      "name": "Seated_trousers",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Seated_trousers#1",
+      "bounds": {
+        "min": [
+          -1.3368,
+          0.1809,
+          75.3316
+        ],
+        "max": [
+          1.3368,
+          1.4406,
+          77.4654
+        ]
+      },
+      "center": [
+        0,
+        0.8107,
+        76.3985
+      ],
+      "size": [
+        2.6737,
+        1.2597,
+        2.1338
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Seated_trousers",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion dark trousers"
+    },
+    {
+      "id": "L001-P-a778d62c7821",
+      "name": "Mane_rear_layer",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_rear_layer#12",
+      "bounds": {
+        "min": [
+          -1.1874,
+          3.2972,
+          74.2079
+        ],
+        "max": [
+          -0.163,
+          4.8284,
+          75.3057
+        ]
+      },
+      "center": [
+        -0.6752,
+        4.0628,
+        74.7568
+      ],
+      "size": [
+        1.0244,
+        1.5312,
+        1.0978
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_rear_layer",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion orange mane"
+    },
+    {
+      "id": "L001-P-a85d6466e7c2",
+      "name": "Gown_badge_field",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Gown_badge_field#1",
+      "bounds": {
+        "min": [
+          0.5031,
+          2.4504,
+          76.6653
+        ],
+        "max": [
+          0.7746,
+          2.8025,
+          76.7898
+        ]
+      },
+      "center": [
+        0.6389,
+        2.6264,
+        76.7275
+      ],
+      "size": [
+        0.2715,
+        0.3521,
+        0.1245
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Gown_badge_field",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion burgundy accent"
+    },
+    {
+      "id": "L001-P-a878d7bffe0d",
+      "name": "Mane_rear_layer",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_rear_layer#13",
+      "bounds": {
+        "min": [
+          -0.379,
+          3.3729,
+          74.1536
+        ],
+        "max": [
+          0.379,
+          4.7528,
+          75.1727
+        ]
+      },
+      "center": [
+        0,
+        4.0628,
+        74.6632
+      ],
+      "size": [
+        0.758,
+        1.3799,
+        1.0192
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_rear_layer",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-a978d95283f9",
+      "name": "Mane_rear_layer",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_rear_layer#10",
+      "bounds": {
+        "min": [
+          0.5328,
+          3.9312,
+          74.4765
+        ],
+        "max": [
+          2.0248,
+          5.5056,
+          75.778
+        ]
+      },
+      "center": [
+        1.2788,
+        4.7184,
+        75.1273
+      ],
+      "size": [
+        1.492,
+        1.5744,
+        1.3015
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_rear_layer",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion orange mane"
     },
     {
       "id": "L001-P-a987505171cb",
@@ -631305,31 +634390,68 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Gown_badge#1",
       "bounds": {
         "min": [
-          0.4442,
-          1.9913,
-          76.694
+          0.4663,
+          2.4046,
+          76.632
         ],
         "max": [
-          0.6662,
-          2.2437,
-          76.7192
+          0.7934,
+          2.8288,
+          76.782
         ]
       },
       "center": [
-        0.5552,
-        2.1175,
-        76.7066
+        0.6299,
+        2.6167,
+        76.707
       ],
       "size": [
-        0.2221,
-        0.2524,
-        0.0252
+        0.3272,
+        0.4242,
+        0.15
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Gown_badge",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-aa78dae509e5",
+      "name": "Mane_rear_layer",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_rear_layer#11",
+      "bounds": {
+        "min": [
+          -1.9529,
+          3.2762,
+          74.37
+        ],
+        "max": [
+          -0.5019,
+          4.8494,
+          75.6712
+        ]
+      },
+      "center": [
+        -1.2274,
+        4.0628,
+        75.0206
+      ],
+      "size": [
+        1.451,
+        1.5731,
+        1.3012
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_rear_layer",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion amber mane"
     },
     {
       "id": "L001-P-ab87d0200ee5",
@@ -631340,31 +634462,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_pixel_tuft#7",
       "bounds": {
         "min": [
-          0.2317,
-          1.8973,
-          75.682
+          -0.1142,
+          2.6473,
+          75.2694
         ],
         "max": [
-          0.8896,
-          2.6542,
-          76.318
+          1.2519,
+          3.9512,
+          76.4992
         ]
       },
       "center": [
-        0.5606,
-        2.2758,
-        76
+        0.5689,
+        3.2992,
+        75.8843
       ],
       "size": [
-        0.6579,
-        0.7569,
-        0.636
+        1.3661,
+        1.3039,
+        1.2299
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Mane_pixel_tuft",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion amber mane"
     },
     {
       "id": "L001-P-ac87d1b394d0",
@@ -631375,31 +634498,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_pixel_tuft#6",
       "bounds": {
         "min": [
-          0.6294,
-          2.2703,
-          75.682
+          0.3213,
+          3.0415,
+          75.2757
         ],
         "max": [
-          1.391,
-          2.9983,
-          76.318
+          1.7288,
+          4.3202,
+          76.4929
         ]
       },
       "center": [
-        1.0102,
-        2.6343,
-        76
+        1.0251,
+        3.6809,
+        75.8843
       ],
       "size": [
-        0.7616,
-        0.728,
-        0.636
+        1.4075,
+        1.2787,
+        1.2171
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Mane_pixel_tuft",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion orange mane"
     },
     {
       "id": "L001-P-ad87d3461abc",
@@ -631410,31 +634534,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_pixel_tuft#5",
       "bounds": {
         "min": [
-          0.9025,
-          2.875,
-          75.682
+          0.6637,
+          3.7147,
+          75.3056
         ],
         "max": [
-          1.6169,
-          3.4298,
-          76.318
+          1.8928,
+          4.75,
+          76.463
         ]
       },
       "center": [
-        1.2597,
-        3.1524,
-        76
+        1.2783,
+        4.2324,
+        75.8843
       ],
       "size": [
-        0.7144,
-        0.5549,
-        0.636
+        1.2291,
+        1.0353,
+        1.1575
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Mane_pixel_tuft",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion amber mane"
     },
     {
       "id": "L001-P-ae87d4d9a0a8",
@@ -631445,31 +634570,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_pixel_tuft#4",
       "bounds": {
         "min": [
-          0.9025,
-          3.45,
-          75.682
+          0.6689,
+          4.3268,
+          75.3289
         ],
         "max": [
-          1.6169,
-          4.0049,
-          76.318
+          1.8876,
+          5.3621,
+          76.4398
         ]
       },
       "center": [
-        1.2597,
-        3.7274,
-        76
+        1.2783,
+        4.8445,
+        75.8843
       ],
       "size": [
-        0.7144,
-        0.5549,
-        0.636
+        1.2187,
+        1.0353,
+        1.1109
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Mane_pixel_tuft",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion orange mane"
     },
     {
       "id": "L001-P-af87d66c2694",
@@ -631480,31 +634606,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_pixel_tuft#3",
       "bounds": {
         "min": [
-          0.6294,
-          3.8815,
-          75.682
+          0.4017,
+          4.7566,
+          75.3477
         ],
         "max": [
-          1.391,
-          4.6095,
-          76.318
+          1.6484,
+          6.0353,
+          76.4209
         ]
       },
       "center": [
-        1.0102,
-        4.2455,
-        76
+        1.0251,
+        5.396,
+        75.8843
       ],
       "size": [
-        0.7616,
-        0.728,
-        0.636
+        1.2467,
+        1.2787,
+        1.0732
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Mane_pixel_tuft",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion amber mane"
     },
     {
       "id": "L001-P-b087d7ffac80",
@@ -631515,31 +634642,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_pixel_tuft#2",
       "bounds": {
         "min": [
-          0.2317,
-          4.2256,
-          75.682
+          -0.0439,
+          4.956,
+          75.3229
         ],
         "max": [
-          0.8896,
-          4.9825,
-          76.318
+          1.1816,
+          6.5992,
+          76.4457
         ]
       },
       "center": [
-        0.5606,
-        4.6041,
-        76
+        0.5689,
+        5.7776,
+        75.8843
       ],
       "size": [
-        0.6579,
-        0.7569,
-        0.636
+        1.2255,
+        1.6432,
+        1.1229
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Mane_pixel_tuft",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion orange mane"
     },
     {
       "id": "L001-P-b187d992326b",
@@ -631550,31 +634678,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_pixel_tuft#1",
       "bounds": {
         "min": [
-          -0.212,
-          4.414,
-          75.682
+          -0.3423,
+          5.1726,
+          75.339
         ],
         "max": [
-          0.212,
-          5.05,
-          76.318
+          0.3423,
+          6.655,
+          76.4297
         ]
       },
       "center": [
         0,
-        4.732,
-        76
+        5.9138,
+        75.8843
       ],
       "size": [
-        0.424,
-        0.636,
-        0.636
+        0.6846,
+        1.4824,
+        1.0907
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Mane_pixel_tuft",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion amber mane"
     },
     {
       "id": "L001-P-b29510b373d8",
@@ -631585,31 +634714,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Muzzle#1",
       "bounds": {
         "min": [
-          -0.742,
-          2.7636,
-          76.6057
+          -1.0283,
+          3.6386,
+          76.7713
         ],
         "max": [
-          0.0959,
-          3.4904,
-          77.0297
+          0.2057,
+          4.6155,
+          77.5939
         ]
       },
       "center": [
-        -0.323,
-        3.127,
-        76.8177
+        -0.4113,
+        4.1271,
+        77.1826
       ],
       "size": [
-        0.8379,
-        0.7268,
-        0.424
+        1.234,
+        0.9769,
+        0.8227
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Muzzle",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion cream muzzle"
     },
     {
       "id": "L001-P-b3951246f9c4",
@@ -631620,31 +634750,68 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Muzzle#2",
       "bounds": {
         "min": [
-          -0.0959,
-          2.7636,
-          76.6057
+          -0.2057,
+          3.6386,
+          76.7713
         ],
         "max": [
-          0.742,
-          3.4904,
-          77.0297
+          1.0283,
+          4.6155,
+          77.5939
         ]
       },
       "center": [
-        0.323,
-        3.127,
-        76.8177
+        0.4113,
+        4.1271,
+        77.1826
       ],
       "size": [
-        0.8379,
-        0.7268,
-        0.424
+        1.234,
+        0.9769,
+        0.8227
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Muzzle",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion cream muzzle"
+    },
+    {
+      "id": "L001-P-b6f3accb4e33",
+      "name": "Gown_badge_book",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Gown_badge_book#1",
+      "bounds": {
+        "min": [
+          0.568,
+          2.528,
+          76.7017
+        ],
+        "max": [
+          0.7199,
+          2.6566,
+          76.7714
+        ]
+      },
+      "center": [
+        0.644,
+        2.5923,
+        76.7365
+      ],
+      "size": [
+        0.1519,
+        0.1285,
+        0.0697
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Gown_badge_book",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion pale shirt and cuffs"
     },
     {
       "id": "L001-P-b987e62a030d",
@@ -631655,31 +634822,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_pixel_tuft#9",
       "bounds": {
         "min": [
-          -0.8896,
-          1.8973,
-          75.682
+          -1.2519,
+          2.6473,
+          75.2694
         ],
         "max": [
-          -0.2317,
-          2.6542,
-          76.318
+          0.1142,
+          3.9512,
+          76.4992
         ]
       },
       "center": [
-        -0.5606,
-        2.2758,
-        76
+        -0.5689,
+        3.2992,
+        75.8843
       ],
       "size": [
-        0.6579,
-        0.7569,
-        0.636
+        1.3661,
+        1.3039,
+        1.2299
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Mane_pixel_tuft",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion amber mane"
     },
     {
       "id": "L001-P-ba87e7bd88f9",
@@ -631690,31 +634858,104 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_pixel_tuft#8",
       "bounds": {
         "min": [
-          -0.212,
-          1.8298,
-          75.682
+          -0.3423,
+          2.6101,
+          75.3804
         ],
         "max": [
-          0.212,
-          2.4658,
-          76.318
+          0.3423,
+          3.7159,
+          76.3882
         ]
       },
       "center": [
         0,
-        2.1478,
-        76
+        3.163,
+        75.8843
       ],
       "size": [
-        0.424,
-        0.636,
-        0.636
+        0.6846,
+        1.1058,
+        1.0078
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Mane_pixel_tuft",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion orange mane"
+    },
+    {
+      "id": "L001-P-bf4896069210",
+      "name": "Tail_tip",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Tail_tip#1",
+      "bounds": {
+        "min": [
+          0.9994,
+          0.155,
+          73.8571
+        ],
+        "max": [
+          1.8542,
+          0.8751,
+          74.4923
+        ]
+      },
+      "center": [
+        1.4268,
+        0.5151,
+        74.1747
+      ],
+      "size": [
+        0.8549,
+        0.7201,
+        0.6351
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Tail_tip",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion orange mane"
+    },
+    {
+      "id": "L001-P-d8c6d4ee3584",
+      "name": "Paw_crest",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_crest#1",
+      "bounds": {
+        "min": [
+          -1.0381,
+          0.8606,
+          78.0477
+        ],
+        "max": [
+          -0.9157,
+          1.0048,
+          78.0477
+        ]
+      },
+      "center": [
+        -0.9769,
+        0.9327,
+        78.0477
+      ],
+      "size": [
+        0.1224,
+        0.1442,
+        0
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Paw_crest",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion burgundy accent"
     },
     {
       "id": "L001-P-d8caa344b993",
@@ -631725,31 +634966,68 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Eye_glint#1",
       "bounds": {
         "min": [
-          -0.4644,
-          3.7175,
-          76.7864
+          -0.4936,
+          4.8276,
+          77.3086
         ],
         "max": [
-          -0.424,
-          3.768,
-          76.8066
+          -0.4165,
+          4.9176,
+          77.3548
         ]
       },
       "center": [
-        -0.4442,
-        3.7427,
-        76.7965
+        -0.455,
+        4.8726,
+        77.3317
       ],
       "size": [
-        0.0404,
-        0.0505,
-        0.0202
+        0.0771,
+        0.09,
+        0.0463
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Eye_glint",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion pale shirt and cuffs"
+    },
+    {
+      "id": "L001-P-da4cd4623dba",
+      "name": "Tongue",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Tongue#1",
+      "bounds": {
+        "min": [
+          -0.1671,
+          3.7183,
+          77.4641
+        ],
+        "max": [
+          0.1671,
+          3.816,
+          77.5541
+        ]
+      },
+      "center": [
+        0,
+        3.7672,
+        77.5091
+      ],
+      "size": [
+        0.3342,
+        0.0977,
+        0.09
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Tongue",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion burgundy accent"
     },
     {
       "id": "L001-P-dbcaa7fd4b57",
@@ -631760,31 +635038,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Eye_glint#2",
       "bounds": {
         "min": [
-          0.3836,
-          3.7175,
-          76.7864
+          0.4833,
+          4.8276,
+          77.3086
         ],
         "max": [
-          0.424,
-          3.768,
-          76.8066
+          0.5604,
+          4.9176,
+          77.3548
         ]
       },
       "center": [
-        0.4038,
-        3.7427,
-        76.7965
+        0.5219,
+        4.8726,
+        77.3317
       ],
       "size": [
-        0.0404,
-        0.0505,
-        0.0202
+        0.0771,
+        0.09,
+        0.0463
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Eye_glint",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion pale shirt and cuffs"
     },
     {
       "id": "L001-P-e05e45468589",
@@ -631795,31 +635074,68 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_low_support_PROVISIONAL#1",
       "bounds": {
         "min": [
-          -1.75,
+          -0.875,
           0.13,
-          75.12
+          75.57
         ],
         "max": [
-          1.75,
-          0.25,
-          77.12
+          0.875,
+          0.155,
+          76.67
         ]
       },
       "center": [
         0,
-        0.19,
+        0.1425,
         76.12
       ],
       "size": [
-        3.5,
-        0.12,
-        2
+        1.75,
+        0.025,
+        1.1
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Lion_low_support_PROVISIONAL",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion teal gown"
+    },
+    {
+      "id": "L001-P-e75e8476ebcc",
+      "name": "Paw_HKU_lettering",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Paw_HKU_lettering#10",
+      "bounds": {
+        "min": [
+          1.1888,
+          0.8745,
+          77.9924
+        ],
+        "max": [
+          1.2021,
+          1.004,
+          78.0155
+        ]
+      },
+      "center": [
+        1.1954,
+        0.9392,
+        78.004
+      ],
+      "size": [
+        0.0134,
+        0.1295,
+        0.0231
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Paw_HKU_lettering",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion pale shirt and cuffs"
     },
     {
       "id": "L001-P-eb5ad931f90d",
@@ -631830,31 +635146,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Nose#1",
       "bounds": {
         "min": [
-          -0.2625,
-          3.1774,
-          76.959
+          -0.4656,
+          4.1601,
+          77.3664
         ],
         "max": [
-          0.2625,
-          3.4803,
-          77.1609
+          0.4656,
+          4.9435,
+          77.6775
         ]
       },
       "center": [
         0,
-        3.3289,
-        77.0599
+        4.5518,
+        77.5219
       ],
       "size": [
-        0.5249,
-        0.3028,
-        0.2019
+        0.9311,
+        0.7833,
+        0.3111
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Nose",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion plum nose and ears"
     },
     {
       "id": "L001-P-f2940c53e8c5",
@@ -631865,31 +635182,320 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Golden_mane#1",
       "bounds": {
         "min": [
-          -1.3628,
-          2.0771,
-          75.6366
+          -1.5168,
+          3.0088,
+          74.6375
         ],
         "max": [
-          1.3628,
-          4.8027,
-          76.3634
+          1.5168,
+          5.9909,
+          76.8741
         ]
       },
       "center": [
         0,
-        3.4399,
-        76
+        4.4999,
+        75.7558
       ],
       "size": [
-        2.7256,
-        2.7256,
-        0.7268
+        3.0336,
+        2.9822,
+        2.2366
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Golden_mane",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion orange mane"
+    },
+    {
+      "id": "L001-P-f4b3aa80118a",
+      "name": "Mane_chin_fringe",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_chin_fringe#5",
+      "bounds": {
+        "min": [
+          0.0169,
+          3.0373,
+          76.5114
+        ],
+        "max": [
+          0.6258,
+          3.8608,
+          77.1082
+        ]
+      },
+      "center": [
+        0.3214,
+        3.449,
+        76.8098
+      ],
+      "size": [
+        0.6089,
+        0.8235,
+        0.5968
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_chin_fringe",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-f59e05472902",
+      "name": "Forelock",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Forelock#1",
+      "bounds": {
+        "min": [
+          -0.4144,
+          5.0267,
+          76.0935
+        ],
+        "max": [
+          0.4915,
+          6.621,
+          76.9091
+        ]
+      },
+      "center": [
+        0.0386,
+        5.8238,
+        76.5013
+      ],
+      "size": [
+        0.9059,
+        1.5944,
+        0.8156
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Forelock",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-f5b3ac139776",
+      "name": "Mane_chin_fringe",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_chin_fringe#4",
+      "bounds": {
+        "min": [
+          -0.2201,
+          2.9802,
+          76.5308
+        ],
+        "max": [
+          0.2201,
+          3.7572,
+          77.0889
+        ]
+      },
+      "center": [
+        0,
+        3.3687,
+        76.8098
+      ],
+      "size": [
+        0.4401,
+        0.777,
+        0.5581
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_chin_fringe",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-f6b3ada61d62",
+      "name": "Mane_chin_fringe",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_chin_fringe#7",
+      "bounds": {
+        "min": [
+          0.5427,
+          3.1698,
+          76.4465
+        ],
+        "max": [
+          1.3854,
+          4.0496,
+          77.1731
+        ]
+      },
+      "center": [
+        0.9641,
+        3.6097,
+        76.8098
+      ],
+      "size": [
+        0.8427,
+        0.8797,
+        0.7266
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_chin_fringe",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-f7b3af39a34e",
+      "name": "Mane_chin_fringe",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_chin_fringe#6",
+      "bounds": {
+        "min": [
+          0.2594,
+          3.1005,
+          76.4572
+        ],
+        "max": [
+          1.026,
+          3.9582,
+          77.1624
+        ]
+      },
+      "center": [
+        0.6427,
+        3.5294,
+        76.8098
+      ],
+      "size": [
+        0.7666,
+        0.8577,
+        0.7053
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_chin_fringe",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-f8b3b0cc293a",
+      "name": "Mane_chin_fringe",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_chin_fringe#1",
+      "bounds": {
+        "min": [
+          -1.3854,
+          3.1698,
+          76.4465
+        ],
+        "max": [
+          -0.5427,
+          4.0496,
+          77.1731
+        ]
+      },
+      "center": [
+        -0.9641,
+        3.6097,
+        76.8098
+      ],
+      "size": [
+        0.8427,
+        0.8797,
+        0.7266
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_chin_fringe",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-fab3b3f23511",
+      "name": "Mane_chin_fringe",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_chin_fringe#3",
+      "bounds": {
+        "min": [
+          -0.6258,
+          3.0373,
+          76.5114
+        ],
+        "max": [
+          -0.0169,
+          3.8608,
+          77.1082
+        ]
+      },
+      "center": [
+        -0.3214,
+        3.449,
+        76.8098
+      ],
+      "size": [
+        0.6089,
+        0.8235,
+        0.5968
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_chin_fringe",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion amber mane"
+    },
+    {
+      "id": "L001-P-fbb3b585bafd",
+      "name": "Mane_chin_fringe",
+      "kind": "part",
+      "parentId": "L001-G-cbbe0175911a",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Mane_chin_fringe#2",
+      "bounds": {
+        "min": [
+          -1.026,
+          3.1005,
+          76.4572
+        ],
+        "max": [
+          -0.2594,
+          3.9582,
+          77.1624
+        ]
+      },
+      "center": [
+        -0.6427,
+        3.5294,
+        76.8098
+      ],
+      "size": [
+        0.7666,
+        0.8577,
+        0.7053
+      ],
+      "sourceFile": "src/model/nov13Details.ts",
+      "sourceAnchor": "Mane_chin_fringe",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
+      "confidence": "inferred-layout",
+      "editMode": "source",
+      "material": "Lion amber mane"
     },
     {
       "id": "L001-P-fc1e469d7683",
@@ -631900,31 +635506,32 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Environment#1/Nov13_Observed_Corrections#1/entrance-lion#1/Lion_body_uniform_scale#1/Rounded_body_mid#1",
       "bounds": {
         "min": [
-          -0.9842,
-          1.0929,
-          75.3691
+          -1.3561,
+          1.2606,
+          74.813
         ],
         "max": [
-          0.9842,
-          2.3547,
-          76.6309
+          1.3561,
+          3.4587,
+          76.9556
         ]
       },
       "center": [
         0,
-        1.7238,
-        76
+        2.3596,
+        75.8843
       ],
       "size": [
-        1.9685,
-        1.2618,
-        1.2618
+        2.7122,
+        2.1981,
+        2.1427
       ],
       "sourceFile": "src/model/nov13Details.ts",
       "sourceAnchor": "Rounded_body_mid",
-      "reference": "U05 three angles + U06 IMG_4347 02:00–02:08: user estimates 4–5 m",
+      "reference": "New user-provided front, side and rear photographs of the seated inflatable lion",
       "confidence": "inferred-layout",
-      "editMode": "source"
+      "editMode": "source",
+      "material": "Lion teal gown"
     },
     {
       "id": "L002",
@@ -656544,18 +660151,18 @@
         ],
         "max": [
           104,
-          6.18,
+          6.5666,
           114
         ]
       },
       "center": [
         0,
-        2.79,
+        2.9833,
         -14
       ],
       "size": [
         208,
-        6.78,
+        7.1666,
         256
       ],
       "sourceFile": "src/model/buildSite.ts",

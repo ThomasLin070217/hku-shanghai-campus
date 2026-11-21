@@ -1,0 +1,5 @@
+.boss-mac-overlay {position:fixed;inset:0;z-index:120;display:grid;place-items:center;background:#0c1c21aa}
+.boss-mac-overlay[hidden] {display:none}
+.boss-mac-overlay>.opening-mac {width:min(1240px,97vw);height:min(850px,96dvh)}
+.lion-game.mac-in-use #boss-field>.boss-header,.lion-game.mac-in-use #inventory-hud {visibility:hidden}
+@media(max-width:640px){.boss-mac-overlay>.opening-mac{width:100vw;height:100dvh}}

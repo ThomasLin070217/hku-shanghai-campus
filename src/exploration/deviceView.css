@@ -1,0 +1,22 @@
+.using-campus-device :is(#pause-panel,#inventory-hud,.opening-hud,.opening-mapcard,.opening-hearts,
+  .opening-warning,.opening-danger-vignette,.boss-header,#survey-hud,#mini-map,#control-badge,#crosshair) {
+  visibility:hidden;
+}
+.opening-modal-root[data-kind="computer"],.boss-mac-overlay:not([hidden]),.survey-device:not([hidden]) {
+  animation:device-screen-in .42s both;
+}
+.survey-device {position:fixed;inset:0;z-index:120;display:grid;place-items:center;background:#101b26ad}
+.survey-device[hidden] {display:none}
+.survey-device > .opening-mac {width:min(1180px,97vw);height:min(820px,95dvh)}
+.survey-records {padding:clamp(16px,3vw,32px);line-height:1.6}
+.survey-records h2 {font-size:21px;line-height:1.3}
+.survey-records li {padding:.24em}
+.survey-records button {font:inherit;padding:.35em .9em;color:#153e37;background:#dbe9e2;border:1px solid #acbfb5;border-radius:5px;cursor:pointer}
+.survey-records button:disabled {opacity:.65;cursor:default}
+@keyframes device-screen-in {
+  0%,28% {opacity:0}
+  100% {opacity:1}
+}
+@media(prefers-reduced-motion:reduce) {
+  .opening-modal-root[data-kind="computer"],.boss-mac-overlay:not([hidden]),.survey-device:not([hidden]) {animation:none}
+}

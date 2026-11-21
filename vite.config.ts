@@ -3,7 +3,8 @@ import { cpSync, mkdirSync } from 'node:fs';
 import { resolve, basename } from 'node:path';
 
 export default defineConfig(({mode})=>{
- const review=mode==='review',out=review?'dist-review':'dist';
+ const review=mode==='review';
+ const out=review?'dist-review':mode==='playtest'?'dist-playtest':'dist';
  const input:Record<string,string>={main:resolve('index.html'),interiors:resolve('interiors.html'),characters:resolve('characters.html')};if(review){input.assessment=resolve('assessment.html');input.aiStudy=resolve('ai-study.html');}
  return {
   base:'./',

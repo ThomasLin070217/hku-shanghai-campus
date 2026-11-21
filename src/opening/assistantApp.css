@@ -1,0 +1,57 @@
+.campus-assistant {
+  --ca-line: #d7e1db;
+  --ca-ink: #253c35;
+  --ca-muted: #526961;
+  display: grid;
+  grid-template-rows: auto auto minmax(0,1fr) auto;
+  width: 100%; height: 100%; min-width: 0; min-height: 0;
+  background: #fcfdfb; color: var(--ca-ink);
+  font: 14px/1.5 system-ui, sans-serif;
+  text-align: left;
+}
+.campus-assistant [hidden] {display: none !important}
+.campus-assistant button, .campus-assistant textarea {font: inherit}
+.campus-assistant button {cursor: pointer}
+.campus-assistant button:focus-visible, .campus-assistant summary:focus-visible, .campus-assistant textarea:focus-visible {outline: 2px solid #357a62; outline-offset: 2px}
+.campus-assistant button:disabled {cursor: default; opacity:.5}
+.campus-assistant .ca-head {display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:2px 16px; padding:12px 18px; border-bottom:1px solid var(--ca-line); background:#f3f7f2; color:var(--ca-ink)}
+.ca-identity {display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
+.ca-name {font-weight:700}
+.ca-status,.ca-network {font-size:12px; color: var(--ca-muted); overflow-wrap:anywhere}
+.ca-status[data-state='local-model'] {color:#176147}
+.ca-context {padding:6px 18px 7px; background:#f8faf6; border-bottom:1px solid var(--ca-line)}
+.ca-context summary {font-size:12px; cursor:pointer; color:var(--ca-muted); white-space:normal}
+.ca-context summary strong {font-weight:600; margin-left:7px; color:var(--ca-ink)}
+.ca-context p {font-size:13px; margin:4px 0;color:var(--ca-muted)}
+.ca-stream {overflow:auto; min-height:0; padding:16px 20px; overscroll-behavior:contain; scrollbar-width:thin}
+.ca-row {margin:0 auto 16px; max-width:66ch}
+.ca-byline {font-size:12px; font-weight:700; color:var(--ca-muted); margin-bottom:4px}
+.ca-markdown,.ca-question {overflow-wrap:anywhere; min-width:0; line-height:1.55}
+.ca-question {margin:0; white-space:pre-wrap}
+.ca-player {padding-left:12px; border-left:2px solid #77a38b}
+.ca-markdown :is(p,h4,blockquote,ul,ol) {margin:3px 0}
+.ca-markdown blockquote {border-left:2px solid #b4cbbd; padding-left:8px}
+.ca-markdown :is(ul,ol) {padding-inline-start:1.5em}
+.ca-markdown :is(code,pre), .ca-code-tools {font-family:ui-monospace,Consolas,monospace}
+.ca-markdown p code {font-size:.92em;background:#e8eeea;padding:0 3px;border-radius:3px}
+.ca-code {background:#19342d;border-radius:5px;color:#f1f8f3;overflow:hidden; margin:7px 0}
+.ca-code pre {margin:0; padding:6px 12px 10px; max-height:15em; overflow:auto; white-space:pre; font-size:12px;line-height:1.5}
+.ca-code-tools {display:flex;align-items:center;justify-content:space-between;padding:4px 9px 3px;color:#c4dbca;font-size:11px}
+.campus-assistant .ca-code-tools button {font:inherit; border:0; background:transparent;color:inherit; text-decoration:underline; padding:4px}
+.ca-generating,.ca-error {font-size:12px;color:var(--ca-muted); margin:4px auto 12px;max-width:76ch}
+.ca-error {color:#88502c; display:flex; gap:8px; align-items:baseline}
+.campus-assistant .ca-error button {border:0; background:transparent; padding:3px;color:inherit;text-decoration:underline;font-weight:600}
+.ca-form {padding:8px 14px 12px; border-top:1px solid var(--ca-line);background:#f8faf7;min-width:0}
+.ca-quick {display:flex; align-items:center; flex-wrap:nowrap; gap:6px; overflow:auto; scrollbar-width:thin; margin-bottom:7px}
+.campus-assistant .ca-quick button {flex:none; padding:3px 8px; color:#385c4e; border:1px solid #c1d1c5; border-radius:4px; background:#fbfdfb; font-size:12px; line-height:1.5}
+.ca-compose {background:#fff; border:1px solid #bdcdc2; border-radius:6px; overflow:hidden}
+.campus-assistant textarea {box-sizing:border-box; display:block; width:100%; min-height:34px; max-height:100px; resize:vertical; padding:8px 10px 2px; border:0; background:transparent; color:var(--ca-ink); outline-offset:-2px}
+.ca-actions {display:flex; justify-content:flex-end; align-items:center; gap:6px; padding:2px 7px 6px}
+.ca-keys {margin-right:auto; font-size:11px;color:var(--ca-muted)}
+.campus-assistant :is(.ca-send,.ca-stop) {border:0; border-radius:4px; padding:4px 12px; font-size:13px; font-weight:650}
+.campus-assistant .ca-send {background:#205a46;color:#fff}
+.campus-assistant .ca-stop {background:#eef1ec;color:#334a3e}
+@media(max-width:600px),(max-height:550px){
+  .ca-keys{display:none}.campus-assistant .ca-head{padding:6px 10px}.ca-stream{padding:8px 12px}.ca-row{margin-bottom:10px}
+  .ca-form{padding:5px 8px}.ca-context{padding:4px 10px}
+}

@@ -1,12 +1,15 @@
 import {createOpeningExperience} from './opening/experience';
 import {createOpeningAtmosphere,type OpeningAtmosphere} from './opening/atmosphere';
-const openingMode=new URLSearchParams(location.search).get('experience')!=='survey';
+const route=new URLSearchParams(location.search).get('experience');
+const sportsMode=route==='sports-hall';
+const openingMode=route!=='survey'&&!sportsMode;
+const publicPlaytest=import.meta.env.MODE==='playtest';
 import {createSceneInspector} from './scene/inspector';
 import {createSceneService} from './scene/service';
 import {sceneRegistry} from './scene/registry';
 import {prepareModelTextures} from './model/deferredTextures';
 import {createExperience} from './gameplay/experience';
-import {createSportsDoor} from './gameplay/sportsDoor';
+import {createSportsDoor,createSportsRescueExperience} from './gameplay/sportsDoor';
 import {createStudentCrowd} from './gameplay/studentCrowd';
 import {CONTROL_GUIDE,KEYS,keyLabel} from './exploration/config';
 import {buildLounge} from './model/buildLounge';
@@ -43,10 +46,24 @@ let atmosphere:OpeningAtmosphere|undefined;
 let viewportWidth=host.clientWidth,viewportHeight=host.clientHeight;const viewportObserver=new ResizeObserver(([entry])=>{viewportWidth=entry.contentRect.width;viewportHeight=entry.contentRect.height;explorer.resize(viewportWidth,viewportHeight);});viewportObserver.observe(host);explorer.resize(viewportWidth,viewportHeight);viewer.beforeRender.add(dt=>explorer.update(dt));
 const elements=new Map<string,HTMLElement>();const el=(id:string)=>{let node=elements.get(id);if(!node){node=document.getElementById(id)!;elements.set(id,node);}return node;};const checked=(id:string)=>(el(id) as HTMLInputElement).checked;let timer:ReturnType<typeof setTimeout>;
 function notify(message:string){el('toast').textContent=message;el('toast').classList.add('show');clearTimeout(timer);timer=setTimeout(()=>el('toast').classList.remove('show'),4500);}
-const crowd=createStudentCrowd();viewer.scene.add(crowd.root);
+const crowd=openingMode?null:createStudentCrowd();
+if(crowd)viewer.scene.add(crowd.root);
 let door:ReturnType<typeof createSportsDoor>|null=null;
-const experience=openingMode?createOpeningExperience(viewer.scene,explorer,notify,()=>asset.openingWorld,()=>atmosphere):createExperience(viewer.scene,explorer,notify,{beforeInteract:()=>door?.interact()??false});
-if(!openingMode){door=createSportsDoor({root:()=>asset.root,game:()=>explorer.game,notify,openPanel:()=>explorer.openPanel('door'),closePanel:()=>explorer.closePanel(),resume:()=>explorer.enter(),persist:()=>experience.persist(true)});viewer.beforeRender.add(dt=>door?.update(dt));}
+const interactWithDoor=()=>door?.interact()??false;
+const experience=openingMode
+ ?createOpeningExperience(viewer.scene,explorer,notify,()=>asset.openingWorld,()=>atmosphere)
+ :sportsMode?createSportsRescueExperience(explorer,interactWithDoor)
+ :createExperience(viewer.scene,explorer,notify,{beforeInteract:interactWithDoor});
+if(!openingMode){
+ let dragControls=false;
+ door=createSportsDoor({
+  root:()=>asset.root,game:()=>explorer.game,notify,
+  openPanel:()=>{dragControls=document.pointerLockElement!==viewer.renderer.domElement;explorer.openPanel('door');},
+  closePanel:()=>explorer.closePanel(),resume:()=>dragControls?explorer.enterCompat():explorer.enter(),
+  persist:()=>experience.persist(true),standalone:sportsMode
+ });
+ viewer.beforeRender.add(dt=>door?.update(dt));
+}
 function loadAssetTextures(root:T.Object3D){void prepareModelTextures(root).catch(()=>notify('招牌照片未能加载。可重试应用参数；导出时会再次加载。'));}
 loadAssetTextures(asset.root);
 const graphicsControls=['export-png','walk-photo','enter-game','enter-compat','enable-ai'];
@@ -82,11 +99,11 @@ function mode(walk:boolean){
  if(walk&&imported){viewer.scene.remove(imported);disposeAsset(imported);imported=null;asset.root.visible=true;}
  if(walk)lighting.set(nightRequested,asset.root);
  exploring=walk;viewer.renderer.domElement.setAttribute('aria-label',walk?(openingMode?'Campus exploration: ':'校园室外探索：')+CONTROL_GUIDE(openingMode)+' · '+keyLabel(KEYS.pause)+(openingMode?' pause':' 暂停'):'校园模型浏览：拖动旋转，滚轮缩放，右键平移');document.body.classList.toggle('exploring',walk);viewer.controls.enabled=!walk;viewer.setActiveCamera(walk?explorer.camera:viewer.camera);
- if(walk){for(const id of ['environment','circulation','sports'])(el(id) as HTMLInputElement).checked=true;(el('isolate') as HTMLInputElement).checked=false;sync();el('labels-layer').style.display='none';el('mode-label').textContent=openingMode?'Building 4 · Shanghai Campus':'CDS-1 · 室外探索';el('reset').textContent=openingMode?'Return to checkpoint':'↺ 返回安全位置';document.querySelector('.stage-bottom>span')!.textContent=CONTROL_GUIDE(openingMode);}
+ if(walk){for(const id of ['environment','circulation','sports'])(el(id) as HTMLInputElement).checked=true;(el('isolate') as HTMLInputElement).checked=false;sync();el('labels-layer').style.display='none';el('mode-label').textContent=openingMode?'Building 4 · Shanghai Campus':sportsMode?'体育馆 · 东门':'CDS-1 · 室外探索';el('reset').textContent=openingMode?'Return to checkpoint':sportsMode?'↺ 返回东门':'↺ 返回安全位置';document.querySelector('.stage-bottom>span')!.textContent=CONTROL_GUIDE(openingMode);}
  else{sync();setView('iso');el('reset').textContent='↺ 重置总览';document.querySelector('.stage-bottom>span')!.textContent='拖动旋转 · 滚轮缩放 · 右键平移';}
  explorer.setEnabled(walk);stats();el('mode-toggle').textContent=openingMode?(walk?'Campus model tools':'Return to opening'):(walk?'模型浏览与导出':'返回室外探索');
 }
-el('mode-toggle').onclick=()=>mode(!exploring);el('reset').onclick=()=>{if(exploring){explorer.reset();experience.persist(true);notify(openingMode?'Checkpoint restored. Your progress and backpack are preserved.':'已返回安全位置，任务和背包已保留。');viewer.renderer.domElement.focus();}else{(el('isolate') as HTMLInputElement).checked=false;sync();setView('iso');}};
+el('mode-toggle').onclick=()=>mode(!exploring);el('reset').onclick=()=>{if(exploring){if(sportsMode)experience.relocate();else explorer.reset();experience.persist(true);notify(openingMode?'Checkpoint restored. Your progress and backpack are preserved.':sportsMode?'已返回体育馆东门，门锁进度已保留。':'已返回安全位置，任务和背包已保留。');viewer.renderer.domElement.focus();}else{(el('isolate') as HTMLInputElement).checked=false;sync();setView('iso');}};
 el('walk-photo').onclick=()=>download(viewer.capture(false,asset.environment),'HKU-outdoor-exploration.png');
 let nightRequested=false;
 el('night-toggle').onclick=()=>{if(loungeView){notify('休闲区采用室内照明；返回校园后可切换夜景');return;}nightRequested=!nightRequested;lighting.set(nightRequested,imported||asset.root);el('night-toggle').textContent=openingMode?(nightRequested?'Day mode':'Night mode'):(nightRequested?'切换日景':'切换夜景');};
@@ -96,7 +113,7 @@ index();stats();mode(true);if(openingMode){atmosphere=createOpeningAtmosphere(vi
 
 el('enter-game').onclick=()=>explorer.enter();
 el('takeover').onclick=()=>explorer.takeover();
-el('enable-ai').onclick=()=>{agentBridge.claim();explorer.enableAI();};
+el('enable-ai').onclick=()=>{if(agentBridge){agentBridge.claim();explorer.enableAI();}};
 
 document.addEventListener('game-notice',e=>{notify((e as CustomEvent).detail);el('enter-compat').hidden=false;});
 el('enter-compat').onclick=()=>explorer.enterCompat();
@@ -108,18 +125,20 @@ toolsMenu.addEventListener('toggle',()=>{if(toolsMenu.open&&exploring)explorer.p
 toolsMenu.querySelector('.tools-content')!.addEventListener('click',e=>{if((e.target as HTMLElement).closest('button,a'))toolsMenu.open=false;});
 const help=document.createElement('button');help.textContent='操作帮助';help.onclick=()=>experience.openSettings();document.querySelector('.header-right')!.prepend(help);
 const advanced=document.createElement('details');advanced.className='pause-options';advanced.innerHTML='<summary>重新开始 / AI 控制</summary>';el('session-save').after(advanced);advanced.append(el('new-game'),el('enable-ai'),el('bridge-status'));
+if(publicPlaytest){el('enable-ai').hidden=true;el('bridge-status').hidden=true;}
+const levelsLink=document.createElement('a');levelsLink.href='?experience=levels';levelsLink.textContent=openingMode?'Level select':'关卡选择';document.querySelector('.header-right')!.prepend(levelsLink);
 const desktopNote=document.createElement('p');desktopNote.className='desktop-note';desktopNote.textContent='当前支持电脑键盘与鼠标；手机可浏览模型。';el('enter-game').before(desktopNote);
 const inspector=createSceneInspector({host,scene:viewer.scene,camera:()=>viewer.activeCamera,root:()=>asset.root,ready:()=>!imported&&!loungeView,openModel:()=>{mode(false);(el('isolate') as HTMLInputElement).checked=false;for(const id of ['environment','circulation','sports'])(el(id) as HTMLInputElement).checked=true;sync();},frame:box=>{const center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3()),span=Math.max(size.x,size.y,size.z,2)*1.65;viewer.controls.target.copy(center);viewer.camera.position.copy(center).add(new T.Vector3(.8,.65,1).normalize().multiplyScalar(Math.max(15,span*1.5)));const aspect=host.clientWidth/host.clientHeight;const height=Math.max(span,span/aspect);Object.assign(viewer.camera,{left:-height*aspect/2,right:height*aspect/2,top:height/2,bottom:-height/2,zoom:1});viewer.camera.updateProjectionMatrix();viewer.camera.lookAt(center);viewer.controls.update();},notify});
 viewer.callbacks.add(inspector.update);
 const numberButton=document.createElement('button');numberButton.id='scene-index-toggle';numberButton.textContent='场景编号';numberButton.onclick=()=>inspector.setOpen(!inspector.opened);document.querySelector('.header-right')!.prepend(numberButton);
 const sceneService=createSceneService(()=>asset.root,()=>explorer.game,id=>{inspector.show(id);});
-const agentBridge=connectAgent(()=>explorer.game,()=>viewer.screenshot(),s=>el('bridge-status').textContent=openingMode?(s.includes('此窗口已连接')?'Local AI control service connected.':'Local AI control service unavailable or owned by another window.'):s,sceneService);
+const agentBridge=publicPlaytest?null:connectAgent(()=>explorer.game,()=>viewer.screenshot(),s=>el('bridge-status').textContent=openingMode?(s.includes('此窗口已连接')?'Local AI control service connected.':'Local AI control service unavailable or owned by another window.'):s,sceneService);
 // Any stable scene ID (S001, R005, B04-P-...) can be a walkTo/lookAt target, resolved from the same registry the inspector uses.
 explorer.game.entityResolver=id=>{const entity=sceneRegistry(asset.root).get(id);return entity?[entity.center[0],entity.center[1],entity.center[2]]:null;};
 if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign((window as unknown as {__CAMPUS:object}).__CAMPUS,{inspector});
 
 // pagehide with BFCache keeps a paused, resumable page; only final unload disposes resources.
-window.addEventListener('pagehide',event=>{experience.persist(true);explorer.pause('page_hidden');if(event.persisted)return;clearTimeout(timer);viewportObserver.disconnect();agentBridge.dispose();inspector.dispose();door?.dispose();crowd.dispose();experience.dispose();atmosphere?.dispose();explorer.dispose();lighting.dispose();glassEnvironment.dispose();disposeAsset(asset.root);disposeAsset(lounge);if(imported)disposeAsset(imported);viewer.dispose();});
+window.addEventListener('pagehide',event=>{experience.persist(true);explorer.pause('page_hidden');if(event.persisted)return;clearTimeout(timer);viewportObserver.disconnect();agentBridge?.dispose();inspector.dispose();door?.dispose();crowd?.dispose();experience.dispose();atmosphere?.dispose();explorer.dispose();lighting.dispose();glassEnvironment.dispose();disposeAsset(asset.root);disposeAsset(lounge);if(imported)disposeAsset(imported);viewer.dispose();});
 
 if(!import.meta.env.DEV&&import.meta.env.MODE!=='review'){document.querySelectorAll('a[href*="evidence/"],.evidence-note').forEach(n=>n.remove());dialog.remove();}
 
@@ -135,3 +154,9 @@ if(openingMode){
  for(const node of Array.from(document.querySelectorAll<HTMLElement>('.header-right > span'))){if(node.textContent==='正常校园')node.textContent='Campus';if(node.textContent==='张江基地')node.textContent='Shanghai';}
  const header=document.querySelector('.header-right');for(const node of Array.from(header?.childNodes??[]))if(node.nodeType===Node.TEXT_NODE){if(node.textContent?.includes('正常校园'))node.textContent='Campus';else if(node.textContent?.includes('张江基地'))node.textContent='Shanghai';}
 }
+if(sportsMode){
+ document.title='HKU Shanghai · 体育馆营救';
+ document.querySelector('.brand-copy > span')!.textContent='体育馆营救';
+ document.querySelector('.pause-card .key-guide')!.textContent='WASD 移动 · 鼠标环视 · F 门禁 · Esc 暂停';
+}
+if(publicPlaytest)advanced.querySelector('summary')!.textContent=openingMode?'Restart':'重新开始';

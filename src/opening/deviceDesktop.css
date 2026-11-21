@@ -1,0 +1,126 @@
+/* Shared desktop. The campus illustration is an original render of this project's site. */
+.opening-mac.device-os {
+  --os-ink:#213833;--os-paper:#f3f5ee;--os-accent:#35684f;
+  position:relative;display:grid;grid-template-rows:36px minmax(0,1fr) 66px;
+  isolation:isolate;overflow:hidden;box-sizing:border-box;border:5px solid #202a27;border-radius:16px;
+  width:100%;height:min(780px,90dvh);min-height:0;text-align:left;
+  color:var(--os-ink);background:#aecabb;
+  font:14px/1.4 "Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;letter-spacing:normal;
+  box-shadow:0 24px 70px #06140dc9,0 0 0 1px #ffffff5b;
+}
+.boss-mac-overlay>.device-os.opening-mac {width:min(1240px,96vw);height:min(835px,94dvh)}
+.device-os *, .device-os *::before,.device-os *::after {box-sizing:border-box}
+.device-os [hidden] {display:none!important}
+.opening-mac.device-os button {font-family:inherit;cursor:pointer}
+.device-os button:focus-visible,.device-os a:focus-visible,.device-os [tabindex]:focus-visible {outline:2px solid #467de0;outline-offset:2px}
+.device-os .device-glyph {display:inline-grid;place-items:center;flex:none}
+.device-os .device-glyph svg {display:block;width:100%;height:100%}
+.device-bar {display:flex;align-items:center;gap:13px;min-width:0;z-index:4;padding:0 13px;background:#eff5eced;border-bottom:1px solid #172d242b;font-size:12px;color:#283d35;font-variant-numeric:tabular-nums}
+.device-os .device-home,.device-os .device-system-button,.device-os .device-link,.device-os .device-controls button {box-shadow:none;border:none;padding:0;background:transparent;appearance:none;color:inherit}
+.device-os .device-home {display:flex;align-items:center;gap:7px;font-size:13px;font-weight:750;white-space:nowrap}
+.device-home .device-glyph {width:22px;height:22px}
+.device-active-app {margin-right:auto;color:#567067;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.device-network,.device-power,.device-clock {white-space:nowrap}
+.device-network::before {content:'';display:inline-block;width:7px;height:7px;background:#2e7953;border-radius:50%;margin-right:6px}
+.device-os:not([data-stage="normal"]) .device-network::before {background:#ac5b39}
+.device-os .device-system-button {display:grid;place-items:center;width:28px;height:28px;border-radius:6px;flex:none}
+.device-system-button .device-glyph {width:17px;height:17px}
+.device-os .device-system-button:hover,.device-os .device-system-button[aria-expanded="true"] {background:#263f3415}
+.device-screen {position:static;display:flex;min-height:0;min-width:0;pointer-events:none}
+.device-wallpaper {position:absolute;inset:36px 0 0;background:radial-gradient(ellipse at 72% 18%,#f2e9c8 0%,transparent 52%),linear-gradient(149deg,#f6f2db,#cdd9bd 53%,#6e9880);z-index:-1}
+.device-wallpaper::before {content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 65px,#2b514b11 65px 66px),repeating-linear-gradient(0deg,transparent 0 65px,#2b514b11 65px 66px);mask-image:linear-gradient(100deg,transparent 10%,#000 70%)}
+.device-wallpaper::after {content:'';position:absolute;width:94%;height:108%;right:-18%;top:2%;background:url('../../assets/campus-transparent.png') center/contain no-repeat;filter:drop-shadow(0 20px 10px #18392f2d);pointer-events:none}
+.device-os[data-stage="exercise"] .device-wallpaper,.device-os[data-stage="connected"] .device-wallpaper {background:radial-gradient(ellipse at 75% 18%,#dfdfbc,transparent 54%),linear-gradient(153deg,#e8ecda,#b4cfc1 53%,#638f82)}
+.device-os[data-stage="emergency"] .device-wallpaper {background:radial-gradient(ellipse at 80% 15%,#d8bbbb,transparent 52%),linear-gradient(150deg,#e9e1cd,#bbc5bb 58%,#777f71)}
+.device-homepage {align-self:center;position:relative;max-width:min(465px,49%);padding:0 0 0 clamp(22px,5vw,68px);margin-top:-15px;color:#18372b;pointer-events:auto}
+.device-phase,.device-caption,.device-alert-label {display:block;margin:0;font:650 10px/1.45 ui-monospace,Consolas,monospace;letter-spacing:.13em;text-transform:uppercase}
+.device-phase {display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.09em}
+.device-phase::before {content:'';width:22px;height:2px;background:currentColor}
+.device-homepage h2 {margin:12px 0 clamp(22px,4vh,44px);font:500 clamp(42px,6.4vw,95px)/.93 Georgia,serif;letter-spacing:-.075em;color:#163b2c;text-wrap:balance}
+.device-homepage .device-caption {color:#476254}
+.device-objective {margin:6px 0 12px;color:#213e31;font-size:clamp(15px,1.7vw,24px);font-weight:620;line-height:1.35;text-wrap:balance}
+.device-os .device-link {color:#295a45;font-size:13px;padding:4px 0;text-decoration:underline;text-underline-offset:4px}
+.device-os .device-link:hover {color:#112d21}
+.device-windows {position:absolute;inset:44px 8px 74px;pointer-events:none}
+.device-os .device-window.opening-mac-window,.boss-mac-overlay .device-os .device-window.opening-mac-window {
+  display:flex;flex-direction:column;position:absolute;inset:auto;top:0;left:0;transform:none;
+  width:min(820px,92%);height:min(465px,94%);max-width:100%;max-height:100%;min-height:0;min-width:0;
+  padding:0;box-shadow:0 8px 28px #19332b33;border:1px solid #25392d54;border-radius:11px;
+  overflow:hidden;color:#223d30;background:var(--os-paper);pointer-events:auto;animation:device-enter .17s ease-out;
+}
+.device-os .device-window.is-front {box-shadow:0 16px 60px #122d2257}
+.device-os .device-window.opening-mac-window.mission,.boss-mac-overlay .device-os .device-window.opening-mac-window.mission {width:min(1090px,97%);height:min(610px,98%);top:0}
+.device-os .device-window.opening-mac-window.agent {width:min(880px,95%);height:min(525px,98%)}
+.device-os .device-window.is-maximized.opening-mac-window,.boss-mac-overlay .device-os .device-window.is-maximized.opening-mac-window {inset:0!important;width:100%;height:100%;border-radius:7px}
+.device-os .device-window[data-leaving] {animation:device-leave .12s ease-out both;pointer-events:none}
+@keyframes device-enter {from{opacity:0;scale:.975;translate:0 4px}to{opacity:1;scale:1;translate:0}}
+@keyframes device-leave {to{opacity:0;scale:.975;translate:0 5px}}
+.device-titlebar {display:grid;grid-template-columns:72px 1fr 72px;align-items:center;flex:0 0 37px;background:#e2e7df;border-bottom:1px solid #c5d0c4;touch-action:none;user-select:none;cursor:grab;color:#345144;line-height:1}
+.device-titlebar:active {cursor:grabbing}
+.device-titlebar>b {text-align:center;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:660}
+.device-controls {display:flex;align-items:center;gap:6px;margin-left:12px}
+.device-os .device-controls button {display:grid;place-items:center;width:14px;height:14px;border-radius:50%;background:#bbc6b8;color:transparent;font:700 12px/1 Arial,sans-serif;border:1px solid #1b38261a;min-width:0;min-height:0}
+.device-os .is-front .device-controls button:nth-child(1){background:#e2806c}
+.device-os .is-front .device-controls button:nth-child(2){background:#dfbd6b}
+.device-os .is-front .device-controls button:nth-child(3){background:#86b68d}
+.device-os .device-controls:hover button,.device-os .device-controls button:focus-visible {color:#344134}
+.device-surface,.device-permission-host {flex:1;min-height:0;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.device-surface {user-select:text}
+.device-os .device-dock {align-self:end;justify-self:center;position:relative;z-index:3;display:flex;align-items:center;gap:8px;margin:0 8px 5px;padding:6px 10px;border:1px solid #f7ffe1b8;border-radius:14px;background:#f3f6e1da;box-shadow:0 3px 18px #1935262e;backdrop-filter:blur(9px);max-width:calc(100% - 16px)}
+.device-os .device-launch.opening-mac-dockitem,.boss-mac-overlay .device-os [data-launch-mission] {position:relative;display:flex;align-items:center;flex-direction:column;justify-content:center;gap:2px;flex:1 1 64px;min-width:0;width:64px;height:49px;padding:1px;margin:0;border:0;background:none;transform:none;box-shadow:none;color:#294537}
+.device-launch .device-glyph {display:grid;place-items:center;height:32px;width:34px;border-radius:8px;background:var(--tile,#426f62);color:#fcfff3;box-shadow:inset 0 1px #ffffff52,0 1px 2px #21342233;transition:translate .14s ease}
+.device-launch .device-glyph svg {width:24px;height:24px}
+.device-launch[data-app="finder"]{--tile:#526f99}.device-launch[data-app="map"]{--tile:#568358}.device-launch[data-app="agent"]{--tile:#8d6a96}.device-launch[data-app="mission"]{--tile:#276e62}.device-launch[data-app="robotics"]{--tile:#926747}.device-launch[data-app="terminal"]{--tile:#435764}.device-launch[data-app="logs"]{--tile:#8c7742}
+.device-launch:hover .device-glyph {translate:0 -2px}
+.device-dock-label {font-size:9px;white-space:nowrap;color:#22372b;line-height:1.1}
+.device-launch:not([data-state="closed"])::after {content:'';position:absolute;bottom:-3px;width:4px;height:2px;background:#4d725e}
+.device-launch[aria-current="true"]::after {width:12px;background:#244c37}
+.device-document {display:block;overflow:auto;min-width:0;min-height:0;flex:1;margin:0;padding:clamp(16px,3.1vw,38px);color:#294334;background:#f3f5ee}
+.device-document h2 {margin:5px 0 18px;font-size:clamp(22px,3vw,36px);letter-spacing:-.04em;line-height:1.13;color:#203a2e}
+.device-document h3 {font-size:16px;margin:22px 0 6px;color:#2e4a39}
+.device-document p:not(.device-caption) {margin:8px 0 15px;font-size:14px;line-height:1.6}
+.device-document .device-caption {color:#55705c}
+.device-document .device-muted {color:#667866;font-size:12px}
+.device-os .device-file-row {display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:12px;width:100%;padding:11px 4px;border:0;border-top:1px solid #c8d3c5;background:transparent;text-align:left;color:inherit}
+.device-os .device-file-row:hover {background:#e1eadc}
+.device-file-row .device-glyph {width:26px;height:26px;color:#477459}
+.device-file-row b {font-size:14px;font-weight:610}.device-file-row small {color:#59705f}
+.device-invite {text-align:center;background:radial-gradient(ellipse at 50% 0,#fffbed,#e2e4d2);font-family:Georgia,serif}
+.device-invite h2 {margin-top:24px;font:italic 46px/1.12 Georgia,serif}
+.device-map {display:grid;grid-template-columns:1.4fr 1fr;flex:1;min-height:0;background:#e6e9dc}
+.device-map-canvas {width:100%;height:100%;min-width:0;min-height:0;object-fit:contain}
+.device-map .device-document {border-left:1px solid #c7d2c5}
+.device-history {margin:0;padding-left:18px}
+.device-history li {padding:.3em 0}
+.device-facts {display:grid;grid-template-columns:minmax(7em,auto) 1fr;gap:0 1em;margin:12px 0}
+.device-facts>* {margin:0;padding:7px 0;border-top:1px solid #c7d1c3}
+.device-facts dt {color:#57735d}
+.device-terminal {margin:14px 0 0;max-width:100%;overflow:auto;padding:14px;background:#e2eade;color:#254737;font:12px/1.5 Consolas,monospace;white-space:pre}
+.device-permission .device-glyph {width:34px;height:34px;color:#56765f;margin:0 0 12px}
+.device-permission .device-caption {margin-bottom:5px}
+.device-notifications {position:absolute;z-index:7;right:10px;top:42px;width:min(330px,calc(100% - 20px));padding:16px 20px;color:#234131;background:#f7f8ed;border-radius:9px;box-shadow:0 10px 34px #132e1f55;border:1px solid #bfd0bc}
+.device-notifications h3,.device-notifications p {margin:0 0 8px}
+.device-notifications h3 {font-size:16px}
+.device-os .device-alert {position:absolute;z-index:10;inset:0;display:grid;place-items:center;background:#311e1c94;padding:12px}
+.device-alert-card {width:min(455px,100%);max-height:100%;overflow:auto;padding:clamp(17px,3.6vw,38px);color:#4c2923;border:1px solid #e69f87;border-top:4px solid #b14d38;border-radius:10px;background:#fff2e5;box-shadow:0 18px 55px #23170d55}
+.device-alert-label {color:#a64635}.device-alert-card h2 {font-size:32px;line-height:1.1;margin:7px 0 15px;color:#562b22}
+.device-alert-card p {margin:9px 0 13px;font-size:15px}
+.device-os .device-primary {display:block;border:0;border-radius:5px;background:#863e30;color:#fff;padding:9px 15px;font-weight:600;margin:19px 0 7px;box-shadow:none}
+.device-os .device-alert-card .device-link {color:#73382b}
+@media(max-width:650px) {
+ .opening-mac.device-os {border-width:3px;border-radius:9px;grid-template-rows:32px minmax(0,1fr) 54px}
+ .device-bar {padding:0 6px;gap:6px}.device-power,.device-active-app {display:none}.device-network {margin-left:auto}
+ .device-wallpaper {inset:32px 0 0}.device-wallpaper::after {width:105%;height:80%;right:-24%;top:24%}
+ .device-homepage {max-width:75%;align-self:start;padding:24px 14px}
+ .device-homepage h2 {font-size:clamp(38px,7vw,55px);margin-bottom:16px}
+ .device-windows {inset:36px 4px 57px}
+ .device-os .device-window.opening-mac-window,.boss-mac-overlay .device-os .device-window.opening-mac-window {width:100%;max-height:100%;height:100%}
+ .device-os .device-dock {gap:2px;margin:0 3px 3px;padding:3px 4px}
+ .device-os .device-launch.opening-mac-dockitem {width:44px;height:42px;gap:1px}
+ .device-launch .device-glyph {width:27px;height:27px}.device-launch .device-glyph svg {width:21px;height:21px}
+ .device-dock-label {width:100%;overflow:hidden;text-overflow:ellipsis;font-size:8px}
+ .device-map {grid-template-columns:1fr;grid-template-rows:minmax(130px,1fr) auto}
+ .device-map .device-document {max-height:130px;padding:10px}.device-map .device-document h2 {font-size:17px;margin:0}
+}
+@media(max-height:540px) {.device-homepage h2 {margin:5px 0 10px;font-size:39px}.device-homepage {margin:0}}
+@media(prefers-reduced-motion:reduce){.device-os *,.device-os *::before,.device-os *::after {animation-duration:.001s!important;transition-duration:.001s!important}}

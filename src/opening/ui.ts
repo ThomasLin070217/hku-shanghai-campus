@@ -5,7 +5,9 @@ import {DEFAULT_SETTINGS} from '../gameplay/save';
 import {setHidden, setText} from '../ui/dom';
 import {createLocalAgent} from './agent';
 import {createMacBookExperience} from './macbook';
-import {OPENING_CAPTURE_DAMAGE, OPENING_MAX_HEARTS} from './runtime';
+import {bindComputeApps} from './computeApps';
+import {OPENING_CAPTURE_DAMAGE} from './runtime';
+import {createVitalsHud} from '../ui/vitals';
 
 /**
  * English opening UI renderer. It only renders opening state and submits
@@ -47,6 +49,7 @@ function formatSetting(key: SliderKey, value: number): string {
 export function createOpeningUI(
   stage: HTMLElement,
   actions: OpeningUIActions,
+  device: {instanceId:()=>string|undefined; units:()=>{id:string;name:string;status:string}[]},
 ): {update(view: OpeningView): void; dispose(): void} {
   const events = new AbortController();
   let currentView:OpeningView|null=null;
@@ -92,39 +95,12 @@ export function createOpeningUI(
   warningEl.append(node('span', 'opening-warning-label', T.robot.label), warningStateEl, warningBarEl);
 
   // -------------------------------------------------------------- Hearts.
-  const heartSvg = () => {
-    // A deliberately blocky pixel heart: 11 rows of crisp rects, not an emoji.
-    const left = [1, 0, 0, 0, 0, 1, 1, 2, 2, 3, 3];
-    const right = [2, 3, 7, 7, 7, 6, 6, 5, 5, 4, 4];
-    let rects = '';
-    for (let y = 0; y < left.length; y++) {
-      rects += `<rect x="${left[y]}" y="${y}" width="${right[y] - left[y] + 1}" height="1"/>`;
-    }
-    return `<svg viewBox="0 0 8 11" shape-rendering="crispEdges" aria-hidden="true" focusable="false">${rects}</svg>`;
-  };
-  const heartsCard = node('section', 'opening-hearts');
-  heartsCard.setAttribute('aria-label', 'Vital hearts');
-  const heartsHead = node('div', 'opening-hearts-head');
-  const heartsLabel = node('p', 'opening-hearts-label', 'Vitals');
-  const heartsCount = node('span', 'opening-hearts-count', '10 / 10');
-  heartsHead.append(heartsLabel, heartsCount);
-  const heartsRow = node('div', 'opening-hearts-row');
-  const heartEls: HTMLElement[] = [];
-  for (let i = 0; i < OPENING_MAX_HEARTS; i++) {
-    const heart = node('span', 'opening-heart is-full');
-    heart.innerHTML = heartSvg();
-    heart.setAttribute('aria-hidden', 'true');
-    heartsRow.append(heart);
-    heartEls.push(heart);
-  }
-  heartsCard.append(heartsHead, heartsRow);
-  heartsCard.setAttribute('role', 'img');
-  heartsCard.setAttribute('aria-label', '10 of 10 hearts');
+  const vitals = createVitalsHud();
 
   const dangerVignette = node('div', 'opening-danger-vignette');
   dangerVignette.setAttribute('aria-hidden', 'true');
 
-  stage.append(heartsCard, hud, mapCard, promptEl, warningEl, dangerVignette);
+  stage.append(vitals.element, hud, mapCard, promptEl, warningEl, dangerVignette);
 
   // ---------------------------------------------------------- Cinematic.
   const cinema = node('section', 'opening-cinema');
@@ -210,6 +186,7 @@ export function createOpeningUI(
   }
 
   function showDialog(next: HTMLElement, nextKind: DialogKind): void {
+    if (kind === 'computer' && nextKind !== 'computer') mac.suspend();
     const entering = kind === null;
     if (entering) previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     dialog?.remove();
@@ -225,6 +202,7 @@ export function createOpeningUI(
 
   function hideDialog(): void {
     if (!dialog) return;
+    if (kind === 'computer') mac.suspend();
     const restore = previousFocus;
     dialog.remove();
     dialog = null;
@@ -241,8 +219,12 @@ export function createOpeningUI(
 
   // ------------------------------------------------------ MacBook + Agent.
   const localAgent = createLocalAgent();
+  const compute = bindComputeApps(device.instanceId,()=>mac.showDesktop());
   const mac = createMacBookExperience({
     actions,
+    ...compute.options,
+    devices:device.units,
+    sessionKey:()=> 'hku.macbook.chat.'+(device.instanceId()??'opening'),
     drawMap: (canvas, large) => actions.drawMap(canvas, large),
     onClose: () => requestClose(),
     agent: localAgent,
@@ -339,10 +321,9 @@ export function createOpeningUI(
   function computerDialog(view: OpeningView): HTMLElement {
     const shell = dialogShell('computer');
     shell.classList.add('opening-mac-shell');
-    const closeHint = node('button', 'opening-mac-closehint', 'Put to sleep · C');
-    closeHint.type = 'button';
-    closeHint.addEventListener('click', () => requestClose());
-    shell.append(mac.root, closeHint);
+    shell.setAttribute('aria-label','MacBook Air');
+    shell.removeAttribute('aria-labelledby');
+    shell.append(mac.root);
     mac.open(view);
     return shell;
   }
@@ -500,7 +481,13 @@ export function createOpeningUI(
     shell.append(body);
     const close = makeButton(T.complete.close, 'primary', requestClose);
     close.dataset.autofocus = 'true';
-    shell.append(actionRow(close));
+    const lawn = makeButton('Play L001 lawn encounter', 'secondary', () => {
+      location.assign('?experience=lion-boss');
+    });
+    const rescue = makeButton('Rescue the sports hall students', 'secondary', () => {
+      location.assign('?experience=sports-hall');
+    });
+    shell.append(actionRow(close, rescue, lawn));
     return shell;
   }
 
@@ -600,19 +587,6 @@ export function createOpeningUI(
   // ---------------------------------------------------------- Modal sync.
   function modalSignature(view: OpeningView): string {
     if (!view.modal) return 'none';
-    if (view.modal === 'computer') {
-      return [
-        'computer',
-        view.computerPage,
-        view.story.stage,
-        view.story.invitation_read,
-        view.story.laptop_acquired,
-        view.story.campus_alert_triggered,
-        view.story.alert_read,
-      ]
-        .map(String)
-        .join('|');
-    }
     return view.modal;
   }
 
@@ -679,7 +653,7 @@ export function createOpeningUI(
       trapFocus(event);
       return;
     }
-    if (event.repeat) return;
+    if (event.isComposing || event.repeat || event.metaKey || event.ctrlKey || event.altKey) return;
     const target = event.target;
     const editable = target instanceof HTMLElement &&
       (target.matches('input, textarea, select') || target.isContentEditable);
@@ -687,6 +661,7 @@ export function createOpeningUI(
       event.preventDefault();
       event.stopPropagation();
       if (kind === 'caught') return;
+      if (kind === 'computer' && event.key === 'Escape' && mac.handleEscape()) return;
       requestClose();
     }
   }
@@ -710,28 +685,6 @@ export function createOpeningUI(
       setText(warningStateEl, text);
     }
     warningFillEl.style.width = Math.max(6, Math.round(level * 100)) + '%';
-  }
-
-  let lastHearts = OPENING_MAX_HEARTS;
-  function updateHearts(view: OpeningView): void {
-    const hearts = Math.max(0, Math.min(view.runtime.maxHearts, Math.round(view.runtime.hearts)));
-    if (hearts !== lastHearts) {
-      for (let i = hearts; i < lastHearts; i++) {
-        const heart = heartEls[i];
-        if (!heart) continue;
-        heart.classList.add('is-hit');
-        setTimeout(() => heart.classList.remove('is-hit'), 720);
-      }
-      lastHearts = hearts;
-    }
-    heartEls.forEach((heart, index) => {
-      heart.classList.toggle('is-full', index < hearts);
-      heart.classList.toggle('is-empty', index >= hearts);
-    });
-    setText(heartsCount, `${hearts} / ${view.runtime.maxHearts}`);
-    heartsCard.classList.toggle('is-low', hearts > 0 && hearts <= 4);
-    heartsCard.classList.toggle('is-empty', hearts <= 0);
-    heartsCard.setAttribute('aria-label', `${hearts} of ${view.runtime.maxHearts} hearts`);
   }
 
   function updateCinema(view: OpeningView): void {
@@ -760,7 +713,6 @@ export function createOpeningUI(
     stage.classList.add('opening-cinema-active');
     document.body.classList.add('opening-cinema-active');
   }
-
   function update(view: OpeningView): void {
     currentView=view;
     // HUD text only: no modal rebuild on per-frame state such as elapsed time.
@@ -771,7 +723,7 @@ export function createOpeningUI(
     setHidden(promptEl, !view.prompt);
     if (view.prompt) setText(promptEl, view.prompt);
     updateWarning(view);
-    updateHearts(view);
+    vitals.update(view.runtime.hearts);
     const target = view.target;
     if (target) {
       const dx = target[0] - view.player[0];
@@ -788,7 +740,6 @@ export function createOpeningUI(
     }
     const danger = clamp(Number(view.robotWarning) || 0, 0, 1);
     dangerVignette.style.opacity = String(view.runtime.curtain_deployed ? Math.min(.72, .10 + danger * .62) : 0);
-    if (view.modal === 'computer') mac.update(view);
     updateCinema(view);
 
     const now = performance.now();
@@ -805,6 +756,8 @@ export function createOpeningUI(
     if (signature !== lastSignature) {
       lastSignature = signature;
       renderModal(view);
+    } else if (view.modal === 'computer') {
+      mac.update(view);
     } else if (view.modal === 'settings' && dialog) {
       const line = dialog.querySelector<HTMLElement>('.opening-modal-save');
       if (line) setText(line, view.saveStatus);
@@ -815,9 +768,9 @@ export function createOpeningUI(
 
   function dispose(): void {
     events.abort();
-    mac.dispose();
-    localAgent.dispose();
     hideDialog();
+    compute.dispose();
+    mac.dispose();
     modalRoot.remove();
     hud.remove();
     mapCard.remove();
@@ -825,6 +778,8 @@ export function createOpeningUI(
     warningEl.remove();
     cinema.remove();
     stage.classList.remove('opening-cinema-active');
+    dangerVignette.remove();
+    vitals.dispose();
   }
 
   return {update, dispose};

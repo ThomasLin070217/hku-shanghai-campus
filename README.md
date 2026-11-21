@@ -1,5 +1,11 @@
 # HKU Shanghai · 校园数字巡检 v9
 
+**[打开校园试玩](https://hku-l001-lawn-playtest.ctw557923.chatgpt.site/)**，可用电脑浏览器直接选择校园开场、体育馆营救、草坪狮子 L001 或校园巡检。帧率偏低时可在选关页勾选「低画质模式」。
+
+本地运行 `npm run play` 后，访问 `/?experience=levels` 选关。公开试玩使用 `npm run build:playtest` 生成的 `dist-playtest/`，MacBook 的技能工作台在浏览器内运行。
+
+**L001 狮子模型更新：** 依据新增正面、侧面和背面照片重建坐姿狮子，补齐后鬃、青绿袍摆、白袖口、爪面标记与尾巴。模型本体暂定 6.5 m，尺寸为游戏比例估算。模型与碰撞使用同一尺度。
+
 **场景编号与 AI 接手：** 右上角“场景编号”可搜索、点选细部、定位和复制修改任务。楼栋 B01–B07、道路 R001…、学院牌 S001。团队及 Agent 先读 [AI 最短接手指南](docs/AI-START.md)，工程约定见 [AGENTS.md](AGENTS.md)。支持离线源码索引、HTTP 与 MCP。
 
 **11 月 16 日照片更新：** 学院石牌夜间侧灯、CDS-1 正门错排地灯与门厅细节已更新。室内预览补了键盘墙前的弧形沙发、进门走廊和环形屏公共区。[照片与建模说明](references/campus-media/UPDATE-20261116.md)。

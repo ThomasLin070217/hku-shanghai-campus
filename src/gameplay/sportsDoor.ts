@@ -1,14 +1,66 @@
 import * as T from 'three';
 import type {CampusGame} from '../exploration/game';
+import type {createExplorer} from '../exploration/controller';
 import {KEYS,keyLabel} from '../exploration/config';
 import {SPORTS_DOOR,sportsDoorWorld} from '../model/sportsDoor';
 import {SPORTS_HALL_PUZZLE,checkCode,checkPassword} from './sudokuPuzzle';
+import {CampusAudio} from './audio';
+import {DEFAULT_SETTINGS} from './save';
 import './sportsDoor.css';
+
+/** A short, replayable rescue. Each visit begins at the east door and has no save writer. */
+export function createSportsRescueExperience(explorer:ReturnType<typeof createExplorer>,interact:()=>boolean){
+ const {game}=explorer;
+ const audio=new CampusAudio({...DEFAULT_SETTINGS}),events=new AbortController();
+ const pause=document.querySelector<HTMLElement>('.pause-card')!;
+ const start=pause.querySelector<HTMLButtonElement>('#enter-game')!;
+ const next=document.createElement('a');
+ next.href='?experience=lion-boss';next.textContent='下一关 · 草坪 L001 →';next.style.textDecoration='underline';next.hidden=true;
+ start.before(next);
+ const brief=pause.querySelector('p')!;
+ pause.querySelector('h2')!.textContent='体育馆营救';
+ brief.textContent='100 名学生被困在体育馆。你正面对东门，开始后按 F 检查门锁，补全数独，再输入四位密码。';
+ start.textContent='开始营救';
+ pause.querySelector<HTMLElement>('#session-save')!.textContent='每次进入本关都会从东门重新开始。';
+ pause.querySelector<HTMLElement>('#experience-settings')!.hidden=true;
+ const replay=pause.querySelector<HTMLButtonElement>('#new-game')!;
+ replay.textContent='重玩体育馆营救';
+ replay.addEventListener('click',()=>location.reload(),{signal:events.signal});
+ function relocate(){
+  const door=sportsDoorWorld(game.site.sportsZ),x=door.x+2.6;
+  const y=game.body.world.support(x,door.z,0)??0;
+  game.body.position.set(x,y,door.z);game.body.velocity.set(0,0,0);
+  game.body.grounded=true;game.yaw=Math.PI/2;game.pitch=0;
+  explorer.pause('sports_east_door');
+ }
+ relocate();
+ const openSettings=()=>explorer.pause('rescue_briefing');
+ const startAudio=()=>{void audio.start();};
+ for(const id of ['#enter-game','#enter-compat','#enable-ai']){
+  pause.querySelector(id)!.addEventListener('click',startAudio,{signal:events.signal});
+ }
+ explorer.interactions.add(interact);explorer.computers.add(openSettings);
+ let started=false,rescued=false;
+ return{
+  audio,relocate,openSettings,
+  persist(_force=false){/* Standalone rescue is session-only. */},
+  update(){
+   if(!game.paused&&!started){started=true;start.textContent='继续营救';}
+   if(game.doors[SPORTS_DOOR.id]&&!rescued){
+    rescued=true;next.hidden=false;start.textContent='进入体育馆';
+    brief.textContent='东门已开启，100 名学生获救。你可以进馆看看，或前往草坪处理 L001。';
+   }
+   const p=game.body.position;
+   audio.update(explorer.student.gait,game.paused||!explorer.enabled,explorer.world.surface(p.x,p.z,p.y),p,explorer.camera.position,game.yaw);
+  },
+  dispose(){events.abort();explorer.interactions.delete(interact);explorer.computers.delete(openSettings);audio.dispose();}
+ };
+}
 
 /** Runtime for the fictional sports-hall east door: prompt, two-stage lock (sudoku, then a
  * numeric password), swing animation, collision toggle and save-backed lock state. All
  * answers live in content/puzzles/sports-hall-lock.json; the model never holds them. */
-export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGame;notify:(text:string)=>void;openPanel:()=>void;closePanel:()=>void;resume:()=>void;persist?:()=>void}){
+export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGame;notify:(text:string)=>void;openPanel:()=>void;closePanel:()=>void;resume:()=>void;persist?:()=>void;standalone?:boolean}){
  const {game,notify}=options;
  const prompt=document.createElement('div');prompt.id='door-prompt';prompt.hidden=true;prompt.setAttribute('role','status');
  document.querySelector('.stage')!.append(prompt);
@@ -19,9 +71,20 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
  const banner=document.createElement('div');banner.id='rescue-banner';banner.hidden=true;
  banner.innerHTML=`<div role="status" aria-live="polite"><span class="eyebrow">SPORTS HALL · EAST DOOR</span><h2>You have successfully rescued the students!</h2><p>100 students are safe. The hall is clear.</p><small>Click anywhere to dismiss</small></div>`;
  document.body.append(banner);
+ if(options.standalone){
+  const actions=document.createElement('p');
+  const next=document.createElement('a');next.href='?experience=lion-boss';next.textContent='下一关 · 前往草坪调查 L001 →';next.style.textDecoration='underline';
+  const dismiss=document.createElement('button');dismiss.type='button';dismiss.textContent='留在体育馆';
+  actions.append(next,'　',dismiss);banner.querySelector('small')!.replaceWith(actions);
+  next.addEventListener('click',event=>event.stopPropagation());
+ }
  let bannerTimer=0;
  function hideRescue(){banner.classList.remove('show');bannerTimer=window.setTimeout(()=>{banner.hidden=true;},420);}
- function showRescue(){banner.hidden=false;requestAnimationFrame(()=>banner.classList.add('show'));clearTimeout(bannerTimer);bannerTimer=window.setTimeout(hideRescue,8000);}
+ function showRescue(){
+  banner.hidden=false;
+  requestAnimationFrame(()=>{banner.classList.add('show');if(options.standalone)banner.querySelector('a')?.focus();});
+  clearTimeout(bannerTimer);if(!options.standalone)bannerTimer=window.setTimeout(hideRescue,8000);
+ }
  banner.addEventListener('click',()=>{clearTimeout(bannerTimer);hideRescue();});
  const card=panel.querySelector('section')!,title=panel.querySelector<HTMLElement>('#door-lock-title')!,sudokuStep=panel.querySelector<HTMLElement>('#door-lock-sudoku-step')!,passwordStep=panel.querySelector<HTMLElement>('#door-lock-password-step')!;
  const grid=panel.querySelector<HTMLElement>('#door-lock-grid')!,statusLine=panel.querySelector<HTMLElement>('#door-lock-status')!;
@@ -48,8 +111,8 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
  function openLock(){
   if(opened)return;opened=true;options.openPanel();panel.hidden=false;reset();showStage(sudokuSolved?'password':'sudoku');
  }
- function closeLock(){
-  if(!opened)return;opened=false;panel.hidden=true;card.classList.remove('shake');options.closePanel();options.resume();
+ function closeLock(resume=true){
+  if(!opened)return;opened=false;panel.hidden=true;card.classList.remove('shake');options.closePanel();if(resume)options.resume();
  }
  function tryConfirm(){
   if(!opened||stage!=='sudoku')return;
@@ -63,7 +126,7 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
   if(!opened||stage!=='password')return;
   if(code.length<pass.length){setStatus(codeStatus,`请输入 ${pass.length} 位数字。`,'warn');return;}
   if(!checkPassword(puzzle,code)){setStatus(codeStatus,pass.failure,'error');code=[];renderCode();card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');audio(false);return;}
-  unlock();closeLock();
+  unlock();closeLock(!options.standalone);
  }
  function pressKey(key:string){
   if(stage!=='password')return;

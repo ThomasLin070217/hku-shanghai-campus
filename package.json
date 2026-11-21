@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
+    "build:playtest": "tsc --noEmit && vite build --mode playtest",
     "preview": "vite preview --host 127.0.0.1",
     "export:glb": "tsx scripts/export-model.ts",
     "validate:glb": "node scripts/validate-glb.mjs",
@@ -49,6 +50,7 @@
     "check:video-followup": "tsx scripts/check-video-followup.ts",
     "scene:opening": "tsx scripts/scene-catalog.ts --opening",
     "check:opening": "tsx scripts/check-opening-state.ts && tsx scripts/check-opening-robot.ts && tsx scripts/check-opening-fleet.ts && tsx scripts/check-opening-runtime.ts && tsx scripts/check-opening-atmosphere.ts && tsx scripts/check-opening-world.ts && tsx scripts/check-opening-integration.ts && tsx scripts/check-opening-reference.ts && tsx scripts/check-opening-npcs.ts",
+    "check:lion-boss": "tsx scripts/check-lion-boss.ts",
     "check:door": "tsx scripts/check-sports-door.ts"
   },
   "dependencies": {

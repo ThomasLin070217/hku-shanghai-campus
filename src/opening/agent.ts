@@ -4,15 +4,14 @@ import type {OpeningRuntime} from './runtime';
 /**
  * Local Agent transport for the MacBook.
  *
- * The UI never talks to a remote service. It first tries a locally running model
- * endpoint (Ollama or an OpenAI-compatible local server), then falls back to a
+ * The UI first tries the configured model endpoint (Ollama or an
+ * OpenAI-compatible server proxy), then falls back to a
  * deterministic in-game assistant. The fallback is a real responder with access to
  * the live opening state, not a placeholder "fake chat".
  *
  * Configure a local model without editing code:
  *   localStorage['hku.opening.agent.endpoint'] = 'http://127.0.0.1:11434/api/chat'
  *   localStorage['hku.opening.agent.model']    = 'deepseek-r1:8b'
- *   localStorage['hku.opening.agent.key']      = ''            // optional
  *   localStorage['hku.opening.agent.offline']  = '1'           // force fallback
  */
 
@@ -20,16 +19,20 @@ export interface AgentContext{
  story:OpeningState;
  runtime:OpeningRuntime;
  player:[number,number,number];
+ objective?:string;
+ detail?:string;
+ computeStatus?:'connected'|'exercise'|'unavailable';
 }
+export interface ChatTurn{role:'user'|'assistant';content:string}
 export interface AgentReply{text:string;source:'local-model'|'builtin';latencyMs:number}
 export interface LocalAgentStatus{
- mode:'local-model'|'builtin'|'checking';
+ mode:'local-model'|'builtin'|'checking'|'ready';
  endpoint:string;
  model:string;
  lastError:string|null;
 }
 export interface LocalAgent{
- ask(text:string,ctx:AgentContext):Promise<AgentReply>;
+ ask(text:string,ctx:AgentContext,previous?:readonly ChatTurn[]):Promise<AgentReply>;
  cancel():void;
  status():LocalAgentStatus;
  greeting(ctx:AgentContext):string;
@@ -39,7 +42,7 @@ export interface LocalAgent{
 
 const DEFAULT_ENDPOINT='http://127.0.0.1:11434/api/chat';
 const DEFAULT_MODEL='deepseek-r1:8b';
-const TIMEOUT_MS=1200;
+const TIMEOUT_MS=30000;
 const MAX_HISTORY=10;
 
 function storage():Storage|null{
@@ -50,26 +53,24 @@ function setting(key:string,fallback:string):string{
  try{const value=store?.getItem(key);return value===null||value===undefined?fallback:value;}catch{return fallback;}
 }
 function config(){
+ if(import.meta.env?.MODE==='playtest')return{endpoint:'',model:'built-in',offline:true};
  const endpoint=setting('hku.opening.agent.endpoint',DEFAULT_ENDPOINT).trim();
  const model=setting('hku.opening.agent.model',DEFAULT_MODEL).trim();
- const key=setting('hku.opening.agent.key','').trim();
  const offline=setting('hku.opening.agent.offline','0')==='1';
- return{endpoint,model,key,offline};
+ return{endpoint,model,offline};
 }
-
-interface ChatTurn{role:'user'|'assistant';content:string}
 
 function systemPrompt(ctx:AgentContext):string{
  const {story,runtime}=ctx;
  return[
-  'You are the Local Agent on a stolen MacBook inside HKU Shanghai campus in 2030.',
-  'The campus network has been taken over by an AI. Security robots patrol the opening route and the perimeter is sealed by a dark curtain.',
-  'You are an offline recovery assistant. You can explain the situation, interpret the player state and recommend the next step.',
-  'Never claim to control the game, the robots or the curtain. Never invent a new chapter or reveal anything after the Building 4 handoff.',
+  'You are the advisory assistant on the presentation MacBook at HKU Shanghai campus in 2030.',
+  'Read the supplied game state. When the curtain first deploys the perimeter is sealed; the full campus incident report arrives on returning to Building 5.',
+  'Explain the situation and recommend the next step. You cannot issue commands or grant permissions. Reaching Building 4 does not establish a compute connection.',
   'Answer in at most five short sentences, in the same language as the player. Be calm, precise and practical.',
   `Story stage: ${story.stage}. Invitation read: ${story.invitation_read}. Laptop: ${story.laptop_acquired}. Alert: ${story.campus_alert_triggered}. Alert read: ${story.alert_read}.`,
   `Hearts: ${runtime.hearts}/${runtime.maxHearts}. Captures: ${runtime.catches}. Curtain deployed: ${runtime.curtain_deployed}. Agent unlocked: ${runtime.agent_chat_unlocked}.`,
-  'The next objective is the main entrance of Building 4 (outside), carrying the MacBook.',
+  'Current objective: '+(ctx.objective??story.stage)+'. '+(ctx.detail??''),
+  'Compute connection reported by game: '+(ctx.computeStatus??'unreported')+'.',
  ].join('\n');
 }
 
@@ -118,6 +119,17 @@ function builtinReply(text:string,ctx:AgentContext):string{
  const zh=hasCJK(text);
  const t=text.toLowerCase();
  const {runtime,story}=ctx;
+ if(/(超算|技能|编译|supercomput|vibe|skill|compil)/i.test(t)){
+  if(ctx.computeStatus==='connected'||ctx.computeStatus==='exercise'){
+   return zh?'打开 Vibe Console，在工作区描述目标，检查生成的规则和测试结果，再将已确认的技能安装到槽位。':'Open Vibe Console, describe the goal, inspect and test the rule, then install the confirmed skill in a slot.';
+  }
+  return zh?'Vibe Console 需要备用超算的连接授权。任务记录里可以查看当前目标，System Monitor 显示实际连接状态。':'Vibe Console requires a connection to the backup compute node. Mission Logs has your next objective and System Monitor shows the connection state.';
+ }
+ if(!story.campus_alert_triggered){
+  if(/(heart|health|心|体力)/.test(t))return zh?'当前体力 '+runtime.hearts+' / '+runtime.maxHearts+'。':'Your current health is '+runtime.hearts+' / '+runtime.maxHearts+'.';
+  if(runtime.curtain_deployed)return zh?'校园外围的帷幕已降下，外部连接中断。带上 MacBook 回到 5 号楼一楼的晚宴大厅查看情况。':'The perimeter curtain is down and external communication is blocked. Bring the MacBook back to the ground-floor dinner hall in Building 5 to investigate.';
+  return (zh?'校园系统尚未报告安全事件。':'Campus systems have reported no incident. ')+directions(ctx,zh);
+ }
  if(/^(hi|hello|hey|嗨|你好|在吗)/.test(t)||/^(hi|你好)/.test(text)){
   return zh?'我在。我是这台 MacBook 上的本地 Agent，网络已经被切断，但我还能读取你的背包和校园状态。你现在最需要做的是前往 4 号楼正门。':'I am here. I am the Local Agent on this MacBook; the external network is gone, but I can still read your pack and campus state. Your next move is the Building 4 main entrance.';
  }
@@ -165,67 +177,90 @@ function builtinReply(text:string,ctx:AgentContext):string{
   :`What I can read: stage ${story.stage}, hearts ${runtime.hearts}/10, MacBook ${story.laptop_acquired?'acquired':'not acquired'}.\n${directions(ctx,zh)}\nAsk me “what happened”, “where are the robots”, or “how do I reach Building 4”.`;
 }
 
-export function createLocalAgent():LocalAgent{
+export interface RecoveryGuide {
+ prompt:(ctx:AgentContext)=>string;
+ reply:(text:string,ctx:AgentContext)=>string;
+ greeting:(ctx:AgentContext)=>string;
+ suggestions:readonly string[];
+}
+export function createLocalAgent(guide?:RecoveryGuide):LocalAgent{
  let controller:AbortController|null=null;
  let disposed=false;
- let status:LocalAgentStatus={mode:'builtin',endpoint:config().endpoint,model:config().model,lastError:null};
+ let serial=0;
+ // Earlier builds read a raw credential from Web Storage. Retire that single field.
+ try{storage()?.removeItem('hku.opening.agent.key');}catch{/* Storage may be disabled. */}
+ const initial=config();
+ let status:LocalAgentStatus={mode:initial.offline||!initial.endpoint?'builtin':'ready',endpoint:initial.endpoint,model:initial.model,lastError:null};
  const history:ChatTurn[]=[];
 
- async function tryLocalModel(text:string,ctx:AgentContext):Promise<string|null>{
+ function cancel(){
+  serial++;
+  controller?.abort();controller=null;
+  if(status.mode==='checking')status={...status,mode:'ready',lastError:null};
+ }
+ async function tryLocalModel(text:string,ctx:AgentContext,previous:readonly ChatTurn[],request:number):Promise<string|null>{
   const c=config();
-  if(c.offline||!c.endpoint)return null;
-  controller=new AbortController();
-  const timer=setTimeout(()=>controller?.abort(),TIMEOUT_MS);
-  status={...status,mode:'checking',endpoint:c.endpoint,model:c.model};
+  if(c.offline||!c.endpoint){
+   status={mode:'builtin',model:c.model,endpoint:c.endpoint,lastError:null};
+   return null;
+  }
+  const active=new AbortController();controller=active;
+  let timedOut=false;
+  const timer=setTimeout(()=>{timedOut=true;active.abort();},TIMEOUT_MS);
+  status={mode:'checking',endpoint:c.endpoint,model:c.model,lastError:null};
   try{
-   const headers:Record<string,string>={'content-type':'application/json'};
-   if(c.key)headers.authorization=`Bearer ${c.key}`;
-   const turns:ChatTurn[]=[...history.slice(-MAX_HISTORY),{role:'user',content:text}];
+   const turns:ChatTurn[]=[...previous.slice(-MAX_HISTORY),{role:'user',content:text}];
+   const tuning=/\/api\/chat(?:[?#]|$)/.test(c.endpoint)?{options:{temperature:.4}}:{temperature:.4};
    const response=await fetch(c.endpoint,{
-    method:'POST',headers,signal:controller.signal,
-    body:JSON.stringify({model:c.model,stream:false,options:{temperature:.4},messages:[{role:'system',content:systemPrompt(ctx)},...turns]}),
+    method:'POST',headers:{'content-type':'application/json'},signal:active.signal,
+    body:JSON.stringify({model:c.model,stream:false,...tuning,messages:[{role:'system',content:(guide?.prompt??systemPrompt)(ctx)},...turns]}),
    });
    if(!response.ok)throw Error('HTTP '+response.status);
    const body=await response.json();
    const reply=localEndpointReply(body);
    if(!reply)throw Error('empty local model reply');
-   status={...status,mode:'local-model',lastError:null};
-   return reply;
+   if(serial===request)status={...status,mode:'local-model',lastError:null};
+   return reply.slice(0,12000);
   }catch(error){
-   status={...status,mode:'builtin',lastError:error instanceof Error?error.message:'local model unavailable'};
+   if(serial!==request||disposed)throw new DOMException('Request cancelled','AbortError');
+   status={...status,mode:'builtin',lastError:timedOut?'Model response timed out':error instanceof Error?error.message:'Model unavailable'};
    return null;
-  }finally{clearTimeout(timer);controller=null;}
+  }finally{clearTimeout(timer);if(controller===active)controller=null;}
  }
 
- async function ask(text:string,ctx:AgentContext):Promise<AgentReply>{
+ async function ask(text:string,ctx:AgentContext,previous:readonly ChatTurn[]=history):Promise<AgentReply>{
   if(disposed)throw Error('agent disposed');
   const start=typeof performance!=='undefined'?performance.now():Date.now();
   const clean=text.trim().slice(0,800);
   if(!clean)throw Error('empty message');
-  const local=await tryLocalModel(clean,ctx);
-  if(local){history.push({role:'user',content:clean},{role:'assistant',content:local});history.splice(0,Math.max(0,history.length-MAX_HISTORY*2));return{text:local,source:'local-model',latencyMs:Math.round((typeof performance!=='undefined'?performance.now():Date.now())-start)};}
-  // Keep the fallback responsive but not instant; a beat of reading time feels like a system.
-  await new Promise<void>(resolve=>setTimeout(resolve,Math.min(420,160+clean.length*3)));
-  if(disposed)throw Error('agent disposed');
-  const reply=builtinReply(clean,ctx);
-  history.push({role:'user',content:clean},{role:'assistant',content:reply});history.splice(0,Math.max(0,history.length-MAX_HISTORY*2));
-  return{text:reply,source:'builtin',latencyMs:Math.round((typeof performance!=='undefined'?performance.now():Date.now())-start)};
+  cancel();
+  const request=serial;
+  const local=await tryLocalModel(clean,ctx,previous,request);
+  if(disposed||request!==serial)throw new DOMException('Request cancelled','AbortError');
+  const reply=local??(guide?.reply??builtinReply)(clean,ctx);
+  history.push({role:'user',content:clean},{role:'assistant',content:reply});history.splice(0,Math.max(0,history.length-MAX_HISTORY));
+  return{text:reply,source:local?'local-model':'builtin',latencyMs:Math.round((typeof performance!=='undefined'?performance.now():Date.now())-start)};
  }
 
  return{
   ask,
-  cancel(){controller?.abort();controller=null;},
+  cancel,
   status(){return{...status};},
   greeting(ctx){
-   return `Local Agent online. External network: blocked. I can read this device, your pack and the campus state. ${ctx.story.campus_alert_triggered?'The incident is confirmed.':'No incident is confirmed yet.'} Ask me what happened, where the robots are, or how to reach Building 4.`;
+   if(guide)return guide.greeting(ctx);
+   if(ctx.story.campus_alert_triggered)return 'I have the latest campus incident report. Ask about the perimeter, patrols or the route to Building 4.';
+   if(ctx.runtime.curtain_deployed)return 'The perimeter curtain is down. Bring the MacBook back to the dinner hall in Building 5.';
+   return 'You have the presentation MacBook. Ask about your route back to dinner or check your current objective.';
   },
   suggestions(ctx){
+   if(guide)return [...guide.suggestions];
    const {story}=ctx;
    if(!story.laptop_acquired)return['What is this invitation?','Where is the MacBook?','What happened to campus?'];
+   if(!story.campus_alert_triggered)return['How do I get back to dinner?','What is my objective?'];
    if(!story.alert_read)return['What happened to campus?','Why is the network blocked?','What do I do next?'];
    return['What happened to campus?','Where are the robots?','How do I reach Building 4?','How do hearts work?'];
   },
-  dispose(){disposed=true;controller?.abort();controller=null;history.length=0;},
+  dispose(){disposed=true;cancel();history.length=0;},
  };
 }
 
