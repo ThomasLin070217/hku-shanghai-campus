@@ -563,9 +563,11 @@ export function createOpeningUI(
     // the B4 supercomputer, so the run continues on foot to the lawn in this page.
     const deviceId = device.instanceId();
     const lawn = makeButton('Continue to Chapter 2', 'primary', () => {
-      if (deviceId) actions.startCampaign?.(deviceId, 'to_lawn');
+      if (deviceId) actions.startCampaign?.(deviceId, {stage: 'to_lawn', gesture: true});
     });
     lawn.disabled = true;
+    // A running campaign is never restarted from here (it would rewind the save).
+    lawn.hidden = !!currentView?.campaign;
     const quick = node('details', 'opening-other-slices');
     const quickRow = node('div', 'opening-other-slices-row');
     quickRow.append(bindBackupRelay(deviceId, () => { lawn.disabled = false; }));
@@ -680,7 +682,9 @@ export function createOpeningUI(
   // only shows once this MacBook is already paired, or when the campaign cannot start.
   function enterB4Puzzle(): boolean {
     const id = device.instanceId();
-    if (!id || relayRestored(id)) return false;
+    if (!id) return false;
+    // Already running: startCampaign only closes the dialog, it never restarts.
+    if (!currentView?.campaign && relayRestored(id)) return false;
     return actions.startCampaign?.(id) ?? false;
   }
 

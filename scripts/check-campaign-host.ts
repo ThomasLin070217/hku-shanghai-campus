@@ -1,13 +1,19 @@
 import assert from 'node:assert/strict';
 import * as T from 'three';
 import {createCampaignHost,type CampaignStorage} from '../src/campaign/host';
-import {CAMPAIGN_CHAPTERS} from '../src/campaign/chapters';
-import {CAMPAIGN_SAVE_KEY,createCampaignState,type CampaignStage} from '../src/campaign/state';
+import {CAMPAIGN_SAVE_KEY,createCampaignState,type CampaignEvent} from '../src/campaign/state';
 import type {Chapter,ChapterContext,ChapterId,Explorer} from '../src/campaign/types';
 import {CampusGame} from '../src/exploration/game';
 import {createNavigation} from '../src/exploration/navigation';
 import {BUILDINGS,SITE} from '../src/model/campusParameters';
-import {checkpointCampaign,checkpointPose,checkpointState} from '../src/opening/checkpoint';
+import {createHeartsChannel} from '../src/opening/heartsChannel';
+import {createOpeningRuntime,OPENING_MAX_HEARTS} from '../src/opening/runtime';
+
+/*
+ * Host logic only. The chapters here are fakes passed through the host's
+ * `chapters` option, so this check never loads the chapter files Tasks 2–4 own.
+ * Entry and approach data are copies of the Task 1 stub values.
+ */
 
 let passed=0;
 const failures:string[]=[];
@@ -18,7 +24,9 @@ function group(name:string,fn:()=>void):void{
 
 // The real campus game, so the host reads the same body the explorer moves.
 const game=new CampusGame(createNavigation(BUILDINGS,SITE,true),BUILDINGS,SITE);
-const explorer={game} as unknown as Explorer;
+let enabled=true;
+const explorer={game,get enabled(){return enabled;}} as unknown as Explorer;
+game.paused=false;
 const place=(x:number,z:number)=>{game.body.position.set(x,0,z);};
 
 function memoryStorage(seed:Record<string,string>={}){
@@ -27,33 +35,40 @@ function memoryStorage(seed:Record<string,string>={}){
  return{storage,data,get writes(){return writes;}};
 }
 
-interface Spy{attached:number;updates:number;interacts:number;detached:number;consume:boolean;ctx:ChapterContext|null}
+const ENTRIES:Record<ChapterId,{entry:Chapter['entry'];approach:[number,number][];events:CampaignEvent[]}>={
+ b4:{entry:{point:[58,.02,18],radius:1.6,event:'enter_b4'},approach:[[58,25],[58,18]],events:['enter_b4','keyboard_solved','flip_solved','breaker_pulled','macbook_connected']},
+ lawn:{entry:{point:[1,.13,87],radius:3,event:'reach_lawn'},approach:[[58,25],[58,33.5],[24,33.5],[24,87],[1,87]],events:['reach_lawn','guardian_shutdown']},
+ sports:{entry:{point:[-45.9,0,-117],radius:2.5,event:'reach_sports'},approach:[[1,87],[24,87],[24,-117],[-45.9,-117]],events:['reach_sports','door_opened']},
+ ending:{entry:{point:[0,0,0],radius:0,event:'door_opened'},approach:[],events:['ending_finished']},
+};
+const CHAPTER_DATA=(id:ChapterId)=>ENTRIES[id];
+
+interface Spy{attached:number;updates:number;dts:number[];interacts:number;detached:number;consume:boolean;ctx:ChapterContext|null}
 function spyChapters(){
  const spies={} as Record<ChapterId,Spy>;
  const factories={} as Record<ChapterId,()=>Chapter>;
- for(const id of Object.keys(CAMPAIGN_CHAPTERS) as ChapterId[]){
-  const spy:Spy={attached:0,updates:0,interacts:0,detached:0,consume:true,ctx:null};spies[id]=spy;
-  factories[id]=()=>{
-   const real=CAMPAIGN_CHAPTERS[id]();
-   return{...real,
-    attach(ctx){spy.attached++;spy.ctx=ctx;real.attach(ctx);},
-    update(dt){spy.updates++;real.update(dt);},
-    interact(){spy.interacts++;return spy.consume;},
-    objective:stage=>({text:`${id} objective at ${stage}`,target:[1,2,3]}),
-    detach(){spy.detached++;real.detach();},
-   };
-  };
+ for(const id of Object.keys(ENTRIES) as ChapterId[]){
+  const spy:Spy={attached:0,updates:0,dts:[],interacts:0,detached:0,consume:true,ctx:null};spies[id]=spy;
+  factories[id]=()=>({
+   id,entry:ENTRIES[id].entry,approach:ENTRIES[id].approach,
+   attach(ctx){spy.attached++;spy.ctx=ctx;},
+   update(dt){spy.updates++;spy.dts.push(dt);},
+   interact(){spy.interacts++;return spy.consume;},
+   objective:stage=>({text:`${id} objective at ${stage}`,target:[1,2,3]}),
+   detach(){spy.detached++;spy.ctx=null;},
+   debug:{complete(){for(const e of ENTRIES[id].events)spy.ctx?.emit(e);return spy.ctx?.stage();}},
+  });
  }
  return{spies,factories};
 }
 
-function makeHost(seed:Record<string,string>={}){
+function makeHost(seed:Record<string,string>={},extra:Partial<ChapterContext>={}){
  const store=memoryStorage(seed),cards:[string,string][]=[];
  const {spies,factories}=spyChapters();
  const host=createCampaignHost({
   context:{
    scene:new T.Scene(),root:()=>new T.Group(),explorer,notify:()=>{},atmosphere:()=>undefined,
-   openPanel:()=>{},closePanel:()=>{},resume:()=>{},card:async(kicker,title)=>{cards.push([kicker,title]);},
+   openPanel:()=>{},closePanel:()=>{},resume:()=>{},card:async(kicker,title)=>{cards.push([kicker,title]);},...extra,
   },
   storage:store.storage,chapters:factories,now:()=>1000,
  });
@@ -94,7 +109,7 @@ group('(a) attaches the chapter for the current stage, once',()=>{
 
 group('(b) walking legs emit the entry event only inside entry.radius',()=>{
  const {host}=makeHost();
- const b4=CAMPAIGN_CHAPTERS.b4().entry,lawn=CAMPAIGN_CHAPTERS.lawn().entry,sports=CAMPAIGN_CHAPTERS.sports().entry;
+ const b4=CHAPTER_DATA('b4').entry,lawn=CHAPTER_DATA('lawn').entry,sports=CHAPTER_DATA('sports').entry;
  host.start('mac-1');
  place(b4.point[0],b4.point[2]+b4.radius+.4);host.update(1/60);
  assert.equal(host.stage(),'b4_enter','outside the B04 door: no event');
@@ -127,7 +142,7 @@ group('(c) every change persists under CAMPAIGN_SAVE_KEY',()=>{
 
 group('(d) objective: active chapter, or Go to … on walking legs',()=>{
  const {host}=makeHost();
- const b4=CAMPAIGN_CHAPTERS.b4(),lawn=CAMPAIGN_CHAPTERS.lawn();
+ const b4=CHAPTER_DATA('b4'),lawn=CHAPTER_DATA('lawn');
  host.start('mac-1');place(0,0);
  const walk=host.objective();
  assert.ok(walk?.text.startsWith('Go to '),walk?.text);assert.deepEqual(walk?.target,b4.entry.point);assert.deepEqual(walk?.route,b4.approach);
@@ -159,32 +174,49 @@ group('chapter cards at every chapter boundary',()=>{
  assert.deepEqual(cards.slice(1),[['CHAPTER 2','The Lawn Guardian'],['CHAPTER 3','Sports Hall Rescue'],['EPILOGUE','Barrier Down']]);
 });
 
-group('stub chapters: debug.complete() runs the campaign to done',()=>{
+group('debug exposes each attached chapter\'s hooks and they can run the campaign to done',()=>{
  const {host}=makeHost();
  host.start('mac-1');place(0,0);
  for(const id of ['b4','lawn','sports','ending'] as const){
-  const debug=host.debug[id];assert.ok(debug?.complete,`${id} stub exposes debug.complete`);
+  const debug=host.debug[id];assert.ok(debug?.complete,`${id} hooks are exposed once attached`);
   (debug.complete as ()=>unknown)();
   host.update(1/60);
  }
  assert.equal(host.stage(),'done');
 });
 
-group('campaign checkpoints start after Chapter 1 at the right stage and place',()=>{
- const expected:Record<string,{stage:CampaignStage;relay:boolean;corePower:boolean}>={
-  'b4-inside':{stage:'b4_keyboard',relay:false,corePower:false},
-  lawn:{stage:'to_lawn',relay:true,corePower:false},
-  sports:{stage:'to_sports',relay:true,corePower:true},
-  ending:{stage:'ending',relay:true,corePower:true},
- };
- for(const [id,want] of Object.entries(expected)){
-  const cp=checkpointCampaign(id as never);
-  assert.deepEqual(cp,want,id);
-  assert.equal(checkpointState(id as never)?.stage,'complete',id);
- }
- assert.equal(checkpointCampaign('b4'),null,'Chapter 1 checkpoints leave the campaign off');
- assert.deepEqual([...checkpointPose('b4-inside').position],CAMPAIGN_CHAPTERS.b4().entry.point);
- assert.deepEqual([...checkpointPose('sports').position],CAMPAIGN_CHAPTERS.lawn().entry.point);
+group('chapters get no frame time while the game is paused or the explorer is off',()=>{
+ const {host,spies}=makeHost();
+ host.start('mac-1');place(0,0);
+ game.paused=true;host.update(.5);
+ enabled=false;game.paused=false;host.update(.5);
+ enabled=true;host.update(.25);
+ assert.deepEqual(spies.b4.dts,[0,0,.25],'paused and disabled frames pass dt=0');
+ const b4=CHAPTER_DATA('b4').entry;
+ place(b4.point[0],b4.point[2]);game.paused=true;host.update(1/60);
+ assert.equal(host.stage(),'b4_enter','no walking-leg event while paused');
+ game.paused=false;host.update(1/60);
+ assert.equal(host.stage(),'b4_keyboard');
+});
+
+group('ctx.hearts damages and heals the one opening runtime store',()=>{
+ let runtime=createOpeningRuntime(),writes=0;
+ const hearts=createHeartsChannel(()=>runtime,next=>{runtime=next;writes++;});
+ const {host,spies}=makeHost({},{hearts});
+ host.start('mac-1');host.emit('enter_b4');
+ const ctx=spies.b4.ctx!;
+ assert.equal(ctx.hearts,hearts,'the host hands chapters the opening hearts channel');
+ assert.equal(ctx.hearts?.max,OPENING_MAX_HEARTS);
+ assert.equal(ctx.hearts?.get(),OPENING_MAX_HEARTS);
+ assert.equal(ctx.hearts?.damage(3),OPENING_MAX_HEARTS-3);
+ assert.equal(runtime.hearts,OPENING_MAX_HEARTS-3,'damage lands in the opening runtime');
+ assert.equal(runtime.catches,1,'counted like a robot catch');
+ assert.equal(ctx.hearts?.damage(99),0,'never below zero');
+ assert.equal(ctx.hearts?.heal(),OPENING_MAX_HEARTS);
+ assert.equal(runtime.hearts,OPENING_MAX_HEARTS);
+ assert.equal(writes,3,'every change goes through the experience setter (persist)');
+ assert.equal(makeHost().spies.b4.ctx,null);
+ const plain=makeHost();plain.host.start('mac-1');assert.equal(plain.spies.b4.ctx?.hearts,undefined,'hearts stays optional');
 });
 
 if(failures.length){console.error(`\ncheck-campaign-host: ${failures.length} failed, ${passed} passed`);process.exit(1);}
