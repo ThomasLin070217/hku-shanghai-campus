@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "units": "metres",
+  "coordinateSystem": "+X right, +Y up, +Z toward the room; panel centre at origin",
+  "sourceRepo": "ThomasLin070217/hku-shanghai-campus",
+  "sourceBranch": "feat/cds1-keyboard-detach",
+  "generatedAt": "2026-11-21T06:55:33.755Z",
+  "fixtures": [
+    {
+      "id": "CDS1-keyboard-wall",
+      "file": "CDS1-Keyboard-Wall.glb",
+      "node": "CDS1_Keyboard_Wall",
+      "bytes": 4726220,
+      "sha256": "555c3dc39b126376146447c54879b3356a8b612f43dc29cc7fdb6748b0717a4f",
+      "stats": {
+        "meshes": 330,
+        "triangles": 47108,
+        "size": [
+          7.81,
+          2.15,
+          0.575
+        ]
+      },
+      "keycaps": 54,
+      "roomTransform": [
+        0.48,
+        2.64,
+        -3.79
+      ],
+      "capabilities": [
+        "keycap.detach",
+        "keycap.reinsert",
+        "socket.usb"
+      ],
+      "source": "2026-11-15 WeChat keyboard-wall photo; 2026-11-16 team evidence"
+    },
+    {
+      "id": "CDS1-hku-flip-wall",
+      "file": "CDS1-HKU-Flip-Wall.glb",
+      "node": "CDS1_HKU_Flip_Wall",
+      "bytes": 2069252,
+      "sha256": "c838945d2d22b4b8ac94c89d9428ad7b02f592c4bfa32448bbcf9807cdf1a633",
+      "stats": {
+        "meshes": 3368,
+        "triangles": 6792,
+        "size": [
+          7.374,
+          3.863,
+          0.23
+        ]
+      },
+      "tiles": 561,
+      "roomTransform": [
+        0.3,
+        0,
+        -1.93
+      ],
+      "capabilities": [
+        "tile.flip.vertical-axis",
+        "tile.front-back-inverse"
+      ],
+      "source": "November 15 flip-wall photo; c2f30ae164433b4a517b2ed5d80b7460.mp4, 00:00-00:17.6"
+    },
+    {
+      "id": "CDS1-aux-power",
+      "file": "CDS1-Aux-Power-Closet.glb",
+      "node": "CDS1_Aux_Power_Closet",
+      "bytes": 71784,
+      "sha256": "d85f9502c4737a666761a277828d19f3330945708f969c4cae83c5f3ee53f4d0",
+      "stats": {
+        "meshes": 8,
+        "triangles": 516,
+        "size": [
+          7.44,
+          3.921,
+          1.075
+        ]
+      },
+      "roomTransform": [
+        0,
+        0,
+        0
+      ],
+      "capabilities": [
+        "power.aux",
+        "breaker.manual"
+      ],
+      "source": "fictional 2030 service closet behind the HKU flip wall"
+    }
+  ]
+}
