@@ -2,7 +2,6 @@ import * as T from 'three';
 import {buildObservedFeatureRoom,keyboardKeycaps,flipWallTiles} from '../model/observedFeatureRooms';
 import {markRelayRestored} from '../opening/backupRelay';
 import {CDS1_KEYS,saveKeyboardProgress} from '../opening/keyboardProgress';
-import {STORY_AUDIO_URLS} from '../gameplay/storyAudioAssets';
 import {OPENING} from '../opening/spatialLayout';
 import {KEYS} from '../exploration/config';
 import {B4_LAYOUT,B4_OBSTACLES,B4_STATIONS,B4_REACH,B4_DOOR_OBSTACLE,setB4FlipPanel,type B4StationId} from './b4Layout';
@@ -38,7 +37,7 @@ export function createB4Chapter():Chapter{
  const emergency:T.PointLight[]=[];let work:T.PointLight|null=null,rackLight:T.PointLight|null=null;
  const rackMaterials:T.MeshStandardMaterial[]=[],capGlow=new Map<T.Group,T.MeshStandardMaterial>();
  let lightLevel=0,lift=0,leverPull=0,flash=0,seenStage:CampaignStage|null=null,hum:HTMLAudioElement|null=null;
- let focus:Focus=null,lookYaw=0,lookPitch=0,baseYaw=0,basePitch=0,sweeping=false,lastTile=-1,flipDone=false;
+ let raf=0,focus:Focus=null,lookYaw=0,lookPitch=0,baseYaw=0,basePitch=0,sweeping=false,lastTile=-1,flipDone=false;
  const ray=new T.Raycaster(),ndc=new T.Vector2();
 
  /** Navigation of the explorer; absent in minimal host test doubles. */
@@ -138,7 +137,8 @@ export function createB4Chapter():Chapter{
   if(!r.ok){if(r.reason)ctx.notify(r.reason);return false;}
   ctx.notify('MacBook paired with the B4 supercomputer.');ctx.emit(r.event!);return true;
  }
- function playHum(){try{if(typeof Audio==='undefined')return;hum??=new Audio(STORY_AUDIO_URLS['supercomputer_hum'].href);hum.loop=true;hum.volume=.3;void hum.play().catch(()=>{});}catch{/* Audio is optional. */}}
+ /** Asset URLs load on demand so this module stays importable headless (checkpoint.ts imports B4_ENTRY). */
+ function playHum(){if(typeof Audio==='undefined')return;void import('../gameplay/storyAudioAssets').then(({STORY_AUDIO_URLS})=>{if(!ctx)return;hum??=new Audio(STORY_AUDIO_URLS['supercomputer_hum'].href);hum.loop=true;hum.volume=.3;return hum.play();}).catch(()=>{/* Audio is optional. */});}
 
  /* ---------------- first-person focus ---------------- */
  function nearest():B4StationId|null{
@@ -151,11 +151,16 @@ export function createB4Chapter():Chapter{
   baseYaw=Math.atan2(-dx,-dz);basePitch=-Math.atan2(dy,Math.hypot(dx,dz));lookYaw=0;lookPitch=0;
  }
  function enterFocus(id:'keyboard'|'flip'){
-  if(!ctx||focus)return;focus=id;aim(B4_STATIONS[id].point);ctx.openPanel('b4-focus');
+  if(!ctx||focus)return;focus=id;aim(B4_STATIONS[id].point);ctx.openPanel('b4-focus');startLoop();
   ctx.notify(id==='keyboard'?'Type I LOVE CDS (or click the gold caps), then Enter. Arrows look around. Esc or '+USE+' steps back.'
    :'Drag across the tiles to turn them. Click flips one, Space flips the row under the cursor. Esc or '+USE+' steps back.');
  }
- function leaveFocus(){if(!ctx||!focus)return;focus=null;sweeping=false;ctx.closePanel();ctx.resume();}
+ function leaveFocus(){if(!ctx||!focus)return;focus=null;sweeping=false;stopLoop();ctx.closePanel();ctx.resume();}
+ /** The focus view pauses the game, and the host skips update() while paused, so the
+  * focus view animates tiles, caps and the camera from its own frame loop. */
+ function startLoop(){if(raf||typeof requestAnimationFrame==='undefined')return;let last=performance.now();
+  const tick=()=>{if(!focus||!ctx){raf=0;return;}const now=performance.now();animate(Math.min(.1,(now-last)/1000));last=now;raf=requestAnimationFrame(tick);};raf=requestAnimationFrame(tick);}
+ function stopLoop(){if(raf&&typeof cancelAnimationFrame!=='undefined')cancelAnimationFrame(raf);raf=0;}
  function pick(e:MouseEvent,objects:T.Object3D[]){
   if(!ctx)return null;
   // HUD layers sit over the world canvas, so the event target is often not the canvas itself.
@@ -208,6 +213,19 @@ export function createB4Chapter():Chapter{
   }
  }
 
+ // Debug hooks: DEV/review only; release builds keep complete() for the host contract.
+ const debug={
+   complete(){for(const e of EVENTS)ctx?.emit(e);return ctx?.stage();},
+   state(){return{stage:ctx?.stage(),typed:keyboard.typed,solved:keyboard.solved,flipped:flipCount(flip),tiles:tiles.length,focus,near:nearest(),light:+lightLevel.toFixed(2)};},
+   /** Same paths as the focus view: type keys, flip tiles, pull, connect. */
+   type(text:string){for(const ch of text)press(ch);return keyboard.typed;},
+   enter(){return press('Enter');},
+   flipAll(){setTiles(tiles.map(t=>t.index),true);return flipCount(flip);},
+   pull,connect,
+   focus(id:'keyboard'|'flip'){enterFocus(id);return focus;},
+   leave(){leaveFocus();return focus;},
+   stations(){return B4_STATIONS;},
+ };
  return{
   id:'b4',entry:B4_ENTRY,approach:[[58,25],[58,18]],
   attach(c){
@@ -219,6 +237,22 @@ export function createB4Chapter():Chapter{
   },
   update(dt){
    if(!ctx||!group)return;applyStage(ctx.stage());
+   if(!raf)animate(dt);
+  },
+  interact(){
+   if(!ctx||focus)return false;
+   const id=nearest();
+   if(!id){const s=step();if(s&&s!=='done'){ctx.notify('Walk up to the '+B4_STATIONS[STEP_STATION[s]].label+' and press '+USE+'.');return true;}return false;}
+   if(id==='keyboard'||id==='flip'){enterFocus(id);return true;}
+   return id==='breaker'?pull():connect();
+  },
+  objective,
+  detach,
+  debug:DEV?debug:{complete:debug.complete},
+ };
+
+ function animate(dt:number){
+   if(!ctx||!group)return;
    const k=Math.min(1,dt*6);
    for(const t of tiles){const d=t.target-t.group.rotation.y;if(Math.abs(d)>.001)t.group.rotation.y+=d*Math.min(1,dt*10);}
    if(flipWall){const want=flipDone?B4_LAYOUT.flipLift:0;lift+=(want-lift)*Math.min(1,dt*1.6);flipWall.position.y=lift;}
@@ -230,34 +264,14 @@ export function createB4Chapter():Chapter{
    for(const m of rackMaterials)m.emissiveIntensity=.12+1.85*lightLevel;
    if(flash>0){flash-=dt;if(flash<=0)paintCaps();}
    if(focus){const g=ctx.explorer.game;g.yaw+=(baseYaw+lookYaw-g.yaw)*k;g.pitch+=(basePitch+lookPitch-g.pitch)*k;}
-  },
-  interact(){
-   if(!ctx||focus)return false;
-   const id=nearest();
-   if(!id){const s=step();if(s&&s!=='done'){ctx.notify('Walk up to the '+B4_STATIONS[STEP_STATION[s]].label+' and press '+USE+'.');return true;}return false;}
-   if(id==='keyboard'||id==='flip'){enterFocus(id);return true;}
-   return id==='breaker'?pull():connect();
-  },
-  objective,
-  detach(){
+ }
+ function detach(){
    leaveFocus();
    if(typeof window!=='undefined'){window.removeEventListener('keydown',onKey,true);window.removeEventListener('pointerdown',onDown);window.removeEventListener('pointermove',onMove);window.removeEventListener('pointerup',onUp);}
    const w=world();if(w){w.setDoorOpen(B4_DOOR_OBSTACLE,false);setB4FlipPanel(w,false);}
    group?.removeFromParent();group?.traverse(o=>{if(o instanceof T.Mesh){o.geometry.dispose();}});
    try{hum?.pause();}catch{/* optional */}
    group=null;ctx=null;tiles=[];caps=[];phraseCaps=[];enterCap=null;capGlow.clear();rackMaterials.length=0;emergency.length=0;seenStage=null;flipDone=false;keyboard=createKeyboardState();
-  },
-  debug:DEV?{
-   complete(){for(const e of EVENTS)ctx?.emit(e);return ctx?.stage();},
-   state(){return{stage:ctx?.stage(),typed:keyboard.typed,solved:keyboard.solved,flipped:flipCount(flip),tiles:tiles.length,focus,near:nearest(),light:+lightLevel.toFixed(2)};},
-   /** Same paths as the focus view: type keys, flip tiles, pull, connect. */
-   type(text:string){for(const ch of text)press(ch);return keyboard.typed;},
-   enter(){return press('Enter');},
-   flipAll(){setTiles(tiles.map(t=>t.index),true);return flipCount(flip);},
-   pull,connect,
-   focus(id:'keyboard'|'flip'){enterFocus(id);return focus;},
-   leave(){leaveFocus();return focus;},
-   stations(){return B4_STATIONS;},
-  }:{complete(){for(const e of EVENTS)ctx?.emit(e);return ctx?.stage();}},
- };
+ }
 }
+
