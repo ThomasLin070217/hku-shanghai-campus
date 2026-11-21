@@ -95,6 +95,16 @@ with sync_playwright() as p:
         frames(page)
         s = page.evaluate(SNAPSHOT)
         check('still b4_flip after input', s['stage'] == 'b4_flip' and s['modal'] is None, s)
+        # The campaign's hearts channel is the opening runtime: HUD and save follow it.
+        h = page.evaluate("() => { const n = __CAMPUS.experience.hearts.damage(2); return {returned: n, runtime: __CAMPUS.openingDebug.state().runtime.hearts}; }")
+        frames(page)
+        hud = page.evaluate("() => document.querySelector('.opening-hearts-count')?.textContent ?? ''")
+        check('ctx hearts damage lands in the opening runtime and the vitals HUD', h['returned'] == 8 and h['runtime'] == 8 and hud == '8 / 10', (h, hud))
+        page.goto(ORIGIN + '?experience=opening', wait_until='load')
+        ready(page)
+        frames(page)
+        kept = page.evaluate("() => ({hearts: __CAMPUS.openingDebug.state().runtime.hearts, stage: __CAMPUS.campaign.state()?.stage})")
+        check('hearts damage is saved with the opening save', kept == {'hearts': 8, 'stage': 'b4_flip'}, kept)
         check('no page errors (saved campaign)', errors == [], errors)
         page.close()
 

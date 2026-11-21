@@ -3,6 +3,7 @@ import {openingCheckpoint,checkpointCampaign,CHECKPOINT_LABELS} from './opening/
 import {createCampaignHost,type CampaignHost} from './campaign/host';
 import {showChapterCard} from './campaign/chapterCard';
 import {CAMPAIGN_CHAPTERS} from './campaign/chapters';
+import type {HeartsChannel} from './opening/heartsChannel';
 import type {CampaignEvent} from './campaign/state';
 import {markRelayRestored,relayRestored} from './opening/backupRelay';
 import {recordCorePowerCut} from './lionBoss/mission';
@@ -72,7 +73,7 @@ if(openingMode){
   scene:viewer.scene,root:()=>asset.root,explorer,notify,atmosphere:()=>atmosphere,
   openPanel:id=>{dragControls=document.pointerLockElement!==viewer.renderer.domElement;explorer.openPanel(id==='computer'||id==='settings'?id:'door');},
   closePanel:()=>explorer.closePanel(),resume:()=>dragControls?explorer.enterCompat():explorer.enter(),
-  card:showChapterCard,
+  card:showChapterCard,hearts:(experience as {hearts?:HeartsChannel}).hearts,
  },chapters:CAMPAIGN_CHAPTERS});
  campaign=host;
  const checkpoint=openingCheckpoint(new URLSearchParams(location.search).get('checkpoint')),resume=checkpoint?checkpointCampaign(checkpoint):null;

@@ -11,6 +11,7 @@ export interface ChapterContext{
  notify:(text:string)=>void; atmosphere:()=>OpeningAtmosphere|undefined;
  openPanel:(id:string)=>void; closePanel:()=>void; resume:()=>void;   // modal panels pause the game and release pointer lock; resume re-enters play
  card:(kicker:string,title:string,ms?:number)=>Promise<void>;          // shared full-screen chapter card (Task 1)
+ hearts?:{get():number;max:number;damage(n:number):number;heal():number};   // the opening runtime's hearts; damage/heal return the new value and persist like a robot catch does
 }
 export interface Chapter{
  id:'b4'|'lawn'|'sports'|'ending';

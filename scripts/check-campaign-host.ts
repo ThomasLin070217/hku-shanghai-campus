@@ -6,6 +6,8 @@ import type {Chapter,ChapterContext,ChapterId,Explorer} from '../src/campaign/ty
 import {CampusGame} from '../src/exploration/game';
 import {createNavigation} from '../src/exploration/navigation';
 import {BUILDINGS,SITE} from '../src/model/campusParameters';
+import {createHeartsChannel} from '../src/opening/heartsChannel';
+import {createOpeningRuntime,OPENING_MAX_HEARTS} from '../src/opening/runtime';
 
 /*
  * Host logic only. The chapters here are fakes passed through the host's
@@ -60,13 +62,13 @@ function spyChapters(){
  return{spies,factories};
 }
 
-function makeHost(seed:Record<string,string>={}){
+function makeHost(seed:Record<string,string>={},extra:Partial<ChapterContext>={}){
  const store=memoryStorage(seed),cards:[string,string][]=[];
  const {spies,factories}=spyChapters();
  const host=createCampaignHost({
   context:{
    scene:new T.Scene(),root:()=>new T.Group(),explorer,notify:()=>{},atmosphere:()=>undefined,
-   openPanel:()=>{},closePanel:()=>{},resume:()=>{},card:async(kicker,title)=>{cards.push([kicker,title]);},
+   openPanel:()=>{},closePanel:()=>{},resume:()=>{},card:async(kicker,title)=>{cards.push([kicker,title]);},...extra,
   },
   storage:store.storage,chapters:factories,now:()=>1000,
  });
@@ -195,6 +197,26 @@ group('chapters get no frame time while the game is paused or the explorer is of
  assert.equal(host.stage(),'b4_enter','no walking-leg event while paused');
  game.paused=false;host.update(1/60);
  assert.equal(host.stage(),'b4_keyboard');
+});
+
+group('ctx.hearts damages and heals the one opening runtime store',()=>{
+ let runtime=createOpeningRuntime(),writes=0;
+ const hearts=createHeartsChannel(()=>runtime,next=>{runtime=next;writes++;});
+ const {host,spies}=makeHost({},{hearts});
+ host.start('mac-1');host.emit('enter_b4');
+ const ctx=spies.b4.ctx!;
+ assert.equal(ctx.hearts,hearts,'the host hands chapters the opening hearts channel');
+ assert.equal(ctx.hearts?.max,OPENING_MAX_HEARTS);
+ assert.equal(ctx.hearts?.get(),OPENING_MAX_HEARTS);
+ assert.equal(ctx.hearts?.damage(3),OPENING_MAX_HEARTS-3);
+ assert.equal(runtime.hearts,OPENING_MAX_HEARTS-3,'damage lands in the opening runtime');
+ assert.equal(runtime.catches,1,'counted like a robot catch');
+ assert.equal(ctx.hearts?.damage(99),0,'never below zero');
+ assert.equal(ctx.hearts?.heal(),OPENING_MAX_HEARTS);
+ assert.equal(runtime.hearts,OPENING_MAX_HEARTS);
+ assert.equal(writes,3,'every change goes through the experience setter (persist)');
+ assert.equal(makeHost().spies.b4.ctx,null);
+ const plain=makeHost();plain.host.start('mac-1');assert.equal(plain.spies.b4.ctx?.hearts,undefined,'hearts stays optional');
 });
 
 if(failures.length){console.error(`\ncheck-campaign-host: ${failures.length} failed, ${passed} passed`);process.exit(1);}
