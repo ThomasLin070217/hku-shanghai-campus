@@ -606,6 +606,7 @@ def credits_checks(page):
     # The credits own the whole screen: no HUD element may peek through the dim layer.
     hud_selectors = ['.opening-hud', '.opening-hearts', '.opening-mapcard', '#inventory-hud',
                      '.stage-bottom', '.stage-top', '.shell-hint', '.shell-chapters',
+                     '.opening-prompt', '.opening-warning', '.opening-save-toast',
                      '.pause-card', '#ending-overlay', '.ending-barrier']
     visible_hud = [selector for selector in hud_selectors if visible(page, selector)]
     check('ending: every HUD element is hidden under the credits', not visible_hud, visible_hud)
