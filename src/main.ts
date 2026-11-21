@@ -1,4 +1,5 @@
 import {createOpeningExperience} from './opening/experience';
+import {openingCheckpoint,CHECKPOINT_LABELS} from './opening/checkpoint';
 import {createOpeningAtmosphere,type OpeningAtmosphere} from './opening/atmosphere';
 const route=new URLSearchParams(location.search).get('experience');
 const sportsMode=route==='sports-hall';
@@ -130,9 +131,6 @@ const help=document.createElement('button');help.textContent='Help';help.onclick
 const advanced=document.createElement('details');advanced.className='pause-options';advanced.innerHTML='<summary>Restart / AI control</summary>';el('session-save').after(advanced);advanced.append(el('new-game'),el('enable-ai'),el('bridge-status'));
 if(publicPlaytest){el('enable-ai').hidden=true;el('bridge-status').hidden=true;}
 const levelsLink=document.createElement('a');levelsLink.href='?experience=levels';levelsLink.textContent=openingMode?'Chapters':'Chapters';document.querySelector('.header-right')!.prepend(levelsLink);
-// Sports players get the same fixed chapter select as the opening shell, so it
-// stays visible even when the header is crowded.
-if(sportsMode){const chapters=document.createElement('a');chapters.className='shell-chapters';chapters.href='?experience=levels';chapters.textContent='Chapters';document.querySelector('.stage')!.append(chapters);}
 const desktopNote=document.createElement('p');desktopNote.className='desktop-note';desktopNote.textContent='Keyboard and mouse are supported. On phones you can browse the model.';el('enter-game').before(desktopNote);
 const inspector=createSceneInspector({host,scene:viewer.scene,camera:()=>viewer.activeCamera,root:()=>asset.root,ready:()=>!imported&&!loungeView,openModel:()=>{mode(false);(el('isolate') as HTMLInputElement).checked=false;for(const id of ['environment','circulation','sports'])(el(id) as HTMLInputElement).checked=true;sync();},frame:box=>{const center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3()),span=Math.max(size.x,size.y,size.z,2)*1.65;viewer.controls.target.copy(center);viewer.camera.position.copy(center).add(new T.Vector3(.8,.65,1).normalize().multiplyScalar(Math.max(15,span*1.5)));const aspect=host.clientWidth/host.clientHeight;const height=Math.max(span,span/aspect);Object.assign(viewer.camera,{left:-height*aspect/2,right:height*aspect/2,top:height/2,bottom:-height/2,zoom:1});viewer.camera.updateProjectionMatrix();viewer.camera.lookAt(center);viewer.controls.update();},notify});
 viewer.callbacks.add(inspector.update);
@@ -152,7 +150,8 @@ if(openingMode){
  document.title='BARRIER 2030 · Chapter 1 · High Table';document.body.classList.add('opening-mode');
  const copy:Record<string,string>={'mode-label':'Building 4 · Shanghai Campus','reset':'Return to checkpoint','mode-toggle':'Campus model tools','takeover':'Take control','night-toggle':'Night / Day','experience-settings':'Settings & save','new-game':'Restart opening…','enable-ai':'Enable AI control','bridge-status':'Local control service','enter-compat':'Drag controls','scene-index-toggle':'Scene index'};
  for(const [id,text]of Object.entries(copy)){const node=document.getElementById(id);if(node)node.textContent=text;}
- const pause=document.querySelector('.pause-card');if(pause){const eyebrow=pause.querySelector('.eyebrow');if(eyebrow)eyebrow.textContent='BARRIER 2030';pause.querySelector('h2')!.textContent='BARRIER 2030';pause.querySelector('p')!.textContent='BARRIER 2030 · You are a Student Ambassador on your way to the High Table Dinner. Begin on the campus shuttle.';pause.querySelector('.key-guide')!.textContent='WASD move · Shift run · Space jump · F interact · E backpack · C MacBook · V view';pause.querySelector('.desktop-note')!.textContent='Keyboard and mouse · Continue to look around and move';pause.querySelector('summary')!.textContent='Restart / AI control';}
+ const checkpointStart=openingCheckpoint(new URLSearchParams(location.search).get('checkpoint'));
+ const pause=document.querySelector('.pause-card');if(pause){const eyebrow=pause.querySelector('.eyebrow');if(eyebrow)eyebrow.textContent='BARRIER 2030';pause.querySelector('h2')!.textContent='BARRIER 2030';pause.querySelector('p')!.textContent=checkpointStart?`Checkpoint: ${CHECKPOINT_LABELS[checkpointStart]}. Continue from here.`:'BARRIER 2030 · You are a Student Ambassador on your way to the High Table Dinner. Begin on the campus shuttle.';pause.querySelector('.key-guide')!.textContent='WASD move · Shift run · Space jump · F interact · E backpack · C MacBook · V view';pause.querySelector('.desktop-note')!.textContent='Keyboard and mouse · Continue to look around and move';pause.querySelector('summary')!.textContent='Restart / AI control';}
  const help=document.querySelector('.header-right > button:not(#scene-index-toggle):not(#night-toggle)');if(help)help.textContent='Help';
  toolsMenu.querySelector('summary')!.textContent='Campus tools';advanced.querySelector('summary')!.textContent='Restart / AI control';
  document.querySelector('.brand-copy > span')!.textContent='BARRIER 2030';

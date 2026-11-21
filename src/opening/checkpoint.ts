@@ -51,7 +51,7 @@ export function checkpointState(id:OpeningCheckpoint):OpeningState|null{
   if(next===state)return null;
   state=next;
  }
- return validOpeningState(state);
+ return validOpeningState(state?{...state,elapsedSeconds:1}:state);
 }
 
 export function checkpointPose(id:OpeningCheckpoint){
