@@ -37,7 +37,9 @@ async function test(name, fn) {
 function resetEnv(overrides = {}) {
   for (const key of [
     'LLM_PROVIDER', 'GEMINI_API_KEY', 'GEMINI_MODEL', 'GEMINI_BASE_URL', 'GEMINI_TRANSPORT',
-    'LITELLM_BASE_URL', 'LITELLM_API_KEY', 'LITELLM_MODEL', 'LLM_TIMEOUT_MS'
+    'DEEPSEEK_API_KEY', 'DEEPSEEK_MODEL', 'DEEPSEEK_BASE_URL', 'DEEPSEEK_TIMEOUT_MS',
+    'LITELLM_BASE_URL', 'LITELLM_API_KEY', 'LITELLM_MODEL', 'LLM_TIMEOUT_MS',
+    'LLM_PROXY', 'HTTPS_PROXY', 'https_proxy', 'NODE_USE_ENV_PROXY'
   ]) delete process.env[key];
   Object.assign(process.env, {
     GEMINI_API_KEY: 'test-gemini-key-do-not-log',
@@ -152,6 +154,60 @@ await test('gemini: retired model error suggests --models', async () => {
   );
 });
 
+await test('deepseek: default base, bearer auth, OpenAI-shaped reply', async () => {
+  resetEnv({ LLM_PROVIDER: 'deepseek', DEEPSEEK_API_KEY: 'sk-test-deepseek', DEEPSEEK_MODEL: 'deepseek-flash' });
+  stubFetch(() => json({ model: 'deepseek-flash', choices: [{ index: 0, message: { role: 'assistant', content: 'pong' }, finish_reason: 'stop' }] }));
+  const response = await llm.chat([{ role: 'user', content: 'ping' }], { temperature: 0.3, maxTokens: 32 });
+  assert.equal(calls[0].url, 'https://api.deepseek.com/chat/completions');
+  assert.equal(calls[0].init.method, 'POST');
+  assert.equal(calls[0].init.headers.authorization, 'Bearer sk-test-deepseek');
+  const body = JSON.parse(calls[0].init.body);
+  assert.deepEqual(body.messages, [{ role: 'user', content: 'ping' }]);
+  assert.equal(body.model, 'deepseek-flash');
+  assert.equal(body.temperature, 0.3);
+  assert.equal(body.max_tokens, 32);
+  assert.equal(response.choices[0].message.content, 'pong');
+});
+
+await test('deepseek: default model, /v1 base and full chat URL', async () => {
+  resetEnv({ LLM_PROVIDER: 'deepseek', DEEPSEEK_API_KEY: 'sk-test-deepseek' });
+  stubFetch(() => json({ choices: [{ index: 0, message: { role: 'assistant', content: 'pong' } }] }));
+  await llm.chat([{ role: 'user', content: 'ping' }]);
+  assert.equal(calls[0].url, 'https://api.deepseek.com/chat/completions');
+  assert.equal(JSON.parse(calls[0].init.body).model, 'deepseek-chat');
+
+  resetEnv({ LLM_PROVIDER: 'deepseek', DEEPSEEK_API_KEY: 'sk-test-deepseek', DEEPSEEK_BASE_URL: 'https://gw.example/v1' });
+  stubFetch(() => json({ choices: [{ index: 0, message: { role: 'assistant', content: 'pong' } }] }));
+  await llm.chat([{ role: 'user', content: 'ping' }]);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].url, 'https://gw.example/v1/chat/completions');
+
+  resetEnv({ LLM_PROVIDER: 'deepseek', DEEPSEEK_API_KEY: 'sk-test-deepseek', DEEPSEEK_BASE_URL: 'https://gw.example/v1/chat/completions' });
+  stubFetch(() => json({ choices: [{ index: 0, message: { role: 'assistant', content: 'pong' } }] }));
+  await llm.chat([{ role: 'user', content: 'ping' }]);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].url, 'https://gw.example/v1/chat/completions');
+});
+
+await test('deepseek: /models listing and missing key error', async () => {
+  resetEnv({ LLM_PROVIDER: 'deepseek', DEEPSEEK_API_KEY: 'sk-test-deepseek' });
+  stubFetch(() => json({ data: [{ id: 'deepseek-flash' }, { id: 'deepseek-v4-pro' }] }));
+  assert.deepEqual(await llm.models(), ['deepseek-flash', 'deepseek-v4-pro']);
+  assert.equal(calls[0].url, 'https://api.deepseek.com/models');
+  assert.equal(calls[0].init.headers.authorization, 'Bearer sk-test-deepseek');
+
+  resetEnv({ LLM_PROVIDER: 'deepseek', DEEPSEEK_API_KEY: '' });
+  await assert.rejects(
+    () => llm.chat([{ role: 'user', content: 'ping' }]),
+    error => {
+      assert.match(error.message, /DEEPSEEK_API_KEY missing/);
+      assert.ok(!error.message.includes('sk-test-deepseek'));
+      return true;
+    }
+  );
+  assert.equal(llm.configured('deepseek'), false);
+});
+
 await test('litellm: unchanged OpenAI-compatible path', async () => {
   resetEnv({
     LLM_PROVIDER: 'litellm',
@@ -167,15 +223,26 @@ await test('litellm: unchanged OpenAI-compatible path', async () => {
   assert.equal(response.choices[0].message.content, 'pong');
 });
 
-await test('provider selection: forced, then gemini key, then litellm', async () => {
+await test('provider selection: forced, then deepseek, then gemini, then litellm', async () => {
   resetEnv({ LLM_PROVIDER: 'litellm' });
   assert.equal(llm.activeProvider(), 'litellm');
+  resetEnv({ DEEPSEEK_API_KEY: 'sk-test-deepseek' });
+  assert.equal(llm.activeProvider(), 'deepseek');
   resetEnv();
   assert.equal(llm.activeProvider(), 'gemini');
   resetEnv({ GEMINI_API_KEY: '' });
   assert.equal(llm.activeProvider(), 'litellm');
   resetEnv({ LLM_PROVIDER: 'nope' });
   assert.throws(() => llm.activeProvider(), /Unknown LLM_PROVIDER/);
+});
+
+await test('proxy: LLM_PROXY wins over HTTPS_PROXY, both optional', async () => {
+  resetEnv();
+  assert.equal(llm.proxyUrl(), '');
+  resetEnv({ HTTPS_PROXY: 'http://env-proxy:8080' });
+  assert.equal(llm.proxyUrl(), 'http://env-proxy:8080');
+  resetEnv({ HTTPS_PROXY: 'http://env-proxy:8080', LLM_PROXY: 'http://llm-proxy:7897' });
+  assert.equal(llm.proxyUrl(), 'http://llm-proxy:7897');
 });
 
 await test('missing key fails with a clear message and never echoes a value', async () => {

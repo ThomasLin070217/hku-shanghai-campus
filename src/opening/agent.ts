@@ -1,17 +1,19 @@
 import type {OpeningState} from './contracts';
 import type {OpeningRuntime} from './runtime';
+import {personaGreeting, personaIdentity, personaPrompt, prefersChinese} from './persona';
 
 /**
  * Local Agent transport for the MacBook.
  *
- * The UI first tries the configured model endpoint (Ollama or an
- * OpenAI-compatible server proxy), then falls back to a
- * deterministic in-game assistant. The fallback is a real responder with access to
- * the live opening state, not a placeholder "fake chat".
+ * The UI first asks the local bridge (`scripts/llm-bridge.mjs`, same machine,
+ * loopback only) which forwards to DeepSeek/Gemini/LiteLLM with the key kept
+ * server-side. If the bridge or the model is unavailable it falls back to the
+ * deterministic in-game assistant, which keeps 岚's voice and reads the live
+ * opening state. Nothing in the browser ever holds an API key.
  *
- * Configure a local model without editing code:
- *   localStorage['hku.opening.agent.endpoint'] = 'http://127.0.0.1:11434/api/chat'
- *   localStorage['hku.opening.agent.model']    = 'deepseek-r1:8b'
+ * Configure without editing code:
+ *   localStorage['hku.opening.agent.endpoint'] = 'http://127.0.0.1:8790/api/chat'
+ *   localStorage['hku.opening.agent.model']    = 'deepseek-flash'
  *   localStorage['hku.opening.agent.offline']  = '1'           // force fallback
  */
 
@@ -40,9 +42,10 @@ export interface LocalAgent{
  dispose():void;
 }
 
-const DEFAULT_ENDPOINT='http://127.0.0.1:11434/api/chat';
-const DEFAULT_MODEL='deepseek-r1:8b';
-const TIMEOUT_MS=30000;
+export const ASSISTANT_DEFAULT_ENDPOINT='http://127.0.0.1:8790/api/chat';
+export const ASSISTANT_DEFAULT_MODEL='deepseek-flash';
+const TIMEOUT_MS=40000;
+const RETRY_COOLDOWN_MS=15000;
 const MAX_HISTORY=10;
 
 function storage():Storage|null{
@@ -54,8 +57,8 @@ function setting(key:string,fallback:string):string{
 }
 function config(){
  if(import.meta.env?.MODE==='playtest')return{endpoint:'',model:'built-in',offline:true};
- const endpoint=setting('hku.opening.agent.endpoint',DEFAULT_ENDPOINT).trim();
- const model=setting('hku.opening.agent.model',DEFAULT_MODEL).trim();
+ const endpoint=setting('hku.opening.agent.endpoint',ASSISTANT_DEFAULT_ENDPOINT).trim();
+ const model=setting('hku.opening.agent.model',ASSISTANT_DEFAULT_MODEL).trim();
  const offline=setting('hku.opening.agent.offline','0')==='1';
  return{endpoint,model,offline};
 }
@@ -63,14 +66,13 @@ function config(){
 function systemPrompt(ctx:AgentContext):string{
  const {story,runtime}=ctx;
  return[
-  'You are the advisory assistant on the presentation MacBook at HKU Shanghai campus in 2030.',
-  'Read the supplied game state. When the curtain first deploys the perimeter is sealed; the full campus incident report arrives on returning to Building 5.',
-  'Explain the situation and recommend the next step. You cannot issue commands or grant permissions. Reaching Building 4 does not establish a compute connection.',
-  'Answer in at most five short sentences, in the same language as the player. Be calm, precise and practical.',
-  `Story stage: ${story.stage}. Invitation read: ${story.invitation_read}. Laptop: ${story.laptop_acquired}. Alert: ${story.campus_alert_triggered}. Alert read: ${story.alert_read}.`,
-  `Hearts: ${runtime.hearts}/${runtime.maxHearts}. Captures: ${runtime.catches}. Curtain deployed: ${runtime.curtain_deployed}. Agent unlocked: ${runtime.agent_chat_unlocked}.`,
-  'Current objective: '+(ctx.objective??story.stage)+'. '+(ctx.detail??''),
-  'Compute connection reported by game: '+(ctx.computeStatus??'unreported')+'.',
+  personaPrompt(),
+  '',
+  'Current state (read it, do not restate it verbatim):',
+  `Story stage: ${story.stage}. Invitation read: ${story.invitation_read}. Laptop acquired: ${story.laptop_acquired}. Alert triggered: ${story.campus_alert_triggered}. Alert read: ${story.alert_read}.`,
+  `Hearts: ${runtime.hearts}/${runtime.maxHearts}. Captures: ${runtime.catches}. Curtain deployed: ${runtime.curtain_deployed}. Chat unlocked: ${runtime.agent_chat_unlocked}.`,
+  `Current objective: ${ctx.objective??story.stage}. ${ctx.detail??''}`,
+  `Compute connection reported by the game: ${ctx.computeStatus??'unreported'}.`,
  ].join('\n');
 }
 
@@ -164,10 +166,10 @@ function builtinReply(text:string,ctx:AgentContext):string{
  if(/(map|地图|route|怎么走|where|direction|build|楼)/.test(t)){
   return (zh?'路线：':'Route: ')+directions(ctx,zh);
  }
- if(/(who are you|你是谁|agent|助手|你能做什么)/.test(t)){
+ if(/(who are you|你是谁|agent|助手|你能做什么|你的名字|你叫什么)/.test(t)){
   return zh
-   ?'我是这台 MacBook 上的本地 Agent，一个离线恢复助手。我能解释当前异常、读取你的任务与心值，并给出下一步。\n• 我不能替你移动、控制机器人或解除帷幕。\n• 外部模型不可用时，我仍然用本机规则回答。'
-   :'I am the Local Agent on this MacBook, an offline recovery assistant. I can explain the incident, read your objective and hearts, and recommend a next step.\n• I cannot move you, control robots or lift the curtain.\n• If no local model is reachable, I answer from the built-in recovery rules.';
+   ?personaIdentity(true)+'\n• 现在云端模型不可用，我用本机规则回答。'
+   :personaIdentity(false)+'\n• The cloud model is unreachable right now, so I answer from the local rules.';
  }
  if(/(stage|objective|status|状态|任务|现在|next|下一步)/.test(t)){
   return `${zh?'当前状态：':'Current status: '}${story.stage} · ${runtime.hearts}/${runtime.maxHearts} hearts · ${runtime.catches} captures\n${directions(ctx,zh)}`;
@@ -192,6 +194,22 @@ export function createLocalAgent(guide?:RecoveryGuide):LocalAgent{
  const initial=config();
  let status:LocalAgentStatus={mode:initial.offline||!initial.endpoint?'builtin':'ready',endpoint:initial.endpoint,model:initial.model,lastError:null};
  const history:ChatTurn[]=[];
+ // When the bridge is unreachable, do not make every question wait for the
+ // full timeout: short-circuit to the built-in core for a while.
+ let retryAfter=0;
+ // The bundled bridge exposes its real provider/model. This keeps the model
+ // chip honest before the first answer and marks a missing bridge as offline.
+ if(!initial.offline&&/127\.0\.0\.1:8790|localhost:8790/.test(initial.endpoint)){
+  const health=initial.endpoint.replace(/\/api\/chat.*$/,'/health');
+  fetch(health,{method:'GET',signal:AbortSignal.timeout(1500)}).then(response=>response.ok?response.json():null).then((body:unknown)=>{
+   if(disposed||!body||typeof body!=='object')return;
+   if(status.mode!=='ready'&&status.mode!=='builtin')return;
+   const data=body as {ok?:boolean;configured?:boolean;model?:string};
+   if(!data.ok)return;
+   const model=typeof data.model==='string'&&data.model?data.model:initial.model;
+   status={...status,mode:data.configured?'local-model':'builtin',model,lastError:data.configured?null:'Local AI bridge has no API key'};
+  }).catch(()=>{if(disposed)return;retryAfter=Date.now()+RETRY_COOLDOWN_MS;status={...status,mode:'builtin',lastError:'Local AI bridge is not running'};});
+ }
 
  function cancel(){
   serial++;
@@ -204,13 +222,17 @@ export function createLocalAgent(guide?:RecoveryGuide):LocalAgent{
    status={mode:'builtin',model:c.model,endpoint:c.endpoint,lastError:null};
    return null;
   }
+  if(Date.now()<retryAfter){
+   status={...status,mode:'builtin',lastError:status.lastError??'Local AI bridge is not running'};
+   return null;
+  }
   const active=new AbortController();controller=active;
   let timedOut=false;
   const timer=setTimeout(()=>{timedOut=true;active.abort();},TIMEOUT_MS);
   status={mode:'checking',endpoint:c.endpoint,model:c.model,lastError:null};
   try{
    const turns:ChatTurn[]=[...previous.slice(-MAX_HISTORY),{role:'user',content:text}];
-   const tuning=/\/api\/chat(?:[?#]|$)/.test(c.endpoint)?{options:{temperature:.4}}:{temperature:.4};
+   const tuning=/11434|ollama/i.test(c.endpoint)?{options:{temperature:.4}}:{temperature:.4};
    const response=await fetch(c.endpoint,{
     method:'POST',headers:{'content-type':'application/json'},signal:active.signal,
     body:JSON.stringify({model:c.model,stream:false,...tuning,messages:[{role:'system',content:(guide?.prompt??systemPrompt)(ctx)},...turns]}),
@@ -219,11 +241,16 @@ export function createLocalAgent(guide?:RecoveryGuide):LocalAgent{
    const body=await response.json();
    const reply=localEndpointReply(body);
    if(!reply)throw Error('empty local model reply');
-   if(serial===request)status={...status,mode:'local-model',lastError:null};
+   const model=body&&typeof body==='object'&&typeof (body as {model?:unknown}).model==='string'
+     ?(body as {model:string}).model:c.model;
+   if(serial===request)status={...status,mode:'local-model',model,lastError:null};
+   retryAfter=0;
    return reply.slice(0,12000);
   }catch(error){
    if(serial!==request||disposed)throw new DOMException('Request cancelled','AbortError');
-   status={...status,mode:'builtin',lastError:timedOut?'Model response timed out':error instanceof Error?error.message:'Model unavailable'};
+   const message=timedOut?'Model response timed out':error instanceof Error?error.message:'Model unavailable';
+   if(error instanceof TypeError||/HTTP 5\d\d/.test(message))retryAfter=Date.now()+RETRY_COOLDOWN_MS;
+   status={...status,mode:'builtin',lastError:message};
    return null;
   }finally{clearTimeout(timer);if(controller===active)controller=null;}
  }
@@ -248,17 +275,20 @@ export function createLocalAgent(guide?:RecoveryGuide):LocalAgent{
   status(){return{...status};},
   greeting(ctx){
    if(guide)return guide.greeting(ctx);
-   if(ctx.story.campus_alert_triggered)return 'I have the latest campus incident report. Ask about the perimeter, patrols or the route to Building 4.';
-   if(ctx.runtime.curtain_deployed)return 'The perimeter curtain is down. Bring the MacBook back to the dinner hall in Building 5.';
-   return 'You have the presentation MacBook. Ask about your route back to dinner or check your current objective.';
+   return personaGreeting({
+    laptopAcquired:ctx.story.laptop_acquired,
+    curtainDeployed:ctx.runtime.curtain_deployed,
+    alertTriggered:ctx.story.campus_alert_triggered,
+    alertRead:ctx.story.alert_read,
+   }, prefersChinese());
   },
   suggestions(ctx){
    if(guide)return [...guide.suggestions];
    const {story}=ctx;
-   if(!story.laptop_acquired)return['What is this invitation?','Where is the MacBook?','What happened to campus?'];
-   if(!story.campus_alert_triggered)return['How do I get back to dinner?','What is my objective?'];
-   if(!story.alert_read)return['What happened to campus?','Why is the network blocked?','What do I do next?'];
-   return['What happened to campus?','Where are the robots?','How do I reach Building 4?','How do hearts work?'];
+   if(!story.laptop_acquired)return['What is this invitation?','Where is the MacBook?','Who are you?'];
+   if(!story.campus_alert_triggered)return['How do I get back to dinner?','What is my objective?','Who are you?'];
+   if(!story.alert_read)return['What happened to campus?','Why is the network blocked?','What do I do next?','Who are you?'];
+   return['What happened to campus?','Where are the robots?','How do I reach Building 4?','Who are you?'];
   },
   dispose(){disposed=true;cancel();history.length=0;},
  };

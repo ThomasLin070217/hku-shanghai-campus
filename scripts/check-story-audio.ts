@@ -22,7 +22,7 @@ Object.assign(globalThis,{AudioContext:class {constructor(){return context;}},fe
 const audio=new CampusAudio({...DEFAULT_SETTINGS,music:.2});audio.enableStory();
 await Promise.all([audio.start(),audio.start()]);
 assert.equal(requests.length,27+OPENING_AUDIO_NAMES.length);
-assert.ok(requests.some(p=>p.endsWith('/invitation-open.wav')),'opening should load the paper replacement');
+assert.ok(!requests.some(p=>p.endsWith('/invitation-open.wav')),'the hurried opening paper cue must not load');
 assert.equal(requests.filter(p=>p.includes('/run-')).length,10,'all five surface variants must load once');
 assert.deepEqual(audio.failedFiles,['robot_scan']);assert.ok(!requests.some(p=>p.includes('boss')));
 await audio.start(true);assert.equal(requests.length,28+OPENING_AUDIO_NAMES.length);assert.deepEqual(audio.failedFiles,[]);

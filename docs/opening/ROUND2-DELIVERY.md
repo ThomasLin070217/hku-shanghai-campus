@@ -96,23 +96,28 @@ snapshot and the save.
 
 ## 3. Local Agent setup
 
-The assistant first tries a local endpoint, then falls back to the built-in recovery
-core. No remote service and no API key are required in the repository.
+The assistant (`岚 · LAN`) first talks to the loopback LLM bridge, then falls back to the
+built-in recovery core. The repository never holds an API key; the bridge reads it from
+the local `.env`.
 
 ```js
 // optional, in the browser devtools of the game page
-localStorage['hku.opening.agent.endpoint'] = 'http://127.0.0.1:11434/api/chat'; // Ollama default
-localStorage['hku.opening.agent.model']    = 'deepseek-r1:8b';
+localStorage['hku.opening.agent.endpoint'] = 'http://127.0.0.1:8790/api/chat'; // local bridge
+localStorage['hku.opening.agent.model']    = 'deepseek-flash';                // label only; the bridge picks the model
 localStorage['hku.opening.agent.offline']  = '1';  // force the built-in core
 ```
 
-The transport accepts Ollama (`message.content` or `response`) and OpenAI-style
-(`choices[0].message.content`) replies. For an authenticated model, point the endpoint
-setting to your same-origin model proxy and configure credentials on that server. The
-browser only sends the model name and messages. Players can stop a pending request;
-the client switches to labeled offline guidance after a network error or 30 s timeout.
-The static public playtest uses the offline guide. The agent can read the live story, hearts and capture count, but it
-cannot move the player or change game state.
+The character sheet lives in `src/opening/persona.ts`: who 岚 is, how it speaks, what it
+may claim and what it cannot do. Online replies are generated from that prompt plus the
+live story state; offline replies use the same identity and tone. The transport accepts
+the bridge's OpenAI-style reply (`choices[0].message.content`) and still accepts Ollama
+(`message.content` or `response`) if you point it at one. For an authenticated model,
+keep the credential on the bridge/server side. The browser only sends the model name and
+messages. Players can stop a pending request; the client switches to labeled offline
+guidance after a network error or 40 s timeout, and skips further bridge calls for 15 s
+after a connection failure. The static public playtest uses the offline guide. The agent
+can read the live story, hearts and capture count, but it cannot move the player or
+change game state.
 
 ## 4. Controls and test hooks
 

@@ -135,7 +135,7 @@ export const OPENING_UI = {
       ['Handoff point', 'Building 4 main entrance'],
       ['Progress', 'Opening complete'],
     ] as [string, string][],
-    note: 'Continue to the sports hall to rescue the students, or take your MacBook straight to the lawn.',
+    note: 'Continue to the sports hall to rescue the students, or take your MacBook straight to the lawn. Before the lawn, Vibe Code your counter-programs with the MacBook assistant.',
     close: 'Close',
   },
   settings: {

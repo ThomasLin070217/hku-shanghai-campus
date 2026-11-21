@@ -1,0 +1,6 @@
+b356834c2eb51edba8fe241db038d51a3b2208f0d878f32f6581f78348da6423  all-task-prompts.zip
+783a968dc80c3598edde10c8c6a7ae06d3d26562412239b029ed269b33faf0db  01-opening-bus-audio/01-opening-bus-audio-pack.zip
+6590c55068bc1a9a52ca07d0c450e16f6e80e7347d246a58fa2d9daf772b1a9f  02-opening-ending/02-opening-ending-pack.zip
+5f924334c7d1bfd4e8121adfef8634ab9559fb4d9569acb4c953db8b528d127b  03-robot-tracking/03-robot-tracking-pack.zip
+18a24554482685ed04561b3c1488e4529cf5fd58f67c9791e392f4441490fecb  04-unitree-g1/04-unitree-g1-pack.zip
+28138a6e519e9858904189d3e3187c4bde2b1d092afb21b6c843b5795be2fa13  05-opening-modeling/05-opening-modeling-pack.zip

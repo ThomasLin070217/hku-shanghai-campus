@@ -27,7 +27,7 @@ let letters=0;lettering.traverse(o=>{if(o instanceof T.Mesh&&(o.material as T.Ma
 console.log('PASS exact reference wording, black geometry, face clearance, bounded lettering, single draw call');
 
 const ray=new T.Raycaster();
-for(const [x,z,height] of [[94,-44,.05],[92,98,.05],[24,-44,.05],[24,-47.8,.035],[16.8,96,.05],[16.8,90,.07],[0,-12,.04],[31,30,.14]]){
+for(const [x,z,height] of [[94,-44,.05],[92,98,.05],[24,-44,.05],[24,-47.8,.035],[16.8,96,.05],[16.8,90,.07],[0,-25.5,.04],[31,30,.14]]){
  assert.ok(Math.abs(world.support(x,z,0)!-height)<1e-7,`support ${x},${z}`);
  ray.set(new T.Vector3(x,.5,z),new T.Vector3(0,-1,0));const hit=ray.intersectObject(asset.root,true)[0];assert.ok(hit,`missing surface ${x},${z}`);assert.ok(Math.abs(hit.point.y-height)<.013,`render/physics mismatch ${x},${z}: ${hit.point.y}/${height}`);
 }

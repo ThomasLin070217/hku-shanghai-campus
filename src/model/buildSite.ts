@@ -10,6 +10,7 @@ import {decorateCampusLobby} from './observedInteriors';
 import {addNov14Details} from './nov14Details';
 import {addObservedCourtyard} from './courtyard';
 import {addLandscapeDetails} from './landscapeDetails';
+import {addCurvedEastWalk,addStairHandrails} from './axisGarden';
 import {glassMaterial,pane,shallowDepth,clippedPane,GLAZING_DEPTH as GD,GLASS_PROFILES,type Cutout} from './glazing';
 import {buildSportsDoor,SPORTS_DOOR,SPORTS_HALL} from './sportsDoor';
 import {NOV13 as N} from './nov13Parameters';
@@ -121,7 +122,7 @@ function landscape(root:T.Group,circulation:T.Group,s:SiteParameters,m:M,opening
  for(let z=-88;z<94;z+=10)for(const x of [-94,94])if(z+1.75< -47.5||z-1.75> -40.5)box(paths,'Lane_dash',.12,.012,3.5,x,.056,z,m.yellow);
  for(let x=-85;x<90;x+=10)box(paths,'Lane_dash',3.5,.012,.12,x,.056,98,m.yellow);
  // Lawn now occupies south central forecourt; no obsolete planned fountain is invented.
- box(green,'South_lawn',28,.16,40,0,.05,73,m.grass);
+ box(green,'South_lawn',28,.16,84,0,.05,52,m.grass);
  const letters=mesh(green,'HKU',lawnLetterGeometry(),m.white);letters.position.set(LAWN_SIGN.x,LAWN_SIGN.bottom,LAWN_SIGN.z);letters.userData={source:LAWN_SIGN.source,sourceFile:'src/model/videoFollowup.ts'};
  for(const [i,r] of centralWalkLayout(s).entries()){const section=group(paths,`R00${i+7}`,'M01,A03','inferred-layout');section.userData.sceneId=section.name;section.userData.label=i?'南草坪东侧步道':'南草坪西侧步道';box(section,'Central_walk',r.width,.07,r.depth,r.x,.035,r.z,m.concrete);}
  for(const z of [-94,-27,92])for(const x of [-COLUMN_X,COLUMN_X])box(green,'Planting_bed',55,.14,3.5,x,.1,z,m.grass);
@@ -129,11 +130,12 @@ function landscape(root:T.Group,circulation:T.Group,s:SiteParameters,m:M,opening
  for(let z=-94;z<=94;z+=13)for(const x of [-101,101])tree(x,z);
  // South lawn trees now follow observed planting zones in landscapeDetails.
  for(let x=-82;x<=84;x+=14){tree(x,-92.5,5);tree(x,108,5);}
- for(const x of [-18])for(const z of [-25,-12])tree(x,z,5);
+ for(const x of [-24])for(const z of [-25,-12])tree(x,z,5);
  const plaza=group(circulation,'Sunken_Plaza_and_Ramp','R02,R06,A03,M01','confirmed-feature_estimated-curve');
  const floor=mesh(plaza,'Lower_plaza_floor',new T.CylinderGeometry(1,1,.3,64),m.concrete);floor.scale.set(s.plazaRadiusX,1,s.plazaRadiusZ);floor.position.set(s.plazaX,-s.plazaDepth-.15,s.plazaZ);
  ribbon(plaza,'Retaining_wall',s.plazaRadiusX,s.plazaRadiusZ,.35,s.plazaX,s.plazaZ,.13,Math.PI*2-.13,.05,.05,m.silver,s.plazaDepth+.1);
  addObservedCourtyard(plaza,s);
+ addCurvedEastWalk(circulation,s);
  const steps=group(circulation,'Auditorium_Grand_Stair','R06','confirmed-feature_estimated-dimensions');
  // Keep the original tread keys and upper silhouette. Only their underfill is cut.
  const stairBox=(name:string,w:number,top:number,depth:number,x:number,z:number,key:string)=>{
@@ -149,6 +151,7 @@ function landscape(root:T.Group,circulation:T.Group,s:SiteParameters,m:M,opening
   stairBox('Walking_stair_tread',L.stairWalkWidth,y,L.stairRun,0,L.stairStartZ+i*L.stairRun,'Opening_stair_'+i);
   if(i%3===0)for(const k of [-1,1])stairBox('Broad_seating_step',7.5,y,2.4,k*11.25,-50.2+i*.8,'Opening_seating_'+i+'_'+k);
  }
+ addStairHandrails(steps);
  if(opening){const floor=box(steps,'Opening_stair_passage_floor',SP.width,.08,SP.depth,0,-.04,SP.z,m.concrete);floor.userData.source=SP.source;}
  box(steps,'Upper_exterior_landing',30,5.1,1.3,0,2.55,-52.05,m.concrete);
  for(const x of [-15.4,15.4,0])beam(steps,new T.Vector3(x,6.2,-51),new T.Vector3(x,1.15,-27),.07,m.frame);

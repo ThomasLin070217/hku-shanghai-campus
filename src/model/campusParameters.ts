@@ -12,7 +12,7 @@ export const BUILDINGS:BuildingSpec[]=[
  {id:'B06',label:'6号楼 · 礼堂',kind:'auditorium',x:0,z:-70,width:34.15,depth:34.15,height:23.95,floors:6,bays:14,rotation:0,source:'R02,R06,A06,P01',confidence:'礼堂身份可靠；6号楼对应由用户图确认；尺寸估计',usage:'Auditorium；层数仅作为外形参数'},
  {id:'B07',label:'7号楼 · 西北配套楼',kind:'amenities',x:-COLUMN_X,z:-70,width:59.5,depth:30,height:23.95,floors:5,bays:25,rotation:0,source:'SM06,SM07,A06,P01,M01',confidence:'外形可靠；宽度及东西列间距经卫星核对；用途、高度与隐藏立面待核实',usage:'三期范围，具体功能待核实'},
 ];
-export const SITE={width:208,depth:256,centerZ:-14,plazaX:0,plazaZ:25,plazaRadiusX:16,plazaRadiusZ:22,plazaDepth:4.2,bridgeHeight:5.3,bridgeWidth:4.4,treeHeight:5.4,sportsZ:-117,sportsWidth:190,sportsDepth:31};
+export const SITE={width:208,depth:256,centerZ:-14,plazaX:0,plazaZ:-9,plazaRadiusX:15,plazaRadiusZ:15,plazaDepth:4.2,bridgeHeight:5.3,bridgeWidth:4.4,treeHeight:5.4,sportsZ:-117,sportsWidth:190,sportsDepth:31};
 export type SiteParameters=typeof SITE;
 export const cloneBuildings=()=>BUILDINGS.map(b=>({...b}));
 export function validateCampus(specs:BuildingSpec[],site:SiteParameters){

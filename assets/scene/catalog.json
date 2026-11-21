@@ -1,6 +1,6 @@
 {
   "schema": "hku-scene/1",
-  "revision": "467187e4d360",
+  "revision": "70db643a4c8e",
   "units": "metres",
   "axes": "+X east-ish, -Z north-ish, +Y up; not georeferenced",
   "entities": [
@@ -12600,6 +12600,42 @@
       "editMode": "source"
     },
     {
+      "id": "A005-P-00756f2844a6",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#40",
+      "bounds": {
+        "min": [
+          9.07,
+          0.51,
+          -27.95
+        ],
+        "max": [
+          9.13,
+          1.37,
+          -27.89
+        ]
+      },
+      "center": [
+        9.1,
+        0.94,
+        -27.92
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
       "id": "A005-P-00a4e6ea1611",
       "name": "Walking_stair_tread",
       "kind": "part",
@@ -12672,6 +12708,42 @@
       "material": "Limestone paving"
     },
     {
+      "id": "A005-P-0186b9dc7792",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#39",
+      "bounds": {
+        "min": [
+          9.07,
+          0.51,
+          -29.31
+        ],
+        "max": [
+          9.13,
+          1.37,
+          -29.25
+        ]
+      },
+      "center": [
+        9.1,
+        0.94,
+        -29.28
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
       "id": "A005-P-01a4e87d9bfd",
       "name": "Walking_stair_tread",
       "kind": "part",
@@ -12742,6 +12814,42 @@
       "confidence": "confirmed-feature_estimated-dimensions",
       "editMode": "source",
       "material": "Limestone paving"
+    },
+    {
+      "id": "A005-P-0286bb6ffd7e",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#38",
+      "bounds": {
+        "min": [
+          -9.13,
+          0.51,
+          -27.95
+        ],
+        "max": [
+          -9.07,
+          1.37,
+          -27.89
+        ]
+      },
+      "center": [
+        -9.1,
+        0.94,
+        -27.92
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
     },
     {
       "id": "A005-P-02a728a7fafc",
@@ -12852,6 +12960,330 @@
       "material": "Limestone paving"
     },
     {
+      "id": "A005-P-0586c028bea0",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#35",
+      "bounds": {
+        "min": [
+          9.07,
+          1.02,
+          -31.71
+        ],
+        "max": [
+          9.13,
+          1.88,
+          -31.65
+        ]
+      },
+      "center": [
+        9.1,
+        1.45,
+        -31.68
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-0686c1bb448c",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#34",
+      "bounds": {
+        "min": [
+          -9.13,
+          1.02,
+          -30.35
+        ],
+        "max": [
+          -9.07,
+          1.88,
+          -30.29
+        ]
+      },
+      "center": [
+        -9.1,
+        1.45,
+        -30.32
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-0786c34eca77",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#37",
+      "bounds": {
+        "min": [
+          -9.13,
+          0.51,
+          -29.31
+        ],
+        "max": [
+          -9.07,
+          1.37,
+          -29.25
+        ]
+      },
+      "center": [
+        -9.1,
+        0.94,
+        -29.28
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-0886c4e15063",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#36",
+      "bounds": {
+        "min": [
+          9.07,
+          1.02,
+          -30.35
+        ],
+        "max": [
+          9.13,
+          1.88,
+          -30.29
+        ]
+      },
+      "center": [
+        9.1,
+        1.45,
+        -30.32
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-0986c674a6f1",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#31",
+      "bounds": {
+        "min": [
+          9.07,
+          1.53,
+          -34.11
+        ],
+        "max": [
+          9.13,
+          2.39,
+          -34.05
+        ]
+      },
+      "center": [
+        9.1,
+        1.96,
+        -34.08
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-0a86c8072cdd",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#30",
+      "bounds": {
+        "min": [
+          -9.13,
+          1.53,
+          -32.75
+        ],
+        "max": [
+          -9.07,
+          2.39,
+          -32.69
+        ]
+      },
+      "center": [
+        -9.1,
+        1.96,
+        -32.72
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-0b86c99ab2c8",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#33",
+      "bounds": {
+        "min": [
+          -9.13,
+          1.02,
+          -31.71
+        ],
+        "max": [
+          -9.07,
+          1.88,
+          -31.65
+        ]
+      },
+      "center": [
+        -9.1,
+        1.45,
+        -31.68
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-0c86cb2d38b4",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#32",
+      "bounds": {
+        "min": [
+          9.07,
+          1.53,
+          -32.75
+        ],
+        "max": [
+          9.13,
+          2.39,
+          -32.69
+        ]
+      },
+      "center": [
+        9.1,
+        1.96,
+        -32.72
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-4cff396cc7c1",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#20",
+      "bounds": {
+        "min": [
+          8.39,
+          0.54,
+          -28.63
+        ],
+        "max": [
+          9.81,
+          0.6,
+          -28.57
+        ]
+      },
+      "center": [
+        9.1,
+        0.57,
+        -28.6
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
       "id": "A005-P-52c5ec96ff78",
       "name": "Walking_stair_tread",
       "kind": "part",
@@ -12924,6 +13356,114 @@
       "material": "Limestone paving"
     },
     {
+      "id": "A005-P-55e1f7907818",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#4",
+      "bounds": {
+        "min": [
+          8.39,
+          5.42,
+          -47.83
+        ],
+        "max": [
+          9.81,
+          5.48,
+          -47.77
+        ]
+      },
+      "center": [
+        9.1,
+        5.45,
+        -47.8
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-56e1f923fe04",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#5",
+      "bounds": {
+        "min": [
+          -9.81,
+          4.91,
+          -45.43
+        ],
+        "max": [
+          -8.39,
+          4.97,
+          -45.37
+        ]
+      },
+      "center": [
+        -9.1,
+        4.94,
+        -45.4
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-57e1fab683ef",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#6",
+      "bounds": {
+        "min": [
+          8.39,
+          4.91,
+          -45.43
+        ],
+        "max": [
+          9.81,
+          4.97,
+          -45.37
+        ]
+      },
+      "center": [
+        9.1,
+        4.94,
+        -45.4
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
       "id": "A005-P-58c5f60822ff",
       "name": "Walking_stair_tread",
       "kind": "part",
@@ -12958,6 +13498,42 @@
       "confidence": "confirmed-feature_estimated-dimensions",
       "editMode": "source",
       "material": "Limestone paving"
+    },
+    {
+      "id": "A005-P-58e1fc4909db",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#7",
+      "bounds": {
+        "min": [
+          -9.81,
+          4.4,
+          -43.03
+        ],
+        "max": [
+          -8.39,
+          4.46,
+          -42.97
+        ]
+      },
+      "center": [
+        -9.1,
+        4.43,
+        -43
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
     },
     {
       "id": "A005-P-59c5f79ba8ea",
@@ -13032,6 +13608,78 @@
       "material": "Limestone paving"
     },
     {
+      "id": "A005-P-5ae1ff6f15b3",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#1",
+      "bounds": {
+        "min": [
+          -9.81,
+          5.93,
+          -50.23
+        ],
+        "max": [
+          -8.39,
+          5.99,
+          -50.17
+        ]
+      },
+      "center": [
+        -9.1,
+        5.96,
+        -50.2
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-5be201029b9f",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#2",
+      "bounds": {
+        "min": [
+          8.39,
+          5.93,
+          -50.23
+        ],
+        "max": [
+          9.81,
+          5.99,
+          -50.17
+        ]
+      },
+      "center": [
+        9.1,
+        5.96,
+        -50.2
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
       "id": "A005-P-5cc5fc540b4f",
       "name": "Walking_stair_tread",
       "kind": "part",
@@ -13066,6 +13714,42 @@
       "confidence": "confirmed-feature_estimated-dimensions",
       "editMode": "source",
       "material": "Limestone paving"
+    },
+    {
+      "id": "A005-P-5ce20295218a",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#3",
+      "bounds": {
+        "min": [
+          -9.81,
+          5.42,
+          -47.83
+        ],
+        "max": [
+          -8.39,
+          5.48,
+          -47.77
+        ]
+      },
+      "center": [
+        -9.1,
+        5.45,
+        -47.8
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
     },
     {
       "id": "A005-P-5dc5fde7913b",
@@ -13176,6 +13860,618 @@
       "material": "Limestone paving"
     },
     {
+      "id": "A005-P-61e20a74bf25",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#8",
+      "bounds": {
+        "min": [
+          8.39,
+          4.4,
+          -43.03
+        ],
+        "max": [
+          9.81,
+          4.46,
+          -42.97
+        ]
+      },
+      "center": [
+        9.1,
+        4.43,
+        -43
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-62e20c074511",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#9",
+      "bounds": {
+        "min": [
+          -9.81,
+          3.89,
+          -40.63
+        ],
+        "max": [
+          -8.39,
+          3.95,
+          -40.57
+        ]
+      },
+      "center": [
+        -9.1,
+        3.92,
+        -40.6
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-67c4f462a058",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#19",
+      "bounds": {
+        "min": [
+          -9.81,
+          1.34,
+          -28.63
+        ],
+        "max": [
+          -8.39,
+          1.4,
+          -28.57
+        ]
+      },
+      "center": [
+        -9.1,
+        1.37,
+        -28.6
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-68c4f5f52644",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#18",
+      "bounds": {
+        "min": [
+          8.39,
+          1.85,
+          -31.03
+        ],
+        "max": [
+          9.81,
+          1.91,
+          -30.97
+        ]
+      },
+      "center": [
+        9.1,
+        1.88,
+        -31
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-69c4f7887cd2",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#17",
+      "bounds": {
+        "min": [
+          -9.81,
+          1.85,
+          -31.03
+        ],
+        "max": [
+          -8.39,
+          1.91,
+          -30.97
+        ]
+      },
+      "center": [
+        -9.1,
+        1.88,
+        -31
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-6ac4f91b02be",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#16",
+      "bounds": {
+        "min": [
+          8.39,
+          2.36,
+          -33.43
+        ],
+        "max": [
+          9.81,
+          2.42,
+          -33.37
+        ]
+      },
+      "center": [
+        9.1,
+        2.39,
+        -33.4
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-6bc4faae88a9",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#15",
+      "bounds": {
+        "min": [
+          -9.81,
+          2.36,
+          -33.43
+        ],
+        "max": [
+          -8.39,
+          2.42,
+          -33.37
+        ]
+      },
+      "center": [
+        -9.1,
+        2.39,
+        -33.4
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-6cc4fc410e95",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#14",
+      "bounds": {
+        "min": [
+          8.39,
+          2.87,
+          -35.83
+        ],
+        "max": [
+          9.81,
+          2.93,
+          -35.77
+        ]
+      },
+      "center": [
+        9.1,
+        2.9,
+        -35.8
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-6dc4fdd46523",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#13",
+      "bounds": {
+        "min": [
+          -9.81,
+          2.87,
+          -35.83
+        ],
+        "max": [
+          -8.39,
+          2.93,
+          -35.77
+        ]
+      },
+      "center": [
+        -9.1,
+        2.9,
+        -35.8
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-6ec4ff67eb0e",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#12",
+      "bounds": {
+        "min": [
+          8.39,
+          3.38,
+          -38.23
+        ],
+        "max": [
+          9.81,
+          3.44,
+          -38.17
+        ]
+      },
+      "center": [
+        9.1,
+        3.41,
+        -38.2
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-6fc500fa70fa",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#11",
+      "bounds": {
+        "min": [
+          -9.81,
+          3.38,
+          -38.23
+        ],
+        "max": [
+          -8.39,
+          3.44,
+          -38.17
+        ]
+      },
+      "center": [
+        -9.1,
+        3.41,
+        -38.2
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-70c5028df6e6",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#10",
+      "bounds": {
+        "min": [
+          8.39,
+          3.89,
+          -40.63
+        ],
+        "max": [
+          9.81,
+          3.95,
+          -40.57
+        ]
+      },
+      "center": [
+        9.1,
+        3.92,
+        -40.6
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-77816370fc1b",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#17",
+      "bounds": {
+        "min": [
+          -9.13,
+          3.06,
+          -41.31
+        ],
+        "max": [
+          -9.07,
+          3.92,
+          -41.25
+        ]
+      },
+      "center": [
+        -9.1,
+        3.49,
+        -41.28
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-788165038207",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#16",
+      "bounds": {
+        "min": [
+          9.07,
+          3.57,
+          -42.35
+        ],
+        "max": [
+          9.13,
+          4.43,
+          -42.29
+        ]
+      },
+      "center": [
+        9.1,
+        4,
+        -42.32
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-7900e6bc05be",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#8",
+      "bounds": {
+        "min": [
+          9.07,
+          4.59,
+          -47.15
+        ],
+        "max": [
+          9.13,
+          5.45,
+          -47.09
+        ]
+      },
+      "center": [
+        9.1,
+        5.02,
+        -47.12
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-7981669607f3",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#15",
+      "bounds": {
+        "min": [
+          9.07,
+          3.57,
+          -43.71
+        ],
+        "max": [
+          9.13,
+          4.43,
+          -43.65
+        ]
+      },
+      "center": [
+        9.1,
+        4,
+        -43.68
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-7a00e84f8baa",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#9",
+      "bounds": {
+        "min": [
+          -9.13,
+          4.08,
+          -46.11
+        ],
+        "max": [
+          -9.07,
+          4.94,
+          -46.05
+        ]
+      },
+      "center": [
+        -9.1,
+        4.51,
+        -46.08
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
       "id": "A005-P-7a058f0097c9",
       "name": "Rail",
       "kind": "part",
@@ -13210,6 +14506,78 @@
       "confidence": "confirmed-feature_estimated-dimensions",
       "editMode": "source",
       "material": "Mullion aluminium"
+    },
+    {
+      "id": "A005-P-7a8168298dde",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#14",
+      "bounds": {
+        "min": [
+          -9.13,
+          3.57,
+          -42.35
+        ],
+        "max": [
+          -9.07,
+          4.43,
+          -42.29
+        ]
+      },
+      "center": [
+        -9.1,
+        4,
+        -42.32
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-7b8169bce46c",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#13",
+      "bounds": {
+        "min": [
+          -9.13,
+          3.57,
+          -43.71
+        ],
+        "max": [
+          -9.07,
+          4.43,
+          -43.65
+        ]
+      },
+      "center": [
+        -9.1,
+        4,
+        -43.68
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
     },
     {
       "id": "A005-P-7c059226a3a0",
@@ -13248,6 +14616,114 @@
       "material": "Mullion aluminium"
     },
     {
+      "id": "A005-P-7c816b4f6a58",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#12",
+      "bounds": {
+        "min": [
+          9.07,
+          4.08,
+          -44.75
+        ],
+        "max": [
+          9.13,
+          4.94,
+          -44.69
+        ]
+      },
+      "center": [
+        9.1,
+        4.51,
+        -44.72
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-7c83a9e6a228",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#28",
+      "bounds": {
+        "min": [
+          9.07,
+          2.04,
+          -35.15
+        ],
+        "max": [
+          9.13,
+          2.9,
+          -35.09
+        ]
+      },
+      "center": [
+        9.1,
+        2.47,
+        -35.12
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-7d00ed081d6d",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#4",
+      "bounds": {
+        "min": [
+          9.07,
+          5.1,
+          -49.55
+        ],
+        "max": [
+          9.13,
+          5.96,
+          -49.49
+        ]
+      },
+      "center": [
+        9.1,
+        5.53,
+        -49.52
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
       "id": "A005-P-7d0593b9298c",
       "name": "Rail",
       "kind": "part",
@@ -13282,6 +14758,690 @@
       "confidence": "confirmed-feature_estimated-dimensions",
       "editMode": "source",
       "material": "Mullion aluminium"
+    },
+    {
+      "id": "A005-P-7d816ce2f043",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#11",
+      "bounds": {
+        "min": [
+          9.07,
+          4.08,
+          -46.11
+        ],
+        "max": [
+          9.13,
+          4.94,
+          -46.05
+        ]
+      },
+      "center": [
+        9.1,
+        4.51,
+        -46.08
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-7d83ab792813",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#29",
+      "bounds": {
+        "min": [
+          -9.13,
+          1.53,
+          -34.11
+        ],
+        "max": [
+          -9.07,
+          2.39,
+          -34.05
+        ]
+      },
+      "center": [
+        -9.1,
+        1.96,
+        -34.08
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-7e00ee9ba359",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#5",
+      "bounds": {
+        "min": [
+          -9.13,
+          4.59,
+          -48.51
+        ],
+        "max": [
+          -9.07,
+          5.45,
+          -48.45
+        ]
+      },
+      "center": [
+        -9.1,
+        5.02,
+        -48.48
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-7e816e75762f",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#10",
+      "bounds": {
+        "min": [
+          -9.13,
+          4.08,
+          -44.75
+        ],
+        "max": [
+          -9.07,
+          4.94,
+          -44.69
+        ]
+      },
+      "center": [
+        -9.1,
+        4.51,
+        -44.72
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-7f00f02e2944",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#6",
+      "bounds": {
+        "min": [
+          -9.13,
+          4.59,
+          -47.15
+        ],
+        "max": [
+          -9.07,
+          5.45,
+          -47.09
+        ]
+      },
+      "center": [
+        -9.1,
+        5.02,
+        -47.12
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-8000f1c1af30",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#7",
+      "bounds": {
+        "min": [
+          9.07,
+          4.59,
+          -48.51
+        ],
+        "max": [
+          9.13,
+          5.45,
+          -48.45
+        ]
+      },
+      "center": [
+        9.1,
+        5.02,
+        -48.48
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-8200f4e7bb08",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#1",
+      "bounds": {
+        "min": [
+          -9.13,
+          5.1,
+          -50.91
+        ],
+        "max": [
+          -9.07,
+          5.96,
+          -50.85
+        ]
+      },
+      "center": [
+        -9.1,
+        5.53,
+        -50.88
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-8283b35866f2",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#22",
+      "bounds": {
+        "min": [
+          -9.13,
+          2.55,
+          -37.55
+        ],
+        "max": [
+          -9.07,
+          3.41,
+          -37.49
+        ]
+      },
+      "center": [
+        -9.1,
+        2.98,
+        -37.52
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-8300f67a40f4",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#2",
+      "bounds": {
+        "min": [
+          -9.13,
+          5.1,
+          -49.55
+        ],
+        "max": [
+          -9.07,
+          5.96,
+          -49.49
+        ]
+      },
+      "center": [
+        -9.1,
+        5.53,
+        -49.52
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-8383b4ebecdd",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#23",
+      "bounds": {
+        "min": [
+          9.07,
+          2.55,
+          -38.91
+        ],
+        "max": [
+          9.13,
+          3.41,
+          -38.85
+        ]
+      },
+      "center": [
+        9.1,
+        2.98,
+        -38.88
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-8400f80dc6df",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#3",
+      "bounds": {
+        "min": [
+          9.07,
+          5.1,
+          -50.91
+        ],
+        "max": [
+          9.13,
+          5.96,
+          -50.85
+        ]
+      },
+      "center": [
+        9.1,
+        5.53,
+        -50.88
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-8483b67e72c9",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#20",
+      "bounds": {
+        "min": [
+          9.07,
+          3.06,
+          -39.95
+        ],
+        "max": [
+          9.13,
+          3.92,
+          -39.89
+        ]
+      },
+      "center": [
+        9.1,
+        3.49,
+        -39.92
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-8581797ac0e5",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#19",
+      "bounds": {
+        "min": [
+          9.07,
+          3.06,
+          -41.31
+        ],
+        "max": [
+          9.13,
+          3.92,
+          -41.25
+        ]
+      },
+      "center": [
+        9.1,
+        3.49,
+        -41.28
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-8583b811f8b5",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#21",
+      "bounds": {
+        "min": [
+          -9.13,
+          2.55,
+          -38.91
+        ],
+        "max": [
+          -9.07,
+          3.41,
+          -38.85
+        ]
+      },
+      "center": [
+        -9.1,
+        2.98,
+        -38.88
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-86817b0d46d1",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#18",
+      "bounds": {
+        "min": [
+          -9.13,
+          3.06,
+          -39.95
+        ],
+        "max": [
+          -9.07,
+          3.92,
+          -39.89
+        ]
+      },
+      "center": [
+        -9.1,
+        3.49,
+        -39.92
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-8683b9a47ea1",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#26",
+      "bounds": {
+        "min": [
+          -9.13,
+          2.04,
+          -35.15
+        ],
+        "max": [
+          -9.07,
+          2.9,
+          -35.09
+        ]
+      },
+      "center": [
+        -9.1,
+        2.47,
+        -35.12
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-8783bb37048d",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#27",
+      "bounds": {
+        "min": [
+          9.07,
+          2.04,
+          -36.51
+        ],
+        "max": [
+          9.13,
+          2.9,
+          -36.45
+        ]
+      },
+      "center": [
+        9.1,
+        2.47,
+        -36.48
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-8883bcca8a78",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#24",
+      "bounds": {
+        "min": [
+          9.07,
+          2.55,
+          -37.55
+        ],
+        "max": [
+          9.13,
+          3.41,
+          -37.49
+        ]
+      },
+      "center": [
+        9.1,
+        2.98,
+        -37.52
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-8983be5d1064",
+      "name": "Black_stair_handrail_side",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_side#25",
+      "bounds": {
+        "min": [
+          -9.13,
+          2.04,
+          -36.51
+        ],
+        "max": [
+          -9.07,
+          2.9,
+          -36.45
+        ]
+      },
+      "center": [
+        -9.1,
+        2.47,
+        -36.48
+      ],
+      "size": [
+        0.06,
+        0.86,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_side",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
     },
     {
       "id": "A005-P-b139dc807c89",
@@ -13572,6 +15732,42 @@
       "material": "Limestone paving"
     },
     {
+      "id": "A005-P-bd986ae2b2ee",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#8",
+      "bounds": {
+        "min": [
+          8.39,
+          3.6,
+          -43.03
+        ],
+        "max": [
+          9.81,
+          3.66,
+          -42.97
+        ]
+      },
+      "center": [
+        9.1,
+        3.63,
+        -43
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
       "id": "A005-P-be39f0f74983",
       "name": "Broad_seating_step",
       "kind": "part",
@@ -13606,6 +15802,42 @@
       "confidence": "confirmed-feature_estimated-dimensions",
       "editMode": "source",
       "material": "Limestone paving"
+    },
+    {
+      "id": "A005-P-be986c7538da",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#9",
+      "bounds": {
+        "min": [
+          -9.81,
+          3.09,
+          -40.63
+        ],
+        "max": [
+          -8.39,
+          3.15,
+          -40.57
+        ]
+      },
+      "center": [
+        -9.1,
+        3.12,
+        -40.6
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
     },
     {
       "id": "A005-P-bf39f28acf6e",
@@ -13644,6 +15876,42 @@
       "material": "Limestone paving"
     },
     {
+      "id": "A005-P-bf986e08bec6",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#6",
+      "bounds": {
+        "min": [
+          8.39,
+          4.11,
+          -45.43
+        ],
+        "max": [
+          9.81,
+          4.17,
+          -45.37
+        ]
+      },
+      "center": [
+        9.1,
+        4.14,
+        -45.4
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
       "id": "A005-P-c039f41d555a",
       "name": "Broad_seating_step",
       "kind": "part",
@@ -13678,6 +15946,42 @@
       "confidence": "confirmed-feature_estimated-dimensions",
       "editMode": "source",
       "material": "Limestone paving"
+    },
+    {
+      "id": "A005-P-c0986f9b44b2",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#7",
+      "bounds": {
+        "min": [
+          -9.81,
+          3.6,
+          -43.03
+        ],
+        "max": [
+          -8.39,
+          3.66,
+          -42.97
+        ]
+      },
+      "center": [
+        -9.1,
+        3.63,
+        -43
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
     },
     {
       "id": "A005-P-c12c4d48f2a9",
@@ -13716,6 +16020,42 @@
       "material": "Limestone paving"
     },
     {
+      "id": "A005-P-c198712eca9e",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#4",
+      "bounds": {
+        "min": [
+          8.39,
+          4.62,
+          -47.83
+        ],
+        "max": [
+          9.81,
+          4.68,
+          -47.77
+        ]
+      },
+      "center": [
+        9.1,
+        4.65,
+        -47.8
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
       "id": "A005-P-c22c4edb7894",
       "name": "Broad_seating_step",
       "kind": "part",
@@ -13750,6 +16090,42 @@
       "confidence": "confirmed-feature_estimated-dimensions",
       "editMode": "source",
       "material": "Limestone paving"
+    },
+    {
+      "id": "A005-P-c29872c15089",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#5",
+      "bounds": {
+        "min": [
+          -9.81,
+          4.11,
+          -45.43
+        ],
+        "max": [
+          -8.39,
+          4.17,
+          -45.37
+        ]
+      },
+      "center": [
+        -9.1,
+        4.14,
+        -45.4
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
     },
     {
       "id": "A005-P-c32c506efe80",
@@ -13788,6 +16164,42 @@
       "material": "Limestone paving"
     },
     {
+      "id": "A005-P-c3987454d675",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#2",
+      "bounds": {
+        "min": [
+          8.39,
+          5.13,
+          -50.23
+        ],
+        "max": [
+          9.81,
+          5.19,
+          -50.17
+        ]
+      },
+      "center": [
+        9.1,
+        5.16,
+        -50.2
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
       "id": "A005-P-c42c5201846c",
       "name": "Broad_seating_step",
       "kind": "part",
@@ -13822,6 +16234,42 @@
       "confidence": "confirmed-feature_estimated-dimensions",
       "editMode": "source",
       "material": "Limestone paving"
+    },
+    {
+      "id": "A005-P-c49875e75c61",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#3",
+      "bounds": {
+        "min": [
+          -9.81,
+          4.62,
+          -47.83
+        ],
+        "max": [
+          -8.39,
+          4.68,
+          -47.77
+        ]
+      },
+      "center": [
+        -9.1,
+        4.65,
+        -47.8
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
     },
     {
       "id": "A005-P-c52c5394daf9",
@@ -13894,6 +16342,42 @@
       "confidence": "confirmed-feature_estimated-dimensions",
       "editMode": "source",
       "material": "Limestone paving"
+    },
+    {
+      "id": "A005-P-c698790d6838",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#1",
+      "bounds": {
+        "min": [
+          -9.81,
+          5.13,
+          -50.23
+        ],
+        "max": [
+          -8.39,
+          5.19,
+          -50.17
+        ]
+      },
+      "center": [
+        -9.1,
+        5.16,
+        -50.2
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
     },
     {
       "id": "A005-P-c72c56bae6d1",
@@ -14002,6 +16486,402 @@
       "confidence": "confirmed-feature_estimated-dimensions",
       "editMode": "source",
       "material": "Limestone paving"
+    },
+    {
+      "id": "A005-P-d606ccdc8337",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#19",
+      "bounds": {
+        "min": [
+          -9.81,
+          0.54,
+          -28.63
+        ],
+        "max": [
+          -8.39,
+          0.6,
+          -28.57
+        ]
+      },
+      "center": [
+        -9.1,
+        0.57,
+        -28.6
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-d6c7e1b6b0f9",
+      "name": "Black_stair_handrail_top",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_top#20",
+      "bounds": {
+        "min": [
+          8.39,
+          1.34,
+          -28.63
+        ],
+        "max": [
+          9.81,
+          1.4,
+          -28.57
+        ]
+      },
+      "center": [
+        9.1,
+        1.37,
+        -28.6
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_top",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-d706ce6f0923",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#18",
+      "bounds": {
+        "min": [
+          8.39,
+          1.05,
+          -31.03
+        ],
+        "max": [
+          9.81,
+          1.11,
+          -30.97
+        ]
+      },
+      "center": [
+        9.1,
+        1.08,
+        -31
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-da06d328ca45",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#15",
+      "bounds": {
+        "min": [
+          -9.81,
+          1.56,
+          -33.43
+        ],
+        "max": [
+          -8.39,
+          1.62,
+          -33.37
+        ]
+      },
+      "center": [
+        -9.1,
+        1.59,
+        -33.4
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-db06d4bb5031",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#14",
+      "bounds": {
+        "min": [
+          8.39,
+          2.07,
+          -35.83
+        ],
+        "max": [
+          9.81,
+          2.13,
+          -35.77
+        ]
+      },
+      "center": [
+        9.1,
+        2.1,
+        -35.8
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-dc06d64ed61c",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#17",
+      "bounds": {
+        "min": [
+          -9.81,
+          1.05,
+          -31.03
+        ],
+        "max": [
+          -8.39,
+          1.11,
+          -30.97
+        ]
+      },
+      "center": [
+        -9.1,
+        1.08,
+        -31
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-dd06d7e15c08",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#16",
+      "bounds": {
+        "min": [
+          8.39,
+          1.56,
+          -33.43
+        ],
+        "max": [
+          9.81,
+          1.62,
+          -33.37
+        ]
+      },
+      "center": [
+        9.1,
+        1.59,
+        -33.4
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-de06d974b296",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#11",
+      "bounds": {
+        "min": [
+          -9.81,
+          2.58,
+          -38.23
+        ],
+        "max": [
+          -8.39,
+          2.64,
+          -38.17
+        ]
+      },
+      "center": [
+        -9.1,
+        2.61,
+        -38.2
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-df06db073881",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#10",
+      "bounds": {
+        "min": [
+          8.39,
+          3.09,
+          -40.63
+        ],
+        "max": [
+          9.81,
+          3.15,
+          -40.57
+        ]
+      },
+      "center": [
+        9.1,
+        3.12,
+        -40.6
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-e006dc9abe6d",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#13",
+      "bounds": {
+        "min": [
+          -9.81,
+          2.07,
+          -35.83
+        ],
+        "max": [
+          -8.39,
+          2.13,
+          -35.77
+        ]
+      },
+      "center": [
+        -9.1,
+        2.1,
+        -35.8
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
+    },
+    {
+      "id": "A005-P-e106de2d4459",
+      "name": "Black_stair_handrail_base",
+      "kind": "part",
+      "parentId": "A005",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Auditorium_Grand_Stair#1/Black_stair_handrail_base#12",
+      "bounds": {
+        "min": [
+          8.39,
+          2.58,
+          -38.23
+        ],
+        "max": [
+          9.81,
+          2.64,
+          -38.17
+        ]
+      },
+      "center": [
+        9.1,
+        2.61,
+        -38.2
+      ],
+      "size": [
+        1.42,
+        0.06,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Black_stair_handrail_base",
+      "reference": "R06",
+      "confidence": "confirmed-feature_estimated-dimensions",
+      "editMode": "source",
+      "material": "Stair black handrail"
     },
     {
       "id": "A005-P-f47322e3df73",
@@ -136665,6 +139545,2921 @@
       "confidence": "observed type and continuity; placement and dimensions estimated",
       "editMode": "source",
       "material": "U08 perimeter low hedge"
+    },
+    {
+      "id": "A016",
+      "name": "轴线梯田花园",
+      "kind": "area",
+      "parentId": "SITE-G-3104754a5c99",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1",
+      "bounds": {
+        "min": [
+          -13.1583,
+          0,
+          -24.0959
+        ],
+        "max": [
+          13.1583,
+          0.625,
+          2.2901
+        ]
+      },
+      "center": [
+        0,
+        0.3125,
+        -10.9029
+      ],
+      "size": [
+        26.3165,
+        0.625,
+        26.386
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Axis_Terraced_Garden",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source"
+    },
+    {
+      "id": "A016-P-01b4fc606873",
+      "name": "Terrace_band_planting",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_planting#3",
+      "bounds": {
+        "min": [
+          -12.8997,
+          0.085,
+          -10.8603
+        ],
+        "max": [
+          -2.2624,
+          0.165,
+          -4.9156
+        ]
+      },
+      "center": [
+        -7.581,
+        0.125,
+        -7.888
+      ],
+      "size": [
+        10.6374,
+        0.08,
+        5.9447
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_planting",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-02b4fdf3ee5f",
+      "name": "Terrace_band_planting",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_planting#2",
+      "bounds": {
+        "min": [
+          2.2298,
+          0.085,
+          -4.3376
+        ],
+        "max": [
+          13.0651,
+          0.165,
+          2.1019
+        ]
+      },
+      "center": [
+        7.6475,
+        0.125,
+        -1.1179
+      ],
+      "size": [
+        10.8353,
+        0.08,
+        6.4395
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_planting",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-03b4ff86744b",
+      "name": "Terrace_band_planting",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_planting#1",
+      "bounds": {
+        "min": [
+          -13.0651,
+          0.085,
+          -4.3376
+        ],
+        "max": [
+          -2.2298,
+          0.165,
+          2.1019
+        ]
+      },
+      "center": [
+        -7.6475,
+        0.125,
+        -1.1179
+      ],
+      "size": [
+        10.8353,
+        0.08,
+        6.4395
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_planting",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-05b502ac8022",
+      "name": "Terrace_band_planting",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_planting#7",
+      "bounds": {
+        "min": [
+          -12.7062,
+          0.085,
+          -23.8861
+        ],
+        "max": [
+          -2.3004,
+          0.165,
+          -18.5058
+        ]
+      },
+      "center": [
+        -7.5033,
+        0.125,
+        -21.196
+      ],
+      "size": [
+        10.4057,
+        0.08,
+        5.3803
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_planting",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-06b5043f060e",
+      "name": "Terrace_band_planting",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_planting#6",
+      "bounds": {
+        "min": [
+          2.2844,
+          0.085,
+          -17.3754
+        ],
+        "max": [
+          12.7874,
+          0.165,
+          -11.7594
+        ]
+      },
+      "center": [
+        7.5359,
+        0.125,
+        -14.5674
+      ],
+      "size": [
+        10.503,
+        0.08,
+        5.616
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_planting",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-06ba3cc0bda7",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#40",
+      "bounds": {
+        "min": [
+          -4.5575,
+          0.165,
+          -16.2478
+        ],
+        "max": [
+          -2.7332,
+          0.385,
+          -14.4234
+        ]
+      },
+      "center": [
+        -3.6454,
+        0.275,
+        -15.3356
+      ],
+      "size": [
+        1.8244,
+        0.22,
+        1.8244
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-07b505d28bfa",
+      "name": "Terrace_band_planting",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_planting#5",
+      "bounds": {
+        "min": [
+          -12.7874,
+          0.085,
+          -17.3754
+        ],
+        "max": [
+          -2.2844,
+          0.165,
+          -11.7594
+        ]
+      },
+      "center": [
+        -7.5359,
+        0.125,
+        -14.5674
+      ],
+      "size": [
+        10.503,
+        0.08,
+        5.616
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_planting",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-07ba3e534393",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#41",
+      "bounds": {
+        "min": [
+          2.3683,
+          0.165,
+          -16.6127
+        ],
+        "max": [
+          4.9224,
+          0.565,
+          -14.0585
+        ]
+      },
+      "center": [
+        3.6454,
+        0.365,
+        -15.3356
+      ],
+      "size": [
+        2.5542,
+        0.4,
+        2.5542
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-08b5076511e6",
+      "name": "Terrace_band_planting",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_planting#4",
+      "bounds": {
+        "min": [
+          2.2624,
+          0.085,
+          -10.8603
+        ],
+        "max": [
+          12.8997,
+          0.165,
+          -4.9156
+        ]
+      },
+      "center": [
+        7.581,
+        0.125,
+        -7.888
+      ],
+      "size": [
+        10.6374,
+        0.08,
+        5.9447
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_planting",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-08ba3fe6c97f",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#42",
+      "bounds": {
+        "min": [
+          2.7332,
+          0.165,
+          -16.2478
+        ],
+        "max": [
+          4.5575,
+          0.385,
+          -14.4234
+        ]
+      },
+      "center": [
+        3.6454,
+        0.275,
+        -15.3356
+      ],
+      "size": [
+        1.8244,
+        0.22,
+        1.8244
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-08c94a70fb22",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#22",
+      "bounds": {
+        "min": [
+          -7.1246,
+          0.165,
+          -9.4178
+        ],
+        "max": [
+          -5.1686,
+          0.418,
+          -7.4618
+        ]
+      },
+      "center": [
+        -6.1466,
+        0.2915,
+        -8.4398
+      ],
+      "size": [
+        1.956,
+        0.253,
+        1.956
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-09ba41794f6b",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#43",
+      "bounds": {
+        "min": [
+          4.7842,
+          0.165,
+          -16.3746
+        ],
+        "max": [
+          7.4648,
+          0.565,
+          -13.6939
+        ]
+      },
+      "center": [
+        6.1245,
+        0.365,
+        -15.0342
+      ],
+      "size": [
+        2.6806,
+        0.4,
+        2.6806
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-09c94c03810e",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#23",
+      "bounds": {
+        "min": [
+          -4.95,
+          0.165,
+          -10.0986
+        ],
+        "max": [
+          -2.3589,
+          0.625,
+          -7.5074
+        ]
+      },
+      "center": [
+        -3.6545,
+        0.395,
+        -8.803
+      ],
+      "size": [
+        2.5912,
+        0.46,
+        2.5912
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-0aba430ca5f8",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#44",
+      "bounds": {
+        "min": [
+          5.1671,
+          0.165,
+          -15.9916
+        ],
+        "max": [
+          7.0818,
+          0.385,
+          -14.0769
+        ]
+      },
+      "center": [
+        6.1245,
+        0.275,
+        -15.0342
+      ],
+      "size": [
+        1.9147,
+        0.22,
+        1.9147
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-0ac94d9606fa",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#20",
+      "bounds": {
+        "min": [
+          -9.6303,
+          0.165,
+          -8.9183
+        ],
+        "max": [
+          -7.5798,
+          0.418,
+          -6.8678
+        ]
+      },
+      "center": [
+        -8.605,
+        0.2915,
+        -7.8931
+      ],
+      "size": [
+        2.0505,
+        0.253,
+        2.0505
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-0bba449f2be4",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#45",
+      "bounds": {
+        "min": [
+          7.1819,
+          0.165,
+          -15.9791
+        ],
+        "max": [
+          9.9788,
+          0.565,
+          -13.1822
+        ]
+      },
+      "center": [
+        8.5803,
+        0.365,
+        -14.5807
+      ],
+      "size": [
+        2.7969,
+        0.4,
+        2.7969
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-0bc94f298ce6",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#21",
+      "bounds": {
+        "min": [
+          -7.5158,
+          0.165,
+          -9.809
+        ],
+        "max": [
+          -4.7774,
+          0.625,
+          -7.0706
+        ]
+      },
+      "center": [
+        -6.1466,
+        0.395,
+        -8.4398
+      ],
+      "size": [
+        2.7384,
+        0.46,
+        2.7384
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-0bcb8dc065f9",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#35",
+      "bounds": {
+        "min": [
+          -9.9788,
+          0.165,
+          -15.9791
+        ],
+        "max": [
+          -7.1819,
+          0.565,
+          -13.1822
+        ]
+      },
+      "center": [
+        -8.5803,
+        0.365,
+        -14.5807
+      ],
+      "size": [
+        2.7969,
+        0.4,
+        2.7969
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-0cb50db1cad8",
+      "name": "Terrace_band_planting",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_planting#8",
+      "bounds": {
+        "min": [
+          2.3004,
+          0.085,
+          -23.8861
+        ],
+        "max": [
+          12.7062,
+          0.165,
+          -18.5058
+        ]
+      },
+      "center": [
+        7.5033,
+        0.125,
+        -21.196
+      ],
+      "size": [
+        10.4057,
+        0.08,
+        5.3803
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_planting",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-0cba4632b1d0",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#46",
+      "bounds": {
+        "min": [
+          7.5814,
+          0.165,
+          -15.5796
+        ],
+        "max": [
+          9.5792,
+          0.385,
+          -13.5818
+        ]
+      },
+      "center": [
+        8.5803,
+        0.275,
+        -14.5807
+      ],
+      "size": [
+        1.9978,
+        0.22,
+        1.9978
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-0cc950bce373",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#26",
+      "bounds": {
+        "min": [
+          2.729,
+          0.165,
+          -9.7285
+        ],
+        "max": [
+          4.5799,
+          0.418,
+          -7.8776
+        ]
+      },
+      "center": [
+        3.6545,
+        0.2915,
+        -8.803
+      ],
+      "size": [
+        1.8508,
+        0.253,
+        1.8508
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-0ccb8f53ebe5",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#34",
+      "bounds": {
+        "min": [
+          -12.0401,
+          0.165,
+          -15.0132
+        ],
+        "max": [
+          -9.9669,
+          0.385,
+          -12.9399
+        ]
+      },
+      "center": [
+        -11.0035,
+        0.275,
+        -13.9766
+      ],
+      "size": [
+        2.0732,
+        0.22,
+        2.0732
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-0dba47c537bb",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#47",
+      "bounds": {
+        "min": [
+          9.5522,
+          0.165,
+          -15.4278
+        ],
+        "max": [
+          12.4548,
+          0.565,
+          -12.5253
+        ]
+      },
+      "center": [
+        11.0035,
+        0.365,
+        -13.9766
+      ],
+      "size": [
+        2.9025,
+        0.4,
+        2.9025
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-0dc9524f695f",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#27",
+      "bounds": {
+        "min": [
+          4.7774,
+          0.165,
+          -9.809
+        ],
+        "max": [
+          7.5158,
+          0.625,
+          -7.0706
+        ]
+      },
+      "center": [
+        6.1466,
+        0.395,
+        -8.4398
+      ],
+      "size": [
+        2.7384,
+        0.46,
+        2.7384
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-0dcb90e671d1",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#37",
+      "bounds": {
+        "min": [
+          -7.4648,
+          0.165,
+          -16.3746
+        ],
+        "max": [
+          -4.7842,
+          0.565,
+          -13.6939
+        ]
+      },
+      "center": [
+        -6.1245,
+        0.365,
+        -15.0342
+      ],
+      "size": [
+        2.6806,
+        0.4,
+        2.6806
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-0eba49588e49",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#48",
+      "bounds": {
+        "min": [
+          9.9669,
+          0.165,
+          -15.0132
+        ],
+        "max": [
+          12.0401,
+          0.385,
+          -12.9399
+        ]
+      },
+      "center": [
+        11.0035,
+        0.275,
+        -13.9766
+      ],
+      "size": [
+        2.0732,
+        0.22,
+        2.0732
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-0ec953e2ef4b",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#24",
+      "bounds": {
+        "min": [
+          -4.5799,
+          0.165,
+          -9.7285
+        ],
+        "max": [
+          -2.729,
+          0.418,
+          -7.8776
+        ]
+      },
+      "center": [
+        -3.6545,
+        0.2915,
+        -8.803
+      ],
+      "size": [
+        1.8508,
+        0.253,
+        1.8508
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-0ecb9279f7bc",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#36",
+      "bounds": {
+        "min": [
+          -9.5792,
+          0.165,
+          -15.5796
+        ],
+        "max": [
+          -7.5814,
+          0.385,
+          -13.5818
+        ]
+      },
+      "center": [
+        -8.5803,
+        0.275,
+        -14.5807
+      ],
+      "size": [
+        1.9978,
+        0.22,
+        1.9978
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-0fba4aeb1435",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#49",
+      "bounds": {
+        "min": [
+          -12.4144,
+          0.165,
+          -22.1141
+        ],
+        "max": [
+          -9.5774,
+          0.625,
+          -19.2771
+        ]
+      },
+      "center": [
+        -10.9959,
+        0.395,
+        -20.6956
+      ],
+      "size": [
+        2.837,
+        0.46,
+        2.837
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-0fc955757537",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#25",
+      "bounds": {
+        "min": [
+          2.3589,
+          0.165,
+          -10.0986
+        ],
+        "max": [
+          4.95,
+          0.625,
+          -7.5074
+        ]
+      },
+      "center": [
+        3.6545,
+        0.395,
+        -8.803
+      ],
+      "size": [
+        2.5912,
+        0.46,
+        2.5912
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-0fcb940c7da8",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#31",
+      "bounds": {
+        "min": [
+          9.5227,
+          0.165,
+          -8.6594
+        ],
+        "max": [
+          12.5098,
+          0.625,
+          -5.6723
+        ]
+      },
+      "center": [
+        11.0162,
+        0.395,
+        -7.1659
+      ],
+      "size": [
+        2.9872,
+        0.46,
+        2.9872
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-10cb959f0394",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#30",
+      "bounds": {
+        "min": [
+          7.5798,
+          0.165,
+          -8.9183
+        ],
+        "max": [
+          9.6303,
+          0.418,
+          -6.8678
+        ]
+      },
+      "center": [
+        8.605,
+        0.2915,
+        -7.8931
+      ],
+      "size": [
+        2.0505,
+        0.253,
+        2.0505
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-11cb97328980",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#33",
+      "bounds": {
+        "min": [
+          -12.4548,
+          0.165,
+          -15.4278
+        ],
+        "max": [
+          -9.5522,
+          0.565,
+          -12.5253
+        ]
+      },
+      "center": [
+        -11.0035,
+        0.365,
+        -13.9766
+      ],
+      "size": [
+        2.9025,
+        0.4,
+        2.9025
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-12c95a2ed79c",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#28",
+      "bounds": {
+        "min": [
+          5.1686,
+          0.165,
+          -9.4178
+        ],
+        "max": [
+          7.1246,
+          0.418,
+          -7.4618
+        ]
+      },
+      "center": [
+        6.1466,
+        0.2915,
+        -8.4398
+      ],
+      "size": [
+        1.956,
+        0.253,
+        1.956
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-12cb98c50f6b",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#32",
+      "bounds": {
+        "min": [
+          9.9494,
+          0.165,
+          -8.2327
+        ],
+        "max": [
+          12.0831,
+          0.418,
+          -6.099
+        ]
+      },
+      "center": [
+        11.0162,
+        0.2915,
+        -7.1659
+      ],
+      "size": [
+        2.1337,
+        0.253,
+        2.1337
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-13c95bc15d87",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#29",
+      "bounds": {
+        "min": [
+          7.1697,
+          0.165,
+          -9.3284
+        ],
+        "max": [
+          10.0404,
+          0.625,
+          -6.4577
+        ]
+      },
+      "center": [
+        8.605,
+        0.395,
+        -7.8931
+      ],
+      "size": [
+        2.8707,
+        0.46,
+        2.8707
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-17cba0a4ad06",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#39",
+      "bounds": {
+        "min": [
+          -4.9224,
+          0.165,
+          -16.6127
+        ],
+        "max": [
+          -2.3683,
+          0.565,
+          -14.0585
+        ]
+      },
+      "center": [
+        -3.6454,
+        0.365,
+        -15.3356
+      ],
+      "size": [
+        2.5542,
+        0.4,
+        2.5542
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-18cba23732f2",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#38",
+      "bounds": {
+        "min": [
+          -7.0818,
+          0.165,
+          -15.9916
+        ],
+        "max": [
+          -5.1671,
+          0.385,
+          -14.0769
+        ]
+      },
+      "center": [
+        -6.1245,
+        0.275,
+        -15.0342
+      ],
+      "size": [
+        1.9147,
+        0.22,
+        1.9147
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-1bc729c2f659",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#19",
+      "bounds": {
+        "min": [
+          -10.0404,
+          0.165,
+          -9.3284
+        ],
+        "max": [
+          -7.1697,
+          0.625,
+          -6.4577
+        ]
+      },
+      "center": [
+        -8.605,
+        0.395,
+        -7.8931
+      ],
+      "size": [
+        2.8707,
+        0.46,
+        2.8707
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-1cc72b557c45",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#18",
+      "bounds": {
+        "min": [
+          -12.0831,
+          0.165,
+          -8.2327
+        ],
+        "max": [
+          -9.9494,
+          0.418,
+          -6.099
+        ]
+      },
+      "center": [
+        -11.0162,
+        0.2915,
+        -7.1659
+      ],
+      "size": [
+        2.1337,
+        0.253,
+        2.1337
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-1dc72ce8a374",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#17",
+      "bounds": {
+        "min": [
+          -12.5098,
+          0.165,
+          -8.6594
+        ],
+        "max": [
+          -9.5227,
+          0.625,
+          -5.6723
+        ]
+      },
+      "center": [
+        -11.0162,
+        0.395,
+        -7.1659
+      ],
+      "size": [
+        2.9872,
+        0.46,
+        2.9872
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting sage"
+    },
+    {
+      "id": "A016-P-1ec72e7b2960",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#16",
+      "bounds": {
+        "min": [
+          9.9338,
+          0.165,
+          -1.2931
+        ],
+        "max": [
+          12.1469,
+          0.385,
+          0.9201
+        ]
+      },
+      "center": [
+        11.0404,
+        0.275,
+        -0.1865
+      ],
+      "size": [
+        2.2131,
+        0.22,
+        2.2131
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-1fc7300eaf4c",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#15",
+      "bounds": {
+        "min": [
+          9.4912,
+          0.165,
+          -1.7357
+        ],
+        "max": [
+          12.5895,
+          0.565,
+          1.3627
+        ]
+      },
+      "center": [
+        11.0404,
+        0.365,
+        -0.1865
+      ],
+      "size": [
+        3.0984,
+        0.4,
+        3.0984
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-20c731a13537",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#14",
+      "bounds": {
+        "min": [
+          7.5903,
+          0.165,
+          -2.1651
+        ],
+        "max": [
+          9.7135,
+          0.385,
+          -0.0419
+        ]
+      },
+      "center": [
+        8.6519,
+        0.275,
+        -1.1035
+      ],
+      "size": [
+        2.1232,
+        0.22,
+        2.1232
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-21c73334bb23",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#13",
+      "bounds": {
+        "min": [
+          7.1657,
+          0.165,
+          -2.5898
+        ],
+        "max": [
+          10.1382,
+          0.565,
+          0.3827
+        ]
+      },
+      "center": [
+        8.6519,
+        0.365,
+        -1.1035
+      ],
+      "size": [
+        2.9725,
+        0.4,
+        2.9725
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-22c734c7410f",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#12",
+      "bounds": {
+        "min": [
+          5.1811,
+          0.165,
+          -2.8021
+        ],
+        "max": [
+          7.1961,
+          0.385,
+          -0.7871
+        ]
+      },
+      "center": [
+        6.1886,
+        0.275,
+        -1.7946
+      ],
+      "size": [
+        2.015,
+        0.22,
+        2.015
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-23c7365ac6fb",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#11",
+      "bounds": {
+        "min": [
+          4.7781,
+          0.165,
+          -3.2051
+        ],
+        "max": [
+          7.5991,
+          0.565,
+          -0.3841
+        ]
+      },
+      "center": [
+        6.1886,
+        0.365,
+        -1.7946
+      ],
+      "size": [
+        2.821,
+        0.4,
+        2.821
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-24c737ed4ce7",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#10",
+      "bounds": {
+        "min": [
+          2.7271,
+          0.165,
+          -3.1984
+        ],
+        "max": [
+          4.6164,
+          0.385,
+          -1.3091
+        ]
+      },
+      "center": [
+        3.6717,
+        0.275,
+        -2.2538
+      ],
+      "size": [
+        1.8893,
+        0.22,
+        1.8893
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-2e5b9d806c5b",
+      "name": "Terrace_band_kerb",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_kerb#6",
+      "bounds": {
+        "min": [
+          2.272,
+          0,
+          -17.585
+        ],
+        "max": [
+          12.8507,
+          0.14,
+          -11.5591
+        ]
+      },
+      "center": [
+        7.5613,
+        0.07,
+        -14.5721
+      ],
+      "size": [
+        10.5787,
+        0.14,
+        6.0259
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_kerb",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace stone kerb"
+    },
+    {
+      "id": "A016-P-2f5b9f13f247",
+      "name": "Terrace_band_kerb",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_kerb#7",
+      "bounds": {
+        "min": [
+          -12.7607,
+          0,
+          -24.0959
+        ],
+        "max": [
+          -2.2897,
+          0.14,
+          -18.303
+        ]
+      },
+      "center": [
+        -7.5252,
+        0.07,
+        -21.1994
+      ],
+      "size": [
+        10.471,
+        0.14,
+        5.7928
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_kerb",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace stone kerb"
+    },
+    {
+      "id": "A016-P-305ba0a67833",
+      "name": "Terrace_band_kerb",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_kerb#4",
+      "bounds": {
+        "min": [
+          2.2475,
+          0,
+          -11.0698
+        ],
+        "max": [
+          12.9751,
+          0.14,
+          -4.7196
+        ]
+      },
+      "center": [
+        7.6113,
+        0.07,
+        -7.8947
+      ],
+      "size": [
+        10.7275,
+        0.14,
+        6.3502
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_kerb",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace stone kerb"
+    },
+    {
+      "id": "A016-P-315ba239fe1e",
+      "name": "Terrace_band_kerb",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_kerb#5",
+      "bounds": {
+        "min": [
+          -12.8507,
+          0,
+          -17.585
+        ],
+        "max": [
+          -2.272,
+          0.14,
+          -11.5591
+        ]
+      },
+      "center": [
+        -7.5613,
+        0.07,
+        -14.5721
+      ],
+      "size": [
+        10.5787,
+        0.14,
+        6.0259
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_kerb",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace stone kerb"
+    },
+    {
+      "id": "A016-P-325ba3cc840a",
+      "name": "Terrace_band_kerb",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_kerb#2",
+      "bounds": {
+        "min": [
+          2.2115,
+          0,
+          -4.5468
+        ],
+        "max": [
+          13.1583,
+          0.14,
+          2.2901
+        ]
+      },
+      "center": [
+        7.6849,
+        0.07,
+        -1.1284
+      ],
+      "size": [
+        10.9468,
+        0.14,
+        6.8369
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_kerb",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace stone kerb"
+    },
+    {
+      "id": "A016-P-335ba55f09f6",
+      "name": "Terrace_band_kerb",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_kerb#3",
+      "bounds": {
+        "min": [
+          -12.9751,
+          0,
+          -11.0698
+        ],
+        "max": [
+          -2.2475,
+          0.14,
+          -4.7196
+        ]
+      },
+      "center": [
+        -7.6113,
+        0.07,
+        -7.8947
+      ],
+      "size": [
+        10.7275,
+        0.14,
+        6.3502
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_kerb",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace stone kerb"
+    },
+    {
+      "id": "A016-P-355ba88515ce",
+      "name": "Terrace_band_kerb",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_kerb#1",
+      "bounds": {
+        "min": [
+          -13.1583,
+          0,
+          -4.5468
+        ],
+        "max": [
+          -2.2115,
+          0.14,
+          2.2901
+        ]
+      },
+      "center": [
+        -7.6849,
+        0.07,
+        -1.1284
+      ],
+      "size": [
+        10.9468,
+        0.14,
+        6.8369
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_kerb",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace stone kerb"
+    },
+    {
+      "id": "A016-P-3c5bb38a6083",
+      "name": "Terrace_band_kerb",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_kerb#8",
+      "bounds": {
+        "min": [
+          2.2897,
+          0,
+          -24.0959
+        ],
+        "max": [
+          12.7607,
+          0.14,
+          -18.303
+        ]
+      },
+      "center": [
+        7.5252,
+        0.07,
+        -21.1994
+      ],
+      "size": [
+        10.471,
+        0.14,
+        5.7928
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_kerb",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace stone kerb"
+    },
+    {
+      "id": "A016-P-4fe5c870a77a",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#4",
+      "bounds": {
+        "min": [
+          -9.7135,
+          0.165,
+          -2.1651
+        ],
+        "max": [
+          -7.5903,
+          0.385,
+          -0.0419
+        ]
+      },
+      "center": [
+        -8.6519,
+        0.275,
+        -1.1035
+      ],
+      "size": [
+        2.1232,
+        0.22,
+        2.1232
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-50e5ca032d65",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#5",
+      "bounds": {
+        "min": [
+          -7.5991,
+          0.165,
+          -3.2051
+        ],
+        "max": [
+          -4.7781,
+          0.565,
+          -0.3841
+        ]
+      },
+      "center": [
+        -6.1886,
+        0.365,
+        -1.7946
+      ],
+      "size": [
+        2.821,
+        0.4,
+        2.821
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-51e5cb96b351",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#6",
+      "bounds": {
+        "min": [
+          -7.1961,
+          0.165,
+          -2.8021
+        ],
+        "max": [
+          -5.1811,
+          0.385,
+          -0.7871
+        ]
+      },
+      "center": [
+        -6.1886,
+        0.275,
+        -1.7946
+      ],
+      "size": [
+        2.015,
+        0.22,
+        2.015
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-52e5cd29393d",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#7",
+      "bounds": {
+        "min": [
+          -4.9942,
+          0.165,
+          -3.5763
+        ],
+        "max": [
+          -2.3492,
+          0.565,
+          -0.9313
+        ]
+      },
+      "center": [
+        -3.6717,
+        0.365,
+        -2.2538
+      ],
+      "size": [
+        2.645,
+        0.4,
+        2.645
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-54e5d04f15b6",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#1",
+      "bounds": {
+        "min": [
+          -12.5895,
+          0.165,
+          -1.7357
+        ],
+        "max": [
+          -9.4912,
+          0.565,
+          1.3627
+        ]
+      },
+      "center": [
+        -11.0404,
+        0.365,
+        -0.1865
+      ],
+      "size": [
+        3.0984,
+        0.4,
+        3.0984
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-55e5d1e29ba2",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#2",
+      "bounds": {
+        "min": [
+          -12.1469,
+          0.165,
+          -1.2931
+        ],
+        "max": [
+          -9.9338,
+          0.385,
+          0.9201
+        ]
+      },
+      "center": [
+        -11.0404,
+        0.275,
+        -0.1865
+      ],
+      "size": [
+        2.2131,
+        0.22,
+        2.2131
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-56e5d375218e",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#3",
+      "bounds": {
+        "min": [
+          -10.1382,
+          0.165,
+          -2.5898
+        ],
+        "max": [
+          -7.1657,
+          0.565,
+          0.3827
+        ]
+      },
+      "center": [
+        -8.6519,
+        0.365,
+        -1.1035
+      ],
+      "size": [
+        2.9725,
+        0.4,
+        2.9725
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-5be5db54bf29",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#8",
+      "bounds": {
+        "min": [
+          -4.6164,
+          0.165,
+          -3.1984
+        ],
+        "max": [
+          -2.7271,
+          0.385,
+          -1.3091
+        ]
+      },
+      "center": [
+        -3.6717,
+        0.275,
+        -2.2538
+      ],
+      "size": [
+        1.8893,
+        0.22,
+        1.8893
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-5ce5dce74515",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#9",
+      "bounds": {
+        "min": [
+          2.3492,
+          0.165,
+          -3.5763
+        ],
+        "max": [
+          4.9942,
+          0.565,
+          -0.9313
+        ]
+      },
+      "center": [
+        3.6717,
+        0.365,
+        -2.2538
+      ],
+      "size": [
+        2.645,
+        0.4,
+        2.645
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-89bd4990287e",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#53",
+      "bounds": {
+        "min": [
+          -7.4302,
+          0.165,
+          -22.9199
+        ],
+        "max": [
+          -4.7924,
+          0.625,
+          -20.2821
+        ]
+      },
+      "center": [
+        -6.1113,
+        0.395,
+        -21.601
+      ],
+      "size": [
+        2.6379,
+        0.46,
+        2.6379
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-8abd4b23ae6a",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#52",
+      "bounds": {
+        "min": [
+          -9.5446,
+          0.165,
+          -22.1919
+        ],
+        "max": [
+          -7.5866,
+          0.418,
+          -20.2339
+        ]
+      },
+      "center": [
+        -8.5656,
+        0.2915,
+        -21.2129
+      ],
+      "size": [
+        1.958,
+        0.253,
+        1.958
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-8bbd4cb63455",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#51",
+      "bounds": {
+        "min": [
+          -9.9362,
+          0.165,
+          -22.5835
+        ],
+        "max": [
+          -7.195,
+          0.625,
+          -19.8423
+        ]
+      },
+      "center": [
+        -8.5656,
+        0.395,
+        -21.2129
+      ],
+      "size": [
+        2.7413,
+        0.46,
+        2.7413
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-8cbd4e49ba41",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#50",
+      "bounds": {
+        "min": [
+          -12.0091,
+          0.165,
+          -21.7088
+        ],
+        "max": [
+          -9.9827,
+          0.418,
+          -19.6824
+        ]
+      },
+      "center": [
+        -10.9959,
+        0.2915,
+        -20.6956
+      ],
+      "size": [
+        2.0264,
+        0.253,
+        2.0264
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-8dbd4fdc402d",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#57",
+      "bounds": {
+        "min": [
+          2.3764,
+          0.165,
+          -23.1224
+        ],
+        "max": [
+          4.9035,
+          0.625,
+          -20.5953
+        ]
+      },
+      "center": [
+        3.6399,
+        0.395,
+        -21.8588
+      ],
+      "size": [
+        2.5271,
+        0.46,
+        2.5271
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-8ebd516fc619",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#56",
+      "bounds": {
+        "min": [
+          -4.5425,
+          0.165,
+          -22.7614
+        ],
+        "max": [
+          -2.7374,
+          0.418,
+          -20.9563
+        ]
+      },
+      "center": [
+        -3.6399,
+        0.2915,
+        -21.8588
+      ],
+      "size": [
+        1.8051,
+        0.253,
+        1.8051
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-8ebf9006961e",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#64",
+      "bounds": {
+        "min": [
+          9.9827,
+          0.165,
+          -21.7088
+        ],
+        "max": [
+          12.0091,
+          0.418,
+          -19.6824
+        ]
+      },
+      "center": [
+        10.9959,
+        0.2915,
+        -20.6956
+      ],
+      "size": [
+        2.0264,
+        0.253,
+        2.0264
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-8fbd53024c05",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#55",
+      "bounds": {
+        "min": [
+          -4.9035,
+          0.165,
+          -23.1224
+        ],
+        "max": [
+          -2.3764,
+          0.625,
+          -20.5953
+        ]
+      },
+      "center": [
+        -3.6399,
+        0.395,
+        -21.8588
+      ],
+      "size": [
+        2.5271,
+        0.46,
+        2.5271
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-90bd5495d1f0",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#54",
+      "bounds": {
+        "min": [
+          -7.0534,
+          0.165,
+          -22.5431
+        ],
+        "max": [
+          -5.1692,
+          0.418,
+          -20.6589
+        ]
+      },
+      "center": [
+        -6.1113,
+        0.2915,
+        -21.601
+      ],
+      "size": [
+        1.8842,
+        0.253,
+        1.8842
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-90bf932c7298",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#62",
+      "bounds": {
+        "min": [
+          7.5866,
+          0.165,
+          -22.1919
+        ],
+        "max": [
+          9.5446,
+          0.418,
+          -20.2339
+        ]
+      },
+      "center": [
+        8.5656,
+        0.2915,
+        -21.2129
+      ],
+      "size": [
+        1.958,
+        0.253,
+        1.958
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-91bf94bff884",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#63",
+      "bounds": {
+        "min": [
+          9.5774,
+          0.165,
+          -22.1141
+        ],
+        "max": [
+          12.4144,
+          0.625,
+          -19.2771
+        ]
+      },
+      "center": [
+        10.9959,
+        0.395,
+        -20.6956
+      ],
+      "size": [
+        2.837,
+        0.46,
+        2.837
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-92bf96527e6f",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#60",
+      "bounds": {
+        "min": [
+          5.1692,
+          0.165,
+          -22.5431
+        ],
+        "max": [
+          7.0534,
+          0.418,
+          -20.6589
+        ]
+      },
+      "center": [
+        6.1113,
+        0.2915,
+        -21.601
+      ],
+      "size": [
+        1.8842,
+        0.253,
+        1.8842
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
+    },
+    {
+      "id": "A016-P-93bd594e63b4",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#59",
+      "bounds": {
+        "min": [
+          4.7924,
+          0.165,
+          -22.9199
+        ],
+        "max": [
+          7.4302,
+          0.625,
+          -20.2821
+        ]
+      },
+      "center": [
+        6.1113,
+        0.395,
+        -21.601
+      ],
+      "size": [
+        2.6379,
+        0.46,
+        2.6379
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-93bf97e5045b",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#61",
+      "bounds": {
+        "min": [
+          7.195,
+          0.165,
+          -22.5835
+        ],
+        "max": [
+          9.9362,
+          0.625,
+          -19.8423
+        ]
+      },
+      "center": [
+        8.5656,
+        0.395,
+        -21.2129
+      ],
+      "size": [
+        2.7413,
+        0.46,
+        2.7413
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting olive"
+    },
+    {
+      "id": "A016-P-94bd5ae1e9a0",
+      "name": "Terrace_band_shrub",
+      "kind": "part",
+      "parentId": "A016",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Circulation#1/Axis_Terraced_Garden#1/Terrace_band_shrub#58",
+      "bounds": {
+        "min": [
+          2.7374,
+          0.165,
+          -22.7614
+        ],
+        "max": [
+          4.5425,
+          0.418,
+          -20.9563
+        ]
+      },
+      "center": [
+        3.6399,
+        0.2915,
+        -21.8588
+      ],
+      "size": [
+        1.8051,
+        0.253,
+        1.8051
+      ],
+      "sourceFile": "src/model/axisGarden.ts",
+      "sourceAnchor": "Terrace_band_shrub",
+      "reference": "C05,A03,U04 02:30–02:39,Nov 21 2026 site photos",
+      "confidence": "curved planting bands confirmed; radii/extents estimated",
+      "editMode": "source",
+      "material": "Terrace planting straw"
     },
     {
       "id": "B01",

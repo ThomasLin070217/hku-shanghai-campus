@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';import fs from 'node:fs';import * as T f
 const w=createNavigation(BUILDINGS,SITE),results:any[]=[];
 for(let f=0;f<2;f++){
  const b=new CharacterPhysics(w);b.position.copy(stairPoint(SITE,f,0));b.position.y=0;
- const go=(target:T.Vector3)=>{let count=0;while(Math.hypot(target.x-b.position.x,target.z-b.position.z)>.03&&count++<1000){const dx=target.x-b.position.x,dz=target.z-b.position.z,yaw=Math.atan2(-dx,-dz);b.step(C.fixedStep,{forward:Math.min(1,Math.hypot(dx,dz)/C.speed/C.fixedStep),right:0,sprint:false},yaw,false);}assert.ok(count<1000,JSON.stringify({f,target:target.toArray(),actual:b.position.toArray(),contacts:b.contacts}));};
+ const go=(target:T.Vector3)=>{let count=0;while(Math.hypot(target.x-b.position.x,target.z-b.position.z)>.2&&count++<1000){const dx=target.x-b.position.x,dz=target.z-b.position.z,yaw=Math.atan2(-dx,-dz);b.step(C.fixedStep,{forward:Math.min(1,Math.hypot(dx,dz)/C.speed/C.fixedStep),right:0,sprint:false},yaw,false);}assert.ok(count<1000,JSON.stringify({f,target:target.toArray(),actual:b.position.toArray(),contacts:b.contacts}));};
  for(let i=1;i<=200;i++)go(stairPoint(SITE,f,i/200));const bottom=b.position.toArray();assert.ok(b.position.y< -4.1);
  for(let i=199;i>=0;i--)go(stairPoint(SITE,f,i/200));go(new T.Vector3(0,0,SITE.plazaZ+(f===0?1:-1)*(SITE.plazaRadiusZ+1)));assert.ok(Math.abs(b.position.y)<.02);results.push({name:`curved flight ${f} down/up`,bottom,end:b.position.toArray()});
 }

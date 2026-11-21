@@ -1,7 +1,6 @@
 import type {CampusGame} from '../exploration/game';
 import {createLocalAgent} from '../opening/agent';
 import {createMacBookExperience} from '../opening/macbook';
-import {bindComputeApps} from '../opening/computeApps';
 import {createOpeningRuntime} from '../opening/runtime';
 import {createOpeningState} from '../opening/state';
 import {drawCampusMap} from './map';
@@ -52,9 +51,7 @@ export function createSurveyMac(game:CampusGame, onClose:()=>void, persist:()=>v
     logs.replaceChildren(row('h2',objective()),row('p','校园记录 '+survey.count+' / '+survey.total),list,submit,feedback,archive);
   }
   const deviceId=()=>game.inventory.slots.find(item=>item?.itemId==='macbook-air-13-silver')?.instanceId;
-  const compute=bindComputeApps(deviceId,()=>mac.showDesktop());
   const mac=createMacBookExperience({
-    ...compute.options,
     agent,onClose,drawMap:(canvas,large)=>drawCampusMap(canvas,game,large),
     files:{body:files,activate:renderFiles},logs:{body:logs,activate:renderLogs},
     sessionKey:()=> 'hku.macbook.chat.'+(deviceId()??'survey'),
@@ -99,7 +96,7 @@ export function createSurveyMac(game:CampusGame, onClose:()=>void, persist:()=>v
       }
     },
     close(){if(host.hidden)return;mac.suspend();host.hidden=true;previousFocus?.focus({preventScroll:true});previousFocus=null;},
-    dispose(){events.abort();compute.dispose();mac.dispose();host.remove();},
+    dispose(){events.abort();mac.dispose();host.remove();},
     get visible(){return !host.hidden;},
   };
 }

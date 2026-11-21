@@ -15,29 +15,37 @@ interface DeviceWindow {
   exitTimer?:ReturnType<typeof setTimeout>;
 }
 
+/**
+ * macOS-style window layer. Windows are draggable, focusable, zoomable and
+ * resizable, but they never move outside the desktop. The app body is built
+ * once and kept mounted so drafts and scroll positions survive minimize.
+ */
 export function createWindowManager(host:HTMLElement,changed:(app:MacApp)=>void) {
   const windows=new Map<WindowApp,DeviceWindow>();
   let active:MacApp='desktop';
   let order=0;
   let dragging:{window:DeviceWindow;id:number;dx:number;dy:number}|null=null;
+  let resizing:{window:DeviceWindow;id:number;x:number;y:number;w:number;h:number}|null=null;
 
   function place(w:DeviceWindow) {
     if(!host.clientWidth||!host.clientHeight||w.state!=='visible')return;
     if(!w.positioned){
-      const offset=(w.z%3-1)*12;
-      w.x=(host.clientWidth-w.frame.offsetWidth)/2+offset;
-      w.y=(host.clientHeight-w.frame.offsetHeight)/2+offset;
+      const offset=(order%4)*14;
+      const width=w.frame.offsetWidth||680,height=w.frame.offsetHeight||460;
+      w.x=Math.max(10,(host.clientWidth-width)/2+offset-21);
+      w.y=Math.max(25,(host.clientHeight-height)/2+offset-28);
       w.positioned=true;
     }
     if(w.maximized)return;
+    const dockClearance=64;
     w.x=Math.max(0,Math.min(w.x,host.clientWidth-w.frame.offsetWidth));
-    w.y=Math.max(0,Math.min(w.y,host.clientHeight-w.frame.offsetHeight));
+    w.y=Math.max(8,Math.min(w.y,host.clientHeight-w.frame.offsetHeight-dockClearance));
     w.frame.style.left=w.x+'px';w.frame.style.top=w.y+'px';
   }
   const resized=new ResizeObserver(()=>{for(const w of windows.values())place(w);});
   resized.observe(host);
   function focus(app:MacApp) {
-    if(active!==app && active!=='desktop')windows.get(active)?.frame.classList.remove('is-front');
+    if(active!==app&&active!=='desktop')windows.get(active)?.frame.classList.remove('is-front');
     active=app;
     if(app!=='desktop'){
       const w=windows.get(app)!;
@@ -56,35 +64,42 @@ export function createWindowManager(host:HTMLElement,changed:(app:MacApp)=>void)
     w.state=state;
     w.frame.inert=true;
     w.frame.dataset.leaving=state;
-    w.exitTimer=setTimeout(()=>{if(w.state!=='visible')w.frame.hidden=true;},120);
+    w.exitTimer=setTimeout(()=>{if(w.state!=='visible')w.frame.hidden=true;},140);
     if(active===app)nextFocus();else changed(active);
   }
   function zoom(w:DeviceWindow) {
     w.maximized=!w.maximized;w.frame.classList.toggle('is-maximized',w.maximized);
     w.titlebar.querySelector('[data-window-control="zoom"]')?.setAttribute('aria-pressed',String(w.maximized));
+    w.frame.style.left=w.frame.style.top=w.frame.style.width=w.frame.style.height='';
     place(w);
   }
   function make(app:WindowApp,title:string,body:HTMLElement){
     const frame=document.createElement('section');
-    frame.className='device-window opening-mac-window '+app;
+    frame.className='mac-window mac-window-'+app;
     frame.setAttribute('role','region');frame.setAttribute('aria-label',title);frame.dataset.window=app;frame.tabIndex=-1;
-    const titlebar=document.createElement('header');titlebar.className='device-titlebar';
-    const controls=document.createElement('div');controls.className='device-controls';
-    const caption=document.createElement('b');caption.textContent=title;
+    const titlebar=document.createElement('header');titlebar.className='mac-titlebar';
+    const lights=document.createElement('div');lights.className='mac-lights';
+    const caption=document.createElement('b');caption.className='mac-window-title';caption.textContent=title;
+    const subtitle=document.createElement('span');subtitle.className='mac-window-subtitle';
+    const titles=document.createElement('div');titles.className='mac-window-titles';
+    const drag=document.createElement('div');drag.className='mac-titlebar-grip';
+    titles.append(caption,subtitle);
     const w:DeviceWindow={frame,body,titlebar,x:0,y:0,state:'closed',z:0,positioned:false,maximized:false};
     const actions=[
-      ['close','Close window','×',()=>hide(app,'closed')],
-      ['minimize','Minimize window','−',()=>hide(app,'minimized')],
-      ['zoom','Zoom window','+',()=>zoom(w)],
+      ['close','Close window',()=>hide(app,'closed')],
+      ['minimize','Minimize window',()=>hide(app,'minimized')],
+      ['zoom','Zoom window',()=>zoom(w)],
     ] as const;
-    for(const [key,label,mark,fn] of actions){
-      const button=document.createElement('button');button.type='button';button.dataset.windowControl=key;button.textContent=mark;
-      button.setAttribute('aria-label',label);button.title=label;button.addEventListener('click',fn);
-      controls.append(button);
+    for(const [key,label,fn] of actions){
+      const button=document.createElement('button');button.type='button';button.dataset.windowControl=key;
+      button.className='mac-light mac-light-'+key;button.setAttribute('aria-label',label);button.title=label;
+      button.addEventListener('click',event=>{event.stopPropagation();fn();});
+      lights.append(button);
     }
-    titlebar.append(controls,caption);
-    const surface=document.createElement('div');surface.className='device-surface';surface.append(body);
-    frame.append(titlebar,surface);host.append(frame);
+    titlebar.append(lights,titles,drag);
+    const surface=document.createElement('div');surface.className='mac-window-body';surface.append(body);
+    const resize=document.createElement('div');resize.className='mac-resize';resize.setAttribute('aria-hidden','true');
+    frame.append(titlebar,surface,resize);host.append(frame);
     windows.set(app,w);
     frame.addEventListener('pointerdown',()=>{if(active!==app)focus(app);},{capture:true});
     frame.addEventListener('focusin',()=>{if(w.state==='visible'&&active!==app)focus(app);});
@@ -102,6 +117,19 @@ export function createWindowManager(host:HTMLElement,changed:(app:MacApp)=>void)
       w.x=event.clientX-rect.left-dragging.dx;w.y=event.clientY-rect.top-dragging.dy;place(w);
     });
     titlebar.addEventListener('lostpointercapture',()=>{dragging=null;});
+    resize.addEventListener('pointerdown',event=>{
+      if(event.button!==0||w.maximized)return;
+      const rect=w.frame.getBoundingClientRect();
+      resizing={window:w,id:event.pointerId,x:event.clientX,y:event.clientY,w:rect.width,h:rect.height};
+      resize.setPointerCapture(event.pointerId);event.preventDefault();
+    });
+    resize.addEventListener('pointermove',event=>{
+      if(resizing?.window!==w||resizing.id!==event.pointerId)return;
+      const width=Math.max(420,Math.min(host.clientWidth-w.x-8,resizing.w+event.clientX-resizing.x));
+      const height=Math.max(300,Math.min(host.clientHeight-w.y-8,resizing.h+event.clientY-resizing.y));
+      w.frame.style.width=width+'px';w.frame.style.height=height+'px';
+    });
+    resize.addEventListener('lostpointercapture',()=>{resizing=null;});
     return w;
   }
   function open(app:WindowApp,title:string,body:()=>HTMLElement,activate?:()=>void) {
@@ -109,6 +137,7 @@ export function createWindowManager(host:HTMLElement,changed:(app:MacApp)=>void)
     const wasVisible=w.state==='visible';w.state='visible';
     clearTimeout(w.exitTimer);delete w.frame.dataset.leaving;w.frame.hidden=false;w.frame.inert=false;
     focus(app);place(w);
+    requestAnimationFrame(()=>{if(w.state==='visible')place(w);});
     if(!wasVisible)activate?.();
     w.frame.focus({preventScroll:true});
   }

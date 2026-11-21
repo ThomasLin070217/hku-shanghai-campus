@@ -44,3 +44,62 @@
 .boss-skill.can-cast {border-color:#c5f59d}.boss-skill.can-cast small {color:#d6ffc8}
 .boss-skill progress {grid-column:1/-1;width:100%;height:2px;border:0;margin-top:3px;accent-color:#9dbda5}
 @media(max-height:480px){.boss-header{padding:8px 16px}.boss-card{padding:12px}.boss-card h1,.boss-card p{margin:5px 0}.boss-card #boss-slots{margin-top:8px;padding-top:5px}#boss-brief{padding-bottom:8px}}
+
+/* 岚 proactively pings the player on the way to the lawn. */
+#boss-ai-ping {
+  position: absolute;
+  top: 86px;
+  right: clamp(16px, 3vw, 44px);
+  z-index: 42;
+  width: min(344px, calc(100vw - 32px));
+  padding: 13px 14px 12px;
+  border: 1px solid #b8efa355;
+  border-radius: 14px;
+  background: #11201dee;
+  box-shadow: 0 16px 44px #04110d80, 0 0 0 .5px #ffffff12 inset;
+  backdrop-filter: blur(20px) saturate(1.25);
+  -webkit-backdrop-filter: blur(20px) saturate(1.25);
+  color: #edf5e8;
+  pointer-events: auto;
+  animation: boss-ping-in .2s ease-out;
+}
+@keyframes boss-ping-in { from { transform: translateY(-6px) scale(.98); } to { transform: none; } }
+.boss-ping-head { display: flex; align-items: center; gap: 9px; }
+.boss-ping-avatar {
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  flex: none;
+  border-radius: 9px;
+  background: linear-gradient(145deg, #4c83f3, #7aaaff);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 0 0 .5px #ffffff22 inset;
+}
+.boss-ping-head b { display: block; font-size: 12.5px; line-height: 1.3; }
+.boss-ping-head small { display: block; color: #9db5a6; font-size: 10px; line-height: 1.35; }
+#boss-ping-close {
+  margin-left: auto;
+  width: 23px;
+  height: 23px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #9db5a6;
+  font-size: 16px;
+  line-height: 1;
+}
+#boss-ping-close:hover { background: #ffffff14; color: #fff; }
+#boss-ai-ping p { margin: 9px 0 11px; color: #dbe8dd; font-size: 12.5px; line-height: 1.65; }
+.boss-ping-actions { display: flex; gap: 7px; }
+.boss-ping-actions button { padding: 5px 10px; border-radius: 6px; font: 600 11.5px system-ui, "Microsoft YaHei", sans-serif; cursor: pointer; }
+#boss-ping-open { border: 1px solid #b8efa3; background: #b8efa3; color: #132f29; }
+#boss-ping-open:hover { filter: brightness(1.06); }
+#boss-ping-later { border: 1px solid #ffffff2b; background: transparent; color: #c9d8cd; }
+#boss-ping-later:hover { background: #ffffff12; }
+@media (max-width: 700px) {
+  #boss-ai-ping { top: 74px; right: 12px; left: 12px; width: auto; }
+}

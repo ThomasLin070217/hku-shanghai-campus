@@ -2,13 +2,13 @@
 
 **[打开校园试玩](https://hku-l001-lawn-playtest.ctw557923.chatgpt.site/)**，可用电脑浏览器直接选择校园开场、体育馆营救、草坪狮子 L001 或校园巡检。帧率偏低时可在选关页勾选「低画质模式」。
 
-本地运行 `npm run play` 后，访问 `/?experience=levels` 选关。公开试玩使用 `npm run build:playtest` 生成的 `dist-playtest/`，MacBook 的技能工作台在浏览器内运行。
+本地运行 `npm run play` 后，访问 `/?experience=levels` 选关。公开试玩使用 `npm run build:playtest` 生成的 `dist-playtest/`。MacBook 已改成 macOS 桌面 + Harness 风格本地 AI：菜单栏、Finder、Dock、Preview、Maps、Terminal，支持语音输入/朗读；草坪战斗中不再有技能工作台。
 
 **L001 狮子模型更新：** 依据新增正面、侧面和背面照片重建坐姿狮子，补齐后鬃、青绿袍摆、白袖口、爪面标记与尾巴。模型本体暂定 6.5 m，尺寸为游戏比例估算。模型与碰撞使用同一尺度。
 
 **场景编号与 AI 接手：** 右上角“场景编号”可搜索、点选细部、定位和复制修改任务。楼栋 B01–B07、道路 R001…、学院牌 S001。团队及 Agent 先读 [AI 最短接手指南](docs/AI-START.md)，工程约定见 [AGENTS.md](AGENTS.md)。支持离线源码索引、HTTP 与 MCP。
 
-**LLM 端点（2026-11-21）：** `npm run llm` 现同时支持 Gemini 直连（`GEMINI_API_KEY`）与 LiteLLM 代理，可用 `--provider` 或 `LLM_PROVIDER` 选择；密钥只存本地 `.env`，不提交、不回显。大陆/香港出口会被 Google 判定为不支持（密钥本身有效）；设 `LLM_PROXY` 复用本机代理（出口在支持区域）即可直连，`npm run llm -- --ping` 已验证。说明见 [LLM 端点](docs/LLM-ENDPOINT.md)，离线校验 `npm run check:llm`。
+**LLM 端点（2026-11-21）：** `npm run llm` 支持 DeepSeek 平台（`DEEPSEEK_API_KEY`，游戏里 MacBook 助手「岚 LAN」的默认模型 `deepseek-flash`）、Gemini 直连（`GEMINI_API_KEY`）与 LiteLLM 代理，可用 `--provider` 或 `LLM_PROVIDER` 选择；密钥只存本地 `.env`，不提交、不回显。大陆/香港出口会被 Google 判定为不支持（密钥本身有效）；设 `LLM_PROXY` 复用本机代理（出口在支持区域）即可直连，`npm run llm -- --ping` 已验证；DeepSeek 可直连，不需要代理。`npm run play` 还会启动本机 LLM 桥（`127.0.0.1:8790`），让游戏里的 MacBook AI 使用同一份 `.env`，密钥不进入浏览器；助手的人设与离线话术在 `src/opening/persona.ts`。说明见 [LLM 端点](docs/LLM-ENDPOINT.md)，MacBook 交互见 [MacBook 与 Harness](docs/MACBOOK-UI.md)，离线校验 `npm run check:llm` 与 `npm run check:opening-assistant`。
 
 **NPC 英文配音（2026-11-21）：** 第一幕 Building 5 的 Staff 已使用 DaVinci AI / ElevenLabs TTS V3 生成英文配音；本轮只用账号免费的 1 次 Audio 额度，没有付费、升级或声音克隆。声音、字幕、接受回应和“回来问电脑”的重复句已接入固定剧情。玩家接受句同时从旧的 macOS Samantha 换成本地 Piper 神经声线（Kristin），因为 DaVinci Audio 免费额度已用尽；它不是 DaVinci 结果，报告中已明确区分。平台额度、生成记录、台词对照、Five Voice Profile 和未完成的 Michael / Ruibang / Lam 计划见 [配音报告](docs/voice/DAVINCI-VOICE-REPORT.md) · [Voice Profiles](docs/voice/PROFILES.md) · [台词对照](docs/voice/STAFF-DIALOGUE-DIFF.md)。
 

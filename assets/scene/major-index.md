@@ -18,6 +18,7 @@
 | A013 | 探索边界 | src/model/buildSite.ts |
 | A014 | 北侧运动区 | src/model/buildSite.ts |
 | A015 | 外围绿化与 HKU 草坪地灯 | src/model/videoFollowup.ts |
+| A016 | 轴线梯田花园 | src/model/axisGarden.ts |
 | B01 | 1号楼 · 西侧北塔 | src/model/buildSite.ts |
 | B02 | 2号楼 · 西侧南塔 | src/model/buildSite.ts |
 | B03 | CDS-2 · 3号楼 | src/model/buildCampus.ts |

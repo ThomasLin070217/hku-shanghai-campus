@@ -14,8 +14,8 @@
 .survey-records button {font:inherit;padding:.35em .9em;color:#153e37;background:#dbe9e2;border:1px solid #acbfb5;border-radius:5px;cursor:pointer}
 .survey-records button:disabled {opacity:.65;cursor:default}
 @keyframes device-screen-in {
-  0%,28% {opacity:0}
-  100% {opacity:1}
+  from {transform:scale(.992)}
+  to {transform:none}
 }
 @media(prefers-reduced-motion:reduce) {
   .opening-modal-root[data-kind="computer"],.boss-mac-overlay:not([hidden]),.survey-device:not([hidden]) {animation:none}

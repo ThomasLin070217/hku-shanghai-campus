@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-21",
+  "feature": "MacBook assistant: 岚 (LAN) persona + DeepSeek via loopback bridge",
+  "endpoint": "http://127.0.0.1:8790/api/chat",
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "fallback": "gemini",
+  "credential": "DEEPSEEK_API_KEY in gitignored .env / bridge process only; dist scan for sk-* and *_API_KEY is clean",
+  "offline": {
+    "identity": "built-in replies keep the same 岚 identity",
+    "requestTimeoutMs": 40000,
+    "cooldownMs": 15000
+  },
+  "checks": [
+    "npm run typecheck",
+    "npm run build",
+    "npm run check:llm (14 passed)",
+    "npm run check:opening-assistant",
+    "npm run check:opening"
+  ],
+  "live": [
+    {
+      "surface": "?experience=macbook-lab (in-game Harness window)",
+      "question": "你是谁？我们现在该怎么办？",
+      "latencyMs": 2597,
+      "source": "local-model",
+      "model": "deepseek-flash",
+      "observed": "自称岚；读到目标与心值；说明不能移动玩家/开门/碰机器人；给出 Vibe Console 与 Robotics 两条路"
+    },
+    {
+      "surface": "bridge",
+      "question": "Can you open the door for me?",
+      "latencyMs": 2307,
+      "language": "en",
+      "observed": "refused once, then pointed to Building 4 and warned about hearts"
+    },
+    {
+      "surface": "bridge",
+      "question": "我的心还剩多少？",
+      "latencyMs": 856,
+      "language": "zh",
+      "observed": "六颗，十颗里还剩六颗；已被抓两次"
+    }
+  ],
+  "evidence": "evidence/opening-implementation/assistant-persona.png"
+}

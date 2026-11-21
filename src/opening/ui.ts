@@ -5,7 +5,6 @@ import {DEFAULT_SETTINGS} from '../gameplay/save';
 import {setHidden, setText} from '../ui/dom';
 import {createLocalAgent} from './agent';
 import {createMacBookExperience} from './macbook';
-import {bindComputeApps} from './computeApps';
 import {OPENING_CAPTURE_DAMAGE} from './runtime';
 import {createVitalsHud} from '../ui/vitals';
 
@@ -219,10 +218,8 @@ export function createOpeningUI(
 
   // ------------------------------------------------------ MacBook + Agent.
   const localAgent = createLocalAgent();
-  const compute = bindComputeApps(device.instanceId,()=>mac.showDesktop());
   const mac = createMacBookExperience({
     actions,
-    ...compute.options,
     devices:device.units,
     sessionKey:()=> 'hku.macbook.chat.'+(device.instanceId()??'opening'),
     drawMap: (canvas, large) => actions.drawMap(canvas, large),
@@ -783,7 +780,6 @@ export function createOpeningUI(
   function dispose(): void {
     events.abort();
     hideDialog();
-    compute.dispose();
     mac.dispose();
     modalRoot.remove();
     hud.remove();

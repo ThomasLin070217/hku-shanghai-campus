@@ -2,8 +2,9 @@
 // Minimal zero-dependency LLM client for this project.
 //
 // Providers:
-//   gemini  - Google Gemini API directly (GEMINI_API_KEY)
-//   litellm - OpenAI-compatible LiteLLM proxy (LITELLM_*)
+//   deepseek - DeepSeek platform API, OpenAI-compatible (DEEPSEEK_API_KEY)
+//   gemini   - Google Gemini API directly (GEMINI_API_KEY)
+//   litellm  - OpenAI-compatible LiteLLM proxy (LITELLM_*)
 //
 // Reads .env at the repo root, then process.env (existing variables win).
 // The key is never printed, logged, or written anywhere.
@@ -17,9 +18,11 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const PROVIDERS = ['gemini', 'litellm'];
+const PROVIDERS = ['deepseek', 'gemini', 'litellm'];
 const DEFAULT_GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash';
+const DEFAULT_DEEPSEEK_BASE = 'https://api.deepseek.com';
+const DEFAULT_DEEPSEEK_MODEL = 'deepseek-chat';
 
 function loadEnv(file) {
   try {
@@ -43,8 +46,18 @@ const trim = name => (process.env[name] || '').trim();
 function timeoutMs(provider) {
   const shared = Number(trim('LLM_TIMEOUT_MS')) || 0;
   if (shared > 0) return shared;
-  const specific = Number(trim(provider === 'gemini' ? 'GEMINI_TIMEOUT_MS' : 'LITELLM_TIMEOUT_MS')) || 0;
+  const specific = Number(trim(provider === 'gemini' ? 'GEMINI_TIMEOUT_MS' : provider === 'deepseek' ? 'DEEPSEEK_TIMEOUT_MS' : 'LITELLM_TIMEOUT_MS')) || 0;
   return specific > 0 ? specific : 60000;
+}
+
+function deepseekConfig() {
+  return {
+    name: 'deepseek',
+    base: (trim('DEEPSEEK_BASE_URL') || DEFAULT_DEEPSEEK_BASE).replace(/\/+$/, ''),
+    key: trim('DEEPSEEK_API_KEY'),
+    model: trim('DEEPSEEK_MODEL') || DEFAULT_DEEPSEEK_MODEL,
+    timeoutMs: timeoutMs('deepseek')
+  };
 }
 
 function litellmConfig() {
@@ -69,7 +82,9 @@ function geminiConfig() {
 }
 
 function configFor(provider) {
-  return provider === 'gemini' ? geminiConfig() : litellmConfig();
+  if (provider === 'gemini') return geminiConfig();
+  if (provider === 'deepseek') return deepseekConfig();
+  return litellmConfig();
 }
 
 /** Outbound proxy for the client, if one is configured (LLM_PROXY wins). */
@@ -117,7 +132,8 @@ function reexecWithProxy() {
 
 /**
  * Provider used when the caller does not pass one: LLM_PROVIDER if set, else
- * gemini when a Gemini key exists, else litellm.
+ * deepseek when a DeepSeek key exists, else gemini when a Gemini key exists,
+ * else litellm.
  */
 export function activeProvider() {
   const forced = trim('LLM_PROVIDER').toLowerCase();
@@ -127,12 +143,14 @@ export function activeProvider() {
     }
     return forced;
   }
+  if (deepseekConfig().key) return 'deepseek';
   return geminiConfig().key ? 'gemini' : 'litellm';
 }
 
 export function configured(provider = activeProvider()) {
   const config = configFor(provider);
   if (provider === 'gemini') return Boolean(config.key);
+  if (provider === 'deepseek') return Boolean(config.key);
   return Boolean(config.base && config.key);
 }
 
@@ -141,6 +159,12 @@ function requireConfig(provider) {
   if (provider === 'gemini') {
     if (!config.key) {
       throw new Error('GEMINI_API_KEY missing. Copy .env.example to .env, fill it in privately, and never paste keys in chat or commit them.');
+    }
+    return config;
+  }
+  if (provider === 'deepseek') {
+    if (!config.key) {
+      throw new Error('DEEPSEEK_API_KEY missing. Copy .env.example to .env, fill it in privately, and never paste keys in chat or commit them.');
     }
     return config;
   }
@@ -258,10 +282,23 @@ export async function models(provider = activeProvider()) {
       .map(model => String(model.name || '').replace(/^models\//, ''))
       .filter(Boolean);
   }
+  if (provider === 'deepseek') {
+    const body = await requestJson('deepseek', openaiEndpoint(config.base, '/models'), {
+      headers: { authorization: `Bearer ${config.key}` }
+    }, config);
+    return (body.data || []).map(model => model.id);
+  }
   const body = await requestJson('litellm', endpointForLitellm(config, '/models'), {
     headers: { authorization: `Bearer ${config.key}` }
   }, config);
   return (body.data || []).map(model => model.id);
+}
+
+function openaiEndpoint(base, path) {
+  if (/\/chat\/completions$/.test(base)) {
+    return path === '/chat/completions' ? base : base.replace(/\/chat\/completions$/, path);
+  }
+  return base + path;
 }
 
 function endpointForLitellm(config, path) {
@@ -273,6 +310,14 @@ function endpointForLitellm(config, path) {
 
 async function litellmChat(config, messages, options, model) {
   return requestJson('litellm', endpointForLitellm(config, '/chat/completions'), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', authorization: `Bearer ${config.key}` },
+    body: JSON.stringify({ model, messages, temperature: options.temperature, max_tokens: options.maxTokens })
+  }, config);
+}
+
+async function deepseekChat(config, messages, options, model) {
+  return requestJson('deepseek', openaiEndpoint(config.base, '/chat/completions'), {
     method: 'POST',
     headers: { 'content-type': 'application/json', authorization: `Bearer ${config.key}` },
     body: JSON.stringify({ model, messages, temperature: options.temperature, max_tokens: options.maxTokens })
@@ -321,6 +366,7 @@ export async function chat(messages, options = {}) {
     throw new Error('No model selected. Set the provider model variable or pass --model <name> (see: npm run llm -- --models).');
   }
   if (provider === 'gemini') return geminiChat(config, messages, options, model);
+  if (provider === 'deepseek') return deepseekChat(config, messages, options, model);
   return litellmChat(config, messages, options, model);
 }
 
@@ -345,14 +391,16 @@ function parseArgs(argv) {
 
 function usage(provider) {
   const gemini = geminiConfig();
+  const deepseek = deepseekConfig();
   const litellm = litellmConfig();
   const proxy = proxyUrl();
   return {
     ok: false,
-    usage: 'npm run llm -- "your prompt" [--system "..."] [--model name] [--provider gemini|litellm] [--json] | --models | --ping',
+    usage: 'npm run llm -- "your prompt" [--system "..."] [--model name] [--provider deepseek|gemini|litellm] [--json] | --models | --ping',
     defaultProvider: provider,
     proxy: proxy ? { url: redactProxy(proxy), applied: nodeAppliesProxy() } : null,
     configured: {
+      deepseek: { apiKey: Boolean(deepseek.key), model: deepseek.model, baseUrl: deepseek.base },
       gemini: { apiKey: Boolean(gemini.key), model: gemini.model, baseUrl: gemini.base, transport: gemini.transport },
       litellm: { baseUrl: Boolean(litellm.base), apiKey: Boolean(litellm.key), model: litellm.model || '(unset)' }
     }

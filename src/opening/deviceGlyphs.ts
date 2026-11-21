@@ -1,4 +1,6 @@
-export type Glyph = 'finder'|'map'|'agent'|'mission'|'robotics'|'terminal'|'logs'|'invitation'|'about'|'bell'|'power'|'lock'|'brand';
+export type Glyph =
+  |'finder'|'map'|'agent'|'mission'|'robotics'|'terminal'|'logs'|'invitation'|'about'
+  |'bell'|'power'|'lock'|'brand'|'apple'|'folder'|'file'|'pdf'|'text'|'search'|'wifi'|'trash';
 
 const paths:Record<Glyph,string>={
   finder:'<path d="M4 8h6l2 2h8v8H4z"/><path d="M5 8V6h5l2 2h6v2"/>',
@@ -14,9 +16,18 @@ const paths:Record<Glyph,string>={
   power:'<path d="M10 3v9m-4-6a8 8 0 1 0 10 0"/>',
   lock:'<path d="M5 10h14v10H5zM8 10V7a4 4 0 1 1 8 0v3m-4 4v3"/>',
   brand:'<path d="M3 17V9l6-4v8m0 4V9l6-4v8m0 4V9l6-4v12l-6 4V13l-6 4-6 3"/>',
+  apple:'<path d="M12 7c-1.3-1.8-3-2.4-4.6-1.6C5.2 6.4 4 9.4 4.7 13c.6 3.3 2.5 6.2 4.7 6.2 1 0 1.6-.6 2.6-.6s1.6.6 2.6.6c2.2 0 4.1-2.9 4.7-6.2.5-2.6-.2-5.2-2-6.5-1.6-1.1-3.6-.7-5.3.5Z"/><path d="M12 7c.2-2.2 1.4-3.6 3.4-4"/>',
+  folder:'<path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H10l2 2h6.5A2.5 2.5 0 0 1 21 9.5v7A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5z"/>',
+  file:'<path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5"/>',
+  pdf:'<path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5"/><path d="M9 16v-4h1.4a1.3 1.3 0 0 1 0 2.6H9m4 1.4v-4h1.2c1.2 0 1.8.8 1.8 2s-.6 2-1.8 2z"/>',
+  text:'<path d="M5 3h14v18H5z"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+  search:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/>',
+  wifi:'<path d="M3.5 8.5a12 12 0 0 1 17 0M6.5 12a8 8 0 0 1 11 0M9.5 15.4a4 4 0 0 1 5 0"/><circle cx="12" cy="19" r="1"/>',
+  trash:'<path d="M4 7h16M9 7V4h6v3m-9 0 1 14h10l1-14M10 11v6m4-6v6"/>',
 };
+
 export function glyph(name:Glyph) {
-  const art=document.createElement('span');art.className='device-glyph';art.setAttribute('aria-hidden','true');
+  const art=document.createElement('span');art.className='device-glyph mac-glyph';art.setAttribute('aria-hidden','true');
   art.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">'+paths[name]+'</svg>';
   return art;
 }

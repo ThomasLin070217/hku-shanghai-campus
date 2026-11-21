@@ -6,8 +6,12 @@ import * as T from 'three';
  *
  * Three layers:
  *  1. scene lighting / sky / fog / tone mapping (animated, not a hard cut);
- *  2. a tall, shader-drawn dark curtain that descends around the campus boundary;
+ *  2. a dark hemispherical dome that descends over the whole campus and closes the sky;
  *  3. red emergency beacons around the Thomas route.
+ *
+ * The dome is deliberately NOT a flat box ceiling: the campus towers reach ~80 m,
+ * so a low slab slices their tops. The hemisphere radius is larger than every
+ * building corner's distance from the dome centre, which keeps every roof inside.
  *
  * DOM-free so it can also be instantiated in a headless check. The renderer is only
  * used for tone-mapping exposure.
@@ -33,22 +37,42 @@ export interface OpeningAtmosphereSnapshot{
  sunIntensity:number;
  fillIntensity:number;
  redLights:number;
+ /** Radius of the sealing hemisphere, metres. */
+ domeRadius:number;
+ /** World height of the dome apex when fully deployed, metres. */
+ domeTop:number;
 }
 
-const CURTAIN_HEIGHT=38;
-const CURTAIN_RADIUS_X=96;
-const CURTAIN_RADIUS_Z=92;
-const CURTAIN_SECONDS=4.6;
+/**
+ * Exported so the geometry check can prove the dome clears every authored roof.
+ * Centre follows the site centre (x=0, z=-14); the rim is sunk 3 m so the mesh
+ * meets uneven ground without floating.
+ */
+export const OPENING_DOME={
+ radius:170,
+ centerX:0,
+ centerZ:-14,
+ sink:3,
+ top:167,
+ seconds:5.2,
+} as const;
+
+const DOME_RADIUS=OPENING_DOME.radius;
+const DOME_SINK=OPENING_DOME.sink;
+const DOME_SECONDS=OPENING_DOME.seconds;
+const DOME_DROP=DOME_RADIUS*1.18;
 const NIGHT_FOG=.0075;
 const DAY_BG=new T.Color(0xb5d7e4);
 const NIGHT_BG=new T.Color(0x05080c);
 
 const lerp=(a:number,b:number,t:number)=>a+(b-a)*t;
 const smooth=(x:number)=>{const t=Math.min(1,Math.max(0,x));return t*t*(3-2*t);};
+const dropFor=(p:number)=>(1-p)*DOME_DROP-DOME_SINK;
 
-function curtainMaterial(){
+/** Dark energy skin of the sealing dome. */
+function domeMaterial(){
  return new T.ShaderMaterial({
-  name:'Opening_AI_curtain',
+  name:'Opening_AI_dome_skin',
   transparent:true,
   depthWrite:false,
   side:T.DoubleSide,
@@ -59,29 +83,65 @@ function curtainMaterial(){
    uEdge:{value:new T.Color(0x8f1d16)},
   },
   vertexShader:`
+   varying vec3 vLocal;
    varying vec2 vUv;
-   void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}
+   void main(){vLocal=position;vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}
   `,
   fragmentShader:`
-   uniform float uTime;uniform float uProgress;uniform vec3 uColor;uniform vec3 uEdge;varying vec2 vUv;
+   uniform float uTime;uniform float uProgress;uniform vec3 uColor;uniform vec3 uEdge;
+   varying vec3 vLocal;varying vec2 vUv;
    float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
    void main(){
-    float horizon=smoothstep(0.0,0.16,vUv.y);
-    float topFade=1.0-smoothstep(0.72,1.0,vUv.y)*0.45;
-    float grain=hash(floor(vUv*vec2(120.0,180.0)))*0.035;
-    float bands=0.5+0.5*sin(vUv.y*160.0+uTime*0.6);
-    float scan=exp(-pow((fract(vUv.y*2.0-uTime*0.035)-0.5)*16.0,2.0));
-    float rim=exp(-pow((vUv.y-0.955)*22.0,2.0));
-    vec3 col=uColor*(0.6+0.8*vUv.y)+grain;
-    col+=uEdge*rim*0.9;
-    col+=uEdge*scan*0.12*(0.4+0.6*uProgress);
-    col+=uEdge*bands*0.02;
-    float alpha=(0.82+0.12*uProgress)*horizon*topFade;
-    alpha*=smoothstep(0.0,0.06,vUv.y);
+    vec3 n=normalize(vLocal);
+    float h=clamp(n.y,0.0,1.0);
+    float grain=hash(floor(vUv*vec2(150.0,220.0)))*0.030;
+    float bands=0.5+0.5*sin(vUv.y*180.0+uTime*0.5);
+    float scan=exp(-pow((fract(vUv.y*3.0-uTime*0.04)-0.5)*14.0,2.0));
+    float horizon=exp(-pow((h-0.018)*26.0,2.0));
+    // Spherical cage lattice: 24 meridians and 8 parallels, soft enough not to alias.
+    float lon=atan(n.z,n.x);
+    float lat=asin(clamp(n.y,0.0,1.0));
+    float lonLine=smoothstep(0.988,1.0,abs(cos(lon*24.0)));
+    float latLine=smoothstep(0.982,1.0,abs(cos(lat*32.0)));
+    float lattice=max(lonLine,latLine);
+    vec3 col=uColor*(0.62+0.70*h)+grain;
+    col+=uEdge*horizon*0.85;
+    col+=uEdge*scan*0.09*(0.4+0.6*uProgress);
+    col+=uEdge*bands*0.015;
+    col+=uEdge*lattice*(0.16+0.14*uProgress);
+    float alpha=(0.56+0.24*uProgress)*(0.35+0.65*smoothstep(0.0,0.22,h));
+    alpha*=smoothstep(0.0,0.035,h);
     gl_FragColor=vec4(col,alpha);
    }
   `,
  });
+}
+
+/** Segmented cage lines: crisp meridians/parallels that read as a machine boundary. */
+function cageGeometry(radius:number,meridians:number,meridianSteps:number,parallels:number,parallelSteps:number,includeRim=false){
+ const positions:number[]=[];
+ const point=(theta:number,phi:number):[number,number,number]=>[radius*Math.sin(theta)*Math.cos(phi),radius*Math.cos(theta),radius*Math.sin(theta)*Math.sin(phi)];
+ for(let m=0;m<meridians;m++){
+  const phi=m/meridians*Math.PI*2;
+  for(let s=0;s<meridianSteps;s++){
+   positions.push(...point(s/meridianSteps*Math.PI/2,phi),...point((s+1)/meridianSteps*Math.PI/2,phi));
+  }
+ }
+ for(let ring=1;ring<=parallels;ring++){
+  const theta=ring/(parallels+1)*Math.PI/2;
+  for(let s=0;s<parallelSteps;s++){
+   positions.push(...point(theta,s/parallelSteps*Math.PI*2),...point(theta,(s+1)/parallelSteps*Math.PI*2));
+  }
+ }
+ if(includeRim){
+  for(let s=0;s<parallelSteps;s++){
+   const t0=s/parallelSteps*Math.PI*2,t1=(s+1)/parallelSteps*Math.PI*2;
+   positions.push(radius*Math.cos(t0),0,radius*Math.sin(t0),radius*Math.cos(t1),0,radius*Math.sin(t1));
+  }
+ }
+ const geometry=new T.BufferGeometry();
+ geometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));
+ return geometry;
 }
 
 export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,lights:Lights){
@@ -93,53 +153,28 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
  const baseEnvironment=scene.environmentIntensity;
  const baseFog=scene.fog??null;
 
- const curtainRoot=new T.Group();curtainRoot.name='Opening_curtain_planes';root.add(curtainRoot);
- const curtainMaterialInstance=curtainMaterial();
- const curtainPanels:{mesh:T.Mesh;width:number;x:number;z:number;yaw:number}[]=[];
- const panel=(width:number,x:number,z:number,yaw:number)=>{
-  const mesh=new T.Mesh(new T.PlaneGeometry(width,CURTAIN_HEIGHT),curtainMaterialInstance);
-  mesh.position.set(x,0,z);mesh.rotation.y=yaw;mesh.renderOrder=4;
-  curtainRoot.add(mesh);curtainPanels.push({mesh,width,x,z,yaw});
- };
- panel(CURTAIN_RADIUS_X*2+30,0,-CURTAIN_RADIUS_Z,0);
- panel(CURTAIN_RADIUS_X*2+30,0,CURTAIN_RADIUS_Z,Math.PI);
- panel(CURTAIN_RADIUS_Z*2+30,-CURTAIN_RADIUS_X,0,Math.PI/2);
- panel(CURTAIN_RADIUS_Z*2+30,CURTAIN_RADIUS_X,0,-Math.PI/2);
+ // The whole sealing volume moves as one group so the descent animates the dome,
+ // the cage and the ground rim together.
+ const curtainRoot=new T.Group();curtainRoot.name='Opening_curtain_dome';curtainRoot.position.set(OPENING_DOME.centerX,dropFor(0),OPENING_DOME.centerZ);root.add(curtainRoot);
 
- // Thin glowing top rails and vertical energy ribs make the boundary read as a machine.
- const railMaterial=new T.MeshBasicMaterial({color:0xff3b2f,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false});
- const rails:T.Mesh[]=[];
- for(const wall of curtainPanels){
-  const geo=new T.PlaneGeometry(wall.width,.28);
-  const rail=new T.Mesh(geo,railMaterial);
-  rail.position.set(wall.x,CURTAIN_HEIGHT-1.4,wall.z);rail.rotation.y=wall.yaw;
-  curtainRoot.add(rail);rails.push(rail);
- }
- const ribMaterial=new T.MeshBasicMaterial({color:0xa32a21,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide});
- const ribs:T.Mesh[]=[];
- for(const wall of curtainPanels){
-  const count=Math.max(4,Math.round(wall.width/18));
-  for(let i=0;i<count;i++){
-   const t=(i+.5)/count;
-   const geo=new T.PlaneGeometry(.12,CURTAIN_HEIGHT*.86);
-   const rib=new T.Mesh(geo,ribMaterial);
-   const along=(t-.5)*wall.width;
-   rib.position.set(wall.x+Math.cos(wall.yaw)*along,CURTAIN_HEIGHT*.43,wall.z-Math.sin(wall.yaw)*along);
-   rib.rotation.y=wall.yaw;curtainRoot.add(rib);ribs.push(rib);
-  }
- }
- root.traverse(o=>{const m=o as T.Mesh;if(m.isMesh)m.frustumCulled=false;});
+ const domeMaterialInstance=domeMaterial();
+ const dome=new T.Mesh(new T.SphereGeometry(DOME_RADIUS,96,40,0,Math.PI*2,0,Math.PI/2),domeMaterialInstance);
+ dome.name='Opening_AI_curtain_dome';dome.renderOrder=3;curtainRoot.add(dome);
 
- // A dark energy ceiling completes the containment volume when the player looks up.
- const ceilingMaterial=new T.ShaderMaterial({
-  name:'Opening_AI_curtain_ceiling',transparent:true,depthWrite:false,side:T.DoubleSide,
-  uniforms:{uTime:{value:0},uProgress:{value:0},uColor:{value:new T.Color(0x05090d)},uEdge:{value:new T.Color(0x7d1a14)}},
-  vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
-  fragmentShader:`uniform float uTime;uniform float uProgress;uniform vec3 uColor;uniform vec3 uEdge;varying vec2 vUv;
-   void main(){float grid=step(.985,max(fract(vUv.x*34.0),fract(vUv.y*30.0)));float pulse=.5+.5*sin(uTime*.7+vUv.x*8.0);vec3 col=uColor+uEdge*grid*(.32+.25*pulse);float alpha=(.24+.20*uProgress)+grid*.18;gl_FragColor=vec4(col,alpha);}`,
- });
- const ceiling=new T.Mesh(new T.PlaneGeometry(CURTAIN_RADIUS_X*2+30,CURTAIN_RADIUS_Z*2+30),ceilingMaterial);
- ceiling.rotation.x=Math.PI/2;ceiling.position.y=CURTAIN_HEIGHT-2;ceiling.renderOrder=3;curtainRoot.add(ceiling);
+ // Dim cage + brighter ribs + horizon ring.
+ const cageMaterial=new T.LineBasicMaterial({name:'Opening_AI_dome_cage',color:0x8f1d16,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false});
+ const cage=new T.LineSegments(cageGeometry(DOME_RADIUS,36,40,9,96),cageMaterial);
+ cage.name='Opening_AI_dome_cage';cage.renderOrder=4;curtainRoot.add(cage);
+
+ const ribMaterial=new T.LineBasicMaterial({name:'Opening_AI_dome_ribs',color:0xff3b2f,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false});
+ const ribs=new T.LineSegments(cageGeometry(DOME_RADIUS,8,48,3,128),ribMaterial);
+ ribs.name='Opening_AI_dome_ribs';ribs.renderOrder=4;curtainRoot.add(ribs);
+
+ const rimMaterial=new T.LineBasicMaterial({name:'Opening_AI_dome_rim',color:0xff4a35,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false});
+ const rim=new T.LineSegments(cageGeometry(DOME_RADIUS,0,0,0,192,true),rimMaterial);
+ rim.name='Opening_AI_dome_rim';rim.renderOrder=4;curtainRoot.add(rim);
+
+ root.traverse(o=>{o.frustumCulled=false;});
 
  // Red emergency beacons on the Thomas route, plus one over the shuttle stop.
  const beaconPoints:[number,number,number][]=[
@@ -183,14 +218,15 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
   else scene.fog=null;
 
   clock+=dt;
-  curtainMaterialInstance.uniforms.uTime.value=clock;
-  curtainMaterialInstance.uniforms.uProgress.value=p;
-  ceilingMaterial.uniforms.uTime.value=clock;ceilingMaterial.uniforms.uProgress.value=p;
-  const drop=(1-p)*CURTAIN_HEIGHT*1.15;
-  curtainRoot.position.y=drop;
+  domeMaterialInstance.uniforms.uTime.value=clock;
+  domeMaterialInstance.uniforms.uProgress.value=p;
+  curtainRoot.position.y=dropFor(p);
   root.visible=p>.001;
-  railMaterial.opacity=.55*smooth(p)* (0.7+0.3*Math.sin(clock*2.2));
-  ribMaterial.opacity=.22*smooth(p);
+  const lit=smooth(p);
+  const breathe=.72+.28*Math.sin(clock*2.1);
+  cageMaterial.opacity=.20*lit*breathe;
+  ribMaterial.opacity=.34*lit*(.70+.30*Math.sin(clock*2.7));
+  rimMaterial.opacity=.42*lit*(.75+.25*Math.sin(clock*1.9));
   pulse+=dt;
   const flash=0.65+0.35*Math.sin(pulse*3.1);
   for(let i=0;i<beaconLights.length;i++){
@@ -210,10 +246,10 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
   if(state.incident||state.curtain)startIncident();
   if(!state.incident&&!state.curtain&&phase!=='day'){
    // A restart returns the whole scene to its opening afternoon.
-   progress=0;target=0;curtain=false;phase='day';curtainRoot.position.y=CURTAIN_HEIGHT*1.15;root.visible=false;
+   progress=0;target=0;curtain=false;phase='day';curtainRoot.position.y=dropFor(0);root.visible=false;
    apply(0,0);return;
   }
-  if(dt>0&&!state.paused&&progress<target)progress=Math.min(target,progress+dt/CURTAIN_SECONDS);
+  if(dt>0&&!state.paused&&progress<target)progress=Math.min(target,progress+dt/DOME_SECONDS);
   if(progress>=1&&phase!=='night')phase='night';
   if(progress>0&&progress<1&&phase!=='disturbance')phase='disturbance';
   apply(progress,state.paused?0:dt);
@@ -221,7 +257,7 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
 
  function reset(){
   progress=0;target=0;curtain=false;phase='day';clock=0;pulse=0;
-  root.visible=false;curtainRoot.position.y=CURTAIN_HEIGHT*1.15;
+  root.visible=false;curtainRoot.position.y=dropFor(0);
   scene.background=baseBackground.clone();
   scene.environmentIntensity=baseEnvironment;
   lights.hemi.intensity=baseHemi;lights.sun.intensity=baseSun;lights.fill.intensity=baseFill;
@@ -243,6 +279,7 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
    sunIntensity:Math.round(lights.sun.intensity*100)/100,
    fillIntensity:Math.round(lights.fill.intensity*100)/100,
    redLights:beaconLights.filter(l=>l.intensity>.1).length,
+   domeRadius:DOME_RADIUS,domeTop:OPENING_DOME.top,
   };
   lastSnapshot=s;return s;
  }
@@ -258,7 +295,12 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
   get phase(){return phase;},
   get curtainProgress(){return progress;},
   dispose(){
-   root.traverse(o=>{const m=o as T.Mesh;if(!m.isMesh)return;m.geometry.dispose();for(const mat of Array.isArray(m.material)?m.material:[m.material])mat.dispose();});
+   root.traverse(o=>{
+    const renderable=o as T.Mesh;
+    if(!renderable.isMesh&&!(renderable as unknown as T.LineSegments).isLineSegments)return;
+    renderable.geometry?.dispose();
+    for(const mat of Array.isArray(renderable.material)?renderable.material:[renderable.material])mat.dispose();
+   });
    root.removeFromParent();
    scene.background=baseBackground.clone();
    scene.fog=baseFog;

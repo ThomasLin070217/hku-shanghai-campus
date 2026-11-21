@@ -11,9 +11,6 @@ def noise(seconds,seed,decay,low):
   t=i/sr;v+=low*(r.uniform(-1,1)-v);envelope=min(1,t/.012)*math.exp(-decay*t)*(1-min(1,max(0,t-seconds+.025)/.025))
   result.append(v*envelope)
  return result
-paper=noise(.42,37,7,.14)
-for i in range(len(paper)):paper[i]*=.5+.5*math.sin(i/sr*13)**2
-save('invitation-open.wav',paper,.25)
 save('jump-cloth.wav',noise(.20,81,20,.10),.18)
 land=noise(.24,93,18,.055)
 for i in range(len(land)):
@@ -28,4 +25,4 @@ for surface in ['paving','grass']:
   values=[];v=0
   for x in data:v+=.22*(x/32768-v);values.append(v)
   save(f'run-{surface}-{n}.wav',values,.42)
-print('Created 13 opening-only foley files')
+print('Created 12 opening-only foley files')

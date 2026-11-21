@@ -26,7 +26,7 @@ export function promenadeLayout(){return V.promenade.flatMap((r,i)=>subtractRect
 export function centralWalkLayout(s:SiteParameters){
  // The flat site paving already connects around the courtyard. The raised strips
  // start beyond its planted rim, rather than projecting into its hole and hedge.
- const start=Math.max(30,s.plazaZ+s.plazaRadiusZ+2),end=94.5;
+ const start=Math.max(12,s.plazaZ+s.plazaRadiusZ+2),end=94.5;
  return start>=end?[]:[-16.8,16.8].map(x=>({x,z:(start+end)/2,width:3,depth:end-start}));
 }
 

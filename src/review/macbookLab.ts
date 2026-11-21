@@ -72,11 +72,11 @@ story.laptop_acquired=true;story.campus_alert_triggered=true;story.alert_read=tr
 const view={story,runtime,player:[0,0,0] as [number,number,number],objective:'验证备用超算接入',
   detail:'打开 Vibe Console 编译一个样本，或在 Robotics 测试设备权限。',computerPage:'tasks' as const};
 const returnButton=document.createElement('button');returnButton.textContent='打开演示 MacBook';returnButton.hidden=true;
-const mac=createMacBookExperience({...apps.options,agent:createLocalAgent(),sessionKey:id,
+const mac=createMacBookExperience({...apps.options,devTools:true,agent:createLocalAgent(),sessionKey:id,
   onClose(){mac.suspend();mac.root.hidden=true;returnButton.hidden=false;returnButton.focus();},
   drawMap(canvas){const g=canvas.getContext('2d');if(g){g.fillStyle='#213c42';g.fillRect(0,0,canvas.width,canvas.height);g.fillStyle='#fff';g.font='18px sans-serif';g.fillText('接口样本 · 无校园定位',28,48);}},
 });
 returnButton.onclick=()=>{returnButton.hidden=true;mac.root.hidden=false;mac.open(view);mac.focusFirst();};
 document.addEventListener('keydown',e=>{if(!mac.root.hidden&&e.key==='Escape'&&!e.isComposing&&!e.repeat){e.preventDefault();if(!mac.handleEscape())stage.querySelector<HTMLButtonElement>('[data-mac-sleep]')?.click();}});
-stage.append(caption,mac.root,returnButton);document.querySelector('#app')!.append(stage);mac.open(view);
+stage.append(caption,mac.root,returnButton);document.querySelector('#app')!.append(stage);mac.open(view);mac.showApp('mission');
 window.addEventListener('pagehide',e=>{if(!e.persisted){release();apps.dispose();mac.dispose();}},{once:true});

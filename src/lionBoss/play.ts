@@ -19,7 +19,6 @@ import {createBossMacBook} from './macbook';
 import {COOLDOWN,evaluateSkill,type SkillKind} from './rules';
 import type {FieldSkillStatus} from './deviceServices';
 import type {ProjectId} from './consoleService';
-import {skillMark} from './workbench';
 import '../style.css';
 import './play.css';
 
@@ -34,16 +33,32 @@ document.querySelector('#app')!.innerHTML = `
       <div id="boss-actions"><div id="boss-q" class="boss-skill"></div><div id="boss-r" class="boss-skill"></div><span id="boss-f"></span></div>
       <div class="boss-controls">WASD 移动 · 拖动鼠标转向 · Shift 奔跑 · V 切换视角</div></div>
     <section id="boss-brief"><div class="boss-card"><small>第一章　失控的开学典礼</small><h1 id="boss-title"></h1>
-      <p id="boss-story"></p><div class="boss-buttons"><button class="boss-primary" id="boss-mac">打开 MacBook　C</button>
+      <p id="boss-story"></p><div class="boss-buttons"><button class="boss-primary" id="boss-mac">和 AI 对话　C</button>
       <button id="boss-start">进入草坪</button><button id="boss-back">返回维护区</button></div>
-      <p id="boss-slots"></p><details id="boss-bindings"><summary>技能按键</summary>
-        <label>短时麻痹 <select id="boss-stun-key"></select></label>
-        <label>助手牵制 <select id="boss-lure-key"></select></label></details>
+      <p id="boss-slots"></p>
       <nav class="boss-links" aria-label="其他关卡"><a href="?experience=levels">选择关卡</a><a id="boss-home" href="?experience=opening">返回校园开场</a></nav></div></section>
-    <div id="boss-workbench-host"></div>
+    <aside id="boss-ai-ping" hidden role="status" aria-live="polite" aria-label="岚的提醒">
+      <div class="boss-ping-head"><span class="boss-ping-avatar">岚</span><div><b>岚 · 本地核心</b><small>MacBook Air</small></div>
+        <button id="boss-ping-close" aria-label="关闭提醒">×</button></div>
+      <p>前面就是 L001。开打前先在 MacBook 里 Vibe Coding 一下技能——按 C 打开，我已经把两套反制程序备好了。</p>
+      <div class="boss-ping-actions"><button id="boss-ping-open">打开 MacBook</button><button id="boss-ping-later">稍后</button></div>
+    </aside>
+    <div id="boss-mac-host"></div>
   </main>`;
 const element = (id:string) => document.getElementById('boss-'+id)!;
 const button = (id:string) => element(id) as HTMLButtonElement;
+const aiPing = element('ai-ping');
+const pingOpen = element('ping-open');
+const pingClose = element('ping-close');
+const pingLater = element('ping-later');
+let pingShown = false, pingTimer = 0;
+function hidePing(){aiPing.hidden=true;window.clearTimeout(pingTimer);}
+function showPing(){
+  if(pingShown||!playing||game.paused||inWorkbench||game.inventoryOpen)return;
+  pingShown=true;aiPing.hidden=false;
+  window.clearTimeout(pingTimer);
+  pingTimer=window.setTimeout(()=>{aiPing.hidden=true;},16000);
+}
 const view = element('view');
 let redrawUntil = performance.now()+1800;
 const viewer = createSiteViewer(view,() => performance.now() < redrawUntil,1.4);
@@ -114,36 +129,17 @@ let respawnGrace = 0;
 const vitals = createVitalsHud('生命');
 element('health').append(vitals.element);
 const skillKeys = {stun:'Q',lure:'R'};
-const choices = ['Q','R','T','G','X','Z'];
-try {
-  const bindings = JSON.parse(localStorage.getItem('hku.lion-boss.keys') ?? 'null');
-  if (choices.includes(bindings?.stun) && choices.includes(bindings?.lure) && bindings.stun !== bindings.lure) {
-    skillKeys.stun = bindings.stun; skillKeys.lure = bindings.lure;
-  }
-} catch { /* Use the default controls. */ }
-for (const kind of ['stun','lure'] as const) {
-  const selector = element(kind+'-key') as HTMLSelectElement;
-  for (const key of choices) selector.add(new Option(key,key));
-  selector.value = skillKeys[kind];
-  selector.onchange = () => {
-    const other = kind === 'stun' ? 'lure' : 'stun';
-    if (skillKeys[other] === selector.value) {
-      skillKeys[other] = skillKeys[kind];
-      (element(other+'-key') as HTMLSelectElement).value = skillKeys[other];
-    }
-    skillKeys[kind] = selector.value;
-    try { localStorage.setItem('hku.lion-boss.keys',JSON.stringify(skillKeys)); } catch { /* Session only. */ }
-    refresh();
-  };
-}
+const skillMark:Record<ProjectId,string> = {stun:'❄',lure:'⌘',ghost:'◎'};
 const workbench = createBossMacBook({
   opening:openingSave,game,instanceId:mac.instanceId,requestDistract:()=>localCast('lure'),
   status:() => ({repaired:state.repaired,runtime,player:[game.body.position.x,game.body.position.y,game.body.position.z],combat:state,canAct:canCast()}),
-  host:element('workbench-host'), storageKey:saveKey+'.skills', keys:skillKeys,
+  host:element('mac-host'), storageKey:saveKey+'.skills',
   onClose() { redrawUntil=performance.now()+900;workbench.close(); inWorkbench = false; explorer.closePanel(); refresh(); },
   onDeploy() { sound.play('equip'); refresh(); },
 });
 const equipped = () => Object.keys(workbench.session().vibe.slots().equipped).length===2;
+void workbench.ensureSkills().then(()=>refresh()).catch(()=>{});
+
 let savedRevision = game.inventory.revision, savedView = game.view;
 function saveProgress() {
   savedRevision = game.inventory.revision; savedView = game.view;
@@ -170,6 +166,7 @@ function openMac() {
   if (inWorkbench || game.inventoryOpen || state.repaired === 3) return;
   if (playing && distanceTo(SAFE) > 2.5) { feedback('按 '+skillKeys.stun+' / '+skillKeys.lure+' 施放技能。按 Esc 可返回维护区。'); return; }
   if (!game.inventory.equipItem(macId)) return;
+  hidePing();
   if (playing) returnToMaintenance();
   holding = false; inWorkbench = true;
   redrawUntil=performance.now()+900;
@@ -179,6 +176,7 @@ function openMac() {
 }
 function returnToMaintenance() {
   playing = false; holding = false;
+  hidePing();
   combat.reset(state.repaired);
   explorer.pause('maintenance');
   place(SAFE);
@@ -197,6 +195,7 @@ function launch() {
   holding = false;
   void sound.start();
   explorer.enterCompat();
+  window.setTimeout(showPing,1800);
   refresh();
 }
 function canCast(){
@@ -267,7 +266,7 @@ function simulate(dt:number) {
 }
 const operation = () => ({ok:false,code:'manual_hold',message:'在维护窗口内长按 F 提交'});
 game.scenario = {
-  tick:simulate, interact:operation, computer() { openMac(); return {ok:inWorkbench,code:'workbench',message:inWorkbench?'技能工作台已打开':'请返回维护区'}; },
+  tick:simulate, interact:operation, computer() { openMac(); return {ok:inWorkbench,code:'assistant',message:inWorkbench?'MacBook 已打开':'请返回维护区'}; },
   snapshot:() => ({combat:structuredClone(state),player:game.body.position.toArray(),hearts:runtime.hearts,catches:runtime.catches,paused:game.paused,playing,inWorkbench,
     macInstance:mac.instanceId,view:game.view,inventory:game.inventory.snapshot(),skills:{stun:workbench.getSkill('stun'),lure:workbench.getSkill('lure')}}),
   spawn:returnToMaintenance,
@@ -306,13 +305,13 @@ function refresh() {
     setText(element('story'),done?'防御系统已承认你的维修身份。狮子完成行礼，草坪恢复安全。入侵来源：未知。':
       hurt?(needsRetry?'体力耗尽。重试将恢复体力，已提交的修复继续有效。':'已退回当前节点安全点，继续后可以重新引招。'):
       playing?'战斗与维护窗口已冻结。继续可从当前时机接着操作。':
-      '清除病毒时，校园防御系统把你标为了入侵者。用手里的 MacBook 写出短时麻痹和助手牵制，在草坪反制 L001，提交三步修复。');
+      '清除病毒时，校园防御系统把你标为了入侵者。往草坪深处走之前，岚会提醒你先 Vibe Coding 几个技能：MacBook 里已经备好两套反制程序，按 C 和岚确认 Q / R 的时机，再上草坪提交三步修复。');
     element('mac').hidden = done || playing || hurt;
     element('back').hidden = done || (!playing && !hurt);
     element('start').hidden = !done && !equipped();
     setText(element('start'),done?'再次挑战':hurt?'重试当前节点':playing?'继续战斗':'进入草坪');
     const slots=workbench.session().vibe.slots();
-    setText(element('slots'),done?'维修记录　3 / 3':'Vibe Console　'+Object.keys(slots.equipped).length+' / '+slots.capacity+' 已部署');
+    setText(element('slots'),done?'维修记录　3 / 3':'本地 AI 已部署　'+Object.keys(slots.equipped).length+' / '+slots.capacity+'　·　Q 短时麻痹　R 助手牵制');
   }
   element('waypoint').hidden = !live;
   if (!live) return;
@@ -352,6 +351,9 @@ function refresh() {
   setText(marker,(behind?'转身　':'')+'◇ '+(idx+1)+' 号节点　'+range.toFixed(1)+' m');
 }
 button('mac').onclick = openMac;
+pingOpen.onclick = () => { hidePing(); openMac(); };
+pingClose.onclick = hidePing;
+pingLater.onclick = hidePing;
 button('start').onclick = launch;
 button('back').onclick = () => { hurt = false; returnToMaintenance(); };
 button('pause').onclick = () => explorer.pause('pause_button');

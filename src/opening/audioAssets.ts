@@ -1,6 +1,5 @@
 /** Opening-only replacements; shared campus audio and other chapters retain their pack. */
 export const OPENING_FOLEY:Record<string,URL>={
- invitation_open:new URL('../../assets/audio/opening-foley/invitation-open.wav',import.meta.url),
  step_jump:new URL('../../assets/audio/opening-foley/jump-cloth.wav',import.meta.url),
  step_land:new URL('../../assets/audio/opening-foley/landing-soft.wav',import.meta.url),
 };

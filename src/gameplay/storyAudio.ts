@@ -14,7 +14,7 @@ cues.set('bus_door',{id:'bus_door',bus:'sfx',loop:false,spatial:false,gain:.65})
 export const OPENING_AUDIO_NAMES=[
  'sfx_anomaly_low','sfx_glitch_burst','sfx_ai_boot','sfx_disturbance_spread','sfx_veil_descend','sfx_veil_seal',
  'amb_dark_hum','robot_servo_loop','robot_patrol_step','robot_scan','robot_lockon','robot_chase_loop','robot_capture',
- 'sfx_safe_restore','step_jump','step_land','invitation_open','invitation_close','macbook_open','macbook_close',
+ 'sfx_safe_restore','step_jump','step_land','invitation_close','macbook_open','macbook_close',
  'agent_status','ui_confirm','ui_error','cc0_bus_engine_idle','cc0_amb_birds_loop','bus_door',
  'mus_safe','mus_unease','mus_tension','mus_chase','mus_hope',
 ];

@@ -5,7 +5,8 @@
  */
 import assert from 'node:assert/strict';
 import * as T from 'three';
-import {createOpeningAtmosphere} from '../src/opening/atmosphere';
+import {createOpeningAtmosphere,OPENING_DOME} from '../src/opening/atmosphere';
+import {BUILDINGS} from '../src/model/campusParameters';
 
 const scene=new T.Scene();
 scene.background=new T.Color(0xb5d7e4);
@@ -39,7 +40,28 @@ assert.ok(night.fogDensity>dayFog,'night fog is present');
 assert.ok(night.hemiIntensity<day.hemiIntensity*.4,'ambient light drops sharply');
 assert.ok(night.sunIntensity<day.sunIntensity*.2,'sunlight is nearly removed');
 assert.ok(night.redLights>=4,'red emergency beacons are lit across the route');
-assert.ok(atmosphere.root.getObjectByName('Opening_AI_curtain_boundary')??true);
+assert.ok(atmosphere.root.getObjectByName('Opening_AI_curtain_boundary'),'the sealing boundary exists');
+
+// The seal is a hemisphere, not the old four-wall box with a flat ceiling.
+const dome=atmosphere.root.getObjectByName('Opening_AI_curtain_dome') as T.Mesh|undefined;
+assert.ok(dome?.isMesh,'the AI seal is a dome mesh');
+assert.ok(dome.geometry instanceof T.SphereGeometry,'the dome geometry is a hemisphere');
+assert.equal(dome.geometry.parameters.thetaLength,Math.PI/2,'the dome is exactly half a sphere');
+assert.equal(atmosphere.root.getObjectByName('Opening_AI_curtain_ceiling'),undefined,'no flat box ceiling remains');
+assert.equal(night.domeRadius,OPENING_DOME.radius);
+assert.equal(night.domeTop,OPENING_DOME.top);
+
+// Every authored roof corner must stay under the dome surface, otherwise the
+// hemisphere would slice a tower the same way the old flat ceiling did.
+const ROOF_MARGIN=4;
+for(const b of BUILDINGS){
+ const dx=Math.abs(b.x-OPENING_DOME.centerX)+b.width/2;
+ const dz=Math.abs(b.z-OPENING_DOME.centerZ)+b.depth/2;
+ const corner=Math.hypot(dx,dz);
+ assert.ok(corner<OPENING_DOME.radius,`${b.id} corner is inside the dome footprint`);
+ const domeHeight=-OPENING_DOME.sink+Math.sqrt(OPENING_DOME.radius**2-corner**2);
+ assert.ok(domeHeight>=b.height+ROOF_MARGIN,`${b.id} roof (${b.height} m) clears the dome at its corner (${domeHeight.toFixed(1)} m)`);
+}
 
 // A paused frame must not advance the curtain.
 const frozen=atmosphere.snapshot();
