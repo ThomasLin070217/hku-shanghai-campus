@@ -8,6 +8,14 @@
 import {STAFF_DIALOGUE} from '../voice/staff-dialogue';
 
 export const OPENING_UI = {
+  /** Product identity. 屏障 is the title; BARRIER 2030 is the same name in English. */
+  game: {
+    titleZh: '屏障',
+    titleEn: 'BARRIER 2030',
+    chapter: 'CHAPTER 04 · HANDOFF',
+    chapterShort: 'CH 04',
+    endOfSlice: 'End of the current slice',
+  },
   hud: {
     objectiveLabel: 'Current objective',
     details: 'Details',
@@ -127,16 +135,28 @@ export const OPENING_UI = {
     onlyWay: 'Retry is the only way to continue.',
   },
   complete: {
-    eyebrow: 'Opening handoff',
+    eyebrow: 'Chapter 04 · Handoff',
     title: 'Building 4 reached',
-    body: 'You reached the main entrance of Building 4 with the presentation MacBook.',
+    body: 'You reached the main entrance of Building 4 with the presentation MacBook. The next chapter takes it from here.',
     facts: [
       ['MacBook', 'Kept in your backpack'],
       ['Handoff point', 'Building 4 main entrance'],
-      ['Progress', 'Opening complete'],
+      ['Progress', 'Chapter 04 handoff'],
     ] as [string, string][],
-    note: 'Continue to the sports hall to rescue the students, or take your MacBook straight to the lawn.',
-    close: 'Close',
+    note: 'End of the current slice. The full rescue, core shutdown and lights-show ending are not part of this build.',
+    close: 'Continue',
+  },
+  epilogue: {
+    eyebrow: 'Chapter 04 · Handoff',
+    /** The line under the title; the only narrative sentence in the epilogue. */
+    line: 'The MacBook is warm in your backpack. Behind you the campus is sealed; ahead, the control room is still dark.',
+    tickerLabel: 'Core status',
+    ticker: ['CPU 01 ONLINE', 'CPU 02 ONLINE', 'CPU 03 ONLINE', 'CPU 04 ONLINE'],
+    meta: 'MacBook retained · Building 4 main entrance · End of the current slice',
+    note: 'The rescue, the core shutdown and the lights-show ending are not implemented in this build.',
+    continue: 'Continue',
+    replay: 'Replay chapter',
+    aria: 'Chapter 04 handoff. End of the current playable slice.',
   },
   settings: {
     eyebrow: 'Preferences',
