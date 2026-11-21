@@ -1,5 +1,6 @@
 import type {SiteParameters} from './campusParameters';
 import {VIDEO_DETAILS as V} from './videoDetailsParameters';
+import {COLUMN_X} from './scaleCalibration';
 
 /** Shared render / navigation footprints. Metres, axis aligned, no stacked junctions. */
 export interface GroundRect {x:number;z:number;width:number;depth:number}
@@ -30,8 +31,28 @@ export function centralWalkLayout(s:SiteParameters){
  return start>=end?[]:[-16.8,16.8].map(x=>({x,z:(start+end)/2,width:3,depth:end-start}));
 }
 
-/** IMG_4379: staircase above a cross passage. Opening-only position/size estimates. */
-export const OPENING_STAIR_PASSAGE={x:0,z:-49,width:30,depth:3.2,clearHeight:3.2,source:'IMG_4379.MOV 00:01–00:09; topology observed, dimensions estimated'};
+/**
+ * The planting strips between the three tower rows. The middle strip is the one
+ * between CDS-1 (B04) and Building 5 (B05), so two things matter there:
+ *  - it stands 2.2 m clear of the CDS-1 wall, leaving a 2.65 m walk along the
+ *    south face instead of the 0.45 m slot the old centre-line produced;
+ *  - it opens a 5 m gap on each tower door axis (x = ±COLUMN_X), so the walk out
+ *    of the Building 5 door is a path rather than a wall.
+ * Render (buildSite) and collision (exploration/navigation) both read this.
+ */
+export const PLANTING_BED={width:55,depth:3.5,rows:[-94,-27,92],middleRow:-27,gapWidth:5,setback:2.2,axes:[-COLUMN_X,COLUMN_X]};
+export function plantingBedLayout():GroundRect[]{
+ const out:GroundRect[]=[];
+ for(const z of PLANTING_BED.rows)for(const x of PLANTING_BED.axes){
+  if(z!==PLANTING_BED.middleRow){out.push({x,z,width:PLANTING_BED.width,depth:PLANTING_BED.depth});continue;}
+  const segment=(PLANTING_BED.width-PLANTING_BED.gapWidth)/2,offset=PLANTING_BED.gapWidth/2+segment/2;
+  // +z points at CDS-1, so the setback is a subtraction: the strip steps away from the wall.
+  for(const sign of [-1,1])out.push({x:x+sign*offset,z:z-PLANTING_BED.setback,width:segment,depth:PLANTING_BED.depth});
+ }
+ return out;
+}
+
+/** IMG_4379: staircase above a cross passage. Opening-only position/size estimates. */export const OPENING_STAIR_PASSAGE={x:0,z:-49,width:30,depth:3.2,clearHeight:3.2,source:'IMG_4379.MOV 00:01–00:09; topology observed, dimensions estimated'};
 export function stairPassageSlabBottom(z:number,depth:number,top:number){
  const p=OPENING_STAIR_PASSAGE;
  return top>p.clearHeight+.15&&z+depth/2>p.z-p.depth/2&&z-depth/2<p.z+p.depth/2?p.clearHeight:0;
