@@ -30,30 +30,30 @@ import {skillMark} from './workbench';
 import '../style.css';
 import './play.css';
 
-document.title = 'L001 草坪防御 · HKU Shanghai';
+document.title = 'L001 Lawn Defense · HKU Shanghai';
 document.body.classList.add('lion-game');
 document.querySelector('#app')!.innerHTML = `
-  <main id="boss-field" aria-label="校园草坪狮子战"><div id="boss-view"></div>
-    <header class="boss-header"><div><span>HKU SHANGHAI</span><strong>草坪防御 / L001</strong></div>
-    <div class="boss-telemetry"><div id="boss-health"></div><b id="boss-progress"></b><small id="boss-compute" hidden></small><button id="boss-pause">暂停 Esc</button></div></header>
-    <div id="boss-waypoint" hidden></div><div id="boss-aim" hidden>＋ 信标</div>
-    <aside id="boss-alert" hidden role="status"><small>CAMPUS DEFENSE SYSTEM</small><strong>检测到未授权管理员</strong><span>THREAT LEVEL: HIGH · DEFENSE UNIT L001</span><b>NEUTRALIZE INTRUDER</b></aside>
-    <div id="boss-black" hidden role="status">连接中断 · 正在返回维护区</div>
+  <main id="boss-field" aria-label="Campus lawn lion encounter"><div id="boss-view"></div>
+    <header class="boss-header"><div><span>HKU SHANGHAI</span><strong>Lawn Defense / L001</strong></div>
+    <div class="boss-telemetry"><div id="boss-health"></div><b id="boss-progress"></b><small id="boss-compute" hidden></small><button id="boss-pause">Pause Esc</button></div></header>
+    <div id="boss-waypoint" hidden></div><div id="boss-aim" hidden>+ Beacon</div>
+    <aside id="boss-alert" hidden role="status"><small>CAMPUS DEFENSE SYSTEM</small><strong>Unauthorized administrator detected</strong><span>THREAT LEVEL: HIGH · DEFENSE UNIT L001</span><b>NEUTRALIZE INTRUDER</b></aside>
+    <div id="boss-black" hidden role="status">Connection lost · Returning to the maintenance area</div>
     <div id="boss-live" hidden><div id="boss-hint"></div><div id="boss-feedback" role="status"></div>
       <div id="boss-actions"><div id="boss-q" class="boss-skill"></div><div id="boss-r" class="boss-skill"></div><span id="boss-f"></span></div>
-      <div class="boss-controls" id="boss-controls">WASD 移动 · 拖动鼠标转向 · Shift 奔跑 · V 切换视角</div></div>
-    <section id="boss-brief"><div class="boss-card"><small>2030　/　校园安防网络</small><h1 id="boss-title"></h1>
-      <p id="boss-story"></p><div class="boss-buttons"><button class="boss-primary" id="boss-mac">打开 MacBook　C</button>
-      <button id="boss-start">进入草坪</button><a class="boss-next" id="boss-next" hidden>前往体育馆 · 篮球馆救援</a></div>
-      <p id="boss-slots"></p><details id="boss-bindings"><summary>技能按键</summary>
-        <label>技能槽 1 <select id="boss-stun-key"></select></label>
-        <label>技能槽 2 <select id="boss-lure-key"></select></label></details>
-      <nav class="boss-links" aria-label="其他关卡"><a href="?experience=levels">选择关卡</a><a id="boss-home" href="?experience=opening">返回校园开场</a></nav></div></section>
-    <aside id="boss-ai-ping" hidden role="status" aria-live="polite" aria-label="岚的提醒">
-      <div class="boss-ping-head"><span class="boss-ping-avatar">岚</span><div><b>岚 · 本地核心</b><small>MacBook Air</small></div>
-        <button id="boss-ping-close" aria-label="关闭提醒">×</button></div>
-      <p>L001 把你标成了入侵者。先退回绿色维护区，再按 C 打开 MacBook，在 Vibe Console 里 Vibe Coding 两个技能。</p>
-      <div class="boss-ping-actions"><button id="boss-ping-open">打开 MacBook</button><button id="boss-ping-later">稍后</button></div>
+      <div class="boss-controls" id="boss-controls">WASD Move · Drag to look · Shift Run · V Camera</div></div>
+    <section id="boss-brief"><div class="boss-card"><small>2030 / Campus security network</small><h1 id="boss-title"></h1>
+      <p id="boss-story"></p><div class="boss-buttons"><button class="boss-primary" id="boss-mac">Open MacBook  C</button>
+      <button id="boss-start">Enter the lawn</button><a class="boss-next" id="boss-next" hidden>Chapter 3 · Sports Hall Rescue</a></div>
+      <p id="boss-slots"></p><details id="boss-bindings"><summary>Skill keys</summary>
+        <label>Skill slot 1 <select id="boss-stun-key"></select></label>
+        <label>Skill slot 2 <select id="boss-lure-key"></select></label></details>
+      <nav class="boss-links" aria-label="Other chapters"><a href="?experience=levels">Chapters</a><a id="boss-home" href="?experience=opening">Back to Chapter 1</a></nav></div></section>
+    <aside id="boss-ai-ping" hidden role="status" aria-live="polite" aria-label="LAN's reminder">
+      <div class="boss-ping-head"><span class="boss-ping-avatar">LAN</span><div><b>LAN · Local core</b><small>MacBook Air</small></div>
+        <button id="boss-ping-close" aria-label="Close reminder">×</button></div>
+      <p>L001 has flagged you as an intruder. Fall back to the green maintenance area, press C to open the MacBook, and Vibe Code two skills in Vibe Console.</p>
+      <div class="boss-ping-actions"><button id="boss-ping-open">Open MacBook</button><button id="boss-ping-later">Later</button></div>
     </aside>
     <div id="boss-mac-host"></div>
   </main>`;
@@ -159,7 +159,7 @@ let blackoutUntil=0,hitPulseUntil=0,shutdownUntil=0;
 let trainingHint='';
 (element('next') as HTMLAnchorElement).href=sportsRescueLink(mac.instanceId);
 let respawnGrace = 0;
-const vitals = createVitalsHud('生命');
+const vitals = createVitalsHud('Health');
 element('health').append(vitals.element);
 const skillKeys:{stun:string;lure:string} = {stun:BOSS_SKILL_KEYS.first,lure:BOSS_SKILL_KEYS.second};
 const choices:readonly string[] = BOSS_SKILL_KEYS.choices;
@@ -201,7 +201,7 @@ function saveProgress() {
     version:2,awakened:seenAwakening,repaired:state.repaired,hearts:runtime.hearts,catches:runtime.catches,
     slotOrder:game.inventory.slots.map(slot=>slot?.instanceId ?? null),selectedHotbar:game.inventory.selectedHotbar,view:game.view,cooldown:{...state.cooldown},
   })); }
-  catch { feedback('浏览器存储不可用，本次进度可继续。'); }
+  catch { feedback('Browser storage is unavailable. You can keep playing this run.'); }
 }
 function place(at:{x:number;z:number}) {
   redrawUntil=performance.now()+1800;
@@ -225,7 +225,7 @@ function prepareAtShelter() {
 function openMac() {
   if(inWorkbench||game.inventoryOpen||needsRetry||leg==='finished')return;
   if(!seenAwakening||!atMaintenance(game.body.position)||leg==='withdraw'&&state.phase==='awakening'){
-    feedback(seenAwakening?'先退至草坪南侧绿色维护区。':'先沿路靠近草坪守卫。');return;
+    feedback(seenAwakening?'Fall back to the green maintenance area south of the lawn.':'Follow the path toward the lawn Guardian.');return;
   }
   prepareAtShelter();
   inWorkbench=true;redrawUntil=performance.now()+900;
@@ -258,22 +258,22 @@ function signalAim(){
   return {x:p.x-Math.sin(game.yaw)*length,z:p.z-Math.cos(game.yaw)*length};
 }
 function localCast(id:ProjectId) {
-  if(!canCast())return {ok:false,message:'请在草坪装备 MacBook 后施放。'};
+  if(!canCast())return {ok:false,message:'Equip the MacBook on the lawn before casting.'};
   const rule=workbench.getSkill(id);
-  if(!rule)return {ok:false,message:'此技能尚未部署。'};
+  if(!rule)return {ok:false,message:'This skill is not deployed yet.'};
   return combat.cast(rule,game.body.position,id==='ghost'?signalAim():undefined);
 }
 function fieldStatus(id:ProjectId):FieldSkillStatus{
   const service=workbench.session();
   if(service.field)return service.field.read(id);
   const rule=workbench.getSkill(id),cooldown=state.cooldown[id];
-  const check=rule?combat.check(rule,game.body.position,id==='ghost'?signalAim():undefined):{ok:false,message:'尚未编译'};
-  return {target:id==='stun'?'L001':id==='lure'?'阿树':'准星信标',canCast:canCast()&&check.ok,
+  const check=rule?combat.check(rule,game.body.position,id==='ghost'?signalAim():undefined):{ok:false,message:'Not compiled yet'};
+  return {target:id==='stun'?'L001':id==='lure'?'Ashu':'Crosshair beacon',canCast:canCast()&&check.ok,
     reason:check.message,cooldown,cooldownTotal:SKILL_SPECS[id].cooldown};
 }
 const castsInFlight=new Set<ProjectId>();
 async function cast(id:ProjectId) {
-  if(!canCast()||castsInFlight.has(id))return {ok:false,message:'当前无法发送技能。'};
+  if(!canCast()||castsInFlight.has(id))return {ok:false,message:'Cannot send a skill right now.'};
   castsInFlight.add(id);
   let result:{ok:boolean;message:string};
   try{
@@ -286,7 +286,7 @@ async function cast(id:ProjectId) {
         result={ok:confirmed.ok,message:confirmed.ok?confirmed.value:confirmed.message};
       }
     }else result=localCast(id);
-  }catch(error){result={ok:false,message:error instanceof Error?error.message:'技能接口未响应。'};}
+  }catch(error){result={ok:false,message:error instanceof Error?error.message:'The skill service did not respond.'};}
   finally{castsInFlight.delete(id);}
   feedback(result.message);workbench.logCast(id,result.message);
   if(result.ok){
@@ -296,10 +296,10 @@ async function cast(id:ProjectId) {
   return result;
 }
 const phases:Record<string,string> = {
-  patrol:'巡逻 · 靠近装置再施放',alert:'已被发现',chase:'L001 追近中',return:'警戒巡航',
-  chargeWarn:'冲撞蓄力 · 横移或施放',charge:'避开冲撞路径',chargeRecover:'冲撞收招',
-  swipeWarn:'扇区挥爪 · 退出扇区或施放',swipeRecover:'挥爪收招',stunned:'运动系统冻结',
-  helperRun:'阿树正在前往侧翼',lured:'L001 正追踪阿树',ghosted:'L001 正追踪信标'
+  patrol:'Patrol · Approach the device before casting',alert:'Detected',chase:'L001 closing in',return:'Alert patrol',
+  chargeWarn:'Charge wind-up · Strafe or cast',charge:'Clear the charge path',chargeRecover:'Charge recovery',
+  swipeWarn:'Sector swipe · Leave the sector or cast',swipeRecover:'Swipe recovery',stunned:'Movement system frozen',
+  helperRun:'Ashu is moving to the flank',lured:'L001 is tracking Ashu',ghosted:'L001 is tracking the beacon'
 };
 function damage(){
   if(respawnGrace>0)return;
@@ -313,7 +313,7 @@ function damage(){
     p.set(x,y,z);
   }
   respawnGrace=OPENING_RESPAWN_GRACE_SECONDS;
-  feedback('受到攻击 −'+hit.lost+' 心 · 短暂保护');
+  feedback('Hit −'+hit.lost+' health · Brief protection');
   if(hit.dead){
     needsRetry=true;playing=false;blackoutUntil=performance.now()+1650;
     explorer.pause('boss_capture');combat.reset(state.repaired);
@@ -323,7 +323,7 @@ function damage(){
 function resumeAfterCapture(){
   needsRetry=false;blackoutUntil=0;runtime=healOpeningHearts(runtime);
   resetToShelter();respawnGrace=OPENING_RESPAWN_GRACE_SECONDS;
-  trainingHint='已回到维护区，生命已恢复。技能和已经解除的防御锁已保留。';saveProgress();
+  trainingHint='Back in the maintenance area. Health restored. Skills and released defense locks are kept.';saveProgress();
 }
 function simulate(dt:number) {
   if(game.armed&&leg==='prepare'&&equipped()&&!atMaintenance(game.body.position)){playing=true;leg='combat';combat.start();}
@@ -350,9 +350,9 @@ function simulate(dt:number) {
     holding=false;sound.play('complete');
     if(state.repaired===3){
       leg='finished';playing=false;shutdownUntil=performance.now()+1750;redrawUntil=performance.now()+3500;explorer.pause('boss_complete');
-      if(recordCorePowerCut(mac.instanceId,3))game.event('ai_core_power_cut','AI 核心电源已关闭',{next:'sports-hall'});
+      if(recordCorePowerCut(mac.instanceId,3))game.event('ai_core_power_cut','AI core power is off',{next:'sports-hall'});
     }
-    feedback(idx===2?'Emergency Shutdown 已执行':'已解除 '+NODES[idx].name+' · 警戒升级');saveProgress();
+    feedback(idx===2?'Emergency Shutdown executed':'Released '+NODES[idx].name+' · Alert raised');saveProgress();
   }else if(before!==state.phase&&(state.phase==='chargeWarn'||state.phase==='swipeWarn')){
     sound.play('select','sfx',undefined,.9,state.phase==='chargeWarn'?.65:1.4);
   }
@@ -360,34 +360,34 @@ function simulate(dt:number) {
 }
 async function bossAction(action:BossAction,stillCurrent:()=>boolean):Promise<Outcome>{
   const deny=(message:string)=>({ok:false,code:'denied',message});
-  if(!stillCurrent()||!game.owner||!game.armed)return deny('控制权已撤销。');
+  if(!stillCurrent()||!game.owner||!game.armed)return deny('Control has been revoked.');
   const service=workbench.session().vibe;
   if(action.type==='cast'){
     const key=action.slot===1?skillKeys.stun:skillKeys.lure;
     const id=service.projects.find(p=>service.slots().equipped[p.id]===key)?.id;
-    if(!id)return deny('装备槽为空。');
+    if(!id)return deny('The equip slot is empty.');
     const result=await cast(id);
     return {...result,code:result.ok?'cast':'rejected'};
   }
   const allowed=()=>stillCurrent()&&leg==='prepare'&&atMaintenance(game.body.position)&&game.inventory.equipped?.instanceId===mac.instanceId&&workbench.session().vibe===service;
-  if(!allowed())return deny('请在维护区装备 MacBook，并保持控制权。');
+  if(!allowed())return deny('Equip the MacBook in the maintenance area and keep control.');
   service.edit(action.project,action.prompt);
   const plan=action.source==='preset'?await service.preset?.(action.project,action.prompt):await service.preview(action.project,action.prompt);
-  if(!plan?.ok)return deny(plan?.message??'当前编译服务没有离线方案。');
-  if(!allowed())return deny('编译权限已变化。');
+  if(!plan?.ok)return deny(plan?.message??'The compile service has no offline plan.');
+  if(!allowed())return deny('Compile permission has changed.');
   const tests=await service.test(plan.value);
   if(!tests.ok)return deny(tests.message);
-  if(!tests.value.length||tests.value.some(t=>t.actual!==t.expected)||!allowed())return deny('规则测试失败或授权过期。');
+  if(!tests.value.length||tests.value.some(t=>t.actual!==t.expected)||!allowed())return deny('Rule tests failed or the grant expired.');
   const installed=await service.install(plan.value);
   if(!installed.ok)return deny(installed.message);
   const project=plan.value.project;
-  if(!allowed()||!service.slots().equipped[project])return deny('未收到有效装备回执。');
-  return {ok:true,code:'compiled',id:project,message:SKILL_SPECS[project].name+' 已部署。'};
+  if(!allowed()||!service.slots().equipped[project])return deny('No valid equip receipt was received.');
+  return {ok:true,code:'compiled',id:project,message:SKILL_SPECS[project].name+' deployed.'};
 }
-const operation = () => ({ok:false,code:'manual_hold',message:'在安全窗口内靠近当前装置并长按 F。'});
+const operation = () => ({ok:false,code:'manual_hold',message:'Approach the current device during a safe window and hold F.'});
 game.scenario = {
   tick:simulate,interact:operation,bossAction,
-  computer(){if(game.owner)return {ok:false,code:'use_compile',message:'通过受控的 compile 动作编译。'};openMac();return {ok:inWorkbench,code:'workbench',message:inWorkbench?'技能工作台已打开':'请返回维护区'};},
+  computer(){if(game.owner)return {ok:false,code:'use_compile',message:'Compile through the controlled compile action.'};openMac();return {ok:inWorkbench,code:'workbench',message:inWorkbench?'Skill workbench is open':'Return to the maintenance area'};},
   snapshot:()=>({leg,combat:structuredClone(state),player:game.body.position.toArray(),yaw:game.yaw,safe:SAFE,trigger,nodes:NODES,hearts:runtime.hearts,catches:runtime.catches,paused:game.paused,playing,inWorkbench,
     locks:{A:state.repaired>=1,B:state.repaired>=2},core:state.repaired===3?'off':state.repaired===2?'unlocked':'locked',
     events:hasCorePowerCut(mac.instanceId)?['ai_core_power_cut']:[],lastCast,protection:respawnGrace,
@@ -415,7 +415,7 @@ window.addEventListener('keyup',e=>{if(e.code===KEYS.interact)holding=false;},{s
 const point = new Vector3();
 const hudSlots=['q','r'].map(name=>{
   const node=element(name);
-  node.innerHTML='<kbd></kbd><i aria-hidden="true"></i><b></b><small></small><progress value="0" max="1" aria-label="冷却进度"></progress>';
+  node.innerHTML='<kbd></kbd><i aria-hidden="true"></i><b></b><small></small><progress value="0" max="1" aria-label="Cooldown progress"></progress>';
   return {node,key:node.querySelector('kbd')!,icon:node.querySelector('i')!,label:node.querySelector('b')!,status:node.querySelector('small')!,progress:node.querySelector('progress')!};
 });
 function mapMarker(marker:HTMLElement,target:{x:number;z:number},height:number,clamp:boolean){
@@ -441,41 +441,41 @@ function refresh() {
   element('black').hidden=!needsRetry;
   element('alert').hidden=!live||state.phase!=='awakening';
   const locks=Math.min(idx,2);
-  setText(element('progress'),done?'核心已断电':'防御锁　'+locks+' / 2');
+  setText(element('progress'),done?'Core power off':'Defense locks  '+locks+' / 2');
   vitals.update(runtime.hearts);
   const service=workbench.session().vibe,slots=service.slots(),equipment=slots.equipped;
   element('compute').hidden=leg!=='combat'||!slots.budget;
-  if(slots.budget)setText(element('compute'),'B4 余量 '+slots.budget.available+' / '+slots.budget.total);
+  if(slots.budget)setText(element('compute'),'B4 budget '+slots.budget.available+' / '+slots.budget.total);
   if(briefing){
     const info=leg==='arrival'?
-      ['草坪上的守卫','B4 备用超算已上线。草坪上的 L001 守卫着核心电源。进入草坪，靠近狮子检查它的状态。','进入草坪']:
-      leg==='withdraw'?['撤回维护区','L001 已将你标记为入侵者。沿绿色标记退回维护区，用手中的电脑接入备用超算。','返回现场']:
-      leg==='prepare'?['草坪维护区',trainingHint||'在电脑的 Vibe Console 任选两个项目，用自己的话描述意图，检查参数、测试、编译并部署。三个技能均可为防御锁创造操作窗口。','开始行动']:
-      done?['L001 已安全关机','核心电源已切断。狮子的眼灯熄灭，校园正在恢复。篮球馆的救援通道现已开放。','再次挑战']:
-      ['行动已暂停','两个防御锁解除后才能关闭电源。看准警告、靠近装置，用软件技能创造安全窗口，再长按 F。','继续行动'];
+      ['The Lawn Guardian','B4 backup supercomputer is online. L001 guards the core power on the lawn. Enter the lawn and approach the lion to check its status.','Enter the lawn']:
+      leg==='withdraw'?['Fall back to maintenance','L001 has flagged you as an intruder. Follow the green markers back to the maintenance area and use the laptop in your hands to reach the backup supercomputer.','Return to the lawn']:
+      leg==='prepare'?['Lawn maintenance area',trainingHint||'In Vibe Console on the laptop, pick any two projects and describe your intent in your own words. Check the parameters and tests, then compile and deploy. All three skills can create a window for the defense locks.','Start']:
+      done?['L001 is safely shut down','Core power is cut. The lion\'s eye lights are out and the campus is recovering. The rescue route in the basketball court is now open.','Replay']:
+      ['Action paused','Power can only be cut once both defense locks are released. Watch for warnings, approach the device, use a software skill to create a safe window, then hold F.','Continue'];
     setText(element('title'),info[0]);setText(element('story'),info[1]);setText(element('start'),info[2]);
     element('mac').hidden=leg!=='prepare'&&!(leg==='combat'&&atMaintenance(game.body.position));
     element('start').hidden=leg==='prepare'&&!equipped();element('next').hidden=!done;
     element('bindings').hidden=done;
-    setText(element('slots'),done?'任务记录 · ai_core_power_cut':leg==='prepare'?'Vibe Console　'+Object.keys(equipment).length+' / '+slots.capacity+' 已部署':'WASD 移动 · Shift 奔跑 · 拖动鼠标转向');
+    setText(element('slots'),done?'Mission log · ai_core_power_cut':leg==='prepare'?'Vibe Console　'+Object.keys(equipment).length+' / '+slots.capacity+' deployed':'WASD Move · Shift Run · Drag to look');
   }
   element('aim').hidden=true;element('waypoint').hidden=!live;
   if(!live)return;
   const node=NODES[idx];
-  const objective=leg==='arrival'?{name:'L001 守卫',...trigger}:leg==='withdraw'||leg==='prepare'?{name:'草坪维护区',...SAFE}:node;
+  const objective=leg==='arrival'?{name:'L001 Guardian',...trigger}:leg==='withdraw'||leg==='prepare'?{name:'Lawn maintenance area',...SAFE}:node;
   const range=distanceTo(objective);
-  let hint=leg==='arrival'?'靠近草坪守卫，检查安防连接':leg==='withdraw'?(atMaintenance(game.body.position)&&seenAwakening?'已进入维护区，按 C 打开 MacBook':'系统误判入侵 · 沿标记退回绿色维护区'):leg==='prepare'?'在维护区编译两个技能':'';
+  let hint=leg==='arrival'?'Approach the lawn Guardian and check the security link':leg==='withdraw'?(atMaintenance(game.body.position)&&seenAwakening?'In the maintenance area · Press C to open the MacBook':'System misread you as an intruder · Follow the markers back to the green maintenance area'):leg==='prepare'?'Compile two skills in the maintenance area':'';
   if(leg==='combat'){
-    hint=phases[state.phase]??'靠近装置，准备施放';
-    if(canSubmit(state))hint='安全窗口 '+state.remaining.toFixed(1)+' s · '+(range>SUBMIT_RADIUS?'进入装置光圈':'长按 F '+(idx===2?'紧急断电':'解除防御锁'));
-    else if(atMaintenance(game.body.position))hint='出发前可按 C 修改程序，向装置方向移动开始行动';
-    if(respawnGrace>0)hint+=' · 保护 '+respawnGrace.toFixed(1)+' s';
+    hint=phases[state.phase]??'Approach the device and prepare to cast';
+    if(canSubmit(state))hint='Safe window '+state.remaining.toFixed(1)+' s · '+(range>SUBMIT_RADIUS?'Step into the device ring':'Hold F '+(idx===2?'for emergency shutdown':'to release the defense lock'));
+    else if(atMaintenance(game.body.position))hint='Press C to edit programs before you leave; move toward the device to start';
+    if(respawnGrace>0)hint+=' · Protected '+respawnGrace.toFixed(1)+' s';
   }
-  setText(element('hint'),objective.name+'　/　'+hint);
+  setText(element('hint'),objective.name+'  /  '+hint);
   setText(element('feedback'),noticeTime>0?notice:'');
   const active=leg==='combat';
   element('actions').hidden=!active;
-  setText(element('controls'),active&&equipment.ghost?'拖动鼠标移动青色信标落点 · '+equipment.ghost+' 投放 · Shift 奔跑 · V 切换视角':'WASD 移动 · 拖动鼠标转向 · Shift 奔跑 · Space 跳跃 · V 切换视角');
+  setText(element('controls'),active&&equipment.ghost?'Drag to move the cyan beacon · '+equipment.ghost+' drops it · Shift Run · V Camera':'WASD Move · Drag to look · Shift Run · Space Jump · V Camera');
   if(active){
     const keys=[skillKeys.stun,skillKeys.lure];
     for(const [index,slot] of hudSlots.entries()){
@@ -483,16 +483,16 @@ function refresh() {
       if(!project)continue;
       const status=fieldStatus(project.id);
       setText(slot.key,keys[index]);setText(slot.icon,skillMark[project.id]);setText(slot.label,project.name);
-      setText(slot.status,status.cooldown>0?'冷却 '+status.cooldown.toFixed(1)+' s':status.canCast?'可施放 · '+status.target:status.reason);
+      setText(slot.status,status.cooldown>0?'Cooldown '+status.cooldown.toFixed(1)+' s':status.canCast?'Ready · '+status.target:status.reason);
       slot.node.title=status.reason;slot.node.classList.toggle('can-cast',status.canCast);
       const fraction=status.cooldownTotal>0?1-Math.min(1,status.cooldown/status.cooldownTotal):1;
       if(slot.progress.value!==fraction)slot.progress.value=fraction;
     }
-    setText(element('f'),state.submit>0?'F　'+Math.round(state.submit*100)+'%':'F　长按操作');
+    setText(element('f'),state.submit>0?'F  '+Math.round(state.submit*100)+'%':'F  Hold to operate');
     if(equipment.ghost)mapMarker(element('aim'),signalAim(),.25,false);
   }
   const marker=element('waypoint'),behind=mapMarker(marker,objective,1.15,true);
-  setText(marker,(behind?'转身　':'')+'◇ '+objective.name+'　'+range.toFixed(1)+' m');
+  setText(marker,(behind?'Turn around  ':'')+'◇ '+objective.name+'  '+range.toFixed(1)+' m');
 }
 button('mac').onclick = openMac;
 pingOpen.onclick = () => { hidePing(); openMac(); };
