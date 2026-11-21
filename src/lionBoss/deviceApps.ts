@@ -24,11 +24,11 @@ export function createDeviceApps(resolveSession:()=>CampusComputeSession|null,on
     monitor();
     const service=resolveSession()?.vibe;
     if(activeVibe!==service){workbench?.dispose();workbench=undefined;activeVibe=service;}
-    if(!service){missionBody.textContent='等待超算连接和技能权限。';return;}
+    if(!service){missionBody.textContent='Waiting for a supercomputer connection and skill permission.';return;}
     if(!workbench){
       missionBody.replaceChildren();
       const allowed=()=>resolveSession()?.vibe===service&&!disposed;
-      const denied=()=>({ok:false as const,message:'设备的编译权限已过期。'});
+      const denied=()=>({ok:false as const,message:'The compile permission for this device has expired.'});
       async function scoped<T>(operation:()=>Promise<T>) {
         if(!allowed())return denied();
         const result=await operation();
@@ -53,7 +53,7 @@ export function createDeviceApps(resolveSession:()=>CampusComputeSession|null,on
     id.textContent=device.id;name.textContent=device.name;state.textContent=device.status;head.append(id,state);
     const permission=document.createElement('p');permission.textContent=device.permission;
     row.append(head,name,permission);
-    if(device.remainingSeconds!=null){const ttl=document.createElement('small');ttl.textContent='控制剩余 '+device.remainingSeconds.toFixed(1)+' s';row.append(ttl);}
+    if(device.remainingSeconds!=null){const ttl=document.createElement('small');ttl.textContent='Control left: '+device.remainingSeconds.toFixed(1)+' s';row.append(ttl);}
     for(const command of device.commands){
       const action=document.createElement('div');action.className='vc-robot-action';
       const b=document.createElement('button');b.type='button';b.dataset.robotCommand=device.id+'/'+command.id;b.textContent=command.label;b.disabled=!command.enabled||commandPending;
@@ -63,13 +63,13 @@ export function createDeviceApps(resolveSession:()=>CampusComputeSession|null,on
         const provider=resolveSession()?.robotics;
         if(disposed||commandPending||provider!==lastService||!provider)return;
         const current=provider.devices().find(d=>d.id===device.id)?.commands.find(c=>c.id===command.id);
-        if(!current?.enabled){lastReport='当前未获准执行此指令。';openRobotics();return;}
+        if(!current?.enabled){lastReport='This command is not authorized right now.';openRobotics();return;}
         const focusKey=b.dataset.robotCommand;
         commandPending=true;openRobotics();
         try{
           const result=await provider.execute(device.id,command.id);
           if(!disposed&&resolveSession()?.robotics===provider)lastReport=result.ok?result.value:result.message;
-        }catch(error){if(!disposed&&resolveSession()?.robotics===provider)lastReport=error instanceof Error?error.message:'设备未响应。';}
+        }catch(error){if(!disposed&&resolveSession()?.robotics===provider)lastReport=error instanceof Error?error.message:'The device did not respond.';}
         finally{
           commandPending=false;
           if(!disposed)openRobotics(document.activeElement===roboticsBody?focusKey:undefined);
@@ -77,7 +77,7 @@ export function createDeviceApps(resolveSession:()=>CampusComputeSession|null,on
       });
       row.append(action);
     }
-    if(device.lastResult){const recent=document.createElement('small');recent.textContent='最近回执 · '+device.lastResult;row.append(recent);}
+    if(device.lastResult){const recent=document.createElement('small');recent.textContent='Last receipt · '+device.lastResult;row.append(recent);}
     return row;
   }
   function openRobotics(preferred?:string){
@@ -87,12 +87,12 @@ export function createDeviceApps(resolveSession:()=>CampusComputeSession|null,on
     const focused=preferred??(document.activeElement as HTMLElement|null)?.dataset.robotCommand;
     const devices=service?.devices()??[];lastDevices=JSON.stringify(devices);
     roboticsBody.replaceChildren();
-    if(!service){roboticsBody.textContent='等待设备控制权限。';return;}
-    const title=document.createElement('h2');title.textContent='机器人设备';
-    const count=document.createElement('small');count.textContent='已发现 '+devices.length+' 台设备';
+    if(!service){roboticsBody.textContent='Waiting for device control permission.';return;}
+    const title=document.createElement('h2');title.textContent='Robot devices';
+    const count=document.createElement('small');count.textContent=devices.length+' devices found';
     roboticsBody.append(title,count,...devices.map(deviceRow));
     const status=document.createElement('p');status.setAttribute('role','status');
-    status.textContent=commandPending?'等待设备回执…':lastReport;roboticsBody.append(status);
+    status.textContent=commandPending?'Waiting for the device…':lastReport;roboticsBody.append(status);
     if(focused){
       const next=Array.from(roboticsBody.querySelectorAll<HTMLButtonElement>('[data-robot-command]')).find(b=>b.dataset.robotCommand===focused&&!b.disabled);
       (next??roboticsBody).focus({preventScroll:true});

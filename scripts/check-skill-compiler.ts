@@ -44,6 +44,8 @@ items.set(key,JSON.stringify({version:1,slots:{stun:{draft:'old',source:'狮子�
 svc=newService();assert.equal(svc.getFieldRule('lure')?.side,'left');assert.equal(svc.installedPlan!('stun')?.origin,'legacy');
 assert.equal(svc.slots().budget?.available,0);
 keys.stun='1';assert.equal(svc.slots().equipped.stun,'1');keys.stun='Q';
+items.set(key,JSON.stringify({version:1,slots:{stun:{draft:'old',source:'Shut down the lion while it charges, within 6 m.'},lure:{draft:'saved',source:'After it swipes, have the helper draw it away to the left.'}}}));
+svc=newService();assert.equal(svc.getFieldRule('stun')?.maxRange,6);assert.equal(svc.getFieldRule('lure')?.side,'left');
 console.log('PASS skill validation, all three pairs, third slot rejection, removal, permissions, stale plans and save migration');
 
 let responseText=JSON.stringify(payload),rejectSchema=true,online=true;

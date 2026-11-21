@@ -24,34 +24,34 @@ export interface VibeService {
   getFieldRule(kind:ProjectId):SkillRule|null;cooldown(id:ProjectId):number|null;reset():void;
 }
 const projects:SkillProject[]=[
-  {id:'stun',name:SKILL_SPECS.stun.name,target:'L001',category:'控制',description:'暂停狮子的运动和攻击，接近防御装置。',supported:true,
-    example:'我想让狮子的运动系统停止三秒，并且在技能结束后自动恢复，不能永久损坏它。'},
-  {id:'lure',name:SKILL_SPECS.lure.name,target:'附近协助机器人',category:'机器人协作',description:'临时接管附近的维修机器人，令狮子转向追逐它。',supported:true,
-    example:'请暂时接管附近的机器人，让它从左侧把狮子引走，给我时间接近防御锁。'},
-  {id:'ghost',name:SKILL_SPECS.ghost.name,target:'草坪信标点',category:'目标转移',description:'投放电子假目标，让狮子追向指定侧翼。',supported:true,
-    example:'在草坪右侧制造一个假目标信号，引开机械狮子。'},
+  {id:'stun',name:SKILL_SPECS.stun.name,target:'L001',category:'Control',description:'Pause lion movement and attacks, then approach the defense device.',supported:true,
+    example:'I want to stop the lion\'s movement system for three seconds and have it recover afterwards, without permanent damage.'},
+  {id:'lure',name:SKILL_SPECS.lure.name,target:'Nearby helper robot',category:'Robot support',description:'Temporarily take over a nearby maintenance robot and make the lion chase it.',supported:true,
+    example:'Take over the nearby robot for a moment and have it draw the lion away to the left, so I can reach the defense lock.'},
+  {id:'ghost',name:SKILL_SPECS.ghost.name,target:'Lawn beacon point',category:'Target diversion',description:'Drop a fake electronic target so the lion chases the chosen flank.',supported:true,
+    example:'Create a fake target signal on the right side of the lawn to draw the mechanical lion away.'},
 ];
 const fail=(message:string)=>({ok:false as const,message});
-const denied='请在安全维护区，使用已获准连接的 MacBook 编译。';
+const denied='Compile from the maintenance area on an approved MacBook.';
 type Installed=CompiledRule&{source:string;slot:number};
 type Candidate={draftProject:ProjectId;compiled:CompiledRule;passed:boolean};
 
 function describe(compiled:CompiledRule,source:string):SkillPlan {
-  const {rule,origin,model}=compiled,id=rule.kind,spec=SKILL_SPECS[id],side=rule.side==='left'?'左':'右';
-  const effect=id==='stun'?'暂停运动和攻击':id==='lure'?'协助机器人移动到'+side+'侧，吸引狮子追逐':'在'+side+'侧投放电子信号并转移狮子的目标';
+  const {rule,origin,model}=compiled,id=rule.kind,spec=SKILL_SPECS[id],side=rule.side==='left'?'left':'right';
+  const effect=id==='stun'?'Pause movement and attacks':id==='lure'?'Helper robot moves to the '+side+' side and draws the lion\'s chase':'Drop an electronic signal on the '+side+' side and redirect the lion\'s target';
   const definition=Object.freeze({skillType:spec.type,targetType:spec.target,maxRange:rule.maxRange??DEFAULT_RANGE,side:rule.side,
     durationSeconds:spec.duration,cooldownSeconds:spec.cooldown,computeCost:spec.cost});
   return {project:id,source,origin,model,effect,definition,duration:spec.duration,cooldown:spec.cooldown,computeCost:spec.cost,
-    condition:'目标在 '+(rule.maxRange??DEFAULT_RANGE)+' m 内；狮子处于活动状态'+(id==='lure'?'，并有可接管机器人':'')};
+    condition:'Target within '+(rule.maxRange??DEFAULT_RANGE)+' m; the lion is active'+(id==='lure'?'; a robot is available to take over':'')};
 }
 function runCases(rule:SkillRule):ValidationCase[] {
   const range=rule.maxRange??DEFAULT_RANGE;
   const base={phase:'chargeWarn',distance:range,cooldown:0,helperReady:true};
   const samples=[
-    {name:'合法目标',expected:true,ctx:base},{name:'冲撞已出手',expected:false,ctx:{...base,phase:'charge'}},
-    {name:'超出射程',expected:false,ctx:{...base,distance:range+1}},{name:'冷却中',expected:false,ctx:{...base,cooldown:2}},
+    {name:'Valid target',expected:true,ctx:base},{name:'Charge already launched',expected:false,ctx:{...base,phase:'charge'}},
+    {name:'Out of range',expected:false,ctx:{...base,distance:range+1}},{name:'Cooling down',expected:false,ctx:{...base,cooldown:2}},
   ];
-  if(rule.kind==='lure')samples.push({name:'机器人离线',expected:false,ctx:{...base,helperReady:false}});
+  if(rule.kind==='lure')samples.push({name:'Robot offline',expected:false,ctx:{...base,helperReady:false}});
   return samples.map(({name,expected,ctx})=>{
     const result=evaluateSkill(rule,ctx);
     return {name,expected,actual:result.ok,detail:ctx.distance+' m · '+result.message};
@@ -103,8 +103,8 @@ export function createLawnVibeService(storageKey:string,keys:{stun:string;lure:s
   function block(id:ProjectId){
     if(!canCompile())return denied;
     if(installed.has(id))return null;
-    if(installed.size>=SLOT_COUNT)return '两个技能槽已满。先从左栏卸载一个已装备技能。';
-    if(slots().budget!.available<SKILL_SPECS[id].cost)return '备用超算剩余算力不足。';
+    if(installed.size>=SLOT_COUNT)return 'Both skill slots are full. Uninstall an equipped skill from the left column first.';
+    if(slots().budget!.available<SKILL_SPECS[id].cost)return 'The backup supercomputer has no compute left.';
     return null;
   }
   function candidate(id:ProjectId,source:string,compiled:CompiledRule):ConsoleResult<SkillPlan>{
@@ -115,34 +115,34 @@ export function createLawnVibeService(storageKey:string,keys:{stun:string;lure:s
   return {
     get name(){
       const config=campusModelConfig();
-      return config.offline?'B4 备用超算 · 离线预设可用':'B4 备用超算 · '+config.model;
+      return config.offline?'B4 backup supercomputer · offline presets available':'B4 backup supercomputer · '+config.model;
     },
     projects,slots,draft:id=>drafts[id],
     edit(id,source){if(!isProjectId(id)||typeof source!=='string')return;invalidate(id);drafts[id]=source.slice(0,400);persist();},
     async preview(id,source){
       if(!canCompile()||!isProjectId(id))return fail(denied);
-      if(drafts[id]!==source)return fail('请先保存当前草稿。');
+      if(drafts[id]!==source)return fail('Save the current draft first.');
       invalidate(id);
       const controller=new AbortController();requests.set(id,controller);
       const result=await compileSkillPrompt(source,controller.signal);
-      if(requests.get(id)!==controller||!canCompile())return fail('草稿或设备权限已改变，请重新生成。');
+      if(requests.get(id)!==controller||!canCompile())return fail('The draft or device permission changed. Generate again.');
       requests.delete(id);
       return result.ok?candidate(id,source,result.value):result;
     },
     async preset(id,source,side='right'){
       if(!canCompile()||!isProjectId(id))return fail(denied);
-      if(!['left','right'].includes(side)||drafts[id]!==source)return fail('预设参数或草稿已改变，请重新检查。');
+      if(!['left','right'].includes(side)||drafts[id]!==source)return fail('The preset parameters or draft changed. Check again.');
       invalidate(id);
       return candidate(id,source,{origin:'preset',rule:{kind:id,side,maxRange:DEFAULT_RANGE}});
     },
     async test(plan){
-      const c=candidates.get(plan);if(!canCompile()||!c)return fail('请回到设备并重新生成当前草稿。');
+      const c=candidates.get(plan);if(!canCompile()||!c)return fail('Return to the device and regenerate the current draft.');
       const cases=runCases(c.compiled.rule);c.passed=cases.every(s=>s.expected===s.actual);
       return {ok:true,value:cases};
     },
     async install(plan){
       const c=candidates.get(plan);
-      if(!c?.passed||drafts[c.draftProject]!==plan.source)return fail('请先生成并测试当前草稿。');
+      if(!c?.passed||drafts[c.draftProject]!==plan.source)return fail('Generate and test the current draft first.');
       const id=c.compiled.rule.kind,reason=block(id);if(reason)return fail(reason);
       const slot=installed.get(id)?.slot??([0,1].find(i=>![...installed.values()].some(s=>s.slot===i))!);
       installed.set(id,{...c.compiled,source:plan.source,slot});
@@ -151,7 +151,7 @@ export function createLawnVibeService(storageKey:string,keys:{stun:string;lure:s
     },
     async uninstall(id){
       if(!canCompile())return fail(denied);
-      if(!installed.delete(id))return fail('这个项目未装备。');
+      if(!installed.delete(id))return fail('This project is not equipped.');
       invalidate(id);persist();return {ok:true,value:undefined};
     },
     installedPlan(id){const data=installed.get(id);return data?describe(data,data.source):null;},

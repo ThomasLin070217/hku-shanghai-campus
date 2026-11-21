@@ -32,31 +32,31 @@ const examples=[
 const reject=(message:string):CompileResult=>({ok:false,message});
 
 export function validateSkillDefinition(raw:unknown):CompileResult {
-  if(!raw||typeof raw!=='object'||Array.isArray(raw))return reject('技能定义应为 JSON 对象。');
+  if(!raw||typeof raw!=='object'||Array.isArray(raw))return reject('A skill definition must be a JSON object.');
   const data=raw as Record<string,unknown>;
-  if(data.skillType==='UNSUPPORTED')return reject('该意图超出了三种可用软件能力。请描述暂停、机器人协助或假信号中的一种。');
+  if(data.skillType==='UNSUPPORTED')return reject('That intent is outside the three available software abilities. Describe a pause, robot support or a fake signal.');
   const allowed=['skillType','targetType','side','maxRange','durationSeconds','cooldownSeconds','computeCost','name','description'];
-  if(Object.keys(data).some(k=>!allowed.includes(k)))return reject('技能包含未知字段。请修改指令并重新生成。');
+  if(Object.keys(data).some(k=>!allowed.includes(k)))return reject('The skill has unknown fields. Revise the instruction and generate again.');
   const id=PROJECT_IDS.find(key=>SKILL_SPECS[key].type===data.skillType);
-  if(!id)return reject('技能类型未获授权。');
+  if(!id)return reject('That skill type is not authorized.');
   const spec=SKILL_SPECS[id];
-  if(data.targetType!==spec.target)return reject('目标与技能不匹配。'+spec.name+' 的合法目标为 '+spec.target+'。');
+  if(data.targetType!==spec.target)return reject('Target does not match the skill. Valid target for '+spec.name+' is '+spec.target+'.');
   for(const [field,value] of [['durationSeconds',spec.duration],['cooldownSeconds',spec.cooldown],['computeCost',spec.cost]] as const){
-    if(field in data && data[field]!==value)return reject(field+' 超出了游戏配置，允许值为 '+value+'。');
+    if(field in data && data[field]!==value)return reject(field+' is outside the game configuration; allowed value is '+value+'.');
   }
   for(const name of ['name','description']){
-    if(name in data&&(typeof data[name]!=='string'||data[name].length>300))return reject('技能文本字段无效。');
+    if(name in data&&(typeof data[name]!=='string'||data[name].length>300))return reject('Invalid skill text field.');
   }
   const range=data.maxRange===undefined?DEFAULT_RANGE:data.maxRange;
-  if(typeof range!=='number'||!Number.isInteger(range)||range<MIN_RANGE||range>MAX_RANGE)return reject('射程应为 '+MIN_RANGE+' 至 '+MAX_RANGE+' 米之间的整数。');
+  if(typeof range!=='number'||!Number.isInteger(range)||range<MIN_RANGE||range>MAX_RANGE)return reject('Range must be a whole number from '+MIN_RANGE+' to '+MAX_RANGE+' m.');
   const side=data.side===undefined?'right':data.side;
-  if(side!=='left'&&side!=='right')return reject('方向应为 left 或 right。');
+  if(side!=='left'&&side!=='right')return reject('Side must be left or right.');
   return {ok:true,value:{rule:{kind:id,side,maxRange:range},origin:'model'}};
 }
 
 export async function compileSkillPrompt(source:string,signal?:AbortSignal):Promise<CompileResult>{
   const config=campusModelConfig();
-  if(!source.trim()||source.length>400)return reject('请输入 1 至 400 个字符的技能描述。');
+  if(!source.trim()||source.length>400)return reject('Enter a skill description of 1 to 400 characters.');
   const timeout=AbortSignal.timeout(25000);
   const requestSignal=signal?AbortSignal.any([signal,timeout]):timeout;
   try{
@@ -67,7 +67,7 @@ export async function compileSkillPrompt(source:string,signal?:AbortSignal):Prom
     const text=await requestCampusModel(config,[{role:'system',content:instruction},...messages,{role:'user',content:source}],requestSignal,outputSchema);
     const json=text.trim().replace(/^~~~json\s*([\s\S]*?)\s*~~~$/i,'$1').replace(/^\x60{3}(?:json)?\s*([\s\S]*?)\s*\x60{3}$/i,'$1');
     let data:unknown;
-    try{data=JSON.parse(json);}catch{return reject('模型返回了无效 JSON。请修改描述并重试。');}
+    try{data=JSON.parse(json);}catch{return reject('The model returned invalid JSON. Revise the description and try again.');}
     // One skill type always identifies exactly one target class. Older/plain providers
     // may return that class explicitly; their value must pass the same validator.
     if(data&&typeof data==='object'&&!Array.isArray(data)&&!Object.hasOwn(data,'targetType')){
@@ -79,8 +79,8 @@ export async function compileSkillPrompt(source:string,signal?:AbortSignal):Prom
     if(result.ok)result.value.model=config.model;
     return result;
   }catch(error){
-    if(signal?.aborted)return reject('生成请求已取消。');
-    if(timeout.aborted||error instanceof ModelUnavailable)return {ok:false,unavailable:true,message:(timeout.aborted?'模型响应超时':(error as Error).message)+'。可以使用当前项目的离线预设。'};
-    return reject(error instanceof Error?error.message:'模型返回无效响应。');
+    if(signal?.aborted)return reject('The generate request was cancelled.');
+    if(timeout.aborted||error instanceof ModelUnavailable)return {ok:false,unavailable:true,message:(timeout.aborted?'Model response timed out':(error as Error).message)+'. You can use the current project\'s offline preset.'};
+    return reject(error instanceof Error?error.message:'The model returned an invalid response.');
   }
 }
