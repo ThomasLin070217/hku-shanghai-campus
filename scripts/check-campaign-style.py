@@ -15,7 +15,11 @@ Asserts, at 960 x 540:
   fades to low opacity after ~2 s without a selection change, then comes back
   on a number key;
 - in a B4 focus view the objective card collapses to one line, the minimap is
-  hidden and the vitals shrink to one compact row.
+  hidden and the vitals shrink to one compact row;
+- the credits hide the pause card and the ending overlay behind them, and no
+  line of copy appears twice on the credits or the Mac panel;
+- the Chapter 1 completion dialog names the chapter the campaign names, and the
+  epilogue it leaves behind uses the same dark tokens.
 
 Screenshots for owner review land in /tmp/one-world/t5/ (override with
 CAMPUS_SHOTS).
@@ -381,7 +385,76 @@ def credits_checks(page):
     kicker = style(page, '#ending-credits-card .ending-kicker')
     check('ending: credits kicker is the opening green', bool(kicker) and kicker['color'] == GREEN,
           kicker and kicker['color'])
+    # The credits settle over a paused game: the explorer's pause card and the
+    # ending's own overlay must both be out of the way while they are up.
+    check('ending: the pause card is hidden under the credits', not visible(page, '.pause-card'),
+          style(page, '.pause-card'))
+    check('ending: the ending overlay is hidden under the credits', not visible(page, '#ending-overlay'),
+          style(page, '#ending-overlay'))
+    check('ending: the barrier line is hidden under the credits', not visible(page, '.ending-barrier'),
+          style(page, '.ending-barrier'))
+    check('ending: the opening HUD is hidden under the credits', not visible(page, '.opening-hud'),
+          style(page, '.opening-hud'))
+    credits_text = page.evaluate(
+        "() => { const c = document.getElementById('ending-credits-card');"
+        " return c ? c.textContent.toUpperCase() : ''; }")
+    check('ending: the credits name HKU SHANGHAI · CDS once',
+          credits_text.count('HKU SHANGHAI · CDS') == 1, credits_text)
+    ending_text = page.evaluate(
+        "() => { const o = document.getElementById('ending-overlay');"
+        " return o ? o.textContent.toUpperCase() : ''; }")
+    check('ending: the Mac panel shows HKU SUPERCOMPUTER once',
+          ending_text.count('HKU SUPERCOMPUTER') == 1, ending_text)
     shot(page, 'check-ending-credits.png')
+
+
+def handoff_checks(page):
+    """Chapter 1 completion: the dialog names the chapter the campaign names, and
+    the epilogue it leaves behind wears the same dark HUD as every other panel."""
+    open_checkpoint(page, 'b4')
+    # A paired MacBook sends handOff() straight into Chapter 2. Empty the bag
+    # first so the same code path opens the completion dialog instead: that is
+    # what a player sees when the relay is already restored.
+    page.evaluate("() => { const inv = window.__CAMPUS.explorer.game.inventory;"
+                  " inv.slots.fill(null); inv.revision++; }")
+    page.evaluate('() => window.__CAMPUS.experience.debug.arriveB4()')
+    page.wait_for_function(
+        "() => { const d = document.querySelector('.opening-handoff-dialog'); return !!d && !d.hidden; }",
+        timeout=20000)
+    chapter = page.evaluate(
+        "() => { const c = document.querySelector('.opening-handoff-dialog .opening-brandlock-chapter');"
+        " return c ? c.textContent.trim() : null; }")
+    check('handoff: the completion dialog names the chapter the campaign names',
+          chapter == 'Chapter 1', chapter)
+    page.locator('.opening-handoff-dialog .opening-button--primary').first.click()
+    page.wait_for_function(
+        "() => { const e = document.querySelector('.opening-epilogue'); return !!e && !e.hidden; }",
+        timeout=20000)
+    page.wait_for_timeout(900)
+    # The card fades in with a CSS animation; software WebGL can stall it, so the
+    # final state is read with the animation off (same as the credits fade above).
+    page.evaluate("() => { const e = document.querySelector('.opening-epilogue-inner');"
+                  " if (e) e.style.animation = 'none';"
+                  " for (const i of document.querySelectorAll('.opening-epilogue-ticker-item'))"
+                  " { i.style.animation = 'none'; i.style.opacity = '1'; } }")
+    inner = style(page, '.opening-epilogue-inner')
+    check('handoff: the epilogue is visible', visible(page, '.opening-epilogue-inner'), inner)
+    assert_body_font('handoff', 'epilogue', inner)
+    assert_paper('handoff', 'epilogue', inner)
+    title = style(page, 'h2.opening-epilogue-title')
+    check('handoff: epilogue display heading uses Georgia',
+          bool(title) and first_family(title['font']) == 'georgia', title and title['font'])
+    eyebrow = style(page, '.opening-epilogue-eyebrow')
+    check('handoff: epilogue eyebrow is the opening green',
+          bool(eyebrow) and eyebrow['color'] == GREEN, eyebrow and eyebrow['color'])
+    meta = style(page, '.opening-epilogue-meta')
+    check('handoff: epilogue meta is the opening soft ink',
+          bool(meta) and meta['color'] == INK_SOFT, meta and meta['color'])
+    note = style(page, '.opening-epilogue-note')
+    check('handoff: epilogue note is the opening gold',
+          bool(note) and note['color'] == GOLD, note and note['color'])
+    assert_surfaces_fonts(page, 'handoff', root='.opening-epilogue')
+    shot(page, 'check-epilogue.png')
 
 
 def menu_checks(page):
@@ -427,6 +500,8 @@ def main():
                 if checkpoint == 'ending':
                     credits_checks(page)
                 shot(page, 'check-' + checkpoint + '.png')
+            print('\n== handoff')
+            handoff_checks(page)
             print('\n== menu')
             menu_checks(page)
         finally:

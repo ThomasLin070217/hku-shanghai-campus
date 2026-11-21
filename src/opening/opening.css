@@ -2945,9 +2945,12 @@ body.opening-mode .opening-modal-root {
 .opening-epilogue-inner {
   position: relative;
   z-index: 3;
-  width: min(760px, 90vw);
-  padding: 6px 0 6px 24px;
-  border-left: 2px solid var(--opening-green);
+  width: min(720px, 92vw);
+  padding: 30px 34px 30px 31px;
+  background: linear-gradient(180deg, var(--opening-paper), var(--opening-paper-deep));
+  border: 1px solid var(--opening-line);
+  border-left: 3px solid var(--opening-green);
+  box-shadow: var(--opening-shadow);
   display: grid;
   gap: 14px;
   animation: opening-epilogue-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
@@ -2969,14 +2972,16 @@ body.opening-mode .opening-modal-root {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
 }
 .opening-epilogue-zh {
-  font-family: "Songti SC", "Noto Serif SC", "PingFang SC", Georgia, serif;
+  font-family: Georgia, "Songti SC", "Noto Serif SC", "PingFang SC", serif;
   font-size: clamp(46px, 7.4vw, 86px);
   line-height: 0.96;
   font-weight: 500;
   letter-spacing: 0.12em;
-  color: #f4f8f2;
+  color: var(--opening-ink);
   text-shadow: 0 0 44px rgba(116, 230, 180, 0.16);
 }
 .opening-epilogue-en {
@@ -2989,10 +2994,10 @@ body.opening-mode .opening-modal-root {
 .opening-epilogue-line {
   margin: 4px 0 0;
   max-width: 58ch;
-  font-family: Georgia, "Songti SC", serif;
-  font-size: clamp(15px, 1.55vw, 18px);
-  line-height: 1.65;
-  color: #cfe2d8;
+  font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  font-size: clamp(14px, 1.45vw, 17px);
+  line-height: 1.7;
+  color: var(--opening-ink-soft);
 }
 .opening-epilogue-ticker {
   display: flex;
@@ -3009,7 +3014,7 @@ body.opening-mode .opening-modal-root {
   font-size: 9px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: #86a296;
+  color: var(--opening-ink-soft);
 }
 .opening-epilogue-ticker-list {
   display: flex;
@@ -3030,7 +3035,7 @@ body.opening-mode .opening-modal-root {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
-  color: #d8f7e8;
+  color: var(--opening-green);
   opacity: 0;
   animation: opening-ticker-in 0.42s ease forwards;
   animation-delay: var(--epilogue-delay, 0s);
@@ -3052,13 +3057,13 @@ body.opening-mode .opening-modal-root {
   font-size: 9px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #86a296;
+  color: var(--opening-ink-soft);
 }
 .opening-epilogue-note {
   margin: 0;
   font-size: 12px;
   line-height: 1.55;
-  color: #c9a86a;
+  color: var(--opening-gold);
 }
 .opening-epilogue-actions {
   display: flex;

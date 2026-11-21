@@ -12,8 +12,8 @@ export const OPENING_UI = {
   game: {
     titleZh: '屏障',
     titleEn: 'BARRIER 2030',
-    chapter: 'CHAPTER 04 · HANDOFF',
-    chapterShort: 'CH 04',
+    chapter: 'CHAPTER 1 · HANDOFF',
+    chapterShort: 'Chapter 1',
     endOfSlice: 'End of the current slice',
   },
   hud: {
@@ -135,19 +135,19 @@ export const OPENING_UI = {
     onlyWay: 'Retry is the only way to continue.',
   },
   complete: {
-    eyebrow: 'Chapter 04 · Handoff',
+    eyebrow: 'Chapter 1 · Handoff',
     title: 'Building 4 reached',
     body: 'You reached the main entrance of Building 4 with the presentation MacBook. The next chapter takes it from here.',
     facts: [
       ['MacBook', 'Kept in your backpack'],
       ['Handoff point', 'Building 4 main entrance'],
-      ['Progress', 'Chapter 04 handoff'],
+      ['Progress', 'Chapter 1 handoff'],
     ] as [string, string][],
     note: 'Continue the playtest at the lawn with your MacBook. Cutting core power opens the route to the sports hall.',
     close: 'Continue',
   },
   epilogue: {
-    eyebrow: 'Chapter 04 · Handoff',
+    eyebrow: 'Chapter 1 · Handoff',
     /** The line under the title; the only narrative sentence in the epilogue. */
     line: 'The MacBook is warm in your backpack. Behind you the campus is sealed; ahead, the control room is still dark.',
     tickerLabel: 'Core status',
@@ -156,7 +156,7 @@ export const OPENING_UI = {
     note: 'The lights-show ending is not implemented in this build.',
     continue: 'Continue',
     replay: 'Replay chapter',
-    aria: 'Chapter 04 handoff. End of the current playable slice.',
+    aria: 'Chapter 1 handoff. End of the current playable slice.',
   },
   settings: {
     eyebrow: 'Preferences',
