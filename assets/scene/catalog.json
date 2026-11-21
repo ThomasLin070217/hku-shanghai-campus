@@ -1,6 +1,6 @@
 {
   "schema": "hku-scene/1",
-  "revision": "785855ad7de4",
+  "revision": "467187e4d360",
   "units": "metres",
   "axes": "+X east-ish, -Z north-ish, +Y up; not georeferenced",
   "entities": [
@@ -97262,6 +97262,41 @@
       "editMode": "source"
     },
     {
+      "id": "A014-G-0af0db62ac83",
+      "name": "篮球场",
+      "kind": "group",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1",
+      "bounds": {
+        "min": [
+          -82.65,
+          0,
+          -126.9
+        ],
+        "max": [
+          -53.35,
+          3.875,
+          -111.1
+        ]
+      },
+      "center": [
+        -68,
+        1.9375,
+        -119
+      ],
+      "size": [
+        29.3,
+        3.875,
+        15.8
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Basketball_Court",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source"
+    },
+    {
       "id": "A014-G-0c8b2fc13593",
       "name": "Leaf_Right",
       "kind": "group",
@@ -97412,23 +97447,23 @@
         "min": [
           -87.8547,
           0,
-          -130.15
+          -130.16
         ],
         "max": [
-          -48.1453,
+          -44.7,
           10.6494,
-          -103.85
+          -103.84
         ]
       },
       "center": [
-        -68,
+        -66.2773,
         5.3247,
         -117
       ],
       "size": [
-        39.7094,
+        43.1547,
         10.6494,
-        26.3
+        26.32
       ],
       "sourceFile": "src/model/buildSite.ts",
       "sourceAnchor": "Sports_Hall",
@@ -97797,6 +97832,78 @@
       "material": "Mullion aluminium"
     },
     {
+      "id": "A014-P-05cd9fd0dab6",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#39",
+      "bounds": {
+        "min": [
+          -60.78,
+          0.296,
+          -119.0015
+        ],
+        "max": [
+          -60.6858,
+          0.31,
+          -118.32
+        ]
+      },
+      "center": [
+        -60.7329,
+        0.303,
+        -118.6607
+      ],
+      "size": [
+        0.0941,
+        0.014,
+        0.6815
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-06cda16360a1",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#38",
+      "bounds": {
+        "min": [
+          -60.7455,
+          0.296,
+          -118.326
+        ],
+        "max": [
+          -60.5839,
+          0.31,
+          -117.6453
+        ]
+      },
+      "center": [
+        -60.6647,
+        0.303,
+        -117.9857
+      ],
+      "size": [
+        0.1615,
+        0.014,
+        0.6807
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-070aafe865e9",
       "name": "Fence_wire",
       "kind": "part",
@@ -98013,6 +98120,42 @@
       "material": "Fence steel"
     },
     {
+      "id": "A014-P-0ccfe96c786b",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#48",
+      "bounds": {
+        "min": [
+          -58.6956,
+          0.296,
+          -124.3361
+        ],
+        "max": [
+          -58.1432,
+          0.31,
+          -123.8455
+        ]
+      },
+      "center": [
+        -58.4194,
+        0.303,
+        -124.0908
+      ],
+      "size": [
+        0.5524,
+        0.014,
+        0.4907
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-0d0ab95a8970",
       "name": "Fence_wire",
       "kind": "part",
@@ -98047,6 +98190,78 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Fence steel"
+    },
+    {
+      "id": "A014-P-0dcdac680a14",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#31",
+      "bounds": {
+        "min": [
+          -58.6956,
+          0.296,
+          -114.1545
+        ],
+        "max": [
+          -58.1432,
+          0.31,
+          -113.6639
+        ]
+      },
+      "center": [
+        -58.4194,
+        0.303,
+        -113.9092
+      ],
+      "size": [
+        0.5524,
+        0.014,
+        0.4907
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-0dcfeafffe57",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#49",
+      "bounds": {
+        "min": [
+          -58.1801,
+          0.296,
+          -124.7295
+        ],
+        "max": [
+          -57.5904,
+          0.31,
+          -124.289
+        ]
+      },
+      "center": [
+        -57.8852,
+        0.303,
+        -124.5093
+      ],
+      "size": [
+        0.5898,
+        0.014,
+        0.4406
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-0e0abaed0f5c",
@@ -98121,6 +98336,42 @@
       "material": "Ivory signage"
     },
     {
+      "id": "A014-P-0ecdadfb9000",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#30",
+      "bounds": {
+        "min": [
+          -58.1801,
+          0.296,
+          -113.711
+        ],
+        "max": [
+          -57.5904,
+          0.31,
+          -113.2705
+        ]
+      },
+      "center": [
+        -57.8852,
+        0.303,
+        -113.4907
+      ],
+      "size": [
+        0.5898,
+        0.014,
+        0.4406
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-0f9069181ca4",
       "name": "Service_line",
       "kind": "part",
@@ -98155,6 +98406,114 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Ivory signage"
+    },
+    {
+      "id": "A014-P-0fcdaf8e15eb",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#33",
+      "bounds": {
+        "min": [
+          -59.5789,
+          0.296,
+          -115.1838
+        ],
+        "max": [
+          -59.1178,
+          0.31,
+          -114.6083
+        ]
+      },
+      "center": [
+        -59.3483,
+        0.303,
+        -114.8961
+      ],
+      "size": [
+        0.4612,
+        0.014,
+        0.5755
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-10cdb1219bd7",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#32",
+      "bounds": {
+        "min": [
+          -59.1634,
+          0.296,
+          -114.6471
+        ],
+        "max": [
+          -58.654,
+          0.31,
+          -114.1113
+        ]
+      },
+      "center": [
+        -58.9087,
+        0.303,
+        -114.3792
+      ],
+      "size": [
+        0.5094,
+        0.014,
+        0.5358
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-10cfefb8bf79",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#44",
+      "bounds": {
+        "min": [
+          -60.2368,
+          0.296,
+          -122.2697
+        ],
+        "max": [
+          -59.8855,
+          0.31,
+          -121.6326
+        ]
+      },
+      "center": [
+        -60.0612,
+        0.303,
+        -121.9512
+      ],
+      "size": [
+        0.3514,
+        0.014,
+        0.6371
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-11af35214fbe",
@@ -98193,6 +98552,330 @@
       "material": "Ivory signage"
     },
     {
+      "id": "A014-P-11cdb2b421c3",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#35",
+      "bounds": {
+        "min": [
+          -60.2368,
+          0.296,
+          -116.3674
+        ],
+        "max": [
+          -59.8855,
+          0.31,
+          -115.7303
+        ]
+      },
+      "center": [
+        -60.0612,
+        0.303,
+        -116.0488
+      ],
+      "size": [
+        0.3514,
+        0.014,
+        0.6371
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-11cff14b4565",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#45",
+      "bounds": {
+        "min": [
+          -59.938,
+          0.296,
+          -122.8502
+        ],
+        "max": [
+          -59.5296,
+          0.31,
+          -122.2408
+        ]
+      },
+      "center": [
+        -59.7338,
+        0.303,
+        -122.5455
+      ],
+      "size": [
+        0.4083,
+        0.014,
+        0.6094
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-12bb4d48a1bd",
+      "name": "Hall_end_glazing",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_glazing#4",
+      "bounds": {
+        "min": [
+          -65.325,
+          2.6,
+          -103.98
+        ],
+        "max": [
+          -48.675,
+          4.8,
+          -103.98
+        ]
+      },
+      "center": [
+        -57,
+        3.7,
+        -103.98
+      ],
+      "size": [
+        16.65,
+        2.2,
+        0
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_glazing",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Glazing_reflective"
+    },
+    {
+      "id": "A014-P-12c6850020f2",
+      "name": "Three_point_corner",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_corner#1",
+      "bounds": {
+        "min": [
+          -81.995,
+          0.296,
+          -125.55
+        ],
+        "max": [
+          -80.245,
+          0.31,
+          -125.49
+        ]
+      },
+      "center": [
+        -81.12,
+        0.303,
+        -125.52
+      ],
+      "size": [
+        1.75,
+        0.014,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_corner",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-12cdb447a7af",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#34",
+      "bounds": {
+        "min": [
+          -59.938,
+          0.296,
+          -115.7592
+        ],
+        "max": [
+          -59.5296,
+          0.31,
+          -115.1498
+        ]
+      },
+      "center": [
+        -59.7338,
+        0.303,
+        -115.4545
+      ],
+      "size": [
+        0.4083,
+        0.014,
+        0.6094
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-12cff2decb50",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#46",
+      "bounds": {
+        "min": [
+          -59.5789,
+          0.296,
+          -123.3917
+        ],
+        "max": [
+          -59.1178,
+          0.31,
+          -122.8162
+        ]
+      },
+      "center": [
+        -59.3483,
+        0.303,
+        -123.1039
+      ],
+      "size": [
+        0.4612,
+        0.014,
+        0.5755
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-13cdb5da2d9b",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#37",
+      "bounds": {
+        "min": [
+          -60.6426,
+          0.296,
+          -117.6573
+        ],
+        "max": [
+          -60.4153,
+          0.31,
+          -116.9844
+        ]
+      },
+      "center": [
+        -60.529,
+        0.303,
+        -117.3208
+      ],
+      "size": [
+        0.2273,
+        0.014,
+        0.6729
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-13cff471513c",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#47",
+      "bounds": {
+        "min": [
+          -59.1634,
+          0.296,
+          -123.8887
+        ],
+        "max": [
+          -58.654,
+          0.31,
+          -123.3529
+        ]
+      },
+      "center": [
+        -58.9087,
+        0.303,
+        -123.6208
+      ],
+      "size": [
+        0.5094,
+        0.014,
+        0.5358
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-143635708f4e",
+      "name": "Court_baseline",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Court_baseline#1",
+      "bounds": {
+        "min": [
+          -82.035,
+          0.296,
+          -126.5
+        ],
+        "max": [
+          -81.965,
+          0.31,
+          -111.5
+        ]
+      },
+      "center": [
+        -82,
+        0.303,
+        -119
+      ],
+      "size": [
+        0.07,
+        0.014,
+        15
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Court_baseline",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-149070f78ae1",
       "name": "Service_line",
       "kind": "part",
@@ -98227,6 +98910,114 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Ivory signage"
+    },
+    {
+      "id": "A014-P-14c688262cc9",
+      "name": "Three_point_corner",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_corner#3",
+      "bounds": {
+        "min": [
+          -55.755,
+          0.296,
+          -125.55
+        ],
+        "max": [
+          -54.005,
+          0.31,
+          -125.49
+        ]
+      },
+      "center": [
+        -54.88,
+        0.303,
+        -125.52
+      ],
+      "size": [
+        1.75,
+        0.014,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_corner",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-14cdb76db386",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#36",
+      "bounds": {
+        "min": [
+          -60.4725,
+          0.296,
+          -117.0022
+        ],
+        "max": [
+          -60.1817,
+          0.31,
+          -116.3439
+        ]
+      },
+      "center": [
+        -60.3271,
+        0.303,
+        -116.673
+      ],
+      "size": [
+        0.2908,
+        0.014,
+        0.6583
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-14cff604a7ca",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#40",
+      "bounds": {
+        "min": [
+          -60.78,
+          0.296,
+          -119.68
+        ],
+        "max": [
+          -60.6858,
+          0.31,
+          -118.9985
+        ]
+      },
+      "center": [
+        -60.7329,
+        0.303,
+        -119.3393
+      ],
+      "size": [
+        0.0941,
+        0.014,
+        0.6815
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-1590728a10cc",
@@ -98265,6 +99056,114 @@
       "material": "Ivory signage"
     },
     {
+      "id": "A014-P-15c689b9b2b5",
+      "name": "Three_point_corner",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_corner#2",
+      "bounds": {
+        "min": [
+          -81.995,
+          0.296,
+          -112.51
+        ],
+        "max": [
+          -80.245,
+          0.31,
+          -112.45
+        ]
+      },
+      "center": [
+        -81.12,
+        0.303,
+        -112.48
+      ],
+      "size": [
+        1.75,
+        0.014,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_corner",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-15cff7972db5",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#41",
+      "bounds": {
+        "min": [
+          -60.7455,
+          0.296,
+          -120.3547
+        ],
+        "max": [
+          -60.5839,
+          0.31,
+          -119.674
+        ]
+      },
+      "center": [
+        -60.6647,
+        0.303,
+        -120.0143
+      ],
+      "size": [
+        0.1615,
+        0.014,
+        0.6807
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-162ec080c85a",
+      "name": "Hall_end_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_mullion#4",
+      "bounds": {
+        "min": [
+          -59.76,
+          2.6,
+          -130.16
+        ],
+        "max": [
+          -59.64,
+          4.8,
+          -129.96
+        ]
+      },
+      "center": [
+        -59.7,
+        3.7,
+        -130.06
+      ],
+      "size": [
+        0.12,
+        2.2,
+        0.2
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-1690741d96b8",
       "name": "Service_line",
       "kind": "part",
@@ -98299,6 +99198,438 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Ivory signage"
+    },
+    {
+      "id": "A014-P-16cff92ab3a1",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#42",
+      "bounds": {
+        "min": [
+          -60.6426,
+          0.296,
+          -121.0156
+        ],
+        "max": [
+          -60.4153,
+          0.31,
+          -120.3427
+        ]
+      },
+      "center": [
+        -60.529,
+        0.303,
+        -120.6792
+      ],
+      "size": [
+        0.2273,
+        0.014,
+        0.6729
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-172ec2134e45",
+      "name": "Hall_end_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_mullion#5",
+      "bounds": {
+        "min": [
+          -51.46,
+          2.6,
+          -130.16
+        ],
+        "max": [
+          -51.34,
+          4.8,
+          -129.96
+        ]
+      },
+      "center": [
+        -51.4,
+        3.7,
+        -130.06
+      ],
+      "size": [
+        0.12,
+        2.2,
+        0.2
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-17363a292111",
+      "name": "Court_baseline",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Court_baseline#2",
+      "bounds": {
+        "min": [
+          -54.035,
+          0.296,
+          -126.5
+        ],
+        "max": [
+          -53.965,
+          0.31,
+          -111.5
+        ]
+      },
+      "center": [
+        -54,
+        0.303,
+        -119
+      ],
+      "size": [
+        0.07,
+        0.014,
+        15
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Court_baseline",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-17bb55270ff9",
+      "name": "Hall_end_glazing",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_glazing#1",
+      "bounds": {
+        "min": [
+          -87.325,
+          2.6,
+          -130.02
+        ],
+        "max": [
+          -70.675,
+          4.8,
+          -130.02
+        ]
+      },
+      "center": [
+        -79,
+        3.7,
+        -130.02
+      ],
+      "size": [
+        16.65,
+        2.2,
+        0
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_glazing",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Glazing_reflective"
+    },
+    {
+      "id": "A014-P-17c68cdfbe8d",
+      "name": "Three_point_corner",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_corner#4",
+      "bounds": {
+        "min": [
+          -55.755,
+          0.296,
+          -112.51
+        ],
+        "max": [
+          -54.005,
+          0.31,
+          -112.45
+        ]
+      },
+      "center": [
+        -54.88,
+        0.303,
+        -112.48
+      ],
+      "size": [
+        1.75,
+        0.014,
+        0.06
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_corner",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-17cffabd398d",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#43",
+      "bounds": {
+        "min": [
+          -60.4725,
+          0.296,
+          -121.6561
+        ],
+        "max": [
+          -60.1817,
+          0.31,
+          -120.9978
+        ]
+      },
+      "center": [
+        -60.3271,
+        0.303,
+        -121.327
+      ],
+      "size": [
+        0.2908,
+        0.014,
+        0.6583
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-182ec3a6d431",
+      "name": "Hall_end_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_mullion#6",
+      "bounds": {
+        "min": [
+          -84.66,
+          2.6,
+          -104.04
+        ],
+        "max": [
+          -84.54,
+          4.8,
+          -103.84
+        ]
+      },
+      "center": [
+        -84.6,
+        3.7,
+        -103.94
+      ],
+      "size": [
+        0.12,
+        2.2,
+        0.2
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-18bb56ba95e5",
+      "name": "Hall_end_glazing",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_glazing#2",
+      "bounds": {
+        "min": [
+          -65.325,
+          2.6,
+          -130.02
+        ],
+        "max": [
+          -48.675,
+          4.8,
+          -130.02
+        ]
+      },
+      "center": [
+        -57,
+        3.7,
+        -130.02
+      ],
+      "size": [
+        16.65,
+        2.2,
+        0
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_glazing",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Glazing_reflective"
+    },
+    {
+      "id": "A014-P-18d23ae75605",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#52",
+      "bounds": {
+        "min": [
+          -56.4028,
+          0.296,
+          -125.5485
+        ],
+        "max": [
+          -55.7378,
+          0.31,
+          -125.2828
+        ]
+      },
+      "center": [
+        -56.0703,
+        0.303,
+        -125.4157
+      ],
+      "size": [
+        0.665,
+        0.014,
+        0.2657
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-192ec5395a1d",
+      "name": "Hall_end_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_mullion#7",
+      "bounds": {
+        "min": [
+          -76.36,
+          2.6,
+          -104.04
+        ],
+        "max": [
+          -76.24,
+          4.8,
+          -103.84
+        ]
+      },
+      "center": [
+        -76.3,
+        3.7,
+        -103.94
+      ],
+      "size": [
+        0.12,
+        2.2,
+        0.2
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-19bb584d1bd1",
+      "name": "Hall_end_glazing",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_glazing#3",
+      "bounds": {
+        "min": [
+          -87.325,
+          2.6,
+          -103.98
+        ],
+        "max": [
+          -70.675,
+          4.8,
+          -103.98
+        ]
+      },
+      "center": [
+        -79,
+        3.7,
+        -103.98
+      ],
+      "size": [
+        16.65,
+        2.2,
+        0
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_glazing",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Glazing_reflective"
+    },
+    {
+      "id": "A014-P-19d23c7adbf1",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#51",
+      "bounds": {
+        "min": [
+          -57.0279,
+          0.296,
+          -125.3388
+        ],
+        "max": [
+          -56.3815,
+          0.31,
+          -125.0113
+        ]
+      },
+      "center": [
+        -56.7047,
+        0.303,
+        -125.1751
+      ],
+      "size": [
+        0.6464,
+        0.014,
+        0.3275
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-1a468010e57a",
@@ -98337,6 +99668,78 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-1ad23e0d61dd",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#50",
+      "bounds": {
+        "min": [
+          -57.6224,
+          0.296,
+          -125.0649
+        ],
+        "max": [
+          -57.0012,
+          0.31,
+          -124.6789
+        ]
+      },
+      "center": [
+        -57.3118,
+        0.303,
+        -124.8719
+      ],
+      "size": [
+        0.6212,
+        0.014,
+        0.386
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-1b2ec85f3696",
+      "name": "Hall_end_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_mullion#1",
+      "bounds": {
+        "min": [
+          -84.66,
+          2.6,
+          -130.16
+        ],
+        "max": [
+          -84.54,
+          4.8,
+          -129.96
+        ]
+      },
+      "center": [
+        -84.6,
+        3.7,
+        -130.06
+      ],
+      "size": [
+        0.12,
+        2.2,
+        0.2
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-1b4681a36b66",
       "name": "Fine_vertical_court_mesh",
       "kind": "part",
@@ -98373,6 +99776,42 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-1c2ec9f2bc82",
+      "name": "Hall_end_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_mullion#2",
+      "bounds": {
+        "min": [
+          -76.36,
+          2.6,
+          -130.16
+        ],
+        "max": [
+          -76.24,
+          4.8,
+          -129.96
+        ]
+      },
+      "center": [
+        -76.3,
+        3.7,
+        -130.06
+      ],
+      "size": [
+        0.12,
+        2.2,
+        0.2
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-1c468336f151",
       "name": "Fine_vertical_court_mesh",
       "kind": "part",
@@ -98407,6 +99846,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Video dark fence steel"
+    },
+    {
+      "id": "A014-P-1d2ecb85426e",
+      "name": "Hall_end_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_mullion#3",
+      "bounds": {
+        "min": [
+          -68.06,
+          2.6,
+          -130.16
+        ],
+        "max": [
+          -67.94,
+          4.8,
+          -129.96
+        ]
+      },
+      "center": [
+        -68,
+        3.7,
+        -130.06
+      ],
+      "size": [
+        0.12,
+        2.2,
+        0.2
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
     },
     {
       "id": "A014-P-1d4684c9773d",
@@ -98661,6 +100136,42 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-222ed364814c",
+      "name": "Hall_end_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_mullion#8",
+      "bounds": {
+        "min": [
+          -68.06,
+          2.6,
+          -104.04
+        ],
+        "max": [
+          -67.94,
+          4.8,
+          -103.84
+        ]
+      },
+      "center": [
+        -68,
+        3.7,
+        -103.94
+      ],
+      "size": [
+        0.12,
+        2.2,
+        0.2
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-224b09d6b3d6",
       "name": "Fine_vertical_court_mesh",
       "kind": "part",
@@ -98697,6 +100208,42 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-232ed4f70738",
+      "name": "Hall_end_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_mullion#9",
+      "bounds": {
+        "min": [
+          -59.76,
+          2.6,
+          -104.04
+        ],
+        "max": [
+          -59.64,
+          4.8,
+          -103.84
+        ]
+      },
+      "center": [
+        -59.7,
+        3.7,
+        -103.94
+      ],
+      "size": [
+        0.12,
+        2.2,
+        0.2
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-234b0b6939c2",
       "name": "Fine_vertical_court_mesh",
       "kind": "part",
@@ -98731,6 +100278,78 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Video dark fence steel"
+    },
+    {
+      "id": "A014-P-2423f260ad6c",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#2",
+      "bounds": {
+        "min": [
+          -66.4689,
+          0.296,
+          -118.5456
+        ],
+        "max": [
+          -66.2336,
+          0.31,
+          -118.0885
+        ]
+      },
+      "center": [
+        -66.3512,
+        0.303,
+        -118.3171
+      ],
+      "size": [
+        0.2353,
+        0.014,
+        0.4571
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-2523f3f33357",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#3",
+      "bounds": {
+        "min": [
+          -66.751,
+          0.296,
+          -118.1183
+        ],
+        "max": [
+          -66.4174,
+          0.31,
+          -117.7089
+        ]
+      },
+      "center": [
+        -66.5842,
+        0.303,
+        -117.9136
+      ],
+      "size": [
+        0.3337,
+        0.014,
+        0.4093
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-263c05984540",
@@ -98803,6 +100422,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Video dark fence steel"
+    },
+    {
+      "id": "A014-P-2723f7193f2f",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#1",
+      "bounds": {
+        "min": [
+          -66.2911,
+          0.296,
+          -119.0039
+        ],
+        "max": [
+          -66.1703,
+          0.31,
+          -118.5302
+        ]
+      },
+      "center": [
+        -66.2307,
+        0.303,
+        -118.7671
+      ],
+      "size": [
+        0.1208,
+        0.014,
+        0.4737
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-273c072bcb2c",
@@ -98913,6 +100568,42 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-2823f8acc51b",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#6",
+      "bounds": {
+        "min": [
+          -68.0039,
+          0.296,
+          -117.2911
+        ],
+        "max": [
+          -67.5302,
+          0.31,
+          -117.1703
+        ]
+      },
+      "center": [
+        -67.7671,
+        0.303,
+        -117.2307
+      ],
+      "size": [
+        0.4737,
+        0.014,
+        0.1208
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-283c08be5118",
       "name": "Fine_vertical_court_mesh",
       "kind": "part",
@@ -99021,6 +100712,42 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-2923fa3f4b07",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#7",
+      "bounds": {
+        "min": [
+          -68.4698,
+          0.296,
+          -117.2911
+        ],
+        "max": [
+          -67.9961,
+          0.31,
+          -117.1703
+        ]
+      },
+      "center": [
+        -68.2329,
+        0.303,
+        -117.2307
+      ],
+      "size": [
+        0.4737,
+        0.014,
+        0.1208
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-293c0a51d703",
       "name": "Fine_vertical_court_mesh",
       "kind": "part",
@@ -99093,6 +100820,42 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-2a23fbd2d0f2",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#4",
+      "bounds": {
+        "min": [
+          -67.1183,
+          0.296,
+          -117.751
+        ],
+        "max": [
+          -66.7089,
+          0.31,
+          -117.4174
+        ]
+      },
+      "center": [
+        -66.9136,
+        0.303,
+        -117.5842
+      ],
+      "size": [
+        0.4093,
+        0.014,
+        0.3337
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-2a3c0be42d91",
       "name": "Fine_vertical_court_mesh",
       "kind": "part",
@@ -99163,6 +100926,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Video dark fence steel"
+    },
+    {
+      "id": "A014-P-2b23fd6556de",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#5",
+      "bounds": {
+        "min": [
+          -67.5456,
+          0.296,
+          -117.4689
+        ],
+        "max": [
+          -67.0885,
+          0.31,
+          -117.2336
+        ]
+      },
+      "center": [
+        -67.3171,
+        0.303,
+        -117.3512
+      ],
+      "size": [
+        0.4571,
+        0.014,
+        0.2353
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-2b3c0d77b37d",
@@ -99525,6 +101324,42 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-2e24021e89e5",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#8",
+      "bounds": {
+        "min": [
+          -68.9115,
+          0.296,
+          -117.4689
+        ],
+        "max": [
+          -68.4544,
+          0.31,
+          -117.2336
+        ]
+      },
+      "center": [
+        -68.6829,
+        0.303,
+        -117.3512
+      ],
+      "size": [
+        0.4571,
+        0.014,
+        0.2353
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-2e4b1cba6cc9",
       "name": "Fine_vertical_court_mesh",
       "kind": "part",
@@ -99631,6 +101466,42 @@
       "confidence": "fictional-gameplay-addition_not-observed",
       "editMode": "source",
       "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-2f2403b10fd1",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#9",
+      "bounds": {
+        "min": [
+          -69.2911,
+          0.296,
+          -117.751
+        ],
+        "max": [
+          -68.8817,
+          0.31,
+          -117.4174
+        ]
+      },
+      "center": [
+        -69.0864,
+        0.303,
+        -117.5842
+      ],
+      "size": [
+        0.4093,
+        0.014,
+        0.3337
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-2f4b1e4df2b5",
@@ -99885,6 +101756,258 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-349673f0342b",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#20",
+      "bounds": {
+        "min": [
+          -67.5456,
+          0.296,
+          -120.7664
+        ],
+        "max": [
+          -67.0885,
+          0.31,
+          -120.5311
+        ]
+      },
+      "center": [
+        -67.3171,
+        0.303,
+        -120.6488
+      ],
+      "size": [
+        0.4571,
+        0.014,
+        0.2353
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-34e21a5a9958",
+      "name": "Hall_west_plinth",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_west_plinth#1",
+      "bounds": {
+        "min": [
+          -87.59,
+          0,
+          -130
+        ],
+        "max": [
+          -87.41,
+          2.6,
+          -104
+        ]
+      },
+      "center": [
+        -87.5,
+        1.3,
+        -117
+      ],
+      "size": [
+        0.18,
+        2.6,
+        26
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_west_plinth",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Ivory signage"
+    },
+    {
+      "id": "A014-P-35967583ba17",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#21",
+      "bounds": {
+        "min": [
+          -67.1183,
+          0.296,
+          -120.5826
+        ],
+        "max": [
+          -66.7089,
+          0.31,
+          -120.249
+        ]
+      },
+      "center": [
+        -66.9136,
+        0.303,
+        -120.4158
+      ],
+      "size": [
+        0.4093,
+        0.014,
+        0.3337
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-369677164003",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#22",
+      "bounds": {
+        "min": [
+          -66.751,
+          0.296,
+          -120.2911
+        ],
+        "max": [
+          -66.4174,
+          0.31,
+          -119.8817
+        ]
+      },
+      "center": [
+        -66.5842,
+        0.303,
+        -120.0864
+      ],
+      "size": [
+        0.3337,
+        0.014,
+        0.4093
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-379678a9c5ef",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#23",
+      "bounds": {
+        "min": [
+          -66.4689,
+          0.296,
+          -119.9115
+        ],
+        "max": [
+          -66.2336,
+          0.31,
+          -119.4544
+        ]
+      },
+      "center": [
+        -66.3512,
+        0.303,
+        -119.6829
+      ],
+      "size": [
+        0.2353,
+        0.014,
+        0.4571
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-384d1ba0a1d7",
+      "name": "Hall_end_plinth",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_plinth#3",
+      "bounds": {
+        "min": [
+          -87.5,
+          0,
+          -104.09
+        ],
+        "max": [
+          -70.5,
+          2.6,
+          -103.91
+        ]
+      },
+      "center": [
+        -79,
+        1.3,
+        -104
+      ],
+      "size": [
+        17,
+        2.6,
+        0.18
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_plinth",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Ivory signage"
+    },
+    {
+      "id": "A014-P-38967a3c4bdb",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#24",
+      "bounds": {
+        "min": [
+          -66.2911,
+          0.296,
+          -119.4698
+        ],
+        "max": [
+          -66.1703,
+          0.31,
+          -118.9961
+        ]
+      },
+      "center": [
+        -66.2307,
+        0.303,
+        -119.2329
+      ],
+      "size": [
+        0.1208,
+        0.014,
+        0.4737
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-38ead9f32813",
       "name": "Closed_sports_glass_door",
       "kind": "part",
@@ -99893,24 +102016,24 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Closed_sports_glass_door#1",
       "bounds": {
         "min": [
-          -70.5,
-          0,
+          -70.45,
+          0.005,
           -130.15
         ],
         "max": [
-          -65.5,
-          3,
+          -65.55,
+          2.955,
           -130.15
         ]
       },
       "center": [
         -68,
-        1.5,
+        1.48,
         -130.15
       ],
       "size": [
-        5,
-        3,
+        4.9,
+        2.95,
         0
       ],
       "sourceFile": "src/model/buildSite.ts",
@@ -99957,6 +102080,78 @@
       "material": "Opaque structural core"
     },
     {
+      "id": "A014-P-394d1d3327c3",
+      "name": "Hall_end_plinth",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_plinth#2",
+      "bounds": {
+        "min": [
+          -65.5,
+          0,
+          -130.09
+        ],
+        "max": [
+          -48.5,
+          2.6,
+          -129.91
+        ]
+      },
+      "center": [
+        -57,
+        1.3,
+        -130
+      ],
+      "size": [
+        17,
+        2.6,
+        0.18
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_plinth",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Ivory signage"
+    },
+    {
+      "id": "A014-P-39a586bd5534",
+      "name": "Hall_end_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_mullion#10",
+      "bounds": {
+        "min": [
+          -51.46,
+          2.6,
+          -104.04
+        ],
+        "max": [
+          -51.34,
+          4.8,
+          -103.84
+        ]
+      },
+      "center": [
+        -51.4,
+        3.7,
+        -103.94
+      ],
+      "size": [
+        0.12,
+        2.2,
+        0.2
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-39eadb86adff",
       "name": "Closed_sports_glass_door",
       "kind": "part",
@@ -99965,24 +102160,24 @@
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Closed_sports_glass_door#2",
       "bounds": {
         "min": [
-          -70.5,
-          0,
+          -70.45,
+          0.005,
           -103.85
         ],
         "max": [
-          -65.5,
-          3,
+          -65.55,
+          2.955,
           -103.85
         ]
       },
       "center": [
         -68,
-        1.5,
+        1.48,
         -103.85
       ],
       "size": [
-        5,
-        3,
+        4.9,
+        2.95,
         0
       ],
       "sourceFile": "src/model/buildSite.ts",
@@ -99991,6 +102186,78 @@
       "confidence": "confirmed-enclosure-type_provisional-exterior",
       "editMode": "source",
       "material": "Glazing_clear"
+    },
+    {
+      "id": "A014-P-3a4d1ec6adaf",
+      "name": "Hall_end_plinth",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_plinth#1",
+      "bounds": {
+        "min": [
+          -87.5,
+          0,
+          -130.09
+        ],
+        "max": [
+          -70.5,
+          2.6,
+          -129.91
+        ]
+      },
+      "center": [
+        -79,
+        1.3,
+        -130
+      ],
+      "size": [
+        17,
+        2.6,
+        0.18
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_plinth",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Ivory signage"
+    },
+    {
+      "id": "A014-P-3f4d26a51beb",
+      "name": "Hall_end_plinth",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_plinth#4",
+      "bounds": {
+        "min": [
+          -65.5,
+          0,
+          -104.09
+        ],
+        "max": [
+          -48.5,
+          2.6,
+          -103.91
+        ]
+      },
+      "center": [
+        -57,
+        1.3,
+        -104
+      ],
+      "size": [
+        17,
+        2.6,
+        0.18
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_plinth",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Ivory signage"
     },
     {
       "id": "A014-P-454ab3810648",
@@ -100101,6 +102368,42 @@
       "material": "Ivory signage"
     },
     {
+      "id": "A014-P-47df6f5cbc11",
+      "name": "Hall_end_transom",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_transom#2",
+      "bounds": {
+        "min": [
+          -70.4,
+          3,
+          -103.98
+        ],
+        "max": [
+          -65.6,
+          4.8,
+          -103.98
+        ]
+      },
+      "center": [
+        -68,
+        3.9,
+        -103.98
+      ],
+      "size": [
+        4.8,
+        1.8,
+        0
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_transom",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Glazing_reflective"
+    },
+    {
       "id": "A014-P-484ab83a68ad",
       "name": "Court_baseline",
       "kind": "part",
@@ -100135,6 +102438,366 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Ivory signage"
+    },
+    {
+      "id": "A014-P-4adf74154dd5",
+      "name": "Hall_end_transom",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_end_transom#1",
+      "bounds": {
+        "min": [
+          -70.4,
+          3,
+          -130.02
+        ],
+        "max": [
+          -65.6,
+          4.8,
+          -130.02
+        ]
+      },
+      "center": [
+        -68,
+        3.9,
+        -130.02
+      ],
+      "size": [
+        4.8,
+        1.8,
+        0
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_end_transom",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Glazing_reflective"
+    },
+    {
+      "id": "A014-P-503c67a09aba",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#31",
+      "bounds": {
+        "min": [
+          -60.2698,
+          0.296,
+          -117.2911
+        ],
+        "max": [
+          -59.7961,
+          0.31,
+          -117.1703
+        ]
+      },
+      "center": [
+        -60.0329,
+        0.303,
+        -117.2307
+      ],
+      "size": [
+        0.4737,
+        0.014,
+        0.1208
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-513c693320a6",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#30",
+      "bounds": {
+        "min": [
+          -59.8039,
+          0.296,
+          -117.2911
+        ],
+        "max": [
+          -59.3302,
+          0.31,
+          -117.1703
+        ]
+      },
+      "center": [
+        -59.5671,
+        0.303,
+        -117.2307
+      ],
+      "size": [
+        0.4737,
+        0.014,
+        0.1208
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-523c6ac6a692",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#33",
+      "bounds": {
+        "min": [
+          -61.0911,
+          0.296,
+          -117.751
+        ],
+        "max": [
+          -60.6817,
+          0.31,
+          -117.4174
+        ]
+      },
+      "center": [
+        -60.8864,
+        0.303,
+        -117.5842
+      ],
+      "size": [
+        0.4093,
+        0.014,
+        0.3337
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-533c6c592c7e",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#32",
+      "bounds": {
+        "min": [
+          -60.7115,
+          0.296,
+          -117.4689
+        ],
+        "max": [
+          -60.2544,
+          0.31,
+          -117.2336
+        ]
+      },
+      "center": [
+        -60.4829,
+        0.303,
+        -117.3512
+      ],
+      "size": [
+        0.4571,
+        0.014,
+        0.2353
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-533eaaf00591",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#44",
+      "bounds": {
+        "min": [
+          -59.3456,
+          0.296,
+          -120.7664
+        ],
+        "max": [
+          -58.8885,
+          0.31,
+          -120.5311
+        ]
+      },
+      "center": [
+        -59.1171,
+        0.303,
+        -120.6488
+      ],
+      "size": [
+        0.4571,
+        0.014,
+        0.2353
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-543c6dec830b",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#35",
+      "bounds": {
+        "min": [
+          -61.5664,
+          0.296,
+          -118.5456
+        ],
+        "max": [
+          -61.3311,
+          0.31,
+          -118.0885
+        ]
+      },
+      "center": [
+        -61.4488,
+        0.303,
+        -118.3171
+      ],
+      "size": [
+        0.2353,
+        0.014,
+        0.4571
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-543eac838b7d",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#45",
+      "bounds": {
+        "min": [
+          -58.9183,
+          0.296,
+          -120.5826
+        ],
+        "max": [
+          -58.5089,
+          0.31,
+          -120.249
+        ]
+      },
+      "center": [
+        -58.7136,
+        0.303,
+        -120.4158
+      ],
+      "size": [
+        0.4093,
+        0.014,
+        0.3337
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-553c6f7f08f7",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#34",
+      "bounds": {
+        "min": [
+          -61.3826,
+          0.296,
+          -118.1183
+        ],
+        "max": [
+          -61.049,
+          0.31,
+          -117.7089
+        ]
+      },
+      "center": [
+        -61.2158,
+        0.303,
+        -117.9136
+      ],
+      "size": [
+        0.3337,
+        0.014,
+        0.4093
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-553eae161169",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#46",
+      "bounds": {
+        "min": [
+          -58.551,
+          0.296,
+          -120.2911
+        ],
+        "max": [
+          -58.2174,
+          0.31,
+          -119.8817
+        ]
+      },
+      "center": [
+        -58.3842,
+        0.303,
+        -120.0864
+      ],
+      "size": [
+        0.3337,
+        0.014,
+        0.4093
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-5566b0ab65b2",
@@ -100173,6 +102836,78 @@
       "material": "Jogging surface"
     },
     {
+      "id": "A014-P-563c71128ee3",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#37",
+      "bounds": {
+        "min": [
+          -61.6297,
+          0.296,
+          -119.4698
+        ],
+        "max": [
+          -61.5089,
+          0.31,
+          -118.9961
+        ]
+      },
+      "center": [
+        -61.5693,
+        0.303,
+        -119.2329
+      ],
+      "size": [
+        0.1208,
+        0.014,
+        0.4737
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-563eafa99754",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#47",
+      "bounds": {
+        "min": [
+          -58.2689,
+          0.296,
+          -119.9115
+        ],
+        "max": [
+          -58.0336,
+          0.31,
+          -119.4544
+        ]
+      },
+      "center": [
+        -58.1512,
+        0.303,
+        -119.6829
+      ],
+      "size": [
+        0.2353,
+        0.014,
+        0.4571
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-56942da29929",
       "name": "Door_glass_leaf",
       "kind": "part",
@@ -100209,6 +102944,366 @@
       "material": "Glazing_clear"
     },
     {
+      "id": "A014-P-573ae6907400",
+      "name": "Key_side",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Key_side#1",
+      "bounds": {
+        "min": [
+          -82,
+          0.296,
+          -121.485
+        ],
+        "max": [
+          -76.2,
+          0.31,
+          -121.415
+        ]
+      },
+      "center": [
+        -79.1,
+        0.303,
+        -121.45
+      ],
+      "size": [
+        5.8,
+        0.014,
+        0.07
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Key_side",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-573c72a514cf",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#36",
+      "bounds": {
+        "min": [
+          -61.6297,
+          0.296,
+          -119.0039
+        ],
+        "max": [
+          -61.5089,
+          0.31,
+          -118.5302
+        ]
+      },
+      "center": [
+        -61.5693,
+        0.303,
+        -118.7671
+      ],
+      "size": [
+        0.1208,
+        0.014,
+        0.4737
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-573eb13c1d40",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#40",
+      "bounds": {
+        "min": [
+          -61.0911,
+          0.296,
+          -120.5826
+        ],
+        "max": [
+          -60.6817,
+          0.31,
+          -120.249
+        ]
+      },
+      "center": [
+        -60.8864,
+        0.303,
+        -120.4158
+      ],
+      "size": [
+        0.4093,
+        0.014,
+        0.3337
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-583c74386b5c",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#39",
+      "bounds": {
+        "min": [
+          -61.3826,
+          0.296,
+          -120.2911
+        ],
+        "max": [
+          -61.049,
+          0.31,
+          -119.8817
+        ]
+      },
+      "center": [
+        -61.2158,
+        0.303,
+        -120.0864
+      ],
+      "size": [
+        0.3337,
+        0.014,
+        0.4093
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-583eb2cfa32c",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#41",
+      "bounds": {
+        "min": [
+          -60.7115,
+          0.296,
+          -120.7664
+        ],
+        "max": [
+          -60.2544,
+          0.31,
+          -120.5311
+        ]
+      },
+      "center": [
+        -60.4829,
+        0.303,
+        -120.6488
+      ],
+      "size": [
+        0.4571,
+        0.014,
+        0.2353
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-593ae9b67fd7",
+      "name": "Key_side",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Key_side#3",
+      "bounds": {
+        "min": [
+          -59.8,
+          0.296,
+          -121.485
+        ],
+        "max": [
+          -54,
+          0.31,
+          -121.415
+        ]
+      },
+      "center": [
+        -56.9,
+        0.303,
+        -121.45
+      ],
+      "size": [
+        5.8,
+        0.014,
+        0.07
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Key_side",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-593c75cbf148",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#38",
+      "bounds": {
+        "min": [
+          -61.5664,
+          0.296,
+          -119.9115
+        ],
+        "max": [
+          -61.3311,
+          0.31,
+          -119.4544
+        ]
+      },
+      "center": [
+        -61.4488,
+        0.303,
+        -119.6829
+      ],
+      "size": [
+        0.2353,
+        0.014,
+        0.4571
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-593eb4622918",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#42",
+      "bounds": {
+        "min": [
+          -60.2698,
+          0.296,
+          -120.8297
+        ],
+        "max": [
+          -59.7961,
+          0.31,
+          -120.7089
+        ]
+      },
+      "center": [
+        -60.0329,
+        0.303,
+        -120.7693
+      ],
+      "size": [
+        0.4737,
+        0.014,
+        0.1208
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-5a3aeb4905c3",
+      "name": "Key_side",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Key_side#2",
+      "bounds": {
+        "min": [
+          -82,
+          0.296,
+          -116.585
+        ],
+        "max": [
+          -76.2,
+          0.31,
+          -116.515
+        ]
+      },
+      "center": [
+        -79.1,
+        0.303,
+        -116.55
+      ],
+      "size": [
+        5.8,
+        0.014,
+        0.07
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Key_side",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-5a3eb5f5af04",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#43",
+      "bounds": {
+        "min": [
+          -59.8039,
+          0.296,
+          -120.8297
+        ],
+        "max": [
+          -59.3302,
+          0.31,
+          -120.7089
+        ]
+      },
+      "center": [
+        -59.5671,
+        0.303,
+        -120.7693
+      ],
+      "size": [
+        0.4737,
+        0.014,
+        0.1208
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-5bf504fb5771",
       "name": "Goal_crossbar",
       "kind": "part",
@@ -100243,6 +103338,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Ivory signage"
+    },
+    {
+      "id": "A014-P-5c3aee6fe23c",
+      "name": "Key_side",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Key_side#4",
+      "bounds": {
+        "min": [
+          -59.8,
+          0.296,
+          -116.585
+        ],
+        "max": [
+          -54,
+          0.31,
+          -116.515
+        ]
+      },
+      "center": [
+        -56.9,
+        0.303,
+        -116.55
+      ],
+      "size": [
+        5.8,
+        0.014,
+        0.07
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Key_side",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-5cf5068edd5d",
@@ -100349,6 +103480,114 @@
       "sourceAnchor": "Door_leaf_stile",
       "reference": "2026-11-20 client request: east glass door + keypad lock",
       "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-5f3ebdd44c9e",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#48",
+      "bounds": {
+        "min": [
+          -58.0911,
+          0.296,
+          -119.4698
+        ],
+        "max": [
+          -57.9703,
+          0.31,
+          -118.9961
+        ]
+      },
+      "center": [
+        -58.0307,
+        0.303,
+        -119.2329
+      ],
+      "size": [
+        0.1208,
+        0.014,
+        0.4737
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-60807e3b0d0b",
+      "name": "Hoop_rim",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Hoop_rim#2",
+      "bounds": {
+        "min": [
+          -54.405,
+          3.0262,
+          -119.2486
+        ],
+        "max": [
+          -53.895,
+          3.0738,
+          -118.7514
+        ]
+      },
+      "center": [
+        -54.15,
+        3.05,
+        -119
+      ],
+      "size": [
+        0.51,
+        0.0476,
+        0.4972
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hoop_rim",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-61807fce92f7",
+      "name": "Hoop_rim",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Hoop_rim#1",
+      "bounds": {
+        "min": [
+          -82.105,
+          3.0262,
+          -119.2486
+        ],
+        "max": [
+          -81.595,
+          3.0738,
+          -118.7514
+        ]
+      },
+      "center": [
+        -81.85,
+        3.05,
+        -119
+      ],
+      "size": [
+        0.51,
+        0.0476,
+        0.4972
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hoop_rim",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
       "editMode": "source",
       "material": "Mullion aluminium"
     },
@@ -100749,6 +103988,42 @@
       "material": "Fence steel"
     },
     {
+      "id": "A014-P-6eda36807de9",
+      "name": "Hoop_pole",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Hoop_pole#1",
+      "bounds": {
+        "min": [
+          -82.62,
+          0,
+          -119.07
+        ],
+        "max": [
+          -82.48,
+          3.7,
+          -118.93
+        ]
+      },
+      "center": [
+        -82.55,
+        1.85,
+        -119
+      ],
+      "size": [
+        0.14,
+        3.7,
+        0.14
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hoop_pole",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-6ef89f343aa7",
       "name": "Hall_end",
       "kind": "part",
@@ -100758,7 +104033,7 @@
       "bounds": {
         "min": [
           -87.5,
-          0,
+          4.8,
           -130.09
         ],
         "max": [
@@ -100769,12 +104044,12 @@
       },
       "center": [
         -68,
-        3.5,
+        5.9,
         -130
       ],
       "size": [
         39,
-        7,
+        2.2,
         0.18
       ],
       "sourceFile": "src/model/buildSite.ts",
@@ -100965,6 +104240,42 @@
       "material": "Fence steel"
     },
     {
+      "id": "A014-P-71da3b390fad",
+      "name": "Hoop_pole",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Hoop_pole#2",
+      "bounds": {
+        "min": [
+          -53.52,
+          0,
+          -119.07
+        ],
+        "max": [
+          -53.38,
+          3.7,
+          -118.93
+        ]
+      },
+      "center": [
+        -53.45,
+        1.85,
+        -119
+      ],
+      "size": [
+        0.14,
+        3.7,
+        0.14
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hoop_pole",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-71f8a3edcc6b",
       "name": "Hall_end",
       "kind": "part",
@@ -100974,7 +104285,7 @@
       "bounds": {
         "min": [
           -87.5,
-          0,
+          4.8,
           -104.09
         ],
         "max": [
@@ -100985,12 +104296,12 @@
       },
       "center": [
         -68,
-        3.5,
+        5.9,
         -104
       ],
       "size": [
         39,
-        7,
+        2.2,
         0.18
       ],
       "sourceFile": "src/model/buildSite.ts",
@@ -101035,6 +104346,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Fence steel"
+    },
+    {
+      "id": "A014-P-73790777ab96",
+      "name": "Hoop_backboard",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Hoop_backboard#1",
+      "bounds": {
+        "min": [
+          -82.08,
+          2.825,
+          -119.9
+        ],
+        "max": [
+          -82.02,
+          3.875,
+          -118.1
+        ]
+      },
+      "center": [
+        -82.05,
+        3.35,
+        -119
+      ],
+      "size": [
+        0.06,
+        1.05,
+        1.8
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hoop_backboard",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Silver facade fins"
     },
     {
       "id": "A014-P-73d8212892ca",
@@ -101107,6 +104454,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Fence steel"
+    },
+    {
+      "id": "A014-P-7479090a3182",
+      "name": "Hoop_backboard",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Hoop_backboard#2",
+      "bounds": {
+        "min": [
+          -53.98,
+          2.825,
+          -119.9
+        ],
+        "max": [
+          -53.92,
+          3.875,
+          -118.1
+        ]
+      },
+      "center": [
+        -53.95,
+        3.35,
+        -119
+      ],
+      "size": [
+        0.06,
+        1.05,
+        1.8
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hoop_backboard",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Silver facade fins"
     },
     {
       "id": "A014-P-747c73ea2165",
@@ -101757,6 +105140,42 @@
       "material": "Fence steel"
     },
     {
+      "id": "A014-P-7fc84fb0478f",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#13",
+      "bounds": {
+        "min": [
+          -75.3142,
+          0.296,
+          -119.68
+        ],
+        "max": [
+          -75.22,
+          0.31,
+          -118.9985
+        ]
+      },
+      "center": [
+        -75.2671,
+        0.303,
+        -119.3393
+      ],
+      "size": [
+        0.0941,
+        0.014,
+        0.6815
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-7fdcd277b756",
       "name": "Fence_post",
       "kind": "part",
@@ -101791,6 +105210,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Fence steel"
+    },
+    {
+      "id": "A014-P-80c85143cd7b",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#12",
+      "bounds": {
+        "min": [
+          -75.4161,
+          0.296,
+          -120.3547
+        ],
+        "max": [
+          -75.2545,
+          0.31,
+          -119.674
+        ]
+      },
+      "center": [
+        -75.3353,
+        0.303,
+        -120.0143
+      ],
+      "size": [
+        0.1615,
+        0.014,
+        0.6807
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-80dcd40a3d42",
@@ -101829,6 +105284,42 @@
       "material": "Fence steel"
     },
     {
+      "id": "A014-P-81c852d65367",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#11",
+      "bounds": {
+        "min": [
+          -75.5847,
+          0.296,
+          -121.0156
+        ],
+        "max": [
+          -75.3574,
+          0.31,
+          -120.3427
+        ]
+      },
+      "center": [
+        -75.471,
+        0.303,
+        -120.6792
+      ],
+      "size": [
+        0.2273,
+        0.014,
+        0.6729
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-81dcd59dc32d",
       "name": "Fence_post",
       "kind": "part",
@@ -101863,6 +105354,438 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Fence steel"
+    },
+    {
+      "id": "A014-P-82c85469d952",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#10",
+      "bounds": {
+        "min": [
+          -75.8183,
+          0.296,
+          -121.6561
+        ],
+        "max": [
+          -75.5275,
+          0.31,
+          -120.9978
+        ]
+      },
+      "center": [
+        -75.6729,
+        0.303,
+        -121.327
+      ],
+      "size": [
+        0.2908,
+        0.014,
+        0.6583
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-82ca9300e1c4",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#26",
+      "bounds": {
+        "min": [
+          -80.2622,
+          0.296,
+          -112.7172
+        ],
+        "max": [
+          -79.5972,
+          0.31,
+          -112.4515
+        ]
+      },
+      "center": [
+        -79.9297,
+        0.303,
+        -112.5843
+      ],
+      "size": [
+        0.665,
+        0.014,
+        0.2657
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-83c855fc5f3e",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#17",
+      "bounds": {
+        "min": [
+          -75.8183,
+          0.296,
+          -117.0022
+        ],
+        "max": [
+          -75.5275,
+          0.31,
+          -116.3439
+        ]
+      },
+      "center": [
+        -75.6729,
+        0.303,
+        -116.673
+      ],
+      "size": [
+        0.2908,
+        0.014,
+        0.6583
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-83ca949367b0",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#27",
+      "bounds": {
+        "min": [
+          -56.4028,
+          0.296,
+          -112.7172
+        ],
+        "max": [
+          -55.7378,
+          0.31,
+          -112.4515
+        ]
+      },
+      "center": [
+        -56.0703,
+        0.303,
+        -112.5843
+      ],
+      "size": [
+        0.665,
+        0.014,
+        0.2657
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-84c8578fe52a",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#16",
+      "bounds": {
+        "min": [
+          -75.5847,
+          0.296,
+          -117.6573
+        ],
+        "max": [
+          -75.3574,
+          0.31,
+          -116.9844
+        ]
+      },
+      "center": [
+        -75.471,
+        0.303,
+        -117.3208
+      ],
+      "size": [
+        0.2273,
+        0.014,
+        0.6729
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-84ca9626ed9c",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#24",
+      "bounds": {
+        "min": [
+          -78.9988,
+          0.296,
+          -113.3211
+        ],
+        "max": [
+          -78.3776,
+          0.31,
+          -112.9351
+        ]
+      },
+      "center": [
+        -78.6882,
+        0.303,
+        -113.1281
+      ],
+      "size": [
+        0.6212,
+        0.014,
+        0.386
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-85c859226b16",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#15",
+      "bounds": {
+        "min": [
+          -75.4161,
+          0.296,
+          -118.326
+        ],
+        "max": [
+          -75.2545,
+          0.31,
+          -117.6453
+        ]
+      },
+      "center": [
+        -75.3353,
+        0.303,
+        -117.9857
+      ],
+      "size": [
+        0.1615,
+        0.014,
+        0.6807
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-85ca97b97387",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#25",
+      "bounds": {
+        "min": [
+          -79.6185,
+          0.296,
+          -112.9887
+        ],
+        "max": [
+          -78.9721,
+          0.31,
+          -112.6612
+        ]
+      },
+      "center": [
+        -79.2953,
+        0.303,
+        -112.8249
+      ],
+      "size": [
+        0.6464,
+        0.014,
+        0.3275
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-86c85ab5f101",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#14",
+      "bounds": {
+        "min": [
+          -75.3142,
+          0.296,
+          -119.0015
+        ],
+        "max": [
+          -75.22,
+          0.31,
+          -118.32
+        ]
+      },
+      "center": [
+        -75.2671,
+        0.303,
+        -118.6607
+      ],
+      "size": [
+        0.0941,
+        0.014,
+        0.6815
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-86ca994cca15",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#22",
+      "bounds": {
+        "min": [
+          -77.8568,
+          0.296,
+          -114.1545
+        ],
+        "max": [
+          -77.3044,
+          0.31,
+          -113.6639
+        ]
+      },
+      "center": [
+        -77.5806,
+        0.303,
+        -113.9092
+      ],
+      "size": [
+        0.5524,
+        0.014,
+        0.4907
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-87ca9adf5001",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#23",
+      "bounds": {
+        "min": [
+          -78.4096,
+          0.296,
+          -113.711
+        ],
+        "max": [
+          -77.8199,
+          0.31,
+          -113.2705
+        ]
+      },
+      "center": [
+        -78.1148,
+        0.303,
+        -113.4907
+      ],
+      "size": [
+        0.5898,
+        0.014,
+        0.4406
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-88ca9c72d5ec",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#20",
+      "bounds": {
+        "min": [
+          -76.8822,
+          0.296,
+          -115.1838
+        ],
+        "max": [
+          -76.4211,
+          0.31,
+          -114.6083
+        ]
+      },
+      "center": [
+        -76.6517,
+        0.303,
+        -114.8961
+      ],
+      "size": [
+        0.4612,
+        0.014,
+        0.5755
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-88cc9a5f8ba6",
@@ -101937,6 +105860,222 @@
       "material": "Opaque structural core"
     },
     {
+      "id": "A014-P-89c85f6e2408",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#19",
+      "bounds": {
+        "min": [
+          -76.4704,
+          0.296,
+          -115.7592
+        ],
+        "max": [
+          -76.062,
+          0.31,
+          -115.1498
+        ]
+      },
+      "center": [
+        -76.2662,
+        0.303,
+        -115.4545
+      ],
+      "size": [
+        0.4083,
+        0.014,
+        0.6094
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-89ca9e055bd8",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#21",
+      "bounds": {
+        "min": [
+          -77.346,
+          0.296,
+          -114.6471
+        ],
+        "max": [
+          -76.8366,
+          0.31,
+          -114.1113
+        ]
+      },
+      "center": [
+        -77.0913,
+        0.303,
+        -114.3792
+      ],
+      "size": [
+        0.5094,
+        0.014,
+        0.5358
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-8ac86101a9f4",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#18",
+      "bounds": {
+        "min": [
+          -76.1145,
+          0.296,
+          -116.3674
+        ],
+        "max": [
+          -75.7632,
+          0.31,
+          -115.7303
+        ]
+      },
+      "center": [
+        -75.9388,
+        0.303,
+        -116.0488
+      ],
+      "size": [
+        0.3514,
+        0.014,
+        0.6371
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-90caa90a054b",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#28",
+      "bounds": {
+        "min": [
+          -57.0279,
+          0.296,
+          -112.9887
+        ],
+        "max": [
+          -56.3815,
+          0.31,
+          -112.6612
+        ]
+      },
+      "center": [
+        -56.7047,
+        0.303,
+        -112.8249
+      ],
+      "size": [
+        0.6464,
+        0.014,
+        0.3275
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-91caaa9d8b36",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#29",
+      "bounds": {
+        "min": [
+          -57.6224,
+          0.296,
+          -113.3211
+        ],
+        "max": [
+          -57.0012,
+          0.31,
+          -112.9351
+        ]
+      },
+      "center": [
+        -57.3118,
+        0.303,
+        -113.1281
+      ],
+      "size": [
+        0.6212,
+        0.014,
+        0.386
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-92b2ffa3b297",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#1",
+      "bounds": {
+        "min": [
+          -80.2622,
+          0.296,
+          -125.5485
+        ],
+        "max": [
+          -79.5972,
+          0.31,
+          -125.2828
+        ]
+      },
+      "center": [
+        -79.9297,
+        0.303,
+        -125.4157
+      ],
+      "size": [
+        0.665,
+        0.014,
+        0.2657
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-9340d78384ba",
       "name": "Hall_lintel",
       "kind": "part",
@@ -101971,6 +106110,150 @@
       "confidence": "confirmed-enclosure-type_provisional-exterior",
       "editMode": "source",
       "material": "Ivory signage"
+    },
+    {
+      "id": "A014-P-93b301363883",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#2",
+      "bounds": {
+        "min": [
+          -79.6185,
+          0.296,
+          -125.3388
+        ],
+        "max": [
+          -78.9721,
+          0.31,
+          -125.0113
+        ]
+      },
+      "center": [
+        -79.2953,
+        0.303,
+        -125.1751
+      ],
+      "size": [
+        0.6464,
+        0.014,
+        0.3275
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-94b302c9be6e",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#3",
+      "bounds": {
+        "min": [
+          -78.9988,
+          0.296,
+          -125.0649
+        ],
+        "max": [
+          -78.3776,
+          0.31,
+          -124.6789
+        ]
+      },
+      "center": [
+        -78.6882,
+        0.303,
+        -124.8719
+      ],
+      "size": [
+        0.6212,
+        0.014,
+        0.386
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-95b3045c14fc",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#4",
+      "bounds": {
+        "min": [
+          -78.4096,
+          0.296,
+          -124.7295
+        ],
+        "max": [
+          -77.8199,
+          0.31,
+          -124.289
+        ]
+      },
+      "center": [
+        -78.1148,
+        0.303,
+        -124.5093
+      ],
+      "size": [
+        0.5898,
+        0.014,
+        0.4406
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-96b305ef9ae8",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#5",
+      "bounds": {
+        "min": [
+          -77.8568,
+          0.296,
+          -124.3361
+        ],
+        "max": [
+          -77.3044,
+          0.31,
+          -123.8455
+        ]
+      },
+      "center": [
+        -77.5806,
+        0.303,
+        -124.0908
+      ],
+      "size": [
+        0.5524,
+        0.014,
+        0.4907
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-974373403015",
@@ -102009,6 +106292,78 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-974c05d07d21",
+      "name": "Halfway_line",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Halfway_line#1",
+      "bounds": {
+        "min": [
+          -68.035,
+          0.296,
+          -126.5
+        ],
+        "max": [
+          -67.965,
+          0.31,
+          -111.5
+        ]
+      },
+      "center": [
+        -68,
+        0.303,
+        -119
+      ],
+      "size": [
+        0.07,
+        0.014,
+        15
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Halfway_line",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-97b3078220d3",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#6",
+      "bounds": {
+        "min": [
+          -77.346,
+          0.296,
+          -123.8887
+        ],
+        "max": [
+          -76.8366,
+          0.31,
+          -123.3529
+        ]
+      },
+      "center": [
+        -77.0913,
+        0.303,
+        -123.6208
+      ],
+      "size": [
+        0.5094,
+        0.014,
+        0.5358
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-984374d3b601",
       "name": "Fine_vertical_court_mesh",
       "kind": "part",
@@ -102043,6 +106398,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Video dark fence steel"
+    },
+    {
+      "id": "A014-P-98b30915a6bf",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#7",
+      "bounds": {
+        "min": [
+          -76.8822,
+          0.296,
+          -123.3917
+        ],
+        "max": [
+          -76.4211,
+          0.31,
+          -122.8162
+        ]
+      },
+      "center": [
+        -76.6517,
+        0.303,
+        -123.1039
+      ],
+      "size": [
+        0.4612,
+        0.014,
+        0.5755
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-994376663bec",
@@ -102081,6 +106472,42 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-99b30aa8fd4d",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#8",
+      "bounds": {
+        "min": [
+          -76.4704,
+          0.296,
+          -122.8502
+        ],
+        "max": [
+          -76.062,
+          0.31,
+          -122.2408
+        ]
+      },
+      "center": [
+        -76.2662,
+        0.303,
+        -122.5455
+      ],
+      "size": [
+        0.4083,
+        0.014,
+        0.6094
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-9a4377f9c1d8",
       "name": "Fine_vertical_court_mesh",
       "kind": "part",
@@ -102115,6 +106542,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Video dark fence steel"
+    },
+    {
+      "id": "A014-P-9ab30c3b8338",
+      "name": "Three_point_arc",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Three_point_arc#9",
+      "bounds": {
+        "min": [
+          -76.1145,
+          0.296,
+          -122.2697
+        ],
+        "max": [
+          -75.7632,
+          0.31,
+          -121.6326
+        ]
+      },
+      "center": [
+        -75.9388,
+        0.303,
+        -121.9512
+      ],
+      "size": [
+        0.3514,
+        0.014,
+        0.6371
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Three_point_arc",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-9b43798c47c4",
@@ -102225,6 +106688,42 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-9d5fcb0b1bb7",
+      "name": "Hall_door_head",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_door_head#2",
+      "bounds": {
+        "min": [
+          -70.5,
+          2.6,
+          -104.09
+        ],
+        "max": [
+          -65.5,
+          3,
+          -103.91
+        ]
+      },
+      "center": [
+        -68,
+        2.8,
+        -104
+      ],
+      "size": [
+        5,
+        0.4,
+        0.18
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_door_head",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Ivory signage"
+    },
+    {
       "id": "A014-P-9e437e45d987",
       "name": "Fine_vertical_court_mesh",
       "kind": "part",
@@ -102259,6 +106758,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Video dark fence steel"
+    },
+    {
+      "id": "A014-P-9e5fcc9ea1a3",
+      "name": "Hall_door_head",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_door_head#1",
+      "bounds": {
+        "min": [
+          -70.5,
+          2.6,
+          -130.09
+        ],
+        "max": [
+          -65.5,
+          3,
+          -129.91
+        ]
+      },
+      "center": [
+        -68,
+        2.8,
+        -130
+      ],
+      "size": [
+        5,
+        0.4,
+        0.18
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_door_head",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Ivory signage"
     },
     {
       "id": "A014-P-9f437fd800b7",
@@ -102549,6 +107084,78 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-aa435c84d335",
+      "name": "Hoop_arm",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Hoop_arm#1",
+      "bounds": {
+        "min": [
+          -82.65,
+          3.305,
+          -119.045
+        ],
+        "max": [
+          -81.75,
+          3.395,
+          -118.955
+        ]
+      },
+      "center": [
+        -82.2,
+        3.35,
+        -119
+      ],
+      "size": [
+        0.9,
+        0.09,
+        0.09
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hoop_arm",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-aa81e343be6b",
+      "name": "Hall_west_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_west_mullion#1",
+      "bounds": {
+        "min": [
+          -87.57,
+          2.6,
+          -129.67
+        ],
+        "max": [
+          -87.43,
+          4.8,
+          -129.53
+        ]
+      },
+      "center": [
+        -87.5,
+        3.7,
+        -129.6
+      ],
+      "size": [
+        0.14,
+        2.2,
+        0.14
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_west_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-aaac8c748125",
       "name": "Goal_post",
       "kind": "part",
@@ -102693,6 +107300,42 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-ab81e4d64457",
+      "name": "Hall_west_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_west_mullion#2",
+      "bounds": {
+        "min": [
+          -87.57,
+          2.6,
+          -127.15
+        ],
+        "max": [
+          -87.43,
+          4.8,
+          -127.01
+        ]
+      },
+      "center": [
+        -87.5,
+        3.7,
+        -127.08
+      ],
+      "size": [
+        0.14,
+        2.2,
+        0.14
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_west_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-abac8e070711",
       "name": "Goal_post",
       "kind": "part",
@@ -102801,6 +107444,42 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-ac81e669ca43",
+      "name": "Hall_west_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_west_mullion#3",
+      "bounds": {
+        "min": [
+          -87.57,
+          2.6,
+          -124.63
+        ],
+        "max": [
+          -87.43,
+          4.8,
+          -124.49
+        ]
+      },
+      "center": [
+        -87.5,
+        3.7,
+        -124.56
+      ],
+      "size": [
+        0.14,
+        2.2,
+        0.14
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_west_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-ace4d71e650b",
       "name": "Court_sideline",
       "kind": "part",
@@ -102907,6 +107586,78 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Video dark fence steel"
+    },
+    {
+      "id": "A014-P-ad43613d64f8",
+      "name": "Hoop_arm",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Hoop_arm#2",
+      "bounds": {
+        "min": [
+          -54.25,
+          3.305,
+          -119.045
+        ],
+        "max": [
+          -53.35,
+          3.395,
+          -118.955
+        ]
+      },
+      "center": [
+        -53.8,
+        3.35,
+        -119
+      ],
+      "size": [
+        0.9,
+        0.09,
+        0.09
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hoop_arm",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-ad81e7fc502e",
+      "name": "Hall_west_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_west_mullion#4",
+      "bounds": {
+        "min": [
+          -87.57,
+          2.6,
+          -122.11
+        ],
+        "max": [
+          -87.43,
+          4.8,
+          -121.97
+        ]
+      },
+      "center": [
+        -87.5,
+        3.7,
+        -122.04
+      ],
+      "size": [
+        0.14,
+        2.2,
+        0.14
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_west_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
     },
     {
       "id": "A014-P-adac912d12e8",
@@ -103053,6 +107804,78 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-ae81e98fd61a",
+      "name": "Hall_west_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_west_mullion#5",
+      "bounds": {
+        "min": [
+          -87.57,
+          2.6,
+          -119.59
+        ],
+        "max": [
+          -87.43,
+          4.8,
+          -119.45
+        ]
+      },
+      "center": [
+        -87.5,
+        3.7,
+        -119.52
+      ],
+      "size": [
+        0.14,
+        2.2,
+        0.14
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_west_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-af18962b0ddd",
+      "name": "Key_top",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Key_top#2",
+      "bounds": {
+        "min": [
+          -59.835,
+          0.296,
+          -121.45
+        ],
+        "max": [
+          -59.765,
+          0.31,
+          -116.55
+        ]
+      },
+      "center": [
+        -59.8,
+        0.303,
+        -119
+      ],
+      "size": [
+        0.07,
+        0.014,
+        4.9
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Key_top",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-af267916c9d5",
       "name": "Hall_base",
       "kind": "part",
@@ -103067,18 +107890,18 @@
         ],
         "max": [
           -48.5,
-          0.3,
+          0.28,
           -104
         ]
       },
       "center": [
         -68,
-        0.2,
+        0.19,
         -117
       ],
       "size": [
         39,
-        0.2,
+        0.18,
         26
       ],
       "sourceFile": "src/model/buildSite.ts",
@@ -103161,6 +107984,42 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-af81eb225c06",
+      "name": "Hall_west_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_west_mullion#6",
+      "bounds": {
+        "min": [
+          -87.57,
+          2.6,
+          -117.07
+        ],
+        "max": [
+          -87.43,
+          4.8,
+          -116.93
+        ]
+      },
+      "center": [
+        -87.5,
+        3.7,
+        -117
+      ],
+      "size": [
+        0.14,
+        2.2,
+        0.14
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_west_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-afe4dbd7c770",
       "name": "Court_sideline",
       "kind": "part",
@@ -103195,6 +108054,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Ivory signage"
+    },
+    {
+      "id": "A014-P-b01897be93c9",
+      "name": "Key_top",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Key_top#1",
+      "bounds": {
+        "min": [
+          -76.235,
+          0.296,
+          -121.45
+        ],
+        "max": [
+          -76.165,
+          0.31,
+          -116.55
+        ]
+      },
+      "center": [
+        -76.2,
+        0.303,
+        -119
+      ],
+      "size": [
+        0.07,
+        0.014,
+        4.9
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Key_top",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-b03f1d6d1703",
@@ -103278,7 +108173,7 @@
       "bounds": {
         "min": [
           -87.59,
-          0,
+          4.8,
           -130
         ],
         "max": [
@@ -103289,12 +108184,12 @@
       },
       "center": [
         -87.5,
-        3.5,
+        5.9,
         -117
       ],
       "size": [
         0.18,
-        7,
+        2.2,
         26
       ],
       "sourceFile": "src/model/buildSite.ts",
@@ -103303,6 +108198,42 @@
       "confidence": "confirmed-enclosure-type_provisional-exterior",
       "editMode": "source",
       "material": "Ivory signage"
+    },
+    {
+      "id": "A014-P-b081ecb5e1f2",
+      "name": "Hall_west_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_west_mullion#7",
+      "bounds": {
+        "min": [
+          -87.57,
+          2.6,
+          -114.55
+        ],
+        "max": [
+          -87.43,
+          4.8,
+          -114.41
+        ]
+      },
+      "center": [
+        -87.5,
+        3.7,
+        -114.48
+      ],
+      "size": [
+        0.14,
+        2.2,
+        0.14
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_west_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
     },
     {
       "id": "A014-P-b13491a453d1",
@@ -103413,6 +108344,42 @@
       "material": "Ivory signage"
     },
     {
+      "id": "A014-P-b181ee4867de",
+      "name": "Hall_west_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_west_mullion#8",
+      "bounds": {
+        "min": [
+          -87.57,
+          2.6,
+          -112.03
+        ],
+        "max": [
+          -87.43,
+          4.8,
+          -111.89
+        ]
+      },
+      "center": [
+        -87.5,
+        3.7,
+        -111.96
+      ],
+      "size": [
+        0.14,
+        2.2,
+        0.14
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_west_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-b2349337d9bd",
       "name": "Fine_vertical_court_mesh",
       "kind": "part",
@@ -103519,6 +108486,42 @@
       "confidence": "confirmed-enclosure-type_provisional-exterior",
       "editMode": "source",
       "material": "Ivory signage"
+    },
+    {
+      "id": "A014-P-b281efdbedc9",
+      "name": "Hall_west_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_west_mullion#9",
+      "bounds": {
+        "min": [
+          -87.57,
+          2.6,
+          -109.51
+        ],
+        "max": [
+          -87.43,
+          4.8,
+          -109.37
+        ]
+      },
+      "center": [
+        -87.5,
+        3.7,
+        -109.44
+      ],
+      "size": [
+        0.14,
+        2.2,
+        0.14
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_west_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
     },
     {
       "id": "A014-P-b33494ca5fa9",
@@ -103629,6 +108632,114 @@
       "material": "Video dark fence steel"
     },
     {
+      "id": "A014-P-bd9e0760efa2",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#19",
+      "bounds": {
+        "min": [
+          -68.0039,
+          0.296,
+          -120.8297
+        ],
+        "max": [
+          -67.5302,
+          0.31,
+          -120.7089
+        ]
+      },
+      "center": [
+        -67.7671,
+        0.303,
+        -120.7693
+      ],
+      "size": [
+        0.4737,
+        0.014,
+        0.1208
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-be9e08f3758e",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#18",
+      "bounds": {
+        "min": [
+          -68.4698,
+          0.296,
+          -120.8297
+        ],
+        "max": [
+          -67.9961,
+          0.31,
+          -120.7089
+        ]
+      },
+      "center": [
+        -68.2329,
+        0.303,
+        -120.7693
+      ],
+      "size": [
+        0.4737,
+        0.014,
+        0.1208
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-bf1c18f4dd15",
+      "name": "Hoop_backboard_mark",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Hoop_backboard_mark#2",
+      "bounds": {
+        "min": [
+          -54,
+          3.13,
+          -119.25
+        ],
+        "max": [
+          -53.98,
+          3.43,
+          -118.75
+        ]
+      },
+      "center": [
+        -53.99,
+        3.28,
+        -119
+      ],
+      "size": [
+        0.02,
+        0.3,
+        0.5
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hoop_backboard_mark",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory signage"
+    },
+    {
       "id": "A014-P-c1bc619744bb",
       "name": "Lock_card_reader",
       "kind": "part",
@@ -103663,6 +108774,78 @@
       "confidence": "fictional-gameplay-addition_not-observed",
       "editMode": "source",
       "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-c1ec03ebe786",
+      "name": "Court_floor",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Court_floor#1",
+      "bounds": {
+        "min": [
+          -82.4,
+          0.27,
+          -126.9
+        ],
+        "max": [
+          -53.6,
+          0.3,
+          -111.1
+        ]
+      },
+      "center": [
+        -68,
+        0.285,
+        -119
+      ],
+      "size": [
+        28.8,
+        0.03,
+        15.8
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Court_floor",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Basketball court floor"
+    },
+    {
+      "id": "A014-P-c21c1dad6ed8",
+      "name": "Hoop_backboard_mark",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Hoop_backboard_mark#1",
+      "bounds": {
+        "min": [
+          -82.02,
+          3.13,
+          -119.25
+        ],
+        "max": [
+          -82,
+          3.43,
+          -118.75
+        ]
+      },
+      "center": [
+        -82.01,
+        3.28,
+        -119
+      ],
+      "size": [
+        0.02,
+        0.3,
+        0.5
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hoop_backboard_mark",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory signage"
     },
     {
       "id": "A014-P-c463334fedf3",
@@ -103737,6 +108920,222 @@
       "material": "Ivory signage"
     },
     {
+      "id": "A014-P-c59e13f81f00",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#11",
+      "bounds": {
+        "min": [
+          -69.7664,
+          0.296,
+          -118.5456
+        ],
+        "max": [
+          -69.5311,
+          0.31,
+          -118.0885
+        ]
+      },
+      "center": [
+        -69.6488,
+        0.303,
+        -118.3171
+      ],
+      "size": [
+        0.2353,
+        0.014,
+        0.4571
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-c69e158ba4ec",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#10",
+      "bounds": {
+        "min": [
+          -69.5826,
+          0.296,
+          -118.1183
+        ],
+        "max": [
+          -69.249,
+          0.31,
+          -117.7089
+        ]
+      },
+      "center": [
+        -69.4158,
+        0.303,
+        -117.9136
+      ],
+      "size": [
+        0.3337,
+        0.014,
+        0.4093
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-c79e171e2ad8",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#13",
+      "bounds": {
+        "min": [
+          -69.8297,
+          0.296,
+          -119.4698
+        ],
+        "max": [
+          -69.7089,
+          0.31,
+          -118.9961
+        ]
+      },
+      "center": [
+        -69.7693,
+        0.303,
+        -119.2329
+      ],
+      "size": [
+        0.1208,
+        0.014,
+        0.4737
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-c89e18b1b0c4",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#12",
+      "bounds": {
+        "min": [
+          -69.8297,
+          0.296,
+          -119.0039
+        ],
+        "max": [
+          -69.7089,
+          0.31,
+          -118.5302
+        ]
+      },
+      "center": [
+        -69.7693,
+        0.303,
+        -118.7671
+      ],
+      "size": [
+        0.1208,
+        0.014,
+        0.4737
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-c99e1a440751",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#15",
+      "bounds": {
+        "min": [
+          -69.5826,
+          0.296,
+          -120.2911
+        ],
+        "max": [
+          -69.249,
+          0.31,
+          -119.8817
+        ]
+      },
+      "center": [
+        -69.4158,
+        0.303,
+        -120.0864
+      ],
+      "size": [
+        0.3337,
+        0.014,
+        0.4093
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-ca9e1bd78d3d",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#14",
+      "bounds": {
+        "min": [
+          -69.7664,
+          0.296,
+          -119.9115
+        ],
+        "max": [
+          -69.5311,
+          0.31,
+          -119.4544
+        ]
+      },
+      "center": [
+        -69.6488,
+        0.303,
+        -119.6829
+      ],
+      "size": [
+        0.2353,
+        0.014,
+        0.4571
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-cb4d9fffacd4",
       "name": "Tennis_net",
       "kind": "part",
@@ -103773,6 +109172,42 @@
       "material": "Fence steel"
     },
     {
+      "id": "A014-P-cb9e1d6a1329",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#17",
+      "bounds": {
+        "min": [
+          -68.9115,
+          0.296,
+          -120.7664
+        ],
+        "max": [
+          -68.4544,
+          0.31,
+          -120.5311
+        ]
+      },
+      "center": [
+        -68.6829,
+        0.303,
+        -120.6488
+      ],
+      "size": [
+        0.4571,
+        0.014,
+        0.2353
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-cc4da19232c0",
       "name": "Tennis_net",
       "kind": "part",
@@ -103807,6 +109242,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Fence steel"
+    },
+    {
+      "id": "A014-P-cc9e1efd9915",
+      "name": "Centre_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Centre_circle#16",
+      "bounds": {
+        "min": [
+          -69.2911,
+          0.296,
+          -120.5826
+        ],
+        "max": [
+          -68.8817,
+          0.31,
+          -120.249
+        ]
+      },
+      "center": [
+        -69.0864,
+        0.303,
+        -120.4158
+      ],
+      "size": [
+        0.4093,
+        0.014,
+        0.3337
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Centre_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-ced3cb085ae5",
@@ -103881,6 +109352,78 @@
       "material": "Mullion aluminium"
     },
     {
+      "id": "A014-P-da992c8083d6",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#8",
+      "bounds": {
+        "min": [
+          -77.1115,
+          0.296,
+          -117.4689
+        ],
+        "max": [
+          -76.6544,
+          0.31,
+          -117.2336
+        ]
+      },
+      "center": [
+        -76.8829,
+        0.303,
+        -117.3512
+      ],
+      "size": [
+        0.4571,
+        0.014,
+        0.2353
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-db992e1309c2",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#9",
+      "bounds": {
+        "min": [
+          -77.4911,
+          0.296,
+          -117.751
+        ],
+        "max": [
+          -77.0817,
+          0.31,
+          -117.4174
+        ]
+      },
+      "center": [
+        -77.2864,
+        0.303,
+        -117.5842
+      ],
+      "size": [
+        0.4093,
+        0.014,
+        0.3337
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-dc1de15304c5",
       "name": "Door_jamb",
       "kind": "part",
@@ -103913,6 +109456,78 @@
       "sourceAnchor": "Door_jamb",
       "reference": "2026-11-20 client request: east glass door + keypad lock",
       "confidence": "fictional-gameplay-addition_not-observed",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-dc3733d6aa94",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#19",
+      "bounds": {
+        "min": [
+          -76.2039,
+          0.296,
+          -120.8297
+        ],
+        "max": [
+          -75.7302,
+          0.31,
+          -120.7089
+        ]
+      },
+      "center": [
+        -75.9671,
+        0.303,
+        -120.7693
+      ],
+      "size": [
+        0.4737,
+        0.014,
+        0.1208
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-dc790c767bc0",
+      "name": "Hall_west_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_west_mullion#11",
+      "bounds": {
+        "min": [
+          -87.57,
+          2.6,
+          -104.47
+        ],
+        "max": [
+          -87.43,
+          4.8,
+          -104.33
+        ]
+      },
+      "center": [
+        -87.5,
+        3.7,
+        -104.4
+      ],
+      "size": [
+        0.14,
+        2.2,
+        0.14
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_west_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
       "editMode": "source",
       "material": "Mullion aluminium"
     },
@@ -103953,6 +109568,78 @@
       "material": "Mullion aluminium"
     },
     {
+      "id": "A014-P-dd3735693080",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#18",
+      "bounds": {
+        "min": [
+          -76.6698,
+          0.296,
+          -120.8297
+        ],
+        "max": [
+          -76.1961,
+          0.31,
+          -120.7089
+        ]
+      },
+      "center": [
+        -76.4329,
+        0.303,
+        -120.7693
+      ],
+      "size": [
+        0.4737,
+        0.014,
+        0.1208
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-dd790e0901ac",
+      "name": "Hall_west_mullion",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_west_mullion#10",
+      "bounds": {
+        "min": [
+          -87.57,
+          2.6,
+          -106.99
+        ],
+        "max": [
+          -87.43,
+          4.8,
+          -106.85
+        ]
+      },
+      "center": [
+        -87.5,
+        3.7,
+        -106.92
+      ],
+      "size": [
+        0.14,
+        2.2,
+        0.14
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_west_mullion",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
       "id": "A014-P-de769e97710b",
       "name": "Door_glass_leaf",
       "kind": "part",
@@ -103987,6 +109674,42 @@
       "confidence": "fictional-gameplay-addition_not-observed",
       "editMode": "source",
       "material": "Glazing_clear"
+    },
+    {
+      "id": "A014-P-e0d942d65826",
+      "name": "Hall_entry_canopy",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_entry_canopy#1",
+      "bounds": {
+        "min": [
+          -50.5,
+          3.07,
+          -118.3
+        ],
+        "max": [
+          -44.7,
+          3.23,
+          -115.7
+        ]
+      },
+      "center": [
+        -47.6,
+        3.15,
+        -117
+      ],
+      "size": [
+        5.8,
+        0.16,
+        2.6
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_entry_canopy",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Silver facade fins"
     },
     {
       "id": "A014-P-e14d6af865c6",
@@ -104025,6 +109748,114 @@
       "material": "Mullion aluminium"
     },
     {
+      "id": "A014-P-e1b2d8e87cdf",
+      "name": "Canopy_brace",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Canopy_brace#2",
+      "bounds": {
+        "min": [
+          -48.4607,
+          2.5512,
+          -115.05
+        ],
+        "max": [
+          -46.3893,
+          3.0988,
+          -114.95
+        ]
+      },
+      "center": [
+        -47.425,
+        2.825,
+        -115
+      ],
+      "size": [
+        2.0714,
+        0.5477,
+        0.1
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Canopy_brace",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-e1b7323baa5b",
+      "name": "Hall_west_glazing",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Hall_west_glazing#1",
+      "bounds": {
+        "min": [
+          -87.5,
+          2.6,
+          -129.9
+        ],
+        "max": [
+          -87.5,
+          4.8,
+          -104.1
+        ]
+      },
+      "center": [
+        -87.5,
+        3.7,
+        -117
+      ],
+      "size": [
+        0,
+        2.2,
+        25.8
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Hall_west_glazing",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Glazing_reflective"
+    },
+    {
+      "id": "A014-P-e2373d48ce1b",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#13",
+      "bounds": {
+        "min": [
+          -78.0297,
+          0.296,
+          -119.4698
+        ],
+        "max": [
+          -77.9089,
+          0.31,
+          -118.9961
+        ]
+      },
+      "center": [
+        -77.9693,
+        0.303,
+        -119.2329
+      ],
+      "size": [
+        0.1208,
+        0.014,
+        0.4737
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-e2c6a8b04974",
       "name": "Rail",
       "kind": "part",
@@ -104061,6 +109892,114 @@
       "material": "Mullion aluminium"
     },
     {
+      "id": "A014-P-e3373edb5406",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#12",
+      "bounds": {
+        "min": [
+          -78.0297,
+          0.296,
+          -119.0039
+        ],
+        "max": [
+          -77.9089,
+          0.31,
+          -118.5302
+        ]
+      },
+      "center": [
+        -77.9693,
+        0.303,
+        -118.7671
+      ],
+      "size": [
+        0.1208,
+        0.014,
+        0.4737
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-e3397d728bd6",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#28",
+      "bounds": {
+        "min": [
+          -58.9183,
+          0.296,
+          -117.751
+        ],
+        "max": [
+          -58.5089,
+          0.31,
+          -117.4174
+        ]
+      },
+      "center": [
+        -58.7136,
+        0.303,
+        -117.5842
+      ],
+      "size": [
+        0.4093,
+        0.014,
+        0.3337
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-e3993aab3920",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#1",
+      "bounds": {
+        "min": [
+          -74.4911,
+          0.296,
+          -119.0039
+        ],
+        "max": [
+          -74.3703,
+          0.31,
+          -118.5302
+        ]
+      },
+      "center": [
+        -74.4307,
+        0.303,
+        -118.7671
+      ],
+      "size": [
+        0.1208,
+        0.014,
+        0.4737
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-e3c6aa43cf60",
       "name": "Rail",
       "kind": "part",
@@ -104091,6 +110030,150 @@
       ],
       "sourceFile": "src/model/buildSite.ts",
       "sourceAnchor": "Rail",
+      "reference": "C03 sports-1; R02 planning",
+      "confidence": "confirmed-enclosure-type_provisional-exterior",
+      "editMode": "source",
+      "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-e437406ed9f2",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#11",
+      "bounds": {
+        "min": [
+          -77.9664,
+          0.296,
+          -118.5456
+        ],
+        "max": [
+          -77.7311,
+          0.31,
+          -118.0885
+        ]
+      },
+      "center": [
+        -77.8488,
+        0.303,
+        -118.3171
+      ],
+      "size": [
+        0.2353,
+        0.014,
+        0.4571
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-e4397f0511c2",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#29",
+      "bounds": {
+        "min": [
+          -59.3456,
+          0.296,
+          -117.4689
+        ],
+        "max": [
+          -58.8885,
+          0.31,
+          -117.2336
+        ]
+      },
+      "center": [
+        -59.1171,
+        0.303,
+        -117.3512
+      ],
+      "size": [
+        0.4571,
+        0.014,
+        0.2353
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-e4993c3ebf0c",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#2",
+      "bounds": {
+        "min": [
+          -74.6689,
+          0.296,
+          -118.5456
+        ],
+        "max": [
+          -74.4336,
+          0.31,
+          -118.0885
+        ]
+      },
+      "center": [
+        -74.5512,
+        0.303,
+        -118.3171
+      ],
+      "size": [
+        0.2353,
+        0.014,
+        0.4571
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-e4b2dda10ea2",
+      "name": "Canopy_brace",
+      "kind": "part",
+      "parentId": "A014-G-d441abf09f03",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Canopy_brace#1",
+      "bounds": {
+        "min": [
+          -48.4607,
+          2.5512,
+          -119.05
+        ],
+        "max": [
+          -46.3893,
+          3.0988,
+          -118.95
+        ]
+      },
+      "center": [
+        -47.425,
+        2.825,
+        -119
+      ],
+      "size": [
+        2.0714,
+        0.5477,
+        0.1
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Canopy_brace",
       "reference": "C03 sports-1; R02 planning",
       "confidence": "confirmed-enclosure-type_provisional-exterior",
       "editMode": "source",
@@ -104133,6 +110216,114 @@
       "material": "Mullion aluminium"
     },
     {
+      "id": "A014-P-e53742015fde",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#10",
+      "bounds": {
+        "min": [
+          -77.7826,
+          0.296,
+          -118.1183
+        ],
+        "max": [
+          -77.449,
+          0.31,
+          -117.7089
+        ]
+      },
+      "center": [
+        -77.6158,
+        0.303,
+        -117.9136
+      ],
+      "size": [
+        0.3337,
+        0.014,
+        0.4093
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-e539809838f1",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#26",
+      "bounds": {
+        "min": [
+          -58.2689,
+          0.296,
+          -118.5456
+        ],
+        "max": [
+          -58.0336,
+          0.31,
+          -118.0885
+        ]
+      },
+      "center": [
+        -58.1512,
+        0.303,
+        -118.3171
+      ],
+      "size": [
+        0.2353,
+        0.014,
+        0.4571
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-e5993dd144f8",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#3",
+      "bounds": {
+        "min": [
+          -74.951,
+          0.296,
+          -118.1183
+        ],
+        "max": [
+          -74.6174,
+          0.31,
+          -117.7089
+        ]
+      },
+      "center": [
+        -74.7842,
+        0.303,
+        -117.9136
+      ],
+      "size": [
+        0.3337,
+        0.014,
+        0.4093
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-e5c6ad69db37",
       "name": "Rail",
       "kind": "part",
@@ -104167,6 +110358,114 @@
       "confidence": "confirmed-enclosure-type_provisional-exterior",
       "editMode": "source",
       "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-e6374394b66c",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#17",
+      "bounds": {
+        "min": [
+          -77.1115,
+          0.296,
+          -120.7664
+        ],
+        "max": [
+          -76.6544,
+          0.31,
+          -120.5311
+        ]
+      },
+      "center": [
+        -76.8829,
+        0.303,
+        -120.6488
+      ],
+      "size": [
+        0.4571,
+        0.014,
+        0.2353
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-e639822bbedd",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#27",
+      "bounds": {
+        "min": [
+          -58.551,
+          0.296,
+          -118.1183
+        ],
+        "max": [
+          -58.2174,
+          0.31,
+          -117.7089
+        ]
+      },
+      "center": [
+        -58.3842,
+        0.303,
+        -117.9136
+      ],
+      "size": [
+        0.3337,
+        0.014,
+        0.4093
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-e6993f64cae4",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#4",
+      "bounds": {
+        "min": [
+          -75.3183,
+          0.296,
+          -117.751
+        ],
+        "max": [
+          -74.9089,
+          0.31,
+          -117.4174
+        ]
+      },
+      "center": [
+        -75.1136,
+        0.303,
+        -117.5842
+      ],
+      "size": [
+        0.4093,
+        0.014,
+        0.3337
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-e6c6aefc6123",
@@ -104205,6 +110504,114 @@
       "material": "Mullion aluminium"
     },
     {
+      "id": "A014-P-e73745273c57",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#16",
+      "bounds": {
+        "min": [
+          -77.4911,
+          0.296,
+          -120.5826
+        ],
+        "max": [
+          -77.0817,
+          0.31,
+          -120.249
+        ]
+      },
+      "center": [
+        -77.2864,
+        0.303,
+        -120.4158
+      ],
+      "size": [
+        0.4093,
+        0.014,
+        0.3337
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-e73983be44c9",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#24",
+      "bounds": {
+        "min": [
+          -74.4911,
+          0.296,
+          -119.4698
+        ],
+        "max": [
+          -74.3703,
+          0.31,
+          -118.9961
+        ]
+      },
+      "center": [
+        -74.4307,
+        0.303,
+        -119.2329
+      ],
+      "size": [
+        0.1208,
+        0.014,
+        0.4737
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-e79940f750d0",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#5",
+      "bounds": {
+        "min": [
+          -75.7456,
+          0.296,
+          -117.4689
+        ],
+        "max": [
+          -75.2885,
+          0.31,
+          -117.2336
+        ]
+      },
+      "center": [
+        -75.5171,
+        0.303,
+        -117.3512
+      ],
+      "size": [
+        0.4571,
+        0.014,
+        0.2353
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-e7c6b08fe70f",
       "name": "Rail",
       "kind": "part",
@@ -104241,6 +110648,222 @@
       "material": "Mullion aluminium"
     },
     {
+      "id": "A014-P-e83746bac243",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#15",
+      "bounds": {
+        "min": [
+          -77.7826,
+          0.296,
+          -120.2911
+        ],
+        "max": [
+          -77.449,
+          0.31,
+          -119.8817
+        ]
+      },
+      "center": [
+        -77.6158,
+        0.303,
+        -120.0864
+      ],
+      "size": [
+        0.3337,
+        0.014,
+        0.4093
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-e8398551cab5",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#25",
+      "bounds": {
+        "min": [
+          -58.0911,
+          0.296,
+          -119.0039
+        ],
+        "max": [
+          -57.9703,
+          0.31,
+          -118.5302
+        ]
+      },
+      "center": [
+        -58.0307,
+        0.303,
+        -118.7671
+      ],
+      "size": [
+        0.1208,
+        0.014,
+        0.4737
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-e899428ad6bb",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#6",
+      "bounds": {
+        "min": [
+          -76.2039,
+          0.296,
+          -117.2911
+        ],
+        "max": [
+          -75.7302,
+          0.31,
+          -117.1703
+        ]
+      },
+      "center": [
+        -75.9671,
+        0.303,
+        -117.2307
+      ],
+      "size": [
+        0.4737,
+        0.014,
+        0.1208
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-e937484d482f",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#14",
+      "bounds": {
+        "min": [
+          -77.9664,
+          0.296,
+          -119.9115
+        ],
+        "max": [
+          -77.7311,
+          0.31,
+          -119.4544
+        ]
+      },
+      "center": [
+        -77.8488,
+        0.303,
+        -119.6829
+      ],
+      "size": [
+        0.2353,
+        0.014,
+        0.4571
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-e93986e450a0",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#22",
+      "bounds": {
+        "min": [
+          -74.951,
+          0.296,
+          -120.2911
+        ],
+        "max": [
+          -74.6174,
+          0.31,
+          -119.8817
+        ]
+      },
+      "center": [
+        -74.7842,
+        0.303,
+        -120.0864
+      ],
+      "size": [
+        0.3337,
+        0.014,
+        0.4093
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-e999441d5ca7",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#7",
+      "bounds": {
+        "min": [
+          -76.6698,
+          0.296,
+          -117.2911
+        ],
+        "max": [
+          -76.1961,
+          0.31,
+          -117.1703
+        ]
+      },
+      "center": [
+        -76.4329,
+        0.303,
+        -117.2307
+      ],
+      "size": [
+        0.4737,
+        0.014,
+        0.1208
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-e9c6b3b5f2e7",
       "name": "Rail",
       "kind": "part",
@@ -104275,6 +110898,114 @@
       "confidence": "confirmed-enclosure-type_provisional-exterior",
       "editMode": "source",
       "material": "Mullion aluminium"
+    },
+    {
+      "id": "A014-P-ea398877d68c",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#23",
+      "bounds": {
+        "min": [
+          -74.6689,
+          0.296,
+          -119.9115
+        ],
+        "max": [
+          -74.4336,
+          0.31,
+          -119.4544
+        ]
+      },
+      "center": [
+        -74.5512,
+        0.303,
+        -119.6829
+      ],
+      "size": [
+        0.2353,
+        0.014,
+        0.4571
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-eb398a0a5c78",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#20",
+      "bounds": {
+        "min": [
+          -75.7456,
+          0.296,
+          -120.7664
+        ],
+        "max": [
+          -75.2885,
+          0.31,
+          -120.5311
+        ]
+      },
+      "center": [
+        -75.5171,
+        0.303,
+        -120.6488
+      ],
+      "size": [
+        0.4571,
+        0.014,
+        0.2353
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
+      "id": "A014-P-ec398b9de264",
+      "name": "Free_throw_circle",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Free_throw_circle#21",
+      "bounds": {
+        "min": [
+          -75.3183,
+          0.296,
+          -120.5826
+        ],
+        "max": [
+          -74.9089,
+          0.31,
+          -120.249
+        ]
+      },
+      "center": [
+        -75.1136,
+        0.303,
+        -120.4158
+      ],
+      "size": [
+        0.4093,
+        0.014,
+        0.3337
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Free_throw_circle",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-ed1efc1212da",
@@ -104601,6 +111332,42 @@
       "material": "Fence steel"
     },
     {
+      "id": "A014-P-f2d76cff53e6",
+      "name": "Court_sideline",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Court_sideline#2",
+      "bounds": {
+        "min": [
+          -82,
+          0.296,
+          -111.535
+        ],
+        "max": [
+          -54,
+          0.31,
+          -111.465
+        ]
+      },
+      "center": [
+        -68,
+        0.303,
+        -111.5
+      ],
+      "size": [
+        28,
+        0.014,
+        0.07
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Court_sideline",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
+    },
+    {
       "id": "A014-P-f30608a58c03",
       "name": "Playing_surface",
       "kind": "part",
@@ -104671,6 +111438,42 @@
       "confidence": "confirmed-types_provisional-layout",
       "editMode": "source",
       "material": "Fence steel"
+    },
+    {
+      "id": "A014-P-f3d76e92d9d2",
+      "name": "Court_sideline",
+      "kind": "part",
+      "parentId": "A014-G-0af0db62ac83",
+      "buildingId": null,
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Sports#1/Sports_Hall#1/Basketball_Court#1/Court_sideline#1",
+      "bounds": {
+        "min": [
+          -82,
+          0.296,
+          -126.535
+        ],
+        "max": [
+          -54,
+          0.31,
+          -126.465
+        ]
+      },
+      "center": [
+        -68,
+        0.303,
+        -126.5
+      ],
+      "size": [
+        28,
+        0.014,
+        0.07
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Court_sideline",
+      "reference": "2026-11-21 client clarification: indoor basketball hall",
+      "confidence": "gameplay-addition_not_observed",
+      "editMode": "source",
+      "material": "Ivory court line paint"
     },
     {
       "id": "A014-P-f41f0717bc4c",
