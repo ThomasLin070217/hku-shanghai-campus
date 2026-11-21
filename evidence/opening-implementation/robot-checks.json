@@ -30,7 +30,33 @@
     "scanVisualRange": 9,
     "scanSamples": 11,
     "scanVisualHeight": 0.3,
-    "scanProbeHeight": 0.3
+    "scanProbeHeight": 0.3,
+    "farDistance": 26,
+    "farHz": 24,
+    "farHysteresis": 3,
+    "shadowUnits": 3,
+    "shadowInterval": 0.5,
+    "shadowHysteresis": 2,
+    "sightingFresh": 6,
+    "sightingGap": 2,
+    "alertGain": 0.55,
+    "alertDecay": 0.12,
+    "supportResponders": 1,
+    "coordinationRadius": 18,
+    "reportInterval": 0.4,
+    "playerWalkSpeed": 2.6,
+    "velocitySmoothing": 8,
+    "predictTime": 0.45,
+    "predictMax": 4,
+    "predictMin": 0.35,
+    "interceptLead": 0.25,
+    "interceptMax": 1.2,
+    "searchPointSeconds": 1.1,
+    "searchSpread": 2.2,
+    "searchTravelCap": 4,
+    "guardAlert": 0.6,
+    "guardDwell": 2.4,
+    "guardRadius": 3.5
   },
   "patrolPoints": [
     [
@@ -155,55 +181,55 @@
         "doorCrossings": [
           {
             "x": 58.1,
-            "at": "10.37s patrol"
+            "at": "10.42s patrol"
           },
           {
-            "x": 58.03,
-            "at": "26.83s patrol"
+            "x": 58.04,
+            "at": "26.97s patrol"
           },
           {
-            "x": 58.1,
-            "at": "45.18s patrol"
+            "x": 58.11,
+            "at": "45.33s patrol"
           },
           {
-            "x": 58.03,
-            "at": "61.65s patrol"
+            "x": 58.04,
+            "at": "61.88s patrol"
           },
           {
-            "x": 58.1,
-            "at": "80.00s patrol"
+            "x": 58.11,
+            "at": "80.25s patrol"
           },
           {
-            "x": 58.03,
-            "at": "96.47s patrol"
+            "x": 58.04,
+            "at": "96.80s patrol"
           },
           {
-            "x": 58.1,
-            "at": "114.82s patrol"
+            "x": 58.11,
+            "at": "115.17s patrol"
           },
           {
-            "x": 58.03,
-            "at": "131.28s patrol"
+            "x": 58.04,
+            "at": "131.72s patrol"
           },
           {
-            "x": 58.1,
-            "at": "149.63s patrol"
+            "x": 58.11,
+            "at": "150.08s patrol"
           },
           {
-            "x": 58.03,
-            "at": "166.10s patrol"
+            "x": 58.04,
+            "at": "166.63s patrol"
           },
           {
-            "x": 58.1,
-            "at": "184.45s patrol"
+            "x": 58.11,
+            "at": "185.00s patrol"
           },
           {
-            "x": 58.03,
-            "at": "200.92s patrol"
+            "x": 58.04,
+            "at": "201.55s patrol"
           },
           {
-            "x": 58.1,
-            "at": "219.27s patrol"
+            "x": 58.11,
+            "at": "219.92s patrol"
           }
         ],
         "longestNoProgressContactSeconds": 0,
@@ -291,15 +317,15 @@
       "name": "blocky red-eye model with a polygon scan wedge; dispose releases geometry and material",
       "passed": true,
       "detail": {
-        "meshes": 13,
+        "meshes": 6,
         "heightMeters": 1.05,
         "footprint": [
           0.52,
           0.76
         ],
         "wedgeVertices": 12,
-        "disposedGeometries": 13,
-        "disposedMaterials": 7
+        "disposedGeometries": 6,
+        "disposedMaterials": 5
       }
     },
     {
@@ -333,6 +359,32 @@
         "scanSamples": 11,
         "scanVisualHeight": 0.3,
         "scanProbeHeight": 0.3,
+        "farDistance": 26,
+        "farHz": 24,
+        "farHysteresis": 3,
+        "shadowUnits": 3,
+        "shadowInterval": 0.5,
+        "shadowHysteresis": 2,
+        "sightingFresh": 6,
+        "sightingGap": 2,
+        "alertGain": 0.55,
+        "alertDecay": 0.12,
+        "supportResponders": 1,
+        "coordinationRadius": 18,
+        "reportInterval": 0.4,
+        "playerWalkSpeed": 2.6,
+        "velocitySmoothing": 8,
+        "predictTime": 0.45,
+        "predictMax": 4,
+        "predictMin": 0.35,
+        "interceptLead": 0.25,
+        "interceptMax": 1.2,
+        "searchPointSeconds": 1.1,
+        "searchSpread": 2.2,
+        "searchTravelCap": 4,
+        "guardAlert": 0.6,
+        "guardDwell": 2.4,
+        "guardRadius": 3.5,
         "patrolPoints": [
           [
             63,
@@ -352,6 +404,96 @@
           ]
         ],
         "slowerThanPlayerWalk": true
+      }
+    },
+    {
+      "name": "the shell pool is shared across units while eye, lamp, beam and scan sector stay per unit",
+      "passed": true,
+      "detail": {
+        "meshesPerUnit": 6,
+        "sharedGeometries": 5,
+        "sharedMaterials": 2,
+        "materialsPerUnit": 5
+      }
+    },
+    {
+      "name": "one unit publishes a sighting, one nearby unit searches the remembered point, the rest stay put",
+      "passed": true,
+      "detail": {
+        "alert": 1,
+        "responders": 1,
+        "sharedPoint": [
+          56,
+          0,
+          -48
+        ],
+        "watcher": "search",
+        "inside": "search",
+        "distant": "patrol"
+      }
+    },
+    {
+      "name": "nothing reaches the blackboard while the Building 5 wall blocks every eye ray",
+      "passed": true,
+      "detail": {
+        "ticks": 240,
+        "alert": 0,
+        "state": "patrol"
+      }
+    },
+    {
+      "name": "alert rises on a report, decays on tick, and the sighting expires",
+      "passed": true,
+      "detail": {
+        "afterReport": 0.55,
+        "afterTwoSeconds": 0.31,
+        "freshSeconds": 6
+      }
+    },
+    {
+      "name": "the search plan keeps the remembered point first and adds a capped prediction along the last visible motion",
+      "passed": true,
+      "detail": {
+        "lastSeen": [
+          55.4,
+          0,
+          -48
+        ],
+        "plan": [
+          [
+            55.4,
+            -48
+          ],
+          [
+            54.29,
+            -47.8
+          ],
+          [
+            53.91,
+            -49.97
+          ]
+        ],
+        "predictionMeters": 1.13
+      }
+    },
+    {
+      "name": "distance tiering cuts the far unit update rate without changing its physical path",
+      "passed": true,
+      "detail": {
+        "nearSteps": 214,
+        "farSteps": 86,
+        "nearDistance": 4.46,
+        "farDistance": 4.48,
+        "farMaxStep": 0.05
+      }
+    },
+    {
+      "name": "an alerted unit holds the guard waypoint and faces it, then resumes the normal sweep",
+      "passed": true,
+      "detail": {
+        "guardedSeconds": 5.63,
+        "maxHeadOffset": 1.32,
+        "alertAtEnd": 0.28
       }
     }
   ],

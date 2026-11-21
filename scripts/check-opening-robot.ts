@@ -15,7 +15,7 @@ import {createNavigation} from '../src/exploration/navigation';
 import {BUILDINGS,SITE} from '../src/model/campusParameters';
 import {EXPLORATION as C} from '../src/exploration/config';
 import {OPENING as O} from '../src/opening/spatialLayout';
-import {createOpeningRobot, openingRobotLineClear, ROBOT, type OpeningRobot} from '../src/opening/robot';
+import {createOpeningRobot, createOpeningRobotAssets, createOpeningRobotBlackboard, openingRobotLineClear, ROBOT, type OpeningRobot} from '../src/opening/robot';
 
 const world=createNavigation(BUILDINGS,SITE,true);
 const DT=1/60;
@@ -310,7 +310,11 @@ function inSectorAndRange(robot:OpeningRobot,player:T.Vector3){
  assert.equal(world.meshes.length,meshesBefore,'the robot never joins the shared collision mesh list');
  const meshes:T.Mesh[]=[];
  robot.root.traverse(object=>{if((object as T.Mesh).isMesh)meshes.push(object as T.Mesh);});
- assert.ok(meshes.length>=8,`a blocky model built from parts, got ${meshes.length} meshes`);
+ // T25 merged the twelve shell boxes into two vertex-coloured meshes (body and head),
+ // plus the always-separate band, eye, beacon and the animated scan sector. The old
+ // per-part threshold (>=8) encoded the pre-merge model, not a behavioural requirement.
+ assert.ok(meshes.length>=5,`a blocky model built from merged parts, got ${meshes.length} meshes`);
+ assert.equal(meshes.filter(m=>m.name==='robot-body'||m.name==='robot-head').length,2,'the static shell is batched into body and head');
  assert.ok(meshes.some(m=>m.name==='opening-robot-eye'),'red eye present');
  assert.ok(meshes.some(m=>m.name==='opening-robot-scan-sector'),'visible scan sector present');
  assert.equal(meshes.filter(m=>/health|hp|bar|weapon|drop|ammo|icon|glow_billboard/i.test(m.name)).length,0,'no health bar, weapon, drop or icon-like part');
@@ -399,6 +403,197 @@ function inSectorAndRange(robot:OpeningRobot,player:T.Vector3){
  assert.ok(patrol.length===4,'patrol points come from spatialLayout, not invented here');
  pass('tuning stays inside the task book window and positions come from the shared layout',
   {...ROBOT,patrolPoints:patrol,slowerThanPlayerWalk:true});
+}
+
+// ---------------------------------------------------------------- 10. the shell pool is shared; emissive parts are not
+{
+ const assets=createOpeningRobotAssets();
+ const a=createOpeningRobot(world,{assets,id:'pool-a'});
+ const b=createOpeningRobot(world,{assets,id:'pool-b',startIndex:2});
+ const geometriesOf=(robot:OpeningRobot)=>{
+  const set=new Set<T.BufferGeometry>();
+  robot.root.traverse(object=>{const mesh=object as T.Mesh;if(mesh.isMesh)set.add(mesh.geometry);});
+  return set;
+ };
+ const materialsOf=(robot:OpeningRobot)=>{
+  const set=new Set<T.Material>();
+  robot.root.traverse(object=>{const mesh=object as T.Mesh;if(mesh.isMesh)for(const m of Array.isArray(mesh.material)?mesh.material:[mesh.material])set.add(m);});
+  return set;
+ };
+ const gA=geometriesOf(a),gB=geometriesOf(b);
+ assert.equal([...gA].filter(g=>gB.has(g)).length,5,'body, head, band, eye and beacon buffers are shared by both units');
+ assert.equal(gA.size,6,'a unit adds only its own animated scan-sector polygon');
+ const mA=materialsOf(a),mB=materialsOf(b);
+ assert.equal([...mA].filter(m=>mB.has(m)).length,2,'the painted shell and band materials are shared');
+ assert.equal(mA.size,5,'five materials per unit: two shared plus eye, lamp and beam');
+ const eyeMaterialOf=(robot:OpeningRobot)=>{
+  const mesh=robot.root.getObjectByName('opening-robot-eye') as T.Mesh;
+  return (Array.isArray(mesh.material)?mesh.material[0]:mesh.material) as T.MeshStandardMaterial;
+ };
+ assert.notEqual(eyeMaterialOf(a),eyeMaterialOf(b),'the eye material stays per unit so red/green state cannot leak');
+ assert.ok(eyeMaterialOf(a).emissive.r>0.6&&eyeMaterialOf(a).emissive.g<0.3,'both eyes glow red in the alert state');
+ a.dispose();b.dispose();
+ assert.doesNotThrow(()=>assets.dispose(),'the fleet owner releases the shared pool after the units');
+ pass('the shell pool is shared across units while eye, lamp, beam and scan sector stay per unit',
+  {meshesPerUnit:6,sharedGeometries:5,sharedMaterials:2,materialsPerUnit:mA.size});
+}
+
+// ---------------------------------------------------------------- 11. shared awareness shares a stale point, never a live track
+{
+ const board=createOpeningRobotBlackboard();
+ const watcher=createOpeningRobot(world,{id:'coord-a',blackboard:board});
+ const inside=createOpeningRobot(world,{id:'coord-b',startIndex:3,blackboard:board});
+ const distant=createOpeningRobot(world,{id:'coord-c',route:O.robotRoutes[4],startIndex:0,blackboard:board});
+ const open=ground(56,-48),hidden=ground(24,-25);
+ assert.ok(openingRobotLineClear(world,new T.Vector3(63,1.05,-48),new T.Vector3(56,1.15,-48)),'scenario: the watcher has a clean line to the target');
+ assert.equal(openingRobotLineClear(world,new T.Vector3(63,1.05,-59),new T.Vector3(56,1.15,-48)),false,'scenario: the Building 5 wall blocks the inside unit');
+ assert.ok(inside.position.distanceTo(open)>ROBOT.range&&inside.position.distanceTo(open)<ROBOT.coordinationRadius,'the inside unit can hear the sighting but cannot see the target');
+ assert.ok(distant.position.distanceTo(open)>ROBOT.coordinationRadius,'the third unit is outside the coordination radius');
+ const responders=new Set<OpeningRobot>();
+ let alertAfterReport=0,sightingFrozen:number[]|null=null;
+ for(let i=0;i<120;i++){
+  const t=(i+1)/60;
+  const player=t<1?open:hidden;    // the target breaks line of sight after one second
+  board.tick(DT);
+  for(const robot of [watcher,inside,distant]){
+   robot.update(DT,player,true,false);
+   const d=robot.diagnostics;
+   assert.equal(d.state==='chase'&&!d.visible,false,`${robot.root.userData.fleetId} chased without its own line of sight at ${t.toFixed(2)}s`);
+   assert.equal(d.caught,false,`${robot.root.userData.fleetId} captured the target without a chase`);
+   if(d.supporting)responders.add(robot);
+  }
+  if(board.alert>alertAfterReport)alertAfterReport=board.alert;
+  if(t>1.2&&board.sighting)sightingFrozen=[board.sighting.position.x,board.sighting.position.z];
+ }
+ assert.ok(alertAfterReport>0.5,`a real sighting raises the fleet alert (${alertAfterReport})`);
+ assert.equal(responders.size,1,'exactly one nearby unit claims the shared search, not the whole fleet');
+ assert.ok(responders.has(inside),'the unit that cannot see the target is the one that searches the remembered point');
+ assert.equal(watcher.state,'search','the seeing unit searches too once the target breaks line of sight');
+ assert.equal(inside.diagnostics.caught,false);
+ assert.equal(distant.state,'patrol','a unit outside the coordination radius ignores the sighting');
+ assert.equal(distant.diagnostics.lastSeen,null,'no shared point is pushed onto a distant unit');
+ const sharedPoint=inside.diagnostics.lastSeen;
+ assert.notEqual(sharedPoint,null,'the responder walks to the shared remembered point');
+ assert.ok(Math.hypot(sharedPoint![0]-open.x,sharedPoint![2]-open.z)<1,`the shared point is the last real sighting (${sharedPoint?.map(round)})`);
+ assert.ok(Math.hypot(sharedPoint![0]-hidden.x,sharedPoint![2]-hidden.z)>10,'and never the hidden live position');
+ assert.deepEqual(sightingFrozen,[round(open.x),round(open.z)],'the blackboard keeps the stale point after the target disappears');
+ pass('one unit publishes a sighting, one nearby unit searches the remembered point, the rest stay put',
+  {alert:round(alertAfterReport),responders:responders.size,sharedPoint:sharedPoint?.map(round),watcher:watcher.state,inside:inside.state,distant:distant.state});
+ watcher.dispose();inside.dispose();distant.dispose();
+}
+
+// ---------------------------------------------------------------- 12. a wall-blocked target is never published
+{
+ const board=createOpeningRobotBlackboard();
+ const guarded=createOpeningRobot(world,{id:'wall-guard',blackboard:board});
+ const covered=ground(62,-55.4);
+ let alert=0,ticks=0;
+ for(;ticks<240;ticks++){
+  board.tick(DT);
+  guarded.update(DT,covered,true,false);
+  alert=Math.max(alert,board.alert);
+  assert.equal(board.sighting,null,'a target behind the closed wall is never published to the blackboard');
+  assert.notEqual(guarded.diagnostics.state,'chase','and never chased through it');
+ }
+ assert.equal(alert,0,'no report means no fleet alert');
+ pass('nothing reaches the blackboard while the Building 5 wall blocks every eye ray',{ticks,alert,state:guarded.diagnostics.state});
+ guarded.dispose();
+}
+
+// ---------------------------------------------------------------- 13. the fleet alert decays and the sighting expires
+{
+ const board=createOpeningRobotBlackboard();
+ board.report('test',ground(70,-48),new T.Vector3(2.6,0,0));
+ const start=board.alert;
+ assert.ok(start>0,'a report raises the alert');
+ assert.notEqual(board.sighting,null);
+ for(let i=0;i<120;i++)board.tick(DT);
+ const mid=board.alert;
+ assert.ok(mid>0&&mid<start,`the alert decays over two seconds (${start} -> ${mid})`);
+ assert.notEqual(board.sighting,null,'the sighting is still actionable inside its window');
+ for(let i=0;i<600;i++)board.tick(DT);
+ assert.equal(board.alert,0,'the alert reaches zero after the reports stop');
+ assert.equal(board.sighting,null,`the sighting expires after ${ROBOT.sightingFresh}s`);
+ pass('alert rises on a report, decays on tick, and the sighting expires',{afterReport:round(start),afterTwoSeconds:round(mid),freshSeconds:ROBOT.sightingFresh});
+}
+
+// ---------------------------------------------------------------- 14. search prediction is bounded by the last visible velocity
+{
+ const robot=createOpeningRobot(world,{id:'predict'});
+ // The default first patrol leg runs west from (63,-48), so the body keeps facing the
+ // walking target and the confirm window can elapse before it breaks sight.
+ const walking=(t:number)=>ground(58-2.6*Math.min(t,1),-48);
+ for(let i=0;i<60;i++)robot.update(DT,walking((i+1)*DT),true,false);
+ assert.equal(robot.state,'chase','scenario: the walking target is confirmed before it breaks sight');
+ const lastSeen=robot.diagnostics.lastSeen!;
+ // The target vanishes far away, which also puts this unit on the far update tier, so
+ // give it a few ticks to take its next simulation step and enter the search.
+ // `assert.equal` above narrows `state` to 'chase' for the rest of this block, so widen
+ // it again for the poll below.
+ const hidden=ground(24,-25);
+ for(let i=0;i<8&&(robot.state as string)!=='search';i++)robot.update(DT,hidden,true,false);
+ assert.equal(robot.state,'search','losing sight turns into a search of the plan');
+ const steps=robot.diagnostics.searchSteps;
+ assert.ok(steps.length>=2,`the search plan adds a predicted point (${JSON.stringify(steps)})`);
+ assert.ok(Math.hypot(steps[0][0]-lastSeen[0],steps[0][1]-lastSeen[2])<0.01,'the first search point is the remembered position');
+ const ahead=lastSeen[0]-steps[1][0];
+ const offset=Math.hypot(steps[1][0]-lastSeen[0],steps[1][1]-lastSeen[2]);
+ assert.ok(ahead>0.3,`the predicted point is ahead along the observed motion (${ahead.toFixed(2)}m)`);
+ assert.ok(offset<=ROBOT.predictMax+1e-6,`and capped at predictMax (${offset.toFixed(2)}m <= ${ROBOT.predictMax})`);
+ pass('the search plan keeps the remembered point first and adds a capped prediction along the last visible motion',
+  {lastSeen:lastSeen.map(round),plan:steps,predictionMeters:round(offset)});
+ robot.dispose();
+}
+
+// ---------------------------------------------------------------- 15. far units update less often but cover the same ground
+{
+ const near=createOpeningRobot(world,{id:'tier-near'});
+ const far=createOpeningRobot(world,{id:'tier-far'});
+ const nearPlayer=ground(70,-48),farPlayer=ground(24,-25);
+ let nearSteps=0,farSteps=0,nearDistance=0,farDistance=0,farMaxStep=0;
+ for(let i=0;i<240;i++){          // four seconds at 60 Hz
+  const a=near.position.clone(),b=far.position.clone();
+  near.update(DT,nearPlayer,true,false);
+  far.update(DT,farPlayer,true,false);
+  const nearMove=near.position.distanceTo(a);
+  const farMove=far.position.distanceTo(b);
+  if(nearMove>1e-4)nearSteps++;
+  if(farMove>1e-4)farSteps++;
+  nearDistance+=nearMove;farDistance+=farMove;
+  farMaxStep=Math.max(farMaxStep,farMove);
+ }
+ assert.equal(near.diagnostics.farTier,false,'a unit near the player keeps the full update rate');
+ assert.equal(far.diagnostics.farTier,true,'a unit far from the player drops to the far tier');
+ assert.ok(farSteps<nearSteps*0.6,`the far unit simulates less often (${farSteps} vs ${nearSteps} moving ticks)`);
+ assert.ok(farSteps>nearSteps*0.25,`but it still simulates (${farSteps} ticks)`);
+ assert.ok(Math.abs(nearDistance-farDistance)<0.5,`both units cover the same ground (${nearDistance.toFixed(2)}m vs ${farDistance.toFixed(2)}m)`);
+ assert.ok(farMaxStep<=ROBOT.chaseSpeed/ROBOT.farHz+1e-6,`a far step stays bounded (${farMaxStep.toFixed(3)}m)`);
+ pass('distance tiering cuts the far unit update rate without changing its physical path',
+  {nearSteps,farSteps,nearDistance:round(nearDistance),farDistance:round(farDistance),farMaxStep:round(farMaxStep)});
+ near.dispose();far.dispose();
+}
+
+// ---------------------------------------------------------------- 16. an alerted unit holds the guard waypoint
+{
+ const board=createOpeningRobotBlackboard();
+ const guard=createOpeningRobot(world,{id:'guard',blackboard:board,guardPoint:[58,0,-50]});
+ const away=ground(24,-46);
+ let guarded=0,maxHeadOffset=0;
+ for(let i=0;i<60*12;i++){
+  const t=(i+1)*DT;
+  if(t<6)board.report('seed',away,new T.Vector3());   // a distant unit keeps the alert up
+  board.tick(DT);
+  guard.update(DT,away,true,false);
+  const d=guard.diagnostics;
+  if(d.guarding){guarded+=DT;maxHeadOffset=Math.max(maxHeadOffset,Math.abs(d.headOffset));}
+  assert.notEqual(d.state,'chase','the seeded sighting is nowhere near this unit');
+ }
+ assert.ok(guarded>1,`the unit holds the alerted guard waypoint for ${guarded.toFixed(2)}s`);
+ assert.ok(guard.diagnostics.alert<ROBOT.guardAlert,'the alert has decayed below the guard threshold by the end');
+ assert.ok(maxHeadOffset>1.2,`it turns its head onto the guard point instead of sweeping (${maxHeadOffset.toFixed(2)} rad)`);
+ pass('an alerted unit holds the guard waypoint and faces it, then resumes the normal sweep',
+  {guardedSeconds:round(guarded),maxHeadOffset:round(maxHeadOffset),alertAtEnd:round(guard.diagnostics.alert)});
+ guard.dispose();
 }
 
 function graphConnected(robot:OpeningRobot){
