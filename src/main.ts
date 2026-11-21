@@ -1,5 +1,10 @@
 import {createOpeningExperience} from './opening/experience';
-import {openingCheckpoint,CHECKPOINT_LABELS} from './opening/checkpoint';
+import {openingCheckpoint,checkpointCampaign,CHECKPOINT_LABELS} from './opening/checkpoint';
+import {createCampaignHost,type CampaignHost} from './campaign/host';
+import {showChapterCard} from './campaign/chapterCard';
+import type {CampaignEvent} from './campaign/state';
+import {markRelayRestored,relayRestored} from './opening/backupRelay';
+import {recordCorePowerCut} from './lionBoss/mission';
 import {createOpeningAtmosphere,type OpeningAtmosphere} from './opening/atmosphere';
 import {loadWorldThreat,sealWorld} from './gameplay/worldThreat';
 const route=new URLSearchParams(location.search).get('experience');
@@ -52,10 +57,35 @@ const crowd=openingMode?null:createStudentCrowd();
 if(crowd)viewer.scene.add(crowd.root);
 let door:ReturnType<typeof createSportsDoor>|null=null;
 const interactWithDoor=()=>door?.interact()??false;
+let campaign:CampaignHost|undefined;
 const experience=openingMode
- ?createOpeningExperience(viewer.scene,explorer,notify,()=>asset.openingWorld,()=>atmosphere)
+ ?createOpeningExperience(viewer.scene,explorer,notify,()=>asset.openingWorld,()=>atmosphere,()=>campaign)
  :sportsMode?createSportsRescueExperience(explorer,interactWithDoor)
  :createExperience(viewer.scene,explorer,notify,{beforeInteract:interactWithDoor});
+if(openingMode){
+ // One world: after Chapter 1 the campaign runs B4 → lawn → sports hall → ending
+ // in this page, on this campus model, explorer and HUD, in first person.
+ explorer.lockView('first');
+ let dragControls=false;
+ const host=createCampaignHost({context:{
+  scene:viewer.scene,root:()=>asset.root,explorer,notify,atmosphere:()=>atmosphere,
+  openPanel:id=>{dragControls=document.pointerLockElement!==viewer.renderer.domElement;explorer.openPanel(id==='computer'||id==='settings'?id:'door');},
+  closePanel:()=>explorer.closePanel(),resume:()=>dragControls?explorer.enterCompat():explorer.enter(),
+  card:showChapterCard,
+ }});
+ campaign=host;
+ const checkpoint=openingCheckpoint(new URLSearchParams(location.search).get('checkpoint')),resume=checkpoint?checkpointCampaign(checkpoint):null;
+ const mac=explorer.game.inventory.slots.find(slot=>slot?.itemId==='macbook-air-13-silver')?.instanceId;
+ if(resume&&mac){
+  // Campaign checkpoint: the results of the chapters before it, through their real writers.
+  if(resume.relay)markRelayRestored(mac);
+  if(resume.corePower)recordCorePowerCut(mac);
+  host.start(mac,resume.stage);
+ }else if((experience as {story?:{stage:string}}).story?.stage!=='complete'||checkpoint)host.reset();
+ else if(!host.active&&mac)host.start(mac,relayRestored(mac)?'to_lawn':'b4_enter'); // a Chapter 1 save from before the campaign existed
+ viewer.beforeRender.add(dt=>host.update(dt));
+ explorer.interactions.add(()=>{host.interact();});
+}
 if(!openingMode){
  let dragControls=false;
  door=createSportsDoor({
@@ -114,7 +144,7 @@ let nightRequested=false;
 el('night-toggle').onclick=()=>{if(loungeView){notify('The lounge uses indoor lighting. Return to campus to switch night mode.');return;}nightRequested=!nightRequested;lighting.set(nightRequested,imported||asset.root);el('night-toggle').textContent=openingMode?(nightRequested?'Day mode':'Night mode'):(nightRequested?'Switch to day':'Switch to night');};
 function showLounge(){mode(false);loungeView=true;sync();lighting.set(false,asset.root);viewer.view('selected',lounge);el('mode-label').textContent='Building 5 · 4F stepped lounge / standalone section · estimated dimensions';stats();notify('Building and floor confirmed. This is a standalone reference asset; use Return to outdoor exploration to go back to campus.');}
 el('lounge-toggle').onclick=()=>showLounge();
-index();stats();mode(true);if(openingMode){atmosphere=createOpeningAtmosphere(viewer.scene,viewer.renderer,viewer.lights);let threat=loadWorldThreat();if(threat.phase==='clear'&&(experience as {runtime?:{curtain_deployed:boolean}}).runtime?.curtain_deployed)threat=sealWorld();if(threat.phase==='sealed')atmosphere.restoreSealed();document.getElementById('night-toggle')?.style.setProperty('display','none');}if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign(window,{__CAMPUS:{viewer,explorer,experience,door,crowd,openingDebug:(experience as {debug?:unknown}).debug,mode,showLounge,lighting,atmosphere,lounge,worldThreat:()=>loadWorldThreat(),get asset(){return asset;},get imported(){return imported;},stats,select,setView,rebuild,exportTarget,perf:()=>viewer.perf(),memory:()=>debugMemory(),resources:()=>resourceReport(viewer.scene),deferred:()=>deferredTextureStats(),ready:true}});
+index();stats();mode(true);if(openingMode){atmosphere=createOpeningAtmosphere(viewer.scene,viewer.renderer,viewer.lights);let threat=loadWorldThreat();if(threat.phase==='clear'&&(experience as {runtime?:{curtain_deployed:boolean}}).runtime?.curtain_deployed)threat=sealWorld();if(threat.phase==='sealed')atmosphere.restoreSealed();document.getElementById('night-toggle')?.style.setProperty('display','none');}if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign(window,{__CAMPUS:{viewer,explorer,experience,door,crowd,openingDebug:(experience as {debug?:unknown}).debug,campaign:campaign&&{state:()=>campaign!.state(),emit:(event:CampaignEvent)=>campaign!.emit(event),start:(deviceId:string)=>campaign!.start(deviceId),chapter:()=>campaign!.chapter(),objective:()=>campaign!.objective(),get debug(){return campaign!.debug;}},mode,showLounge,lighting,atmosphere,lounge,worldThreat:()=>loadWorldThreat(),get asset(){return asset;},get imported(){return imported;},stats,select,setView,rebuild,exportTarget,perf:()=>viewer.perf(),memory:()=>debugMemory(),resources:()=>resourceReport(viewer.scene),deferred:()=>deferredTextureStats(),ready:true}});
 
 el('enter-game').onclick=()=>explorer.enter();
 el('takeover').onclick=()=>explorer.takeover();
@@ -152,7 +182,7 @@ if(openingMode){
  const copy:Record<string,string>={'mode-label':'Building 4 · Shanghai Campus','reset':'Return to checkpoint','mode-toggle':'Campus model tools','takeover':'Take control','night-toggle':'Night / Day','experience-settings':'Settings & save','new-game':'Restart opening…','enable-ai':'Enable AI control','bridge-status':'Local control service','enter-compat':'Drag controls','scene-index-toggle':'Scene index'};
  for(const [id,text]of Object.entries(copy)){const node=document.getElementById(id);if(node)node.textContent=text;}
  const checkpointStart=openingCheckpoint(new URLSearchParams(location.search).get('checkpoint'));
- const pause=document.querySelector('.pause-card');if(pause){const eyebrow=pause.querySelector('.eyebrow');if(eyebrow)eyebrow.textContent='BARRIER 2030';pause.querySelector('h2')!.textContent='BARRIER 2030';pause.querySelector('p')!.textContent=checkpointStart?`Checkpoint: ${CHECKPOINT_LABELS[checkpointStart]}. Continue from here.`:'BARRIER 2030 · You are a Student Ambassador on your way to the High Table Dinner. Begin on the campus shuttle.';pause.querySelector('.key-guide')!.textContent='WASD move · Shift run · Space jump · F interact · E backpack · C MacBook · V view';pause.querySelector('.desktop-note')!.textContent='Keyboard and mouse · Continue to look around and move';pause.querySelector('summary')!.textContent='Restart / AI control';}
+ const pause=document.querySelector('.pause-card');if(pause){const eyebrow=pause.querySelector('.eyebrow');if(eyebrow)eyebrow.textContent='BARRIER 2030';pause.querySelector('h2')!.textContent='BARRIER 2030';pause.querySelector('p')!.textContent=checkpointStart?`Checkpoint: ${CHECKPOINT_LABELS[checkpointStart]}. Continue from here.`:'BARRIER 2030 · You are a Student Ambassador on your way to the High Table Dinner. Begin on the campus shuttle.';pause.querySelector('.key-guide')!.textContent='WASD move · Shift run · Space jump · F interact · E backpack · C MacBook';pause.querySelector('.desktop-note')!.textContent='Keyboard and mouse · Continue to look around and move';pause.querySelector('summary')!.textContent='Restart / AI control';}
  const help=document.querySelector('.header-right > button:not(#scene-index-toggle):not(#night-toggle)');if(help)help.textContent='Help';
  toolsMenu.querySelector('summary')!.textContent='Campus tools';advanced.querySelector('summary')!.textContent='Restart / AI control';
  document.querySelector('.brand-copy > span')!.textContent='BARRIER 2030';

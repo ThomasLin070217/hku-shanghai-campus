@@ -1,14 +1,19 @@
 import type {CampusGame} from '../exploration/game';
 import {OPENING as O} from './spatialLayout';
 import type {OpeningState} from './contracts';
-export function drawOpeningMap(canvas:HTMLCanvasElement,g:CampusGame,story:OpeningState,large=false){
+import type {Objective} from '../campaign/types';
+/** After Chapter 1 the running campaign owns the route and target (`campaign`, from `host.objective()`). */
+export function drawOpeningMap(canvas:HTMLCanvasElement,g:CampusGame,story:OpeningState,large=false,campaign?:Objective|null){
+ if(story.stage==='complete'&&campaign){
+  const t=campaign.target;drawCampusMap(canvas,g,{route:campaign.route??[],target:t?{x:t[0],z:t[2]}:null},large);return;
+ }
  const route=story.stage==='to_b6'?O.routeB6:story.stage==='return_b5'?[...O.routeB6].reverse():story.stage==='to_b4'||story.stage==='complete'?O.routeB4:O.routeB5;
  const target=story.stage==='to_b6'?O.laptop:story.stage==='to_b4'||story.stage==='complete'?O.handoff:story.stage==='bus'?O.busExit:O.staff;
  drawCampusMap(canvas,g,{route,target:{x:target[0],z:target[2]}},large);
 }
 interface CampusMapOverlay {
  route:readonly (readonly number[])[];
- target:{x:number;z:number};
+ target:{x:number;z:number}|null;
  focus?:{x:number;z:number;width:number;depth:number};
  markers?:readonly {x:number;z:number;label:string}[];
 }
@@ -24,6 +29,6 @@ export function drawCampusMap(canvas:HTMLCanvasElement,g:CampusGame,overlay:Camp
  for(const marker of overlay.markers??[]){
   c.fillStyle='#34564b';c.fillRect(px(marker.x)-3,pz(marker.z)-3,6,6);c.fillText(marker.label,px(marker.x)+13,pz(marker.z)+4);
  }
- c.fillStyle='#ad7031';c.beginPath();c.arc(px(overlay.target.x),pz(overlay.target.z),large?8:5,0,Math.PI*2);c.fill();
+ if(overlay.target){c.fillStyle='#ad7031';c.beginPath();c.arc(px(overlay.target.x),pz(overlay.target.z),large?8:5,0,Math.PI*2);c.fill();}
  c.save();c.translate(px(g.body.position.x),pz(g.body.position.z));c.rotate(-g.yaw);c.beginPath();c.moveTo(0,-9);c.lineTo(-5,5);c.lineTo(5,5);c.closePath();c.fillStyle='#254b91';c.fill();c.restore();c.textAlign='left';c.fillStyle='#173f32';c.font='12px system-ui';c.fillText('N ↑',9,18);
 }

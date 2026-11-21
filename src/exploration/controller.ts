@@ -12,6 +12,8 @@ import type {BuildingSpec,SiteParameters} from '../model/campusParameters';
 export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:BuildingSpec[],site:SiteParameters,opening=false){
  let world=createNavigation(specs,site,opening),game=new CampusGame(world,specs,site),enabled=false,accumulator=0,turn=0,compat=false,dragging=false,lastX=0,lastY=0;
  const events=new AbortController(),interactions=new Set<()=>void>(),computers=new Set<()=>void>();let disposed=false;
+ /** Story mode pins the camera (e.g. first person); null keeps the V toggle. */
+ let viewLock:'first'|'third'|null=null;
  const listenWindow=<K extends keyof WindowEventMap>(type:K,fn:(e:WindowEventMap[K])=>void,options:AddEventListenerOptions={})=>window.addEventListener(type,fn,{...options,signal:events.signal});
  const listenDocument=<K extends keyof DocumentEventMap>(type:K,fn:(e:DocumentEventMap[K])=>void,options:AddEventListenerOptions={})=>document.addEventListener(type,fn,{...options,signal:events.signal});
  const listenCanvas=<K extends keyof HTMLElementEventMap>(type:K,fn:(e:HTMLElementEventMap[K])=>void,options:AddEventListenerOptions={})=>canvas.addEventListener(type,fn,{...options,signal:events.signal});
@@ -43,12 +45,12 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
   if(e.code===KEYS.computer&&!e.repeat){e.preventDefault();for(const fn of computers)fn();return;}
   if(/^Digit[1-9]$/.test(e.code)){e.preventDefault();game.takeover('human_hotbar');game.selectHotbar(Number(e.code.slice(-1))-1);if(!controlled())game.paused=true;return;}
   if((e.code===KEYS.zoomIn||e.code===KEYS.zoomOut)&&controlled()){distance=T.MathUtils.clamp(distance+(e.code===KEYS.zoomIn?-0.5:0.5),C.minDistance,C.maxDistance);return;}
-  const movement=[KEYS.forward,KEYS.back,KEYS.left,KEYS.right,KEYS.sprint,KEYS.jump].includes(e.code as never);
-  if((game.owner||game.armed)&&(movement||e.code===KEYS.interact||e.code===KEYS.view)){game.takeover('human_movement');clear();if(!controlled())game.pause('human_movement');}
+  const movement=[KEYS.forward,KEYS.back,KEYS.left,KEYS.right,KEYS.sprint,KEYS.jump].includes(e.code as never),viewKey=e.code===KEYS.view&&!viewLock;
+  if((game.owner||game.armed)&&(movement||e.code===KEYS.interact||viewKey)){game.takeover('human_movement');clear();if(!controlled())game.pause('human_movement');}
   if(e.code===KEYS.pause&&compat){pause('escape');return;}
   if(!controlled()||game.paused)return;
   if(e.code===KEYS.interact){e.preventDefault();if(!e.repeat)for(const fn of interactions)fn();return;}
-  if(movement||e.code===KEYS.view){e.preventDefault();keys.add(e.code);if(!e.repeat&&e.code===KEYS.jump){game.humanJump=true;jumpBuffer=C.jumpBufferMs;}if(!e.repeat&&e.code===KEYS.view)game.view=game.view==='first'?'third':'first';}
+  if(movement||viewKey){e.preventDefault();keys.add(e.code);if(!e.repeat&&e.code===KEYS.jump){game.humanJump=true;jumpBuffer=C.jumpBufferMs;}if(!e.repeat&&viewKey)game.view=game.view==='first'?'third':'first';}
  });
  listenWindow('keyup',e=>keys.delete(e.code));
  listenDocument('mousemove',e=>{if(enabled&&locked()&&!game.paused){game.yaw-=e.movementX*sensitivity;game.pitch=T.MathUtils.clamp(game.pitch+e.movementY*sensitivity,C.minPitch,C.maxPitch);}});
@@ -71,7 +73,7 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
    student.root.visible=actualDistance>.65;
   }camera.updateMatrixWorld();
  }
- function update(dt:number){inventoryUI.refresh();if(!enabled)return;const held=game.inventory.equipped?.itemId??null;student.equip(held);firstPerson.equip(held);dt=Math.min(dt,.1);const before=game.body.position.clone();
+ function update(dt:number){inventoryUI.refresh();if(viewLock)game.view=viewLock;if(!enabled)return;const held=game.inventory.equipped?.itemId??null;student.equip(held);firstPerson.equip(held);dt=Math.min(dt,.1);const before=game.body.position.clone();
   game.human={forward:Number(keys.has(KEYS.forward))-Number(keys.has(KEYS.back)),right:Number(keys.has(KEYS.right))-Number(keys.has(KEYS.left)),sprint:keys.has(KEYS.sprint)};
   if(!game.paused){
    // A jump pressed a moment before landing is re-armed on the first grounded step.
@@ -90,7 +92,9 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  function reset(){pause('reset');game.spawn();student.gait.reset();student.animate(.02,0,true,0);turn=game.yaw;actualDistance=distance;updateCamera(1);}
  reset();student.root.visible=false;
  return{camera,student,interactions,computers,enter,enterCompat(){if(game.inventoryOpen||game.panel)return;game.takeover('human_compat');compat=true;game.paused=false;clear();canvas.focus();},update,reset,pause,openInventory,closeInventory,firstPerson,openPanel(panel:'computer'|'settings'|'door',physicalScreen=false){deviceView.show(physicalScreen&&panel==='computer');clear();compat=false;game.openPanel(panel);if(locked())document.exitPointerLock();},closePanel(){deviceView.show(false);clear();game.closePanel();},setComfort(fov:number,shake:boolean){camera.fov=T.MathUtils.clamp(fov,60,90);camera.updateProjectionMatrix();bob=shake;}, get game(){return game;},get position(){return game.body.position;},get world(){return world;},get enabled(){return enabled;},get state(){return{...game.observe(),yaw:game.yaw,pitch:game.pitch,distance,actualDistance,locked:locked(),compat,keys:[...keys]};},
-  setSensitivity(v:number){sensitivity=T.MathUtils.clamp(v,.0004,.006);},takeover(){pause('human_takeover');},enableAI(){if(locked())document.exitPointerLock();clear();game.enableAI();},
+  setSensitivity(v:number){sensitivity=T.MathUtils.clamp(v,.0004,.006);},
+  /** Pin the view (story mode keeps first person) or pass null to give the V toggle back. */
+  lockView(view:'first'|'third'|null){viewLock=view;if(view){game.view=view;updateCamera(1);}},get viewLock(){return viewLock;},takeover(){pause('human_takeover');},enableAI(){if(locked())document.exitPointerLock();clear();game.enableAI();},
   setEnabled(v:boolean){if(!v)deviceView.show(false);game.inventoryOpen=false;enabled=v;pause('mode_change');student.root.visible=v&&game.view==='third';arms.visible=v&&game.view==='first';if(v)updateCamera(1);},
   inspectAt(x:number,y:number,z:number,heading=0){pause('qa_inspection');student.gait.reset();student.animate(.02,0,true,0);game.body.position.set(x,y,z);game.body.velocity.set(0,0,0);game.yaw=heading;game.pitch=0;turn=heading;student.root.position.copy(game.body.position);updateCamera(1);},
   resize(w:number,h:number){if(w<=0||h<=0||!Number.isFinite(w/h)||camera.aspect===w/h)return;camera.aspect=w/h;camera.updateProjectionMatrix();},

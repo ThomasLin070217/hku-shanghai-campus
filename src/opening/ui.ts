@@ -556,29 +556,14 @@ export function createOpeningUI(
       facts.append(row);
     }
     body.append(facts, node('p', 'opening-endofslice', T.game.endOfSlice), node('p', 'opening-muted', T.complete.note));
-    const other = node('details', 'opening-other-slices');
-    const otherRow = node('div', 'opening-other-slices-row');
-    otherRow.append(
-      makeButton('L001 lawn encounter', 'secondary', () => {
-        location.assign('?experience=lion-boss');
-      }),
-      makeButton('Sports hall encounter', 'secondary', () => {
-        location.assign('?experience=sports-hall');
-      }),
-    );
-    other.append(node('summary', '', 'Other playable encounters'), otherRow);
-    body.append(other);
     shell.append(body);
     const close = makeButton(T.complete.close, 'primary', requestClose);
     close.dataset.autofocus = 'true';
-    // B4 handoff: the playable Keyboard Wall chapter pairs this MacBook with the
-    // backup supercomputer; the lawn entry then carries the save forward.
+    // One world: this dialog only shows once the MacBook is already paired with
+    // the B4 supercomputer, so the run continues on foot to the lawn in this page.
     const deviceId = device.instanceId();
-    const b4 = makeButton('Go to the Keyboard Wall (B4)', 'primary', () => {
-      location.assign(`interiors.html?chapter=b4&device=${encodeURIComponent(deviceId ?? '')}`);
-    });
-    const lawn = makeButton('Play L001 lawn encounter', 'secondary', () => {
-      location.assign('?experience=lion-boss');
+    const lawn = makeButton('Continue to Chapter 2', 'primary', () => {
+      if (deviceId) actions.startCampaign?.(deviceId, 'to_lawn');
     });
     lawn.disabled = true;
     const quick = node('details', 'opening-other-slices');
@@ -587,7 +572,7 @@ export function createOpeningUI(
     quick.append(node('summary', '', 'Quick restore (skip the puzzle)'), quickRow);
     body.append(quick);
     const replay = makeButton(T.epilogue.replay, 'secondary', () => actions.action('restart'));
-    shell.append(actionRow(close, b4, lawn, replay));
+    shell.append(actionRow(close, lawn, replay));
     return shell;
   }
 
@@ -690,27 +675,13 @@ export function createOpeningUI(
     return view.modal;
   }
 
-  // Reaching Building 4 hands straight over to the playable Keyboard Wall
-  // puzzle (backup power + supercomputer). The hand-off dialog only shows once
-  // this MacBook is already paired, or when the puzzle page cannot be reached.
-  let b4Entering = false;
+  // Reaching Building 4 hands straight over to the campaign in this page: the
+  // Keyboard Wall rooms are inside B04, entered on foot. The completion dialog
+  // only shows once this MacBook is already paired, or when the campaign cannot start.
   function enterB4Puzzle(): boolean {
     const id = device.instanceId();
     if (!id || relayRestored(id)) return false;
-    if (b4Entering) return true;
-    b4Entering = true;
-    const card = document.createElement('div');
-    card.className = 'opening-b4-transition';
-    card.dataset.b4Transition = 'true';
-    card.setAttribute('role', 'status');
-    card.style.cssText = 'position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:rgba(6,14,10,.94);color:#f2efe3;font:16px/1.5 system-ui;text-align:center;opacity:0;transition:opacity .5s ease';
-    card.innerHTML = '<div><p style="margin:0 0 6px;font-size:12px;letter-spacing:.2em;color:#8fd3a8">CHAPTER 1 · BUILDING 4</p><h2 style="margin:0 0 10px;font-size:30px;font-weight:600">The Keyboard Wall</h2><p style="margin:0;color:#c9d6cc">The backup supercomputer is hidden behind this wall. Bring it online to fight back.</p></div>';
-    document.body.append(card);
-    requestAnimationFrame(() => { card.style.opacity = '1'; });
-    window.setTimeout(() => {
-      location.assign(`interiors.html?chapter=b4&device=${encodeURIComponent(id)}`);
-    }, 2200);
-    return true;
+    return actions.startCampaign?.(id) ?? false;
   }
 
   function renderModal(view: OpeningView): void {
@@ -909,7 +880,7 @@ export function createOpeningUI(
   function update(view: OpeningView): void {
     currentView=view;
     // The handoff epilogue appears once, after the completion modal is closed.
-    if (view.story.stage === 'complete' && !view.modal) showEpilogue();
+    if (view.story.stage === 'complete' && !view.modal && !view.campaign) showEpilogue();
     else if (view.story.stage !== 'complete') {
       if (epilogueVisible) hideEpilogue(false);
       epilogueSeen = false;

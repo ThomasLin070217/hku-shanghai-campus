@@ -2319,7 +2319,8 @@ body.opening-cinema-letter .opening-invite-card {
 .opening-warning,
 .opening-modal-root,
 .opening-cinema,
-.opening-epilogue {
+.opening-epilogue,
+.campaign-card {
   --opening-ink: #e8f4ee;
   --opening-ink-soft: #a4bcb1;
   --opening-paper: rgba(8, 18, 15, 0.92);

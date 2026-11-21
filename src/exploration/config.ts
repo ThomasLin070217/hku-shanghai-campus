@@ -21,4 +21,4 @@ export const LANDSCAPE = {
 };
 
 export const keyLabel=(code:string)=>code.startsWith('Key')?code.slice(3):({Space:'Space',ShiftLeft:'Shift',Escape:'Esc',BracketLeft:'[',BracketRight:']'}[code]??code);
-export const CONTROL_GUIDE=(english=false)=>english?`WASD move · Shift run · Space jump · F interact · E backpack · C MacBook · V view · 1–9 / scroll items`:`${keyLabel(KEYS.forward)}${keyLabel(KEYS.left)}${keyLabel(KEYS.back)}${keyLabel(KEYS.right)} move · ${keyLabel(KEYS.sprint)} run · ${keyLabel(KEYS.jump)} jump · ${keyLabel(KEYS.interact)} interact · ${keyLabel(KEYS.inventory)} backpack · ${keyLabel(KEYS.computer)} computer · ${keyLabel(KEYS.view)} view · 1–9 / scroll items`;
+export const CONTROL_GUIDE=(english=false)=>english?`WASD move · Shift run · Space jump · F interact · E backpack · C MacBook · 1–9 / scroll items`:`${keyLabel(KEYS.forward)}${keyLabel(KEYS.left)}${keyLabel(KEYS.back)}${keyLabel(KEYS.right)} move · ${keyLabel(KEYS.sprint)} run · ${keyLabel(KEYS.jump)} jump · ${keyLabel(KEYS.interact)} interact · ${keyLabel(KEYS.inventory)} backpack · ${keyLabel(KEYS.computer)} computer · ${keyLabel(KEYS.view)} view · 1–9 / scroll items`;
