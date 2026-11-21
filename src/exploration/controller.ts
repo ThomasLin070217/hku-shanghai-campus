@@ -73,7 +73,7 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
    student.root.visible=actualDistance>.65;
   }camera.updateMatrixWorld();
  }
- function update(dt:number){inventoryUI.refresh();if(viewLock)game.view=viewLock;if(!enabled)return;const held=game.inventory.equipped?.itemId??null;student.equip(held);firstPerson.equip(held);dt=Math.min(dt,.1);const before=game.body.position.clone();
+ function update(dt:number){inventoryUI.refresh();if(viewLock)game.view=viewLock;if(!enabled)return;const held=game.inventory.equipped?.itemId??null;student.equip(held);firstPerson.equip(held);firstPerson.setCarry(game.panel==='computer');dt=Math.min(dt,.1);const before=game.body.position.clone();
   game.human={forward:Number(keys.has(KEYS.forward))-Number(keys.has(KEYS.back)),right:Number(keys.has(KEYS.right))-Number(keys.has(KEYS.left)),sprint:keys.has(KEYS.sprint)};
   if(!game.paused){
    // A jump pressed a moment before landing is re-armed on the first grounded step.

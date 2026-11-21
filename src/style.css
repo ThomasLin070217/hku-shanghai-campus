@@ -24,3 +24,37 @@ body:not(.exploring) #pause-panel,body:not(.exploring) #crosshair,body:not(.expl
 
 /* Keep exploration hints clear of the nine-slot inventory HUD. */
 .exploring .stage-bottom{bottom:2px}.exploring .stage-bottom>span:first-child{font-size:9px;padding:3px 10px;border-radius:0;background:#203d32c0}.exploring #toast{bottom:176px}
+
+/* Story mode only: the campaign body class wears the opening HUD. Survey mode
+   (?experience=survey) keeps the light 52 px kit declared above. */
+body.opening-mode.exploring #inventory-hud{bottom:6px;font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;opacity:1;transition:opacity .35s ease}
+body.opening-mode.exploring #inventory-hud.is-idle{opacity:.24}
+body.opening-mode.exploring #inventory-hud.is-idle:hover,body.opening-mode.exploring #inventory-hud.is-idle:focus-within{opacity:.92}
+body.opening-mode .hotbar,body.opening-mode .bag-hotbar,body.opening-mode .storage-grid{grid-template-columns:repeat(9,36px);gap:4px}
+body.opening-mode .hotbar{padding:5px;background:rgba(8,18,15,.92);border:1px solid rgba(116,230,180,.46);box-shadow:0 14px 34px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04)}
+body.opening-mode .item-slot{width:36px;height:36px;padding:3px;background:#102019;border:1px solid rgba(116,230,180,.22);border-radius:0;transition:border-color .15s ease,background .15s ease}
+body.opening-mode .item-slot:hover{background:#162e26;border-color:rgba(116,230,180,.46)}
+body.opening-mode .item-slot.selected{outline:2px solid #ffb648;outline-offset:1px;background:#162e26}
+body.opening-mode .item-slot.picked{outline:2px dashed #74e6b4;outline-offset:1px}
+body.opening-mode .item-slot.empty:not(.selected):not(.picked){background:#102019}
+body.opening-mode .slot-number{top:0;left:2px;font:8px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:#a4bcb1}
+body.opening-mode .slot-count{right:2px;bottom:0;font:bold 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:#e8f4ee}
+body.opening-mode.exploring .slot-number{font-size:8px}
+body.opening-mode.exploring #held-name{font-size:10px;height:14px}
+body.opening-mode.exploring .bag-open{font-size:10px;padding:6px;background:rgba(8,18,15,.92);color:#e8f4ee;border:1px solid rgba(116,230,180,.46)}
+body.opening-mode.exploring .stage-bottom{bottom:86px}
+body.opening-mode #inventory-modal{background:rgba(5,13,11,.78)}
+body.opening-mode .bag-panel{background:linear-gradient(180deg,#0b1814,#050d0b);border:1px solid rgba(116,230,180,.46);box-shadow:0 24px 60px rgba(0,0,0,.6);color:#e8f4ee;font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+body.opening-mode .bag-panel h2{font-family:Georgia,"Times New Roman",serif;font-weight:400;color:#e8f4ee}
+body.opening-mode .bag-panel small,body.opening-mode .bag-panel .bag-info p,body.opening-mode .bag-panel .bag-label span,body.opening-mode .bag-panel .bag-footer{color:#a4bcb1}
+body.opening-mode .bag-heading{border-bottom-color:rgba(116,230,180,.22)}
+body.opening-mode .bag-heading button{color:#e8f4ee}
+body.opening-mode .bag-emblem{background:rgba(116,230,180,.12);color:#74e6b4;border-color:rgba(116,230,180,.46)}
+body.opening-mode .bag-footer{border-top-color:rgba(116,230,180,.22)}
+body.opening-mode .pause-card{background:linear-gradient(180deg,#0b1814,#050d0b);border:1px solid rgba(116,230,180,.46);box-shadow:0 24px 60px rgba(0,0,0,.6);color:#e8f4ee;font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+body.opening-mode .pause-card h2{font-family:Georgia,"Times New Roman",serif;font-weight:400;color:#e8f4ee}
+body.opening-mode .pause-card p,body.opening-mode .pause-card .key-guide{color:#a4bcb1}
+body.opening-mode .pause-card button{border:1px solid rgba(116,230,180,.46);color:#e8f4ee}
+body.opening-mode .pause-card .primary{background:#74e6b4;color:#08120f;font-weight:700}
+/* The checkpoint action ships a survey-paper background; keep it dark in story mode. */
+body.opening-mode .pause-card .pause-checkpoint{background:#102019;color:#e8f4ee}

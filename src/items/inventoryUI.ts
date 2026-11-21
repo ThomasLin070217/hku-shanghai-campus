@@ -10,7 +10,12 @@ export function createInventoryUI(getGame:()=>CampusGame,open:()=>void,close:()=
  const modal=document.createElement('div');modal.id='inventory-modal';modal.hidden=true;
  modal.innerHTML=`<section role="dialog" aria-modal="true" aria-labelledby="bag-title" class="bag-panel"><div class="bag-heading"><div><small>HKU SHANGHAI / STUDENT KIT</small><h2 id="bag-title">随身背包<span>36 SLOTS</span></h2></div><button id="bag-close" aria-label="关闭背包">×</button></div><div class="bag-info"><span class="bag-emblem">HKU</span><div><b>为今天的探索做好准备。</b><p>拖拽物品，或依次点击两个格子移动 / 交换。</p></div></div><div class="bag-label">储物区 <span>27 格</span></div><div class="storage-grid" aria-label="背包储物区"></div><div class="bag-label">快捷栏 <span>1—9 · 滚轮切换</span></div><div class="bag-hotbar"></div><div class="bag-footer"><span id="bag-description">选择物品查看说明</span><span><kbd>${keyLabel(KEYS.inventory)}</kbd> / <kbd>${keyLabel(KEYS.pause)}</kbd> 关闭</span></div></section>`;
  if(english){for(const node of [hud,modal]){for(const [zh,en]of [['物品快捷栏','Item hotbar'],['打开背包','Open backpack'],['背包储物区','Backpack storage'],['关闭背包','Close backpack'],['随身背包','Backpack'],['为今天的探索做好准备。','Ready for tonight.'],['拖拽物品，或依次点击两个格子移动 / 交换。','Drag an item, or select two slots to move or swap it.'],['选择物品查看说明','Select an item for details'],['储物区','Storage'],['27 格','27 slots'],['快捷栏','Hotbar'],['滚轮切换','scroll to select'],['背包','Bag'],['关闭','Close']])node.innerHTML=node.innerHTML.replaceAll(zh,en);}}
- document.body.append(hud,modal);let heldTimer:ReturnType<typeof setTimeout>|undefined;let source:number|null=null,revision=-1,priorGame:CampusGame|null=null,wasOpen=false;
+ document.body.append(hud,modal);let heldTimer:ReturnType<typeof setTimeout>|undefined;let idleTimer:ReturnType<typeof setTimeout>|undefined;let source:number|null=null,revision=-1,priorGame:CampusGame|null=null,wasOpen=false,lastSelected=-1;
+ // The compact dock fades to low opacity when the selection has not changed for
+ // ~2 s; scroll, number keys and E wake it (owner review, 2026-11-22).
+ const wake=()=>{hud.classList.remove('is-idle');if(idleTimer)clearTimeout(idleTimer);idleTimer=setTimeout(()=>{if(document.body.classList.contains('exploring')&&document.body.classList.contains('opening-mode')&&!getGame().inventoryOpen)hud.classList.add('is-idle');},2000);};
+ const wakeKeys=(e:KeyboardEvent)=>{if(e.code===KEYS.inventory||/^Digit[1-9]$/.test(e.code))wake();};
+ if(typeof window!=='undefined')window.addEventListener('keydown',wakeKeys);
  const hotbar=hud.querySelector('.hotbar')!,storage=modal.querySelector('.storage-grid')!,bagbar=modal.querySelector('.bag-hotbar')!;
  const make=(index:number,bag:boolean)=>{const b=document.createElement('button');b.type='button';b.className='item-slot';b.dataset.slot=String(index);b.dataset.bag=String(bag);b.innerHTML=`<span class="slot-number">${index<9?index+1:''}</span><img draggable="false" hidden><span class="slot-count"></span>`;
   b.onclick=()=>{const g=getGame();g.takeover('human_inventory_click');if(!bag){g.selectHotbar(index);return;}if(source===null){if(g.inventory.slots[index])source=index;}else{g.inventory.move(source,index);source=null;}revision=-1;refresh();};
@@ -25,10 +30,11 @@ export function createInventoryUI(getGame:()=>CampusGame,open:()=>void,close:()=
  function refresh(){const g=getGame(),inv=g.inventory;setHidden(hud,!document.body.classList.contains('exploring'));setHidden(modal,!g.inventoryOpen);
   if(g.inventoryOpen&&!wasOpen)(modal.querySelector('#bag-close') as HTMLButtonElement).focus();if(!g.inventoryOpen&&wasOpen)source=null;wasOpen=g.inventoryOpen;
   if(priorGame===g&&revision===inv.revision)return;priorGame=g;revision=inv.revision;
+  const selectionChanged=inv.selectedHotbar!==lastSelected;lastSelected=inv.selectedHotbar;if(selectionChanged)wake();
   for(const b of Array.from(document.querySelectorAll<HTMLButtonElement>('#inventory-hud .item-slot,#inventory-modal .item-slot'))){const i=Number(b.dataset.slot),s=inv.slots[i],def=s?ITEMS[s.itemId]:null,img=b.querySelector('img')!;b.classList.toggle('empty',!s);b.draggable=b.dataset.bag==='true'&&!!s;b.classList.toggle('selected',i===inv.selectedHotbar);b.classList.toggle('picked',i===source);b.setAttribute('aria-label',`${english?(i<9?'Hotbar':'Bag'):(i<9?'Hotbar':'Bag')} ${i<9?i+1:i-8}: ${def?(english?'MacBook Air':def.name):'Empty'}${s?' × '+s.count:''}`);b.setAttribute('aria-pressed',String(i===inv.selectedHotbar));img.hidden=!def;if(def)img.src=def.icon;b.querySelector('.slot-count')!.textContent=s&&s.count>1?String(s.count):'';}
   // The held-item name is a toast: it shows when the selection changes, then fades after 2 s.
   const heldName=hud.querySelector<HTMLElement>('#held-name')!,label=inv.equipped?(english?'MacBook Air · 13-inch':ITEMS[inv.equipped.itemId].name):'Empty hands';
   if(heldName.textContent!==label){heldName.textContent=label;heldName.style.transition='opacity .4s';heldName.style.opacity='1';clearTimeout(heldTimer);heldTimer=setTimeout(()=>{heldName.style.opacity='0';},2000);}
  }
- return{refresh,dispose(){clearTimeout(heldTimer);hud.remove();modal.remove();}};
+ return{refresh,dispose(){clearTimeout(heldTimer);clearTimeout(idleTimer);if(typeof window!=='undefined')window.removeEventListener('keydown',wakeKeys);hud.remove();modal.remove();}};
 }

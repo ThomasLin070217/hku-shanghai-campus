@@ -59,16 +59,17 @@ export function createOpeningUI(
   const hud = node('section', 'opening-hud');
   hud.setAttribute('aria-label', T.hud.objectiveLabel);
   const objective = node('h2', 'opening-objective');
-  const details = node('details', 'opening-details');
-  const detailText = node('p', 'opening-detail-text');
-  details.append(node('summary', '', T.hud.details), detailText);
-  const saveLine = node('p', 'opening-save');
   const distanceEl = node('p', 'opening-distance');
   const distanceArrow = node('i', 'opening-distance-arrow', '↑');
   distanceArrow.setAttribute('aria-hidden', 'true');
   const distanceText = node('span', 'opening-distance-text', '');
   distanceEl.append(distanceArrow, distanceText);
-  hud.append(node('p', 'opening-eyebrow', T.hud.objectiveLabel), objective, details, distanceEl, saveLine);
+  hud.append(node('p', 'opening-eyebrow', T.hud.objectiveLabel), objective, distanceEl);
+  // The permanent save line is gone: a save shows a short toast instead.
+  const saveToast = node('p', 'opening-save-toast');
+  saveToast.hidden = true;
+  saveToast.setAttribute('role', 'status');
+  saveToast.setAttribute('aria-live', 'polite');
 
   const mapCard = node('button', 'opening-mapcard');
   mapCard.type = 'button';
@@ -111,7 +112,7 @@ export function createOpeningUI(
   const dangerVignette = node('div', 'opening-danger-vignette');
   dangerVignette.setAttribute('aria-hidden', 'true');
 
-  stage.append(vitals.element, hud, mapCard, promptEl, warningEl, dangerVignette);
+  stage.append(vitals.element, hud, mapCard, promptEl, warningEl, saveToast, dangerVignette);
 
   // ---------------------------------------------------------- Cinematic.
   const cinema = node('section', 'opening-cinema');
@@ -130,8 +131,8 @@ export function createOpeningUI(
   stage.append(cinema);
 
   // ----------------------------------------------------------- Epilogue.
-  // Shown once the Building 4 handoff modal is closed. This is the end of the
-  // current slice, not the full students-freed / lights-show ending.
+  // Shown once the Building 4 handoff modal is closed. Chapter 1 ends here; the
+  // run continues in-page into Chapter 2 (the lawn and the full ending).
   const epilogue = node('section', 'opening-epilogue');
   epilogue.hidden = true;
   epilogue.setAttribute('role', 'region');
@@ -192,6 +193,10 @@ export function createOpeningUI(
   let lastSignature: string | null = null;
   let lastMiniDraw = 0;
   let lastWarningText = '';
+  let lastSaveStatus = '';
+  let saveToastTimer: number | undefined;
+  let saveToastHide: number | undefined;
+  let lastSaveTick = -1;
 
   function dialogShell(sectionKind: DialogKind): HTMLElement {
     const shell = node('section', 'opening-dialog opening-dialog--' + sectionKind);
@@ -812,6 +817,29 @@ export function createOpeningUI(
   },{capture:true,signal:events.signal});
 
   // ------------------------------------------------------------- Update.
+  /** A save is a short toast ("Saved on this device"), never a permanent line.
+   *  Only a forced device write raises it: a load, a checkpoint start, the 5 s
+   *  autosave or another status message changes the text but not the save tick. */
+  function updateSaveToast(text: string, tick: number): void {
+    const first = lastSaveTick < 0;
+    const saved = !first && tick > lastSaveTick;
+    lastSaveTick = Math.max(lastSaveTick, tick);
+    lastSaveStatus = text;
+    if (!saved || text !== 'Saved on this device.') return;
+    saveToast.textContent = text.replace(/\.$/, '');
+    saveToast.hidden = false;
+    saveToast.classList.remove('is-visible');
+    void saveToast.offsetWidth;
+    saveToast.classList.add('is-visible');
+    window.clearTimeout(saveToastTimer);
+    window.clearTimeout(saveToastHide);
+    saveToastTimer = window.setTimeout(() => {
+      saveToast.classList.remove('is-visible');
+      saveToastHide = window.setTimeout(() => {
+        if (!saveToast.classList.contains('is-visible')) saveToast.hidden = true;
+      }, 260);
+    }, 2400);
+  }
   function updateWarning(view: OpeningView): void {
     const state = view.robotState;
     const level = clamp(Number(view.robotWarning) || 0, 0, 1);
@@ -893,9 +921,7 @@ export function createOpeningUI(
     }
     // HUD text only: no modal rebuild on per-frame state such as elapsed time.
     setText(objective, view.objective);
-    setText(detailText, view.detail);
-    setHidden(details, !view.detail);
-    setText(saveLine, view.saveStatus);
+    updateSaveToast(view.saveStatus, view.saveTick ?? 0);
     setHidden(promptEl, !view.prompt);
     if (view.prompt) {
       if (promptEl.dataset.text !== view.prompt) {
@@ -958,6 +984,8 @@ export function createOpeningUI(
 
   function dispose(): void {
     events.abort();
+    window.clearTimeout(saveToastTimer);
+    window.clearTimeout(saveToastHide);
     hideDialog();
     mac.dispose();
     modalRoot.remove();
@@ -965,6 +993,7 @@ export function createOpeningUI(
     mapCard.remove();
     promptEl.remove();
     warningEl.remove();
+    saveToast.remove();
     cinema.remove();
     epilogue.remove();
     stage.classList.remove('opening-cinema-active', 'opening-epilogue-active');

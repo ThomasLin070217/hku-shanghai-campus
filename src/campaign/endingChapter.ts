@@ -50,7 +50,7 @@ export const ENDING_CLEAR_AT=7;
 /** The credits card body. Pure, so the headless check reads the exact copy. */
 export function creditsMarkup():string{
  return '<section id="ending-credits-card" role="dialog" aria-modal="true" aria-label="BARRIER 2030 credits">'
-  +'<p class="ending-kicker">HKU SHANGHAI · CDS</p>'
+  +'<p class="ending-kicker">CREDITS</p>'
   +'<h2>BARRIER 2030</h2>'
   +'<p class="ending-team">Thomas · Harry · Frost · WHL</p>'
   +'<p class="ending-place">HKU Shanghai · CDS</p>'
@@ -96,6 +96,11 @@ const ENDING_CSS=`
 #ending-overlay .ending-barrier.show{opacity:1}
 #ending-credits{position:fixed;inset:0;z-index:61;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,rgba(10,26,21,.92),rgba(2,7,5,.985) 72%);font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;color:#e8f4ee;opacity:0;transition:opacity .7s ease}
 #ending-credits.show{opacity:1}
+/* The credits own the screen: the paused game's card, the Mac overlay and the
+   now-stale HUD all step aside until the credits go. */
+body:has(#ending-credits) #pause-panel{display:none}
+body:has(#ending-credits) #ending-overlay{display:none}
+body:has(#ending-credits) :is(.opening-hud,.opening-hearts,.opening-mapcard,#inventory-hud,.stage-bottom,.shell-hint,.shell-chapters){display:none}
 #ending-credits-card{text-align:center;padding:40px 46px;max-width:min(560px,90vw)}
 #ending-credits-card .ending-kicker{margin:0 0 18px;font:600 11px/1.2 ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;letter-spacing:.26em;color:#74e6b4}
 #ending-credits-card h2{margin:0;font:400 clamp(40px,7vw,64px)/1.02 Georgia,"Times New Roman",serif;letter-spacing:.01em}
@@ -133,7 +138,7 @@ export function createEndingChapter():Chapter{
   document.getElementById(STYLE_ID)?.remove();
   const style=document.createElement('style');style.id=STYLE_ID;style.textContent=ENDING_CSS;document.head.append(style);
   overlay=document.createElement('div');overlay.id='ending-overlay';
-  overlay.innerHTML='<div class="ending-mac"><div class="ending-screen"><div class="ending-camera"></div><p class="ending-head"><span>HKU SUPERCOMPUTER</span><span>B04 · CDS-1</span></p><ul class="ending-lines"></ul></div><div class="ending-base"></div><div class="ending-notch"></div></div><p class="ending-barrier" aria-live="polite"></p>';
+  overlay.innerHTML='<div class="ending-mac"><div class="ending-screen"><div class="ending-camera"></div><p class="ending-head"><span>BOOT SEQUENCE</span><span>B04 · CDS-1</span></p><ul class="ending-lines"></ul></div><div class="ending-base"></div><div class="ending-notch"></div></div><p class="ending-barrier" aria-live="polite"></p>';
   lines=overlay.querySelector('.ending-lines');
   barrier=overlay.querySelector('.ending-barrier');
   document.body.append(overlay);
