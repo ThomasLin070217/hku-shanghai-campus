@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-21T07:50:51.072Z",
+  "date": "2026-11-21T08:34:39.630Z",
   "results": [
     {
       "name": "30/60/144 FPS movement is equal",
@@ -75,7 +75,7 @@
         [
           4,
           0.09,
-          -22.40000000000002
+          -23.83000000000001
         ]
       ]
     },
@@ -90,16 +90,16 @@
     {
       "name": "sunken edge cannot be walked off",
       "detail": [
-        5,
+        5.25,
         0,
-        3.5966666666666733
+        5.537912163063082
       ]
     },
     {
       "name": "camera rays hit the below-ground retaining wall",
       "detail": {
         "obstacle": "plaza-retaining-wall",
-        "distance": 15.40074207119712
+        "distance": 3.000000207465545
       }
     }
   ]
