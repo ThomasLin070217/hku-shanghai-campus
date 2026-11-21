@@ -20,6 +20,7 @@
     "check:gameplay": "npm run check:survey",
     "check:transport": "node scripts/check-agent-transport.mjs",
     "ai:atlas": "tsx scripts/atlas-campus.ts",
+    "llm": "node scripts/llm.mjs",
     "check:v8": "tsx scripts/check-v8.ts",
     "check:nov13": "tsx scripts/check-nov13.ts",
     "export:v8": "tsx scripts/export-v8.ts",
