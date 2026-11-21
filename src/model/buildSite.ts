@@ -5,7 +5,7 @@ import {tagChildren} from '../scene/authoring';
 import {LAWN_SIGN,lawnLetterGeometry,OCULUS,oculusDeckGeometry,addVideoFollowup} from './videoFollowup';
 import {campusFont as font} from './fonts';
 import {sceneRegistry} from '../scene/registry';
-import {driveSections,centralWalkLayout,subtractRects,OPENING_STAIR_PASSAGE as SP,stairPassageSlabBottom} from './groundLayout';
+import {driveSections,centralWalkLayout,subtractRects,plantingBedLayout,OPENING_STAIR_PASSAGE as SP,stairPassageSlabBottom} from './groundLayout';
 import {decorateCampusLobby} from './observedInteriors';
 import {addNov14Details} from './nov14Details';
 import {addObservedCourtyard} from './courtyard';
@@ -18,7 +18,7 @@ import {addNov13Details} from './nov13Details';
 import {addVideoDetails} from './videoDetails';
 import {voxelizeMaterials} from '../voxel/materials';
 import * as T from 'three';
-import {COLUMN_X,CALIBRATED_LAYOUT as CL,SCALE_CALIBRATION} from './scaleCalibration';
+import {CALIBRATED_LAYOUT as CL,SCALE_CALIBRATION} from './scaleCalibration';
 
 import {LANDSCAPE as L} from '../exploration/config';
 
@@ -125,7 +125,7 @@ function landscape(root:T.Group,circulation:T.Group,s:SiteParameters,m:M,opening
  box(green,'South_lawn',28,.16,84,0,.05,52,m.grass);
  const letters=mesh(green,'HKU',lawnLetterGeometry(),m.white);letters.position.set(LAWN_SIGN.x,LAWN_SIGN.bottom,LAWN_SIGN.z);letters.userData={source:LAWN_SIGN.source,sourceFile:'src/model/videoFollowup.ts'};
  for(const [i,r] of centralWalkLayout(s).entries()){const section=group(paths,`R00${i+7}`,'M01,A03','inferred-layout');section.userData.sceneId=section.name;section.userData.label=i?'South lawn east walk':'South lawn west walk';box(section,'Central_walk',r.width,.07,r.depth,r.x,.035,r.z,m.concrete);}
- for(const z of [-94,-27,92])for(const x of [-COLUMN_X,COLUMN_X])box(green,'Planting_bed',55,.14,3.5,x,.1,z,m.grass);
+ for(const bed of plantingBedLayout())box(green,'Planting_bed',bed.width,.14,bed.depth,bed.x,.1,bed.z,m.grass);
  function tree(x:number,z:number,h=s.treeHeight){box(green,'Block_tree_trunk',.44,h*.70,.44,x,h*.35,z,m.bark);for(const [dx,dy,dz,w,ht] of [[0,.77,0,.65,.35],[-.18,.66,.10,.42,.28],[.19,.69,-.09,.38,.28],[0,1.00,0,.42,.22]])box(green,'Block_leaf_cluster',h*w,h*ht,h*w,x+dx*h,h*dy,z+dz*h,m.leaf);}
  for(let z=-94;z<=94;z+=13)for(const x of [-101,101])tree(x,z);
  // South lawn trees now follow observed planting zones in landscapeDetails.

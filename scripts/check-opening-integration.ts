@@ -6,6 +6,7 @@ import {createNavigation} from '../src/exploration/navigation';
 import {BUILDINGS,SITE} from '../src/model/campusParameters';
 import {OPENING as O,OFFICE_LAYOUT} from '../src/opening/spatialLayout';
 import {buildSite} from '../src/model/buildSite';
+import {PLANTING_BED} from '../src/model/groundLayout';
 import {sceneRegistry} from '../src/scene/registry';
 import {disposeAsset} from '../src/model/buildCampus';
 const results:object[]=[];
@@ -28,6 +29,11 @@ for(const {x,z} of [OFFICE_LAYOUT.presentation,OFFICE_LAYOUT.credenza,OFFICE_LAY
 }
 route('Building6 back to Building5',pickup,[...O.routeB6].reverse());
 route('Building5 to Building4 handoff',O.staff,O.routeB4);
+// The planting bed used to seal the Building 5 door axis. Walking straight north
+// must cross the strip and reach its far (Building 4) edge, not stop on it.
+const bedEdge=PLANTING_BED.middleRow-PLANTING_BED.setback+PLANTING_BED.depth/2;
+route('Building5 door through the planting-bed gap',O.checkpoints.b5safe,[[O.b5.door,bedEdge+1]]);
+assert.ok(g.body.position.z>bedEdge,`the planting-bed gap must open the Building 5 door axis; stopped at z=${g.body.position.z}, far edge ${bedEdge}`);
 let called=0;g.scenario={interact(){called++;g.openPanel('computer');return{ok:true,code:'test_modal',message:'Paused'};},computer(){called++;g.openPanel('computer');return{ok:true,code:'page_ready',message:'Paused'};},tick(){},snapshot(){return{};},spawn(){}};
 g.panel=null;g.enableAI();g.acquireControl('opening-test');const epoch=g.epoch,before=g.body.position.toArray();g.act({commandId:'open-modal',controlEpoch:epoch,durationMs:100,interact:'opening-staff',move:{forward:1,right:0}},1000);g.step(1/120,1001);assert.equal(called,1);assert.deepEqual(g.body.position.toArray(),before);assert.equal(g.owner,null);assert.equal(g.paused,true);assert.equal(g.act({commandId:'old',controlEpoch:epoch,durationMs:100},1002).ok,false);results.push({name:'Shared RPC route, modal same-frame stop and epoch invalidation',passed:true});
 const baseline=buildSite(),opening=buildSite(undefined,undefined,true),baseIndex=sceneRegistry(baseline.root),index=sceneRegistry(opening.root),migrations=baseIndex.entities.filter(e=>!index.byId.has(e.id)).map(e=>({oldId:e.id,authorKey:e.authorKey,newId:e.buildingId==='B05'?'B05':e.buildingId==='B06'?'B06':null,reason:'Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original.'}));

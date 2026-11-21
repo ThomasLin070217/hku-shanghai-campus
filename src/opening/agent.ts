@@ -72,8 +72,8 @@ function directions(ctx:AgentContext,zh:boolean):string{
  if(stage==='complete')return zh?'你已在 4 号楼正门外完成交接。请把 MacBook 留着，下一章会从楼内开始。':'You already reached the Building 4 entrance. Keep the MacBook; the next chapter continues inside.';
  if(stage==='to_b4'||stage==='incident'){
   return zh
-   ?'离开 5 号楼后沿中央步道向南走（地图上 x≈24 的直线），到 B4 门前的东西向道路后向东，目标就是 4 号楼正门外的交接点。\n• 红色扫描锥正面不要硬穿；绕到机器人侧面或柱后即可断开视线。\n• 沿途会经过我标记的巡逻区，听到追击提示就先躲开再前进。'
-   :'Leave Building 5, follow the central walk south (the long line at x≈24 on the map), then turn east along the arrival road. The handoff point is outside the Building 4 main entrance.\n• Do not walk through a red scan cone head-on; step around the side or behind a column to break line of sight.\n• If the pursuit warning rises, break sight first, then continue.';
+   ?'离开 5 号楼后沿门前通道一直向北，穿过绿化带的缺口，再沿 4 号楼正门向北绕过楼体，向西走到正门外的交接点。\n• 红色扫描锥正面不要硬穿；绕到机器人侧面或柱后即可断开视线。\n• 沿途会经过我标记的巡逻区，听到追击提示就先躲开再前进。'
+   :'Leave Building 5, walk straight north through the gap in the planting bed, follow the east side of Building 4 around the building, then turn west to the handoff outside the main entrance.\n• Do not walk through a red scan cone head-on; step around the side or behind a column to break line of sight.\n• If the pursuit warning rises, break sight first, then continue.';
  }
  if(stage==='return_b5')return zh
   ?'你还在 6 号楼。带着 MacBook 原路返回 5 号楼一楼；进门右转就是晚宴区。路上可能会听到异常低频声，别停下。'

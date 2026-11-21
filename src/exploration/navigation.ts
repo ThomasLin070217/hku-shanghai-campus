@@ -1,11 +1,11 @@
 import {openingObstacles,openingSupport} from '../opening/navigation';
 import {LAWN_SIGN,LAWN_SIZE,OCULUS,oculusDeck} from '../model/videoFollowup';
-import {driveLayout,centralWalkLayout,promenadeLayout,contains,OPENING_STAIR_PASSAGE as SP} from '../model/groundLayout';
+import {driveLayout,centralWalkLayout,promenadeLayout,plantingBedLayout,contains,OPENING_STAIR_PASSAGE as SP} from '../model/groundLayout';
 import {linkLayout} from '../model/nov14Details';
 import {COURTYARD,courtyardHeight,courtyardGate,stairPoint} from '../model/courtyard';
 import {landscapeLayout} from '../model/landscapeDetails';
 import * as T from 'three';
-import {COLUMN_X,CALIBRATED_LAYOUT as CL} from '../model/scaleCalibration';
+import {CALIBRATED_LAYOUT as CL} from '../model/scaleCalibration';
 
 import {LION,lionBodySize} from '../model/lionParameters';
 import {SPORTS_DOOR,SPORTS_HALL} from '../model/sportsDoor';
@@ -48,7 +48,7 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters,opening=f
 
  for(let x=-82;x<=84;x+=14){circle('tree',x,-92.5,.23,3.8);circle('tree',x,108,.23,3.8);}
  for(const x of [-18])for(const z of [-25,-12])circle('tree',x,z,.23,3.8);
- for(const z of [-94,-27,92])for(const x of [-COLUMN_X,COLUMN_X])box('planting-bed',x,z,55,3.5,.5);
+ for(const bed of plantingBedLayout())box('planting-bed',bed.x,bed.z,bed.width,bed.depth,.17);
  box('HKU-lawn-letters',LAWN_SIGN.x,LAWN_SIGN.z+LAWN_SIGN.depth/2,LAWN_SIZE.x,LAWN_SIZE.z,LAWN_SIGN.bottom+LAWN_SIZE.y,LAWN_SIGN.bottom);
  const hx=SPORTS_HALL.x,hz=s.sportsZ,hw=SPORTS_HALL.width,hd=SPORTS_HALL.depth,hh=SPORTS_HALL.wallHeight;
  // Walled, not one solid block: the fictional east door needs a real opening to walk through.
