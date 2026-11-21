@@ -18,6 +18,7 @@
 | A013 | 探索边界 | src/model/buildSite.ts |
 | A014 | 北侧运动区 | src/model/buildSite.ts |
 | A015 | 外围绿化与 HKU 草坪地灯 | src/model/videoFollowup.ts |
+| A016 | 东侧弧形步道 | src/model/axisGarden.ts |
 | B01 | 1号楼 · 西侧北塔 | src/model/buildSite.ts |
 | B02 | 2号楼 · 西侧南塔 | src/model/buildSite.ts |
 | B03 | CDS-2 · 3号楼 | src/model/buildCampus.ts |
@@ -37,7 +38,7 @@
 | R008 | 南草坪东侧步道 | src/model/buildSite.ts |
 | R009 | CDS-1 门前到达车道 | src/model/buildSite.ts |
 | R010 | 北侧蓝色跑道 | src/model/videoDetails.ts |
-| R011 | 庭院北侧中央步道 | src/model/nov14Details.ts |
+| R011 | 礼堂台阶—下沉庭院连接步道 | src/model/nov14Details.ts |
 | R012 | 西侧架空步道（高架） | src/model/buildSite.ts |
 | R013 | 礼堂西侧连接平台（高架） | src/model/buildSite.ts |
 | R014 | 礼堂东侧连接平台（高架） | src/model/buildSite.ts |
