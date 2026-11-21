@@ -1,6 +1,6 @@
 {
   "schema": "hku-scene/1",
-  "revision": "d0cb538adec7",
+  "revision": "25b17b97136b",
   "units": "metres",
   "axes": "+X east-ish, -Z north-ish, +Y up; not georeferenced",
   "entities": [
@@ -593288,7 +593288,7 @@
         0.14,
         30.052
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Recess_ceiling",
       "reference": "references/CAMPUS_BASIS.md",
       "confidence": "visual depth only; not surveyed interior",
@@ -593324,7 +593324,7 @@
         3.82,
         0
       ],
-      "sourceFile": "src/opening/geometry.ts",
+      "sourceFile": "src/model/buildSite.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -593360,7 +593360,7 @@
         3.82,
         0
       ],
-      "sourceFile": "src/opening/geometry.ts",
+      "sourceFile": "src/model/buildSite.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -593396,7 +593396,7 @@
         3.82,
         0
       ],
-      "sourceFile": "src/opening/geometry.ts",
+      "sourceFile": "src/model/buildSite.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -593432,7 +593432,7 @@
         3.82,
         0
       ],
-      "sourceFile": "src/opening/geometry.ts",
+      "sourceFile": "src/model/buildSite.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -593504,7 +593504,7 @@
         0.14,
         2.6
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Recess_floor",
       "reference": "references/CAMPUS_BASIS.md",
       "confidence": "visual depth only; not surveyed interior",
@@ -593540,7 +593540,7 @@
         7.88,
         0.28
       ],
-      "sourceFile": "src/opening/geometry.ts",
+      "sourceFile": "src/model/buildSite.ts",
       "sourceAnchor": "Scenic_structural_post",
       "reference": "references/CAMPUS_BASIS.md",
       "confidence": "visual depth only; not surveyed interior",
@@ -593684,7 +593684,7 @@
         0.14,
         2.6
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Recess_ceiling",
       "reference": "references/CAMPUS_BASIS.md",
       "confidence": "visual depth only; not surveyed interior",
@@ -593756,7 +593756,7 @@
         8,
         30.052
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Opaque_facade_backing",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -594764,7 +594764,7 @@
         7.88,
         30.052
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Recess_back",
       "reference": "references/CAMPUS_BASIS.md",
       "confidence": "visual depth only; not surveyed interior",
@@ -596456,7 +596456,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -596600,7 +596600,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -597284,7 +597284,7 @@
         7.88,
         0.12
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Recess_side",
       "reference": "references/CAMPUS_BASIS.md",
       "confidence": "visual depth only; not surveyed interior",
@@ -597392,7 +597392,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -597644,7 +597644,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -597860,7 +597860,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -597968,7 +597968,7 @@
         7.88,
         0.12
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Recess_side",
       "reference": "references/CAMPUS_BASIS.md",
       "confidence": "visual depth only; not surveyed interior",
@@ -598040,7 +598040,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -598328,7 +598328,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -598508,7 +598508,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -598580,7 +598580,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -598724,7 +598724,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -600596,7 +600596,7 @@
         7.88,
         2.6
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Recess_side",
       "reference": "references/CAMPUS_BASIS.md",
       "confidence": "visual depth only; not surveyed interior",
@@ -600704,7 +600704,7 @@
         7.88,
         2.6
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Recess_side",
       "reference": "references/CAMPUS_BASIS.md",
       "confidence": "visual depth only; not surveyed interior",
@@ -601496,7 +601496,7 @@
         3.82,
         0
       ],
-      "sourceFile": "src/opening/geometry.ts",
+      "sourceFile": "src/model/buildSite.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -601879,20 +601879,20 @@
         "max": [
           12.3503,
           1.065,
-          -60.6827
+          -61.12
         ]
       },
       "center": [
         12.3002,
         0.78,
-        -60.9327
+        -61.1513
       ],
       "size": [
         0.1,
         0.57,
-        0.5
+        0.0627
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Scenic_seat_back",
       "reference": "references/CAMPUS_BASIS.md",
       "confidence": "visual depth only; not surveyed interior",
@@ -601928,7 +601928,7 @@
         7.88,
         0.22
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Scenic_structural_post",
       "reference": "references/CAMPUS_BASIS.md",
       "confidence": "visual depth only; not surveyed interior",
@@ -602008,42 +602008,6 @@
       "material": "Glazing_reflective"
     },
     {
-      "id": "B06-P-80d2c90653e9",
-      "name": "Scenic_seat_back",
-      "kind": "part",
-      "parentId": "B06-G-cca948d4d21a",
-      "buildingId": "B06",
-      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B06/02_Glass#1/Glazing_and_grid#4/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_seat_back#1",
-      "bounds": {
-        "min": [
-          12.2502,
-          0.495,
-          -59.2827
-        ],
-        "max": [
-          12.3503,
-          1.065,
-          -58.7827
-        ]
-      },
-      "center": [
-        12.3002,
-        0.78,
-        -59.0327
-      ],
-      "size": [
-        0.1,
-        0.57,
-        0.5
-      ],
-      "sourceFile": "src/model/buildSite.ts",
-      "sourceAnchor": "Scenic_seat_back",
-      "reference": "references/CAMPUS_BASIS.md",
-      "confidence": "visual depth only; not surveyed interior",
-      "editMode": "source",
-      "material": "Scenic_seat_light"
-    },
-    {
       "id": "B06-P-80fe862f0336",
       "name": "Scenic_structural_post",
       "kind": "part",
@@ -602072,7 +602036,7 @@
         7.88,
         0.22
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Scenic_structural_post",
       "reference": "references/CAMPUS_BASIS.md",
       "confidence": "visual depth only; not surveyed interior",
@@ -602144,7 +602108,7 @@
         3.82,
         0
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -602216,7 +602180,7 @@
         3.82,
         0
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -602252,7 +602216,7 @@
         7.88,
         0.22
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Scenic_structural_post",
       "reference": "references/CAMPUS_BASIS.md",
       "confidence": "visual depth only; not surveyed interior",
@@ -602402,42 +602366,6 @@
       "confidence": "confirmed-front",
       "editMode": "source",
       "material": "Glazing_reflective"
-    },
-    {
-      "id": "B06-P-852c13620597",
-      "name": "Scenic_low_table",
-      "kind": "part",
-      "parentId": "B06-G-cca948d4d21a",
-      "buildingId": "B06",
-      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B06/02_Glass#1/Glazing_and_grid#4/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_low_table#1",
-      "bounds": {
-        "min": [
-          12.1573,
-          0.67,
-          -60.6327
-        ],
-        "max": [
-          12.8072,
-          0.77,
-          -59.3327
-        ]
-      },
-      "center": [
-        12.4822,
-        0.72,
-        -59.9827
-      ],
-      "size": [
-        0.65,
-        0.1,
-        1.3
-      ],
-      "sourceFile": "src/model/buildSite.ts",
-      "sourceAnchor": "Scenic_low_table",
-      "reference": "references/CAMPUS_BASIS.md",
-      "confidence": "visual depth only; not surveyed interior",
-      "editMode": "source",
-      "material": "Scenic_seating_silhouette"
     },
     {
       "id": "B06-P-85686d375c04",
@@ -602654,6 +602582,42 @@
       "confidence": "confirmed-front",
       "editMode": "source",
       "material": "Glazing_reflective"
+    },
+    {
+      "id": "B06-P-88e657bad2ac",
+      "name": "Recess_ceiling_strip",
+      "kind": "part",
+      "parentId": "B06-G-75332981950d",
+      "buildingId": "B06",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B06/02_Glass#1/Glazing_and_grid#3/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Recess_ceiling_strip#3",
+      "bounds": {
+        "min": [
+          6.0861,
+          7.6925,
+          -56.584
+        ],
+        "max": [
+          8.0861,
+          7.7475,
+          -56.484
+        ]
+      },
+      "center": [
+        7.0861,
+        7.72,
+        -56.534
+      ],
+      "size": [
+        2,
+        0.055,
+        0.1
+      ],
+      "sourceFile": "src/model/buildSite.ts",
+      "sourceAnchor": "Recess_ceiling_strip",
+      "reference": "references/CAMPUS_BASIS.md",
+      "confidence": "visual depth only; not surveyed interior",
+      "editMode": "source",
+      "material": "Night_recess_ceiling_light"
     },
     {
       "id": "B06-P-89211213a540",
@@ -603404,7 +603368,7 @@
         0.14,
         30.052
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Recess_floor",
       "reference": "references/CAMPUS_BASIS.md",
       "confidence": "visual depth only; not surveyed interior",
@@ -603626,42 +603590,6 @@
       "confidence": "confirmed-front",
       "editMode": "source",
       "material": "Mullion aluminium"
-    },
-    {
-      "id": "B06-P-a9d89dd70221",
-      "name": "Scenic_table_support",
-      "kind": "part",
-      "parentId": "B06-G-cca948d4d21a",
-      "buildingId": "B06",
-      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B06/02_Glass#1/Glazing_and_grid#4/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_table_support#1",
-      "bounds": {
-        "min": [
-          12.4023,
-          0.015,
-          -60.0627
-        ],
-        "max": [
-          12.5622,
-          0.665,
-          -59.9027
-        ]
-      },
-      "center": [
-        12.4822,
-        0.34,
-        -59.9827
-      ],
-      "size": [
-        0.16,
-        0.65,
-        0.16
-      ],
-      "sourceFile": "src/model/buildSite.ts",
-      "sourceAnchor": "Scenic_table_support",
-      "reference": "references/CAMPUS_BASIS.md",
-      "confidence": "visual depth only; not surveyed interior",
-      "editMode": "source",
-      "material": "Scenic_seating_silhouette"
     },
     {
       "id": "B06-P-aaa149a812d2",
@@ -603944,7 +603872,7 @@
         8,
         1.1
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Pilotis",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-wide-frame",
@@ -604124,7 +604052,7 @@
         3,
         0.18
       ],
-      "sourceFile": "src/opening/geometry.ts",
+      "sourceFile": "src/model/buildSite.ts",
       "sourceAnchor": "Opaque_hall_service_doors",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-form_estimated-dimensions",
@@ -604196,7 +604124,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -604340,7 +604268,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -604844,7 +604772,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -604880,7 +604808,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -604988,7 +604916,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -605060,7 +604988,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -605132,7 +605060,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -605168,7 +605096,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -605240,7 +605168,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -605276,7 +605204,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -605312,7 +605240,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -605348,7 +605276,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -605384,7 +605312,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -605456,7 +605384,7 @@
         3.82,
         2.3743
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Curtain_pane",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -606148,42 +606076,6 @@
       "material": "Mullion aluminium"
     },
     {
-      "id": "B06-P-d1ab0df03841",
-      "name": "Scenic_seat",
-      "kind": "part",
-      "parentId": "B06-G-cca948d4d21a",
-      "buildingId": "B06",
-      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B06/02_Glass#1/Glazing_and_grid#4/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_seat#1",
-      "bounds": {
-        "min": [
-          12.3203,
-          0.415,
-          -59.2827
-        ],
-        "max": [
-          12.8002,
-          0.545,
-          -58.7827
-        ]
-      },
-      "center": [
-        12.5602,
-        0.48,
-        -59.0327
-      ],
-      "size": [
-        0.48,
-        0.13,
-        0.5
-      ],
-      "sourceFile": "src/model/buildSite.ts",
-      "sourceAnchor": "Scenic_seat",
-      "reference": "references/CAMPUS_BASIS.md",
-      "confidence": "visual depth only; not surveyed interior",
-      "editMode": "source",
-      "material": "Scenic_seat_light"
-    },
-    {
       "id": "B06-P-d1f023f07453",
       "name": "Curtain_pane",
       "kind": "part",
@@ -606451,20 +606343,20 @@
         "max": [
           12.8002,
           0.545,
-          -60.6827
+          -61.12
         ]
       },
       "center": [
         12.5602,
         0.48,
-        -60.9327
+        -61.1513
       ],
       "size": [
         0.48,
         0.13,
-        0.5
+        0.0627
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Scenic_seat",
       "reference": "references/CAMPUS_BASIS.md",
       "confidence": "visual depth only; not surveyed interior",
@@ -607760,7 +607652,7 @@
         2.5,
         2.6
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Scenic_shadow_panel_PROVISIONAL",
       "reference": "references/CAMPUS_BASIS.md",
       "confidence": "visual depth only; not surveyed interior",
@@ -608084,7 +607976,7 @@
         2.5,
         2.6
       ],
-      "sourceFile": "src/model/buildSite.ts",
+      "sourceFile": "src/opening/geometry.ts",
       "sourceAnchor": "Scenic_shadow_panel_PROVISIONAL",
       "reference": "references/CAMPUS_BASIS.md",
       "confidence": "visual depth only; not surveyed interior",
@@ -608480,7 +608372,7 @@
         3,
         0.22
       ],
-      "sourceFile": "src/opening/geometry.ts",
+      "sourceFile": "src/model/buildSite.ts",
       "sourceAnchor": "Service_door_frame",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-form_estimated-dimensions",
@@ -608624,7 +608516,7 @@
         8,
         0.22
       ],
-      "sourceFile": "src/opening/geometry.ts",
+      "sourceFile": "src/model/buildSite.ts",
       "sourceAnchor": "Mullion",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -608696,7 +608588,7 @@
         8,
         0.22
       ],
-      "sourceFile": "src/opening/geometry.ts",
+      "sourceFile": "src/model/buildSite.ts",
       "sourceAnchor": "Mullion",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -608768,7 +608660,7 @@
         8,
         0.22
       ],
-      "sourceFile": "src/opening/geometry.ts",
+      "sourceFile": "src/model/buildSite.ts",
       "sourceAnchor": "Mullion",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",
@@ -608876,7 +608768,7 @@
         8,
         0.22
       ],
-      "sourceFile": "src/opening/geometry.ts",
+      "sourceFile": "src/model/buildSite.ts",
       "sourceAnchor": "Mullion",
       "reference": "R02,R06,A06,P01",
       "confidence": "confirmed-front",

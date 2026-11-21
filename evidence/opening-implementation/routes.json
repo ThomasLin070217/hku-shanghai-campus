@@ -18,21 +18,75 @@
     ]
   },
   {
-    "name": "Building5 to Building6 pickup space",
-    "seconds": 50.141666666666666,
+    "name": "Building5 to the Building6 east side door and lift lobby",
+    "seconds": 29.325,
     "end": [
-      7.239724630656219,
+      11.190279182001897,
+      0.02,
+      -59.943957776863215
+    ]
+  },
+  {
+    "name": "Ground lobby into the lift car",
+    "seconds": 0.8333333333333334,
+    "end": [
+      9.778508018258126,
+      0.02,
+      -59.996351711533606
+    ]
+  },
+  {
+    "name": "Ground lobby to the 5F office",
+    "seconds": 1.0583333333333333,
+    "end": [
+      9.778508018258126,
       5.1,
-      -58.19519508866746
+      -59.996351711533606
+    ]
+  },
+  {
+    "name": "5F lift car to the office desk",
+    "seconds": 0.975,
+    "end": [
+      7.355441426071322,
+      5.1,
+      -59.442922394377796
+    ]
+  },
+  {
+    "name": "Office desk back into the lift car",
+    "seconds": 1.025,
+    "end": [
+      9.623959324091496,
+      5.1,
+      -59.99782251770509
+    ]
+  },
+  {
+    "name": "5F office down to the ground lobby",
+    "seconds": 1.0583333333333333,
+    "end": [
+      9.623959324091496,
+      0.019999999999999574,
+      -59.99782251770509
+    ]
+  },
+  {
+    "name": "Ground lift car back out through the side door",
+    "seconds": 3.1416666666666666,
+    "end": [
+      15.925534747251351,
+      0,
+      -56.10147940725737
     ]
   },
   {
     "name": "Building6 back to Building5",
-    "seconds": 50.125,
+    "seconds": 26.641666666666666,
     "end": [
-      63.92091664696218,
+      63.92094523107259,
       0.02,
-      -61.00570891684875
+      -61.005707334359116
     ]
   },
   {
@@ -43,6 +97,10 @@
       0.08,
       25.071794419470955
     ]
+  },
+  {
+    "name": "Lift call anchors, 5F car support and side-door clearance",
+    "passed": true
   },
   {
     "name": "Shared RPC route, modal same-frame stop and epoch invalidation",

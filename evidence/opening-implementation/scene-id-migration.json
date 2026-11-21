@@ -1,7 +1,7 @@
 {
   "scope": "opening asset mode only",
-  "baselineRevision": "70db643a4c8e",
-  "openingRevision": "470a908845d7",
+  "baselineRevision": "a697595b8d45",
+  "openingRevision": "f61581205ca6",
   "migrations": [
     {
       "oldId": "B05-P-a129ba53b7ea",
@@ -82,8 +82,26 @@
       "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
     },
     {
-      "oldId": "B06-P-88e657bad2ac",
-      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B06/02_Glass#1/Glazing_and_grid#3/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Recess_ceiling_strip#3",
+      "oldId": "B06-P-80d2c90653e9",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B06/02_Glass#1/Glazing_and_grid#4/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_seat_back#1",
+      "newId": "B06",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B06-P-852c13620597",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B06/02_Glass#1/Glazing_and_grid#4/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_low_table#1",
+      "newId": "B06",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B06-P-a9d89dd70221",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B06/02_Glass#1/Glazing_and_grid#4/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_table_support#1",
+      "newId": "B06",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B06-P-d1ab0df03841",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B06/02_Glass#1/Glazing_and_grid#4/Scenic_facade_recess#1/Scenic_depth_PROVISIONAL#1/Scenic_seat#1",
       "newId": "B06",
       "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
     }
