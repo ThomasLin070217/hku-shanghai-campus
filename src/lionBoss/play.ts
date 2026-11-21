@@ -14,6 +14,7 @@ import {setText} from '../ui/dom';
 import {restoreKitLayout} from './kit';
 import {createCombat, BOSS, NODES, SAFE, checkpoint, canSubmit, SUBMIT_RADIUS} from './combat';
 import {createBossScene} from './scene';
+import {batchLawnScenery} from './scenery';
 import {createBossMacBook} from './macbook';
 import type {SkillRule} from './rules';
 import '../style.css';
@@ -41,14 +42,23 @@ document.querySelector('#app')!.innerHTML = `
 const element = (id:string) => document.getElementById('boss-'+id)!;
 const button = (id:string) => element(id) as HTMLButtonElement;
 const view = element('view');
-const viewer = createSiteViewer(view);
+let redrawUntil = performance.now()+1800;
+const viewer = createSiteViewer(view,() => performance.now() < redrawUntil);
 const buildings = cloneBuildings();
 const campus = buildSite(buildings, SITE);
 viewer.scene.add(campus.root);
-void prepareModelTextures(campus.root).catch(() => {});
+const scenery = batchLawnScenery(campus.root);
+void prepareModelTextures(campus.root).then(() => { redrawUntil=Math.max(redrawUntil,performance.now()+100); }).catch(() => {});
 viewer.renderer.setPixelRatio(Math.min(devicePixelRatio, 1.4));
+viewer.renderer.shadowMap.autoUpdate=false;
+viewer.renderer.shadowMap.needsUpdate=true;
+viewer.renderer.domElement.addEventListener('webglcontextrestored',() => {
+  viewer.renderer.shadowMap.needsUpdate=true;
+  redrawUntil=performance.now()+1800;
+});
 viewer.controls.enabled = false;
 const explorer = createExplorer(viewer.renderer.domElement, viewer.scene, buildings, SITE);
+explorer.student.root.traverse(object=>{ object.castShadow=false; });
 const game = explorer.game;
 viewer.setActiveCamera(explorer.camera);
 const resize = () => explorer.resize(view.clientWidth,view.clientHeight);
@@ -142,6 +152,7 @@ function saveProgress() {
   catch { feedback('浏览器存储不可用，本次进度可继续。'); }
 }
 function place(at:{x:number;z:number}) {
+  redrawUntil=performance.now()+1800;
   const floor = explorer.world.support(at.x,at.z,0.3) ?? 0;
   game.body.position.set(at.x,floor,at.z);
   game.body.velocity.set(0,0,0);
@@ -300,7 +311,10 @@ button('pause').onclick = () => explorer.pause('pause_button');
 explorer.setEnabled(true);
 place(restored === 0 || restored === 3 ? SAFE : checkpoint(restored));
 viewer.beforeRender.add(dt => {
+  if (!game.paused) redrawUntil=performance.now()+1800;
+  if (savedRevision !== game.inventory.revision || savedView !== game.view) redrawUntil=performance.now()+150;
   explorer.update(dt);
+  scenery.update(explorer.camera);
   visuals.render(state);
   const p = game.body.position;
   sound.update(explorer.student.gait,!playing || game.paused,explorer.world.surface(p.x,p.z,p.y),p,explorer.camera.position,game.yaw);
@@ -315,5 +329,5 @@ window.addEventListener('pagehide',event => {
   explorer.pause('page_hidden');
   if (event.persisted) return;
   events.abort(); observer.disconnect(); workbench.dispose(); visuals.dispose();
-  vitals.dispose(); explorer.dispose(); sound.dispose(); disposeAsset(campus.root); viewer.dispose();
+  vitals.dispose(); explorer.dispose(); sound.dispose(); scenery.dispose(); disposeAsset(campus.root); viewer.dispose();
 });

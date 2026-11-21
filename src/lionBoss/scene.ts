@@ -109,11 +109,22 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
   // Body and collision shape share this local pivot; no regenerated lion or edited asset.
   const pivot=new T.Group();
   anchor.add(pivot);pivot.add(body);
+  // The campus uses a baked sun shadow; the moving lion has its own contact shadow.
+  body.traverse(object=>{ object.castShadow=false; });
 
   const props=new T.Group();
   props.name='L001_boss_gameplay';
   props.userData.dynamicGameplay=true;
   scene.add(props);
+  const shadowCanvas=document.createElement('canvas');
+  shadowCanvas.width=shadowCanvas.height=64;
+  const shadowContext=shadowCanvas.getContext('2d')!;
+  const gradient=shadowContext.createRadialGradient(32,32,6,32,32,32);
+  gradient.addColorStop(0,'rgba(25,33,24,.38)'); gradient.addColorStop(1,'rgba(25,33,24,0)');
+  shadowContext.fillStyle=gradient; shadowContext.fillRect(0,0,64,64);
+  const contactMap=new T.CanvasTexture(shadowCanvas);
+  const contact=new T.Mesh(new T.PlaneGeometry(5.6,5.6),new T.MeshBasicMaterial({map:contactMap,transparent:true,depthWrite:false}));
+  contact.rotation.x=-Math.PI/2; props.add(contact);
   const telegraph=telegraphs();props.add(telegraph.root);
   const dog=helperModel();props.add(dog);
   const pad=ring(2.4,.11,0x4dded0);
@@ -154,6 +165,7 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
     syncCollision(state);
     const localYaw=state.yaw-LION.yaw;
     const dx=state.lion.x-BOSS.x,dz=state.lion.z-BOSS.z;
+    contact.position.set(state.lion.x,GROUND+.012,state.lion.z);
     const ca=Math.cos(LION.yaw),sa=Math.sin(LION.yaw);
     pivot.position.set(dx*ca-dz*sa,0,dx*sa+dz*ca);
     if (phase==='complete') completionStarted ??= performance.now();
@@ -176,6 +188,7 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
     }
   }
   function dispose() {
+    contactMap.dispose();
     anchor!.add(body!);pivot.removeFromParent();
     if(originalCollision && obstacle) Object.assign(obstacle,originalCollision);
     if(originalMesh && collisionMesh) {
