@@ -1,3 +1,4 @@
+import {CDS1_KEYS, readKeyboardProgress, saveKeyboardProgress} from './opening/keyboardProgress';
 import * as T from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
@@ -180,7 +181,7 @@ let puzzleState: 'idle' | 'collect' | 'ready' | 'flash' | 'online' = 'idle';
 let puzzleInserted = 0;
 let typed = '';
 let flashStart = 0;
-let flashTimer: number | null = null;
+let beepTimer: number | null = null;
 let chimeLight: T.PointLight | null = null;
 let keyboardLight: T.PointLight | null = null;
 let enterPressedAt = -Infinity;
@@ -194,7 +195,7 @@ function showPuzzleHud() {
 function updatePuzzleHud() {
   const hud = document.querySelector<HTMLElement>('#puzzle-hud')!;
   document.querySelector('#puzzle-input')!.textContent = typed || '—';
-  document.querySelector('#puzzle-status')!.textContent = puzzleState === 'online' ? 'CDS-1 ONLINE' : puzzleInserted === 8 ? 'All keys seated · Press Enter' : `${puzzleInserted} / 8 seated`;
+  document.querySelector('#puzzle-status')!.textContent = puzzleState === 'online' ? 'CDS-1 ONLINE' : puzzleInserted === CDS1_KEYS.length ? 'All keys seated · Press Enter' : `${puzzleInserted} / 8 seated`;
   document.querySelector('#cpu-status')!.textContent = puzzleState === 'online' ? 'CPU 01 · ONLINE' : 'CPU 01 · OFFLINE';
   hud.classList.toggle('online', puzzleState === 'online');
 }
@@ -205,7 +206,7 @@ function stopKeyboardPuzzle() {
   typed = '';
   flashStart = 0;
   enterPressedAt = -Infinity;
-  if (flashTimer !== null) { clearTimeout(flashTimer); flashTimer = null; }
+  if (beepTimer !== null) { clearTimeout(beepTimer); beepTimer = null; }
   if (chimeLight) { scene.remove(chimeLight); chimeLight = null; }
   if (keyboardLight) { scene.remove(keyboardLight); keyboardLight = null; }
   hidePuzzleHud();
@@ -225,16 +226,25 @@ function startPuzzle() {
   puzzleState = 'collect';
   puzzleInserted = 0;
   typed = '';
+  const progress = chapterMode ? readKeyboardProgress(deviceId) : null;
   const phrase = caps.filter(cap => cap.phrase);
   const xs = [-2.9, -2.0, -1.1, -.2, .7, 1.6, 2.5, 3.3];
   const zs = [1.55, 1.72, 1.48, 1.68, 1.52, 1.75, 1.50, 1.66];
   phrase.forEach((cap, index) => {
-    cap.puzzle = 'floor';
+    cap.puzzle = progress?.seated.includes(cap.group.userData.label) ? 'seated' : 'floor';
+    if (cap.puzzle === 'seated') {
+      cap.seatedAt = performance.now() - 450;
+      cap.group.position.copy(cap.rest);
+      cap.group.rotation.set(0, 0, 0);
+      puzzleInserted++;
+    }
     cap.lit = false;
     cap.yaw = (index % 2 ? 1 : -1) * (.35 + index * .04);
     cap.scatter.set(xs[index] ?? 0, -1.405, zs[index] ?? 3.1);
-    cap.group.position.copy(cap.scatter);
-    cap.group.rotation.set(-Math.PI / 2, cap.yaw, 0);
+    if (cap.puzzle === 'floor') {
+      cap.group.position.copy(cap.scatter);
+      cap.group.rotation.set(-Math.PI / 2, cap.yaw, 0);
+    }
     resetGlow(cap);
   });
   view('keys');
@@ -246,7 +256,11 @@ function startPuzzle() {
   document.querySelector('#note')!.textContent = 'Keyboard Wall: type I LOVE CDS following the Mac prompt, or click the gold keys on the floor; press Enter to boot once all are back.';
   for (const id of ['#detachPhrase', '#detachV', '#attachAll', '#puzzleStart']) document.querySelector<HTMLButtonElement>(id)!.hidden = true;
   document.querySelector<HTMLButtonElement>('#puzzleReset')!.hidden = false;
-  playSfx('tick');
+  if (progress?.online) {
+    puzzleState = 'online';
+    setCpuOnline();
+    updatePuzzleHud();
+  } else if (!chapterMode) playSfx('tick');
 }
 function resetPuzzle() {
   stopKeyboardPuzzle();
@@ -260,12 +274,13 @@ function insertCap(cap: Cap) {
   cap.flyStart = performance.now();
   cap.yaw = cap.group.rotation.y;
   playSfx('insert');
+  if (chapterMode) saveKeyboardProgress(deviceId, [String(cap.group.userData.label)], false);
 }
 function typeLetter(letter: string) {
   if (!puzzleActive || (puzzleState !== 'collect' && puzzleState !== 'ready')) return;
   const key = letter.toUpperCase();
   if (!/^[A-Z]$/.test(key)) return;
-  typed += key;
+  typed = (typed + key).slice(-CDS1_KEYS.length);
   const cap = caps.find(item => item.phrase && item.puzzle === 'floor' && item.group.userData.label === key);
   if (cap) insertCap(cap);
   updatePuzzleHud();
@@ -324,7 +339,7 @@ function updatePuzzleCaps(now: number) {
     }
   }
   const enter = caps.find(cap => cap.enter);
-  if (puzzleInserted === 8 && enter && puzzleState !== 'flash' && puzzleState !== 'online') {
+  if (puzzleInserted === CDS1_KEYS.length && enter && puzzleState !== 'flash' && puzzleState !== 'online') {
     if (enter.glow) {
       enter.glow.emissive.setHex(0x4aa3ff);
       enter.glow.emissiveIntensity = .8 + .2 * Math.sin(now * .006);
@@ -334,6 +349,15 @@ function updatePuzzleCaps(now: number) {
   }
   if (puzzleState === 'flash') {
     const elapsed = (now - flashStart) / 1000;
+    if (elapsed >= 3) {
+      if (beepTimer !== null) { clearTimeout(beepTimer); beepTimer = null; }
+      puzzleState = 'online';
+      if (chapterMode) saveKeyboardProgress(deviceId, [...CDS1_KEYS], true);
+      setCpuOnline();
+      updatePuzzleHud();
+      playSfx('chime');
+      return;
+    }
     const rate = 4 + elapsed * 7;
     const globalOn = Math.sin(elapsed * rate * Math.PI * 2) > 0;
     for (const cap of caps) {
@@ -364,7 +388,7 @@ function flashBeeps(index: number) {
   if (puzzleState !== 'flash') return;
   playSfx('tick');
   const interval = Math.max(45, 210 - index * 16);
-  flashTimer = window.setTimeout(() => flashBeeps(index + 1), interval);
+  beepTimer = window.setTimeout(() => flashBeeps(index + 1), interval);
 }
 function setCpuOnline() {
   document.querySelector('#puzzle-hud')!.classList.add('online');
@@ -384,20 +408,13 @@ function setCpuOnline() {
   window.setTimeout(() => flash?.classList.remove('show'), 420);
 }
 function startFinale() {
-  if (!puzzleActive || puzzleInserted !== 8 || puzzleState !== 'ready') return;
+  if (!puzzleActive || puzzleInserted !== CDS1_KEYS.length || puzzleState !== 'ready') return;
   puzzleState = 'flash';
   flashStart = performance.now();
   enterPressedAt = performance.now();
   updatePuzzleHud();
   playSfx('unlock');
   flashBeeps(0);
-  flashTimer = window.setTimeout(() => {
-    if (kind !== 'keyboard') return;
-    puzzleState = 'online';
-    setCpuOnline();
-    updatePuzzleHud();
-    playSfx('chime');
-  }, 3000);
 }
 
 type Tile = {group: T.Group; row: number; column: number; current: number; from: number; target: number; start: number; duration: number; outline: T.LineSegments | null};
@@ -764,7 +781,8 @@ renderer.domElement.addEventListener('pointerup', event => {
   const cap = caps.find(item => item.group === node);
   if (cap) {
     if (kind === 'keyboard' && puzzleActive) {
-      if (cap.phrase && cap.puzzle === 'floor') insertCap(cap);
+      if (cap.enter) startFinale();
+      else if (cap.phrase && cap.puzzle === 'floor') insertCap(cap);
       return;
     }
     setCap(cap, !cap.attached);
@@ -791,7 +809,7 @@ window.addEventListener('keydown', event => {
   if (event.key === 'Enter') { event.preventDefault(); revealWall(); }
 });
 window.addEventListener('keydown', event => {
-  if (kind !== 'keyboard' || !puzzleActive) return;
+  if (kind !== 'keyboard' || !puzzleActive || event.repeat || event.isComposing || event.metaKey || event.ctrlKey || event.altKey) return;
   const target = event.target as HTMLElement | null;
   if (target && target.closest('input,textarea,select')) return;
   if (event.key === 'Enter') { event.preventDefault(); startFinale(); return; }
