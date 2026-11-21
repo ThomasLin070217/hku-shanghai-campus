@@ -23,13 +23,13 @@ export interface CrowdVariant {key:string;label:string;appearance:Appearance;cou
 /** Weights are shares of the whole crowd; counts are then rounded to sum to `total`. */
 const BASE:Omit<CrowdVariant,'count'>[]=[
  {key:'cn-man',label:'本地男生',female:false,international:false,appearance:{...STUDENT,id:'crowd-cn-man',name:'绿袍学生 · 本地男生'}},
- {key:'cn-woman',label:'本地女生',female:true,international:false,appearance:{...STUDENT,id:'crowd-cn-woman',name:'绿袍学生 · 本地女生',height:1.68,build:.94,hairStyle:'long'}},
- {key:'af-man',label:'非洲裔男生',female:false,international:true,appearance:{...STUDENT,id:'crowd-af-man',name:'绿袍学生 · 非洲裔男生',skin:0x7a5138,hair:0x141010}},
- {key:'af-woman',label:'非洲裔女生',female:true,international:true,appearance:{...STUDENT,id:'crowd-af-woman',name:'绿袍学生 · 非洲裔女生',skin:0x8a5c40,hair:0x191211,hairStyle:'long',height:1.69,build:.95}},
- {key:'sa-man',label:'南亚裔男生',female:false,international:true,appearance:{...STUDENT,id:'crowd-sa-man',name:'绿袍学生 · 南亚裔男生',skin:0xb87a50,hair:0x241a14}},
- {key:'sa-woman',label:'南亚裔女生',female:true,international:true,appearance:{...STUDENT,id:'crowd-sa-woman',name:'绿袍学生 · 南亚裔女生',skin:0xc98a60,hair:0x2a1d16,hairStyle:'long',height:1.67,build:.94}},
- {key:'eu-man',label:'欧美裔男生',female:false,international:true,appearance:{...STUDENT,id:'crowd-eu-man',name:'绿袍学生 · 欧美裔男生',skin:0xf0c8a8,hair:0xd9b06a}},
- {key:'eu-woman',label:'欧美裔女生',female:true,international:true,appearance:{...STUDENT,id:'crowd-eu-woman',name:'绿袍学生 · 欧美裔女生',skin:0xf2ccae,hair:0xc79a52,hairStyle:'long',height:1.7,build:.94}},
+ {key:'cn-woman',label:'本地女生',female:true,international:false,appearance:{...STUDENT,id:'crowd-cn-woman',name:'绿袍学生 · 本地女生',height:1.68,build:.94,hairStyle:'long',faceWidth:.84,coat:0x0f6b56,trim:0x05493c}},
+ {key:'af-man',label:'非洲裔男生',female:false,international:true,appearance:{...STUDENT,id:'crowd-af-man',name:'绿袍学生 · 非洲裔男生',skin:0x7a5138,hair:0x141010,coat:0x5e2733,trim:0x39161f,shirt:0xf2ecdd}},
+ {key:'af-woman',label:'非洲裔女生',female:true,international:true,appearance:{...STUDENT,id:'crowd-af-woman',name:'绿袍学生 · 非洲裔女生',skin:0x8a5c40,hair:0x191211,hairStyle:'long',faceWidth:.85,height:1.69,build:.95,coat:0x74303f,trim:0x451a26,shirt:0xf2ecdd}},
+ {key:'sa-man',label:'南亚裔男生',female:false,international:true,appearance:{...STUDENT,id:'crowd-sa-man',name:'绿袍学生 · 南亚裔男生',skin:0xb87a50,hair:0x241a14,coat:0x24395c,trim:0x14243b,shirt:0xf4f1e4}},
+ {key:'sa-woman',label:'南亚裔女生',female:true,international:true,appearance:{...STUDENT,id:'crowd-sa-woman',name:'绿袍学生 · 南亚裔女生',skin:0xc98a60,hair:0x2a1d16,hairStyle:'long',faceWidth:.85,height:1.67,build:.94,coat:0x2d4a72,trim:0x1a2e49,shirt:0xf6f2e6}},
+ {key:'eu-man',label:'欧美裔男生',female:false,international:true,appearance:{...STUDENT,id:'crowd-eu-man',name:'绿袍学生 · 欧美裔男生',skin:0xf0c8a8,hair:0xd9b06a,coat:0x3b4148,trim:0x23282d,shirt:0xf6f2e8}},
+ {key:'eu-woman',label:'欧美裔女生',female:true,international:true,appearance:{...STUDENT,id:'crowd-eu-woman',name:'绿袍学生 · 欧美裔女生',skin:0xf2ccae,hair:0xc79a52,hairStyle:'long',faceWidth:.84,height:1.7,build:.94,coat:0x8a7350,trim:0x574530,shirt:0xf7f3e8}},
 ];
 const split=(total:number,parts:number)=>{const base=Math.floor(total/parts),rest=total-base*parts;return Array.from({length:parts},(_,i)=>base+(i<rest?1:0));};
 /** 20% international (three regions, both genders) and a configurable female share. */
@@ -106,7 +106,7 @@ export function createStudentCrowd(placements=crowdPlacements(),variants=crowdVa
  const skinMaterial=new T.MeshStandardMaterial({name:'Crowd_atlas',map:atlas,roughness:.9});
  const plainMaterial=new T.MeshStandardMaterial({name:'Crowd_flat',vertexColors:true,roughness:.95});
  // Pass 2: bake every variant once, then instance it across that variant's students.
- const meshes:T.InstancedMesh[]=[],matrix=new T.Matrix4(),quaternion=new T.Quaternion(),up=new T.Vector3(0,1,0),position=new T.Vector3(),scale=new T.Vector3(),color=new T.Color();
+ const meshes:T.InstancedMesh[]=[],matrix=new T.Matrix4(),quaternion=new T.Quaternion(),up=new T.Vector3(0,1,0),position=new T.Vector3(),scale=new T.Vector3(),color=new T.Color(),tint=new T.Color(),tintRandom=random(90210);
  let triangles=0;
  const bake=(mesh:T.Mesh,remapUv:boolean)=>{
   const source=mesh.geometry.index?mesh.geometry.toNonIndexed():mesh.geometry.clone();
@@ -137,8 +137,10 @@ export function createStudentCrowd(placements=crowdPlacements(),variants=crowdVa
    const mesh=new T.InstancedMesh(geometry,material,slots.length);
    mesh.name=`${CROWD.name}__${prototype.variant.key}__${material===skinMaterial?'skin':'flat'}`;
    mesh.castShadow=true;mesh.receiveShadow=true;
-   slots.forEach((p,i)=>{quaternion.setFromAxisAngle(up,p.yaw);position.set(p.x,CROWD.floor,p.z);scale.setScalar(p.scale);matrix.compose(position,quaternion,scale);mesh.setMatrixAt(i,matrix);});
-   mesh.instanceMatrix.needsUpdate=true;mesh.computeBoundingSphere();root.add(mesh);meshes.push(mesh);
+   slots.forEach((p,i)=>{quaternion.setFromAxisAngle(up,p.yaw);position.set(p.x,CROWD.floor,p.z);scale.setScalar(p.scale);matrix.compose(position,quaternion,scale);mesh.setMatrixAt(i,matrix);
+    // A small per-student tint keeps identical variants from looking cloned.
+    const d=.94+tintRandom()*.11,warm=.98+tintRandom()*.04;tint.setRGB(d*warm,d,(d*(2-warm)));mesh.setColorAt(i,tint);});
+   mesh.instanceMatrix.needsUpdate=true;if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;mesh.computeBoundingSphere();root.add(mesh);meshes.push(mesh);
   }
  }
  for(const prototype of prototypes)prototype.root.removeFromParent();

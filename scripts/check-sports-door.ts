@@ -8,6 +8,8 @@ import {SPORTS_DOOR,SPORTS_HALL,sportsDoorWorld} from '../src/model/sportsDoor';
 import {SPORTS_HALL_PUZZLE,checkCode,checkPassword,parseSudoku,solvedRows} from '../src/gameplay/sudokuPuzzle';
 import {disposeAsset} from '../src/model/buildCampus';
 import {CROWD,createStudentCrowd,crowdPlacements,crowdVariants} from '../src/gameplay/studentCrowd';
+import {createCharacter} from '../src/characters/character';
+import {STUDENT} from '../src/characters/config';
 
 const asset=buildSite(),registry=sceneRegistry(asset.root),nav=createNavigation(BUILDINGS,SITE),centre=sportsDoorWorld(SITE.sportsZ);
 
@@ -87,6 +89,14 @@ const maleSize=maleBounds.box.getSize(new T.Vector3()),femaleSize=femaleBounds.b
 assert.ok(femaleBounds.verts>=maleBounds.verts+200,`long hair adds geometry (${maleBounds.verts} → ${femaleBounds.verts} vertices)`);
 assert.ok(femaleSize.z>maleSize.z+.05,`long hair deepens the silhouette (${maleSize.z.toFixed(2)} → ${femaleSize.z.toFixed(2)} m)`);
 assert.ok(femaleSize.y<maleSize.y,`female students are shorter (${maleSize.y.toFixed(2)} → ${femaleSize.y.toFixed(2)} m)`);
+// Clothes vary by variant, and female students get a narrower face.
+assert.ok(new Set(variants.map(v=>v.appearance.coat)).size>=6,`gowns use several colours (${new Set(variants.map(v=>v.appearance.coat)).size})`);
+assert.ok(variants.filter(v=>v.female).every(v=>(v.appearance.faceWidth??1)<=.9),'female students have a narrower face');
+{
+ const maleHead=createCharacter(STUDENT).root.getObjectByName('head')!,femaleHead=createCharacter(variants.find(v=>v.female)!.appearance).root.getObjectByName('head')!;
+ assert.ok(femaleHead.scale.x<maleHead.scale.x*.9,`narrower face is applied to the rig (${maleHead.scale.x.toFixed(3)} → ${femaleHead.scale.x.toFixed(3)})`);
+}
+assert.ok(crowd.meshes.every(m=>!!m.instanceColor),'every student carries a per-instance tint');
 // The atlas must hold each variant's own head texture, so every face shows the right skin.
 const atlas=crowd.atlasInfo;
 for(const variant of variants){

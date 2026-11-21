@@ -21,6 +21,8 @@ export function createCharacter(input:Appearance=STUDENT){
  });rig.nodes.forEach((n,i)=>n.children?.forEach(c=>nodes[i].add(nodes[c])));visual.add(nodes[0]);
  const get=(name:string)=>nodes.find(n=>n.name===name)!;
  const torso=get('torso'),head=get('head'),left=get('arm-left'),right=get('arm-right');
+ // A narrower face is just a head-node scale; hair blocks are children, so they follow.
+ if(config.faceWidth&&config.faceWidth!==1)head.scale.x*=config.faceWidth;
  for(const [arm,sign] of [[left,1],[right,-1]] as const){const hand=new T.Mesh(new T.BoxGeometry(.20,.30,.25),new T.MeshStandardMaterial({color:config.skin,roughness:.95}));hand.name='Student_hand';hand.position.set(sign*.20,-.80,0);arm.add(hand);}
  const green=new T.MeshStandardMaterial({color:config.coat,roughness:1}),trim=new T.MeshStandardMaterial({color:config.trim,roughness:1});
  const box=(p:T.Object3D,n:string,w:number,h:number,d:number,x:number,y:number,z:number,m:T.Material)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.name=n;o.position.set(x,y,z);p.add(o);o.castShadow=true;return o;};
