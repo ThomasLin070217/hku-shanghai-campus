@@ -1,0 +1,663 @@
+{
+  "version": "0.1",
+  "note": "WorkBuddy audio deliverable. Codex handles trigger/load/spatialization. See ADS section 9.",
+  "spec": {
+    "sampleRate": 22050,
+    "bitDepth": 16,
+    "channels": 1,
+    "peakDbfs": -1.0
+  },
+  "buses": [
+    "master",
+    "ambient",
+    "sfx",
+    "steps",
+    "ui",
+    "music"
+  ],
+  "cueSheetScene03": [
+    {
+      "at": 0.0,
+      "cue": "sfx_anomaly_low"
+    },
+    {
+      "at": 1.5,
+      "cue": "sfx_glitch_burst"
+    },
+    {
+      "at": 2.5,
+      "cue": "sfx_ai_boot"
+    },
+    {
+      "at": 4.0,
+      "cue": "sfx_disturbance_spread"
+    },
+    {
+      "at": 6.0,
+      "cue": "sfx_veil_descend"
+    },
+    {
+      "at": 11.0,
+      "cue": "sfx_veil_seal"
+    },
+    {
+      "at": 13.5,
+      "cue": "amb_dark_hum"
+    }
+  ],
+  "musicLayers": {
+    "safe": {
+      "file": "synth/music/mus_safe.wav",
+      "bpm": 72,
+      "bars": 8,
+      "key": "A-minor/C-major",
+      "loop": true
+    },
+    "unease": {
+      "file": "synth/music/mus_unease.wav",
+      "bpm": 72,
+      "bars": 8,
+      "key": "A-minor/C-major",
+      "loop": true
+    },
+    "tension": {
+      "file": "synth/music/mus_tension.wav",
+      "bpm": 72,
+      "bars": 8,
+      "key": "A-minor/C-major",
+      "loop": true
+    },
+    "chase": {
+      "file": "synth/music/mus_chase.wav",
+      "bpm": 72,
+      "bars": 8,
+      "key": "A-minor/C-major",
+      "loop": true
+    },
+    "boss": {
+      "file": "synth/music/mus_boss.wav",
+      "bpm": 72,
+      "bars": 8,
+      "key": "A-minor/C-major",
+      "loop": true
+    },
+    "hope": {
+      "file": "synth/music/mus_hope.wav",
+      "bpm": 72,
+      "bars": 8,
+      "key": "A-minor/C-major",
+      "loop": true
+    }
+  },
+  "crossfadeMs": {
+    "normal": 2000,
+    "toChase": 500,
+    "fromChase": 4000
+  },
+  "cues": [
+    {
+      "id": "sfx_anomaly_low",
+      "file": "synth/sfx/sfx_anomaly_low.wav",
+      "bus": "sfx",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.9,
+      "priority": "high"
+    },
+    {
+      "id": "sfx_glitch_burst",
+      "file": "synth/sfx/sfx_glitch_burst.wav",
+      "bus": "sfx",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.9,
+      "priority": "high"
+    },
+    {
+      "id": "sfx_ai_boot",
+      "file": "synth/sfx/sfx_ai_boot.wav",
+      "bus": "sfx",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.9,
+      "priority": "high"
+    },
+    {
+      "id": "sfx_disturbance_spread",
+      "file": "synth/sfx/sfx_disturbance_spread.wav",
+      "bus": "sfx",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.9,
+      "priority": "high"
+    },
+    {
+      "id": "sfx_veil_descend",
+      "file": "synth/sfx/sfx_veil_descend.wav",
+      "bus": "sfx",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.9,
+      "priority": "high"
+    },
+    {
+      "id": "sfx_veil_seal",
+      "file": "synth/sfx/sfx_veil_seal.wav",
+      "bus": "sfx",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.9,
+      "priority": "high",
+      "duck": {
+        "music": -99,
+        "ambient": -99,
+        "durationMs": 300,
+        "recoverMs": 3000
+      }
+    },
+    {
+      "id": "amb_dark_hum",
+      "file": "synth/sfx/amb_dark_hum.wav",
+      "bus": "ambient",
+      "spatial": false,
+      "loop": true,
+      "gain": 0.45,
+      "priority": "low"
+    },
+    {
+      "id": "robot_servo_loop",
+      "file": "synth/sfx/robot_servo_loop.wav",
+      "bus": "sfx",
+      "spatial": true,
+      "loop": true,
+      "gain": 0.6,
+      "priority": "medium"
+    },
+    {
+      "id": "robot_patrol_step",
+      "file": "synth/sfx/robot_patrol_step.wav",
+      "bus": "sfx",
+      "spatial": true,
+      "loop": false,
+      "gain": 0.8,
+      "priority": "high"
+    },
+    {
+      "id": "robot_scan",
+      "file": "synth/sfx/robot_scan.wav",
+      "bus": "sfx",
+      "spatial": true,
+      "loop": false,
+      "gain": 0.8,
+      "priority": "high"
+    },
+    {
+      "id": "robot_lockon",
+      "file": "synth/sfx/robot_lockon.wav",
+      "bus": "sfx",
+      "spatial": true,
+      "loop": false,
+      "gain": 0.8,
+      "priority": "high",
+      "duck": {
+        "music": -6,
+        "ambient": -4,
+        "durationMs": 800,
+        "recoverMs": 1500
+      }
+    },
+    {
+      "id": "robot_chase_loop",
+      "file": "synth/sfx/robot_chase_loop.wav",
+      "bus": "sfx",
+      "spatial": true,
+      "loop": true,
+      "gain": 0.7,
+      "priority": "high"
+    },
+    {
+      "id": "robot_near_danger",
+      "file": "synth/sfx/robot_near_danger.wav",
+      "bus": "sfx",
+      "spatial": true,
+      "loop": false,
+      "gain": 0.8,
+      "priority": "high"
+    },
+    {
+      "id": "robot_capture",
+      "file": "synth/sfx/robot_capture.wav",
+      "bus": "sfx",
+      "spatial": true,
+      "loop": false,
+      "gain": 0.8,
+      "priority": "high"
+    },
+    {
+      "id": "sfx_blackout",
+      "file": "synth/sfx/sfx_blackout.wav",
+      "bus": "sfx",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.9,
+      "priority": "high"
+    },
+    {
+      "id": "sfx_safe_restore",
+      "file": "synth/sfx/sfx_safe_restore.wav",
+      "bus": "sfx",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.9,
+      "priority": "high"
+    },
+    {
+      "id": "step_jump",
+      "file": "synth/sfx/step_jump.wav",
+      "bus": "steps",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.8,
+      "priority": "medium"
+    },
+    {
+      "id": "step_land",
+      "file": "synth/sfx/step_land.wav",
+      "bus": "steps",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.8,
+      "priority": "medium"
+    },
+    {
+      "id": "step_stair_up",
+      "file": "synth/sfx/step_stair_up.wav",
+      "bus": "steps",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.8,
+      "priority": "medium"
+    },
+    {
+      "id": "step_stair_down",
+      "file": "synth/sfx/step_stair_down.wav",
+      "bus": "steps",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.8,
+      "priority": "medium"
+    },
+    {
+      "id": "ui_confirm",
+      "file": "synth/sfx/ui_confirm.wav",
+      "bus": "ui",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "medium"
+    },
+    {
+      "id": "ui_cancel",
+      "file": "synth/sfx/ui_cancel.wav",
+      "bus": "ui",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "medium"
+    },
+    {
+      "id": "ui_error",
+      "file": "synth/sfx/ui_error.wav",
+      "bus": "ui",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "medium"
+    },
+    {
+      "id": "invitation_open",
+      "file": "synth/sfx/invitation_open.wav",
+      "bus": "ui",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "medium"
+    },
+    {
+      "id": "invitation_page",
+      "file": "synth/sfx/invitation_page.wav",
+      "bus": "ui",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "medium"
+    },
+    {
+      "id": "invitation_close",
+      "file": "synth/sfx/invitation_close.wav",
+      "bus": "ui",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "medium"
+    },
+    {
+      "id": "macbook_open",
+      "file": "synth/sfx/macbook_open.wav",
+      "bus": "ui",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "medium"
+    },
+    {
+      "id": "macbook_close",
+      "file": "synth/sfx/macbook_close.wav",
+      "bus": "ui",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "medium"
+    },
+    {
+      "id": "macbook_type",
+      "file": "synth/sfx/macbook_type.wav",
+      "bus": "ui",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "medium"
+    },
+    {
+      "id": "agent_status",
+      "file": "synth/sfx/agent_status.wav",
+      "bus": "ui",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "medium"
+    },
+    {
+      "id": "decrypt_tick",
+      "file": "synth/sfx/decrypt_tick.wav",
+      "bus": "ui",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "medium"
+    },
+    {
+      "id": "decrypt_success",
+      "file": "synth/sfx/decrypt_success.wav",
+      "bus": "ui",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "medium"
+    },
+    {
+      "id": "decrypt_fail",
+      "file": "synth/sfx/decrypt_fail.wav",
+      "bus": "ui",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "medium"
+    },
+    {
+      "id": "power_switch",
+      "file": "synth/sfx/power_switch.wav",
+      "bus": "ui",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "medium"
+    },
+    {
+      "id": "power_surge",
+      "file": "synth/sfx/power_surge.wav",
+      "bus": "ui",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "medium"
+    },
+    {
+      "id": "supercomputer_hum",
+      "file": "synth/sfx/supercomputer_hum.wav",
+      "bus": "sfx",
+      "spatial": true,
+      "loop": true,
+      "gain": 0.5,
+      "priority": "low"
+    },
+    {
+      "id": "boss_roar",
+      "file": "synth/sfx/boss_roar.wav",
+      "bus": "sfx",
+      "spatial": true,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "high"
+    },
+    {
+      "id": "boss_servo",
+      "file": "synth/sfx/boss_servo.wav",
+      "bus": "sfx",
+      "spatial": true,
+      "loop": true,
+      "gain": 0.65,
+      "priority": "medium"
+    },
+    {
+      "id": "boss_footstep",
+      "file": "synth/sfx/boss_footstep.wav",
+      "bus": "sfx",
+      "spatial": true,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "high"
+    },
+    {
+      "id": "boss_attack_windup",
+      "file": "synth/sfx/boss_attack_windup.wav",
+      "bus": "sfx",
+      "spatial": true,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "high",
+      "duck": {
+        "music": -4,
+        "ambient": -3,
+        "durationMs": 600,
+        "recoverMs": 800
+      }
+    },
+    {
+      "id": "boss_attack_hit",
+      "file": "synth/sfx/boss_attack_hit.wav",
+      "bus": "sfx",
+      "spatial": true,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "high"
+    },
+    {
+      "id": "boss_damage",
+      "file": "synth/sfx/boss_damage.wav",
+      "bus": "sfx",
+      "spatial": true,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "high"
+    },
+    {
+      "id": "boss_defeat",
+      "file": "synth/sfx/boss_defeat.wav",
+      "bus": "sfx",
+      "spatial": true,
+      "loop": false,
+      "gain": 0.85,
+      "priority": "high"
+    },
+    {
+      "id": "gym_ambience",
+      "file": "synth/sfx/gym_ambience.wav",
+      "bus": "ambient",
+      "spatial": false,
+      "loop": true,
+      "gain": 0.4,
+      "priority": "low"
+    },
+    {
+      "id": "bounce_ball",
+      "file": "synth/sfx/bounce_ball.wav",
+      "bus": "sfx",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.9,
+      "priority": "high"
+    },
+    {
+      "id": "student_free",
+      "file": "synth/sfx/student_free.wav",
+      "bus": "sfx",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.9,
+      "priority": "high"
+    },
+    {
+      "id": "sfx_lightshow_sweep",
+      "file": "synth/sfx/sfx_lightshow_sweep.wav",
+      "bus": "sfx",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.9,
+      "priority": "high"
+    },
+    {
+      "id": "sfx_crowd_cheer",
+      "file": "synth/sfx/sfx_crowd_cheer.wav",
+      "bus": "sfx",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.9,
+      "priority": "high"
+    },
+    {
+      "id": "cc0_amb_birds_loop",
+      "file": "cc0/processed/amb_birds_loop.wav",
+      "bus": "ambient",
+      "spatial": false,
+      "loop": true,
+      "gain": 0.5,
+      "priority": "low",
+      "source": "CC0 — see cc0/MANIFEST.md",
+      "note": "real CC0 bird chirping — prefer for Scene02"
+    },
+    {
+      "id": "cc0_amb_wind_loop",
+      "file": "cc0/processed/amb_wind_loop.wav",
+      "bus": "ambient",
+      "spatial": false,
+      "loop": true,
+      "gain": 0.42,
+      "priority": "low",
+      "source": "CC0 — see cc0/MANIFEST.md",
+      "note": "real CC0 wind — Scene02 outdoor layer"
+    },
+    {
+      "id": "cc0_amb_rain_loop",
+      "file": "cc0/processed/amb_rain_loop.wav",
+      "bus": "ambient",
+      "spatial": false,
+      "loop": true,
+      "gain": 0.4,
+      "priority": "low",
+      "source": "CC0 — see cc0/MANIFEST.md",
+      "note": "CC0 rain — lockdown variant"
+    },
+    {
+      "id": "cc0_bus_engine_idle",
+      "file": "cc0/processed/bus_engine_idle.wav",
+      "bus": "ambient",
+      "spatial": false,
+      "loop": true,
+      "gain": 0.5,
+      "priority": "low",
+      "source": "CC0 — see cc0/MANIFEST.md",
+      "note": "real engine idle — Scene01"
+    },
+    {
+      "id": "cc0_celebration_applause_loop",
+      "file": "cc0/processed/celebration_applause_loop.wav",
+      "bus": "ambient",
+      "spatial": false,
+      "loop": true,
+      "gain": 0.55,
+      "priority": "medium",
+      "source": "CC0 — see cc0/MANIFEST.md",
+      "note": "crowd applause — ending"
+    },
+    {
+      "id": "cc0_impact_metal_hit",
+      "file": "cc0/processed/impact_metal_hit.wav",
+      "bus": "sfx",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.8,
+      "priority": "high",
+      "source": "CC0 — see cc0/MANIFEST.md",
+      "note": "real metal impact — boss/robot hit"
+    },
+    {
+      "id": "cc0_mechanical_motor_hum",
+      "file": "cc0/processed/mechanical_motor_hum.wav",
+      "bus": "sfx",
+      "spatial": true,
+      "loop": true,
+      "gain": 0.45,
+      "priority": "low",
+      "source": "CC0 — see cc0/MANIFEST.md",
+      "note": "motor/fan hum — robot substitute"
+    },
+    {
+      "id": "cc0_scifi_engine_hum",
+      "file": "cc0/processed/scifi_engine_hum.wav",
+      "bus": "sfx",
+      "spatial": true,
+      "loop": true,
+      "gain": 0.4,
+      "priority": "low",
+      "source": "CC0 — see cc0/MANIFEST.md",
+      "note": "sci-fi hum — supercomputer/AI"
+    },
+    {
+      "id": "cc0_alert_beep",
+      "file": "cc0/processed/alert_beep.wav",
+      "bus": "sfx",
+      "spatial": false,
+      "loop": false,
+      "gain": 0.7,
+      "priority": "high",
+      "source": "CC0 — see cc0/MANIFEST.md",
+      "note": "alert beep — lockon alternative"
+    }
+  ],
+  "cc0Assets": {
+    "count": 9,
+    "manifest": "cc0/MANIFEST.md",
+    "rawZipCount": 6,
+    "note": "OGG-only packs in cc0/raw/ need decoding before engine import; prefer processed WAV rows."
+  },
+  "integration": {
+    "sampleRates": [
+      22050,
+      44000,
+      44100,
+      48000
+    ],
+    "note": "Mixed rates from synth + CC0. Codex must verify decodeAudioData handles them or resample at import."
+  }
+}

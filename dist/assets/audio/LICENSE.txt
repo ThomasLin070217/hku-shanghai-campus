@@ -1,0 +1,14 @@
+HKU campus digital survey — original procedural sound assets, 2026-11-14.
+The original top-level WAV files listed below were synthesized by scripts/generate-audio.py,
+using only seeded noise, sinusoidal tones and envelopes. No external recording,
+voice, sample pack, music or paid service is used.
+To the extent possible under law, the authors dedicate these WAV assets and the
+synthesis script to the public domain under CC0 1.0 Universal:
+https://creativecommons.org/publicdomain/zero/1.0/
+Source/version: this project's scripts/generate-audio.py, v9 (seed 904).
+Footsteps: step-paving.wav / step-grass.wav; environment: wind-leaves.wav;
+UI: select, equip, bag, collect, complete, view.
+
+Added campus/ and kenney/ assets are third-party CC0 recordings/sample packs.
+Their attribution, licenses and processing are documented in SOURCES.md and kenney/License.txt.
+The old top-level synthetic footsteps/wind are retained for historical comparison; runtime uses campus/.

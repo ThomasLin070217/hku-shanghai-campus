@@ -1,0 +1,9 @@
+# Campus audio sources · 2026-11-14
+
+- **Kenney, Impact Sounds (1.0), 2019-12-19, CC0.** Official source: https://kenney.nl/assets/impact-sounds . Ten concrete/grass footsteps from the official browser download. Original OGG files and pack License.txt are retained in `kenney/`. Direct old static URL returned HTML, which was rejected as an invalid ZIP; actual archive obtained through the official Download → Continue without donating flow. Nothing purchased.
+- **Thimras, Park ambiences, 2022-07-25, CC0.** Source: https://opengameart.org/content/park-ambiences ; original: https://opengameart.org/sites/default/files/park_ambience_wind.wav . Author describes an open-field wind recording in Adelaide, Australia. This is a generic ambience substitute, **not HKU field audio**. Downloaded in browser after CLI HTTP 403. Original 48 kHz/24 bit stereo, 256.8 s, archived in work/experience-fix. No speech-bearing user footage was uploaded or used as ambient soundtrack.
+- UI tones remain the project's original CC0 synthesis from `scripts/generate-audio.py`. No background music asset currently exists; the reserved music bus/setting defaults to 0 and the nonfunctional music slider is removed from the UI.
+
+Processed outputs in `campus/`: 10 step variations with rumble reduction, modest level and short edge fades; a 45-second restrained wind loop from a quiet 48-second window, high-pass 220 Hz, low-pass 4.5 kHz, 3-second overlap crossfade. See `scripts/prepare-campus-audio.py` and `evidence/experience-fix/audio-assets.json` for exact source offsets, measured levels and hashes. CC0 permits modification and redistribution.
+
+Audit limitation: AudioContext playback and system afplay were executed; recording captures actual final game mix. The agent's tool channel rejects audio input, so subjective timbre/listening approval is **not verified**. Do not describe numeric checks or playback as a completed human listening review.

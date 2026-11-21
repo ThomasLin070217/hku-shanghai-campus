@@ -1,0 +1,25 @@
+# Asset provenance and licenses · accessed 2026-11-14
+
+| Component | Version/source | Code | Geometry | Texture | Animation | Actual use / modifications |
+|---|---|---|---|---|---|---|
+| Kenney Blocky Characters | 2.0, creation 2025-06-10; https://kenney.nl/assets/blocky-characters | No executable package code copied | CC0; character-c GLB | CC0; texture-c only in original-source assessment | CC0; original idle/walk/sprint plus other clips retained in exports | Selected runtime base. Extracted rigid joints/geometry/animation data into local JSON; regenerated UVs and original pixel textures; tapered sleeve mesh, smaller hands, green open gown/pleats, hand slots, jump and carry blending |
+| skinview3d | npm 3.4.2, SHA1 6cb7f85f7b7767adae82d5d93b4b20dada7dc4d2; https://github.com/bs-community/skinview3d | MIT, LICENSE.skinview3d retained | Procedural geometry from model.js under MIT | No bundled example skin/font used; assessment colors authored locally | MIT; WalkingAnimation rendered in assessment only | Model/animation modules vendored only for assessment.html. Declaration's ModelType made local to avoid unused dependency. Separate skin viewer/control/orbit/renderer modules not used. Runtime player uses Kenney instead |
+| HKU skins / gown / jump / holding overlay | This project, 2026-11-14 | Original project code | Original additions | Original pixel art, exported PNG | Original pose overlay over CC0 locomotion | Own source files; released here under MIT for the additions |
+| MacBook Air prop and icon | Original geometry informed by https://www.apple.com/macbook-air/specs/ | Original project code | Original, MIT | Original colors, pixel desktop, SVG icon; MIT | Original hinge function; MIT | 13-inch silver; 30.41 × 21.5 × 1.13 cm closed. Apple product images are reference only, not embedded; Apple/MacBook names remain their respective trademarks |
+| Entrance lion sculpture | Original simplified interpretation of IMG_4342 | Original project code | Original, MIT | Original colors; MIT | None | No downloaded mascot model. Visual reference is user's recording. Size and siting are estimates |
+| User video / HEIC / map | IMG_4339, IMG_4340, IMG_4342, attached JPG | N/A | N/A | User-supplied reference, no CC0/MIT claim | N/A | Local review derivatives only; do not treat user references as freely redistributable stock assets |
+
+Kenney license: `assets/characters/kenney/LICENSE.txt`. Unmodified source GLB and its texture are stored there. Runtime derived data: `src/characters/kenney-rig.json`. The assessment screen compares the old model, the loaded original Kenney GLB with its original walk clip, the skinview rigid layout with an authored evaluation skin and its original WalkingAnimation, and the adapted HKU actor. The assessment does not embed the standalone skin viewer.
+
+Choice: Kenney gives a complete local model, named joints and locomotion clips without tying the game to a skin viewer. skinview's 64×64 skin convention is convenient, but its default larger head and viewer-oriented package require extra adaptations and an older Three.js dependency. The project vendors only the assessment module so the game retains its existing Three.js version. Both were rendered; the selected Kenney base was exercised with walking, running and per-instance equipment.
+
+MIT for newly authored v8 additions:
+
+Copyright (c) 2026 HKU Shanghai campus project contributors.
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Existing project and dependency notices remain in `THIRD-PARTY-NOTICES.md` and their original license files.
+
+## U06 daylight video addition (2026-11-14)
+
+`assets/nov14/cds-monument-photo.png` is a panel-only perspective crop from the user's own `IMG_4347.MOV` at 02:55, incorporated at the user's request. It includes HKU's crest and school name as photographed architectural signage; no separate trademark licence or general redistribution permission is asserted. Video frames remain local project references; this update did not upload footage to third-party services. Courtyard, link and interior geometry is editable procedural work, with uncertainty recorded in `references/nov14-video/REPORT.md`.
