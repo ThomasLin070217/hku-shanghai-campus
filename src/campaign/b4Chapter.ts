@@ -60,11 +60,14 @@ export function createB4Chapter():Chapter{
     for(let k=0;k<7;k++){const strip=new T.Mesh(new T.BoxGeometry(.02,.04,r.z1-r.z0-.2),led);strip.position.set(r.x0-.01,r.bottom+.4+k*.27,(r.z0+r.z1)/2);rack.add(strip);}
     continue;
    }
-   const m=new T.Mesh(new T.BoxGeometry(r.x1-r.x0,r.top-r.bottom,r.z1-r.z0),mats[r.render??'wall']);m.position.set((r.x0+r.x1)/2,(r.top+r.bottom)/2,(r.z0+r.z1)/2);m.receiveShadow=true;g.add(tag(m,r.name));
+   // The keyboard plinth shows only under the timber wall; above it the builder's wall and keycaps are the surface.
+   const top=r.render==='plinth'?Math.min(r.top,B4_LAYOUT.keyboardOrigin[1]+.72):r.top;
+   const m=new T.Mesh(new T.BoxGeometry(r.x1-r.x0,top-r.bottom,r.z1-r.z0),mats[r.render??'wall']);m.position.set((r.x0+r.x1)/2,(top+r.bottom)/2,(r.z0+r.z1)/2);m.receiveShadow=true;g.add(tag(m,r.name));
   }
   // Keyboard Wall: the observed panel and its timber backing, from the legacy room builder.
   const kb=buildObservedFeatureRoom('keyboard'),kbRoot=new T.Group();tag(kbRoot,'B4_keyboard_wall');kbRoot.position.fromArray(B4_LAYOUT.keyboardOrigin);g.add(kbRoot);
-  for(const name of ['Keyboard_timber_wall','Keyboard_wall']){const o=kb.getObjectByName(name);if(o)kbRoot.attach(o);}
+  // add(), not attach(): the builder-local offsets place each part relative to the layout origin.
+  for(const name of ['Keyboard_timber_wall','Keyboard_wall']){const o=kb.getObjectByName(name);if(o){o.removeFromParent();kbRoot.add(o);}}
   caps=keyboardKeycaps(kbRoot);
   for(const cap of caps){
    if(cap.userData.phrase)phraseCaps.push(cap);if(cap.userData.enter)enterCap=cap;
@@ -72,7 +75,7 @@ export function createB4Chapter():Chapter{
   }
   // HKU flip wall in front of the aux power closet.
   const fw=buildObservedFeatureRoom('flipWall'),fwRoot=new T.Group();tag(fwRoot,'B4_flip_wall_and_closet');fwRoot.position.fromArray(B4_LAYOUT.flipOrigin);g.add(fwRoot);
-  for(const name of ['HKU_flip_wall','Aux_power_closet']){const o=fw.getObjectByName(name);if(o)fwRoot.attach(o);}
+  for(const name of ['HKU_flip_wall','Aux_power_closet']){const o=fw.getObjectByName(name);if(o){o.removeFromParent();fwRoot.add(o);}}
   flipWall=fwRoot.getObjectByName('HKU_flip_wall')??null;lever=fwRoot.getObjectByName('Aux_breaker_lever')??null;closet=fwRoot.getObjectByName('Aux_power_closet')??null;
   tiles=flipWallTiles(fwRoot).map((group,index)=>({group,index,row:Number(group.userData.row),column:Number(group.userData.column),target:0}));
   flip=createFlipState(tiles.length);
@@ -154,7 +157,9 @@ export function createB4Chapter():Chapter{
  }
  function leaveFocus(){if(!ctx||!focus)return;focus=null;sweeping=false;ctx.closePanel();ctx.resume();}
  function pick(e:MouseEvent,objects:T.Object3D[]){
-  if(!ctx)return null;const canvas=(e.target as Element|null)?.closest?.('canvas');if(!canvas)return null;
+  if(!ctx)return null;
+  // HUD layers sit over the world canvas, so the event target is often not the canvas itself.
+  const canvas=(e.target as Element|null)?.closest?.('canvas')??document.elementsFromPoint(e.clientX,e.clientY).find((el):el is HTMLCanvasElement=>el instanceof HTMLCanvasElement&&el.getBoundingClientRect().width>=innerWidth*.5);if(!canvas)return null;
   const r=canvas.getBoundingClientRect();ndc.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);
   ray.setFromCamera(ndc,ctx.explorer.camera);return ray.intersectObjects(objects,true)[0]??null;
  }
