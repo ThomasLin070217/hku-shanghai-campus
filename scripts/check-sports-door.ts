@@ -7,7 +7,7 @@ import {BUILDINGS,SITE} from '../src/model/campusParameters';
 import {SPORTS_DOOR,SPORTS_HALL,sportsDoorWorld} from '../src/model/sportsDoor';
 import {SPORTS_HALL_PUZZLE,checkCode,checkPassword,parseSudoku,solvedRows} from '../src/gameplay/sudokuPuzzle';
 import {disposeAsset} from '../src/model/buildCampus';
-import {CROWD,createStudentCrowd,crowdPlacements} from '../src/gameplay/studentCrowd';
+import {CROWD,createStudentCrowd,crowdPlacements,crowdVariants} from '../src/gameplay/studentCrowd';
 
 const asset=buildSite(),registry=sceneRegistry(asset.root),nav=createNavigation(BUILDINGS,SITE),centre=sportsDoorWorld(SITE.sportsZ);
 
@@ -48,25 +48,50 @@ assert.throws(()=>parseSudoku({...base,password:{...pw,answer:'191'}}),/password
 assert.throws(()=>parseSudoku({...base,password:{...pw,length:5}}),/password.answer/,'password length must match');
 
 // The crowd inside the hall: exactly 100 students, all on the floor, none in the walls or the aisle.
-const placements=crowdPlacements();assert.equal(placements.length,100,'100 students');
-const crowd=createStudentCrowd(placements);
+const placements=crowdPlacements(),variants=crowdVariants();assert.equal(placements.length,100,'100 students');
+const crowd=createStudentCrowd(placements,variants);
+// Cast: half female with long hair, one fifth international across several skin tones.
+const female=variants.filter(v=>v.female).reduce((n,v)=>n+v.count,0),international=variants.filter(v=>v.international).reduce((n,v)=>n+v.count,0);
+assert.equal(variants.reduce((n,v)=>n+v.count,0),100,'variant counts add up');
+assert.equal(female,50,'half the crowd is female');
+assert.equal(international,20,'one fifth is international');
+assert.ok(variants.filter(v=>v.female).every(v=>v.appearance.hairStyle==='long'),'female students use long hair');
+assert.ok(new Set(variants.filter(v=>v.international).map(v=>v.appearance.skin)).size>=3,'at least three international skin tones');
+assert.ok(new Set(variants.map(v=>v.appearance.skin)).size>=5,'crowd mixes domestic and international skin tones');
 const innerX=SPORTS_HALL.width/2-.35,innerZ=SPORTS_HALL.depth/2-.35;
 for(const p of placements){
  assert.ok(Math.abs(p.x-SPORTS_HALL.x)<innerX,`student x ${p.x} inside the hall`);
  assert.ok(Math.abs(p.z-SITE.sportsZ)<innerZ,`student z ${p.z} inside the hall`);
- assert.ok(Math.abs(p.z-SITE.sportsZ)>1.2,'centre aisle stays walkable');
+ assert.ok(Math.hypot(p.x-(SPORTS_HALL.x+SPORTS_HALL.eastX),p.z-SITE.sportsZ)>2.5,'doorway approach stays clear');
  assert.ok(p.scale>=.9&&p.scale<=1.1,'scale stays near the protagonist');
- assert.ok(Math.abs(p.yaw-CROWD.yaw)<.3,'students face the door');
+ assert.ok(Math.abs(p.yaw-CROWD.yaw)<.9,'students keep roughly facing the door');
 }
 assert.equal(crowd.count,100,'crowd reports 100');
-assert.ok(crowd.meshes.every(m=>m.isInstancedMesh&&m.count===100),'one instanced draw call per material');
-assert.ok(crowd.meshes.length<=12,`instancing keeps draw calls low (${crowd.meshes.length})`);
+assert.ok(crowd.meshes.every(m=>m.isInstancedMesh),'every crowd mesh is instanced');
+assert.equal(crowd.meshes.reduce((n,m)=>n+m.count,0),100*2,'each student is drawn twice: atlas body plus flat-colour parts');
+assert.ok(crowd.meshes.length<=20,`instancing keeps draw calls low (${crowd.meshes.length})`);
 assert.ok(crowd.triangles<40000,`crowd triangles stay small (${crowd.triangles})`);
+// Scatter: no two students overlap, and the crowd fills the hall instead of sitting in a grid.
+let closest=Infinity;for(let i=0;i<placements.length;i++)for(let j=i+1;j<placements.length;j++)closest=Math.min(closest,Math.hypot(placements[i].x-placements[j].x,placements[i].z-placements[j].z));
+assert.ok(closest>1.0,`students do not overlap (closest ${closest.toFixed(2)} m)`);
+assert.ok(new Set(placements.map(p=>p.x.toFixed(2))).size>90,'positions are scattered, not on a grid');
+// The atlas must hold each variant's own head texture, so every face shows the right skin.
+const atlas=crowd.atlasInfo;
+for(const variant of variants){
+ const slot=atlas.slots.get(`${variant.appearance.id}/head`);
+ assert.ok(slot!==undefined,`head texture packed for ${variant.key}`);
+ const skin=variant.appearance.skin,rgb=[(skin>>16)&255,(skin>>8)&255,skin&255];
+ let matches=0;
+ for(let row=slot*16;row<slot*16+16;row++)for(let x=0;x<atlas.width;x++){
+  const o=(row*atlas.width+x)*4;if(Math.abs(atlas.data[o]-rgb[0])<9&&Math.abs(atlas.data[o+1]-rgb[1])<9&&Math.abs(atlas.data[o+2]-rgb[2])<9)matches++;
+ }
+ assert.ok(matches>100,`${variant.key} head texture carries its skin tone (${matches} texels)`);
+}
 const drawCalls=crowd.meshes.length,crowdTriangles=crowd.triangles;
 const first=crowd.meshes[0].instanceMatrix.array;
 assert.ok(Math.abs(first[13]-SPORTS_HALL.floorTop)<1e-4,'students stand on the hall floor');
 const matrix=new T.Matrix4();crowd.meshes[0].getMatrixAt(0,matrix);const euler=new T.Euler().setFromRotationMatrix(matrix);
-assert.ok(Math.abs(euler.y-CROWD.yaw)<.25,'instances keep the authored facing');
+assert.ok(Math.abs(euler.y-CROWD.yaw)<.9,'instances keep the authored facing');
 crowd.dispose();
 console.log('PASS east door geometry/碰撞门洞一致, 可开关; sudoku 4 blanks → 1911; 第二道 4 位密码 1911, 错误/残缺密码被拒绝; 馆内 100 名学生就位', {centre,sudoku:puzzle.answer,password:pw.answer,students:crowd.count,drawCalls,crowdTriangles,entities:registry.entities.length});
 nav.dispose();disposeAsset(asset.root);

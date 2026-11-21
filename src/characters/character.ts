@@ -27,6 +27,8 @@ export function createCharacter(input:Appearance=STUDENT){
  if(config.gown){box(torso,'Gown_back',.87,1.32,.065,0,.55,-.335,green);for(const s of [-1,1]){box(torso,'Open_gown_panel',.25,1.3,.055,s*.30,.55,.333,green);box(torso,'Gown_facing',.045,1.31,.015,s*.175,.55,.37,trim);box(torso,'Back_pleat',.035,1.17,.02,s*.20,.55,-.38,trim);}}
  // Continuous hair cap on all sides is painted into the six-face atlas, with a shallow solid crown.
  const hair=new T.MeshStandardMaterial({color:config.hair,roughness:1});box(head,'Short_hair_crown',8.12,.28,8.12,0,7.94,0,hair);
+ // 'long' adds a real silhouette: a back mass down to the shoulders plus two side locks.
+ if(config.hairStyle==='long'){box(head,'Long_hair_back',8.5,7.2,1.6,0,3.6,-4.7,hair);for(const side of [-1,1])box(head,'Long_hair_side',.6,6.2,6.6,side*4.15,4.1,-.7,hair);}
  const sockets={leftHand:new T.Group(),rightHand:new T.Group(),back:new T.Group()};
  left.add(sockets.leftHand);right.add(sockets.rightHand);torso.add(sockets.back);
  sockets.leftHand.name='slot_left_hand';sockets.rightHand.name='slot_right_hand';sockets.back.name='slot_back';
