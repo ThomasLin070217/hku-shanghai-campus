@@ -126,6 +126,22 @@ export function createOpeningUI(
 
   stage.append(heartsCard, hud, mapCard, promptEl, warningEl, dangerVignette);
 
+  // ---------------------------------------------------------- Cinematic.
+  const cinema = node('section', 'opening-cinema');
+  cinema.hidden = true;
+  cinema.setAttribute('aria-live', 'polite');
+  const cinemaBlack = node('div', 'opening-cinema-black');
+  const cinemaBarTop = node('i', 'opening-cinema-bar top');
+  const cinemaBarBottom = node('i', 'opening-cinema-bar bottom');
+  const cinemaCopy = node('div', 'opening-cinema-copy');
+  const cinemaTitle = node('h2', 'opening-cinema-title');
+  const cinemaSubtitle = node('p', 'opening-cinema-subtitle-line');
+  const cinemaHint = node('p', 'opening-cinema-hint');
+  cinemaCopy.append(cinemaTitle, cinemaSubtitle, cinemaHint);
+  const cinemaSpeech = node('p', 'opening-cinema-speech');
+  cinema.append(cinemaBlack, cinemaBarTop, cinemaBarBottom, cinemaCopy, cinemaSpeech);
+  stage.append(cinema);
+
   // -------------------------------------------------------------- Modal.
   const modalRoot = node('div', 'opening-modal-root');
   modalRoot.hidden = true;
@@ -278,7 +294,7 @@ export function createOpeningUI(
     continueButton.dataset.autofocus = 'true';
     const footer = actionRow(makeButton(T.invitation.close, 'secondary', requestClose), continueButton);
     footer.classList.add('opening-invite-actions');
-    shell.append(node('p','opening-muted','Press any key to finish reading and continue.'),footer);
+    shell.append(footer);
     return shell;
   }
 
@@ -718,6 +734,33 @@ export function createOpeningUI(
     heartsCard.setAttribute('aria-label', `${hearts} of ${view.runtime.maxHearts} hearts`);
   }
 
+  function updateCinema(view: OpeningView): void {
+    const c = view.cinema;
+    if (!c || c.mode === 'off') {
+      cinema.hidden = true;
+      stage.classList.remove('opening-cinema-active');
+      document.body.classList.remove('opening-cinema-active');
+      document.body.classList.remove('opening-cinema-letter');
+      return;
+    }
+    cinema.hidden = false;
+    cinema.dataset.mode = c.mode;
+    cinemaBlack.style.opacity = String(clamp(c.opacity, 0, 1));
+    cinema.classList.toggle('has-letterbox', c.letterbox);
+    const isLetter = view.modal === 'invitation' && !c.subtitle;
+    cinema.classList.toggle('is-letter', isLetter);
+    document.body.classList.toggle('opening-cinema-letter', isLetter);
+    setText(cinemaTitle, c.title);
+    setText(cinemaSubtitle, c.subtitle);
+    setText(cinemaHint, c.hint);
+    const speak = c.mode === 'subtitle';
+    cinemaCopy.hidden = speak;
+    cinemaSpeech.hidden = !speak;
+    if (speak) setText(cinemaSpeech, c.subtitle);
+    stage.classList.add('opening-cinema-active');
+    document.body.classList.add('opening-cinema-active');
+  }
+
   function update(view: OpeningView): void {
     currentView=view;
     // HUD text only: no modal rebuild on per-frame state such as elapsed time.
@@ -746,6 +789,7 @@ export function createOpeningUI(
     const danger = clamp(Number(view.robotWarning) || 0, 0, 1);
     dangerVignette.style.opacity = String(view.runtime.curtain_deployed ? Math.min(.72, .10 + danger * .62) : 0);
     if (view.modal === 'computer') mac.update(view);
+    updateCinema(view);
 
     const now = performance.now();
     if (!document.hidden && now - lastMiniDraw >= 200) {
@@ -779,6 +823,8 @@ export function createOpeningUI(
     mapCard.remove();
     promptEl.remove();
     warningEl.remove();
+    cinema.remove();
+    stage.classList.remove('opening-cinema-active');
   }
 
   return {update, dispose};

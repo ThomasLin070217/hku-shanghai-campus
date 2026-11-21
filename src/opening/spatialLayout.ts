@@ -19,6 +19,8 @@ export const OPENING={
   wheelRadius:.34,
  },
  spawn:[66.6,.54,30.6] as [number,number,number],spawnYaw:Math.PI/2,
+ /** The physical invitation on the seat beside the player. */
+ invitation:[65.5,1.05,31.55] as [number,number,number],
  busExit:[63.4,0,27.8] as [number,number,number],
  b5:{id:'B05',x0:54,x1:82,z0:-80,door:58,doorWidth:2.4,floor:.02,z1:-54.7,clearHeight:4.55,doorHeight:3.2},
  b6:{id:'B06',x0:1,x1:10,z0:-62,door:4,doorWidth:2.4,floor:5.1,z1:-52.625,clearHeight:2.65,doorHeight:2.6},

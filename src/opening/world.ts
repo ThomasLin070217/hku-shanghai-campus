@@ -151,6 +151,15 @@ function buildBus(root:T.Group,materials:ReturnType<typeof busMaterials>){
   box(seats,'opening-bus-seatback-'+x+'-'+z,.62,.50,.09,x,floor+.72,z+.24,materials.seat);
   box(seats,'opening-bus-seatleg-'+x+'-'+z,.07,.40,.07,x,floor+.20,z-.18,materials.metal);
  }
+ // The physical invitation on the seat beside the player. It is the first
+ // diegetic objective, so it gets a paper body, green ribbon and wax seal.
+ const invitation=box(group,'opening-bus-invitation',.30,.012,.42,O.invitation[0],O.invitation[1],O.invitation[2],materials.paper);
+ invitation.rotation.y=.16;
+ const seal=new T.Mesh(new T.CylinderGeometry(.055,.055,.014,14),materials.accent);
+ seal.rotation.x=Math.PI/2;seal.position.set(O.invitation[0]+.09,O.invitation[1]+.012,O.invitation[2]+.12);
+ group.add(seal);tag(seal,'opening-bus-invitation-seal','opening-bus-invitation-seal');
+ box(group,'opening-bus-invitation-ribbon',.035,.014,.42,O.invitation[0]-.08,O.invitation[1]+.007,O.invitation[2],materials.green);
+
  // Handrails beside the doorway, clear of the opening itself.
  box(group,'opening-bus-rail-west',.06,2.00,.06,doorFrom-.16,floor+1.00,z0+.36,materials.metal);
  box(group,'opening-bus-rail-east',.06,2.00,.06,doorTo+.16,floor+1.00,z0+.36,materials.metal);
@@ -186,7 +195,7 @@ function buildBus(root:T.Group,materials:ReturnType<typeof busMaterials>){
  destMesh.position.set(b.x+.55,roofBottom-.03,z1+.080);destMesh.castShadow=false;
  group.add(destMesh);tag(destMesh,'opening-bus-destination','opening-bus-destination');
 
- return{group,pivot,doorLeaf:pivot};
+ return{group,pivot,doorLeaf:pivot,invitation};
 }
 /** Mullion spacing helper kept separate so the window band stays readable. */
 function busMullionOffset(bays:number,i:number){return .035;}
@@ -204,6 +213,8 @@ function busMaterials(){
   lamp:std('Opening_bus_headlamp',0xfff0c2,0xffe6a8,.65),
   tail:std('Opening_bus_taillight',0x8c2c25,0xff3b2e,.55),
   gold:std('Opening_bus_gold_lettering',0xe7c877,.5,.25),
+  paper:std('Opening_bus_invitation_paper',0xf3e7c8,.92,0),
+  accent:std('Opening_invitation_wax',0x8a2a20,.7,.1),
   glass:(()=>{const m=glassMaterial('clear');m.side=T.DoubleSide;return m;})(),
  };
 }
@@ -423,6 +434,7 @@ export function createOpeningWorld(){
  let doorT=0;         // 0 closed, 1 fully open
  let incident=false;
  let laptopTaken=false;
+ let invitationTakenState=false;
  const incidentStrips=dinner.strips.map(m=>({material:m,normal:m.emissiveIntensity,incident:.12}));
  applyIncident(false);
 
@@ -443,7 +455,7 @@ export function createOpeningWorld(){
   for(const light of dinner.roomLights){light.color.setHex(next?0xff5a45:0xffe7b8);light.intensity=next?7:26;}
   office.roomLight.color.setHex(next?0xff5a45:0xffe9c0);office.roomLight.intensity=next?6:20;
  }
- function update(state:{incident:boolean;laptopAcquired:boolean;doorOpen:boolean},dt:number){
+ function update(state:{incident:boolean;laptopAcquired:boolean;doorOpen:boolean;invitationRead?:boolean},dt:number){
   // dt may be zero (paused frame): animation must not advance, state must not reset.
   if(dt>0){
    const goal=state.doorOpen?1:0;
@@ -451,6 +463,8 @@ export function createOpeningWorld(){
    doorT+=Math.max(-step,Math.min(step,goal-doorT));
   }
   bus.pivot.rotation.y=doorT===0?0:-DOOR_OPEN_ANGLE*doorT;
+  const invitationTaken=state.invitationRead===true;
+  if(invitationTaken!==invitationTakenState){invitationTakenState=invitationTaken;bus.invitation.visible=!invitationTaken;}
   if(state.incident!==incident)applyIncident(state.incident);
   if(state.laptopAcquired!==laptopTaken){
    laptopTaken=state.laptopAcquired;

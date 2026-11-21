@@ -2,8 +2,8 @@
  * Fast browser flow check for the Thomas opening.
  *
  * State beats use the game's debug hooks (the same transition/capture functions the
- * normal triggers call). The long walking legs are covered by
- * scripts/check-opening-browser.mjs and the offline integration check.
+ * normal triggers call). The long walking legs are covered by the offline integration
+ * check (scripts/check-opening-integration.ts).
  */
 import {spawn} from 'node:child_process';import fs from 'node:fs';import WebSocket from 'ws';
 const CHROME='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',PORT=9260,OUT='evidence/opening-flow-20261119';
