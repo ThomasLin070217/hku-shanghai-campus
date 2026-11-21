@@ -116,7 +116,7 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters,opening=f
   }
   if(opening&&Math.abs(x)<SP.width/2&&Math.abs(z-SP.z)<SP.depth/2&&y<SP.clearHeight-.2)h=0;
   if(Math.abs(x)<15&&z>=-52.7&&z< -51.4)h=5.1;
-  if(Math.abs(x)<14&&z>53&&z<93)h=Math.max(h,.13);if(Math.abs(x)>2&&Math.abs(x)<13&&z> -24.5&&z<.5)h=Math.max(h,.09);
+  if(Math.abs(x)<14&&z>53&&z<93)h=Math.max(h,.13);if(q>=1&&Math.abs(x)>2&&Math.abs(x)<13&&z> -24.5&&z<.5)h=Math.max(h,.09);
   if(Math.abs(x)<s.sportsWidth/2&&Math.abs(z-s.sportsZ)<s.sportsDepth/2)h=.14;
   if(Math.abs(x-SPORTS_HALL.x)<SPORTS_HALL.width/2-.09&&Math.abs(z-s.sportsZ)<SPORTS_HALL.depth/2-.09)h=Math.max(h,SPORTS_HALL.floorTop);
   if(((x>27.5&&x<78.5)||(x> -27&&x<17))&&Math.abs(z-s.sportsZ)<12.5)h=.19;
