@@ -114,3 +114,5 @@
 @media (max-width: 700px) {
   #boss-ai-ping { top: 74px; right: 12px; left: 12px; width: auto; }
 }
+
+#boss-actions #boss-q.can-cast {background:#b8efa3;color:#102b24;border-color:#c5f59d}

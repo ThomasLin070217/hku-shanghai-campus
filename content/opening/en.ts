@@ -86,7 +86,7 @@ export const OPENING_UI = {
       ['Robots compromised', 'Campus security robots are no longer responding to campus control.'],
       ['Perimeter barrier active', 'External connections are blocked. No messages can leave campus.'],
       ['Students and staff may have been detained', 'This is unconfirmed. Treat the campus as unsafe.'],
-      ['Building 4 emergency control is available', 'Reach the main entrance of Building 4 to hand over the MacBook.'],
+      ['Building 4 emergency control is available', 'Go to Building 4 and restore the backup relay behind the keyboard wall.'],
     ] as [string, string][],
     note: 'Detected locally · no outside connection used',
     confirm: 'Enable emergency assistance',
