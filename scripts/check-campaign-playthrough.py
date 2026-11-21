@@ -37,6 +37,11 @@ const watch = () => new MutationObserver(records => {
   }
 }).observe(document, {subtree: true, attributes: true, attributeFilter: ['data-chapter-card']});
 if (document.documentElement) watch(); else document.addEventListener('DOMContentLoaded', watch);
+// Focus trace: who moved focus, for the handoff focus assertions' failure detail.
+window.__focusLog = [];
+document.addEventListener('focusin', e => { const t = e.target;
+  window.__focusLog.push({t: Math.round(performance.now()), el: (t.tagName || '') + '.' + (t.className || '') + ':' + (t.textContent || '').trim().slice(0, 30),
+    stack: (new Error().stack || '').split(String.fromCharCode(10)).slice(2, 8).map(l => l.trim()).join(' | ')}); }, true);
 """
 HELPERS = """
 window.__t6 = {
@@ -48,7 +53,7 @@ window.__t6 = {
     const C = window.__CAMPUS;
     return {stage: C.campaign.state()?.stage ?? null, story: C.openingDebug.state().story.stage, modal: C.openingDebug.state().modal,
       view: C.explorer.game.view, paused: C.explorer.game.paused, panel: C.explorer.game.panel, doc: window.__doc ?? null,
-      href: location.href, cards: window.__cards.slice(), toast: document.getElementById('toast')?.textContent ?? ''};
+      href: location.href, cards: (window.__cards || []).slice(), toast: document.getElementById('toast')?.textContent ?? ''};
   },
 };
 """
@@ -84,7 +89,19 @@ def until(page, js, timeout=120):
 
 
 def snap(page):
-    return page.evaluate('() => window.__t6.snap()')
+    # A lost helper means a new document (reload/navigation): report it instead of crashing.
+    return page.evaluate("() => window.__t6 ? window.__t6.snap() : {lost: true, stage: null, story: null, modal: null, view: null, doc: window.__doc ?? null, href: location.href, cards: [], toast: ''}")
+
+
+def watch_navigation(page):
+    """Main-frame navigations after boot: the one-document rule says there are none."""
+    navs = []
+    page.on('framenavigated', lambda frame: navs.append(frame.url) if frame == page.main_frame else None)
+    return navs
+
+
+def focus_log(page, n=8):
+    return page.evaluate(f'() => (window.__focusLog || []).slice(-{n})')
 
 
 def boot(page, query):
@@ -260,6 +277,7 @@ def handoff_dialog(browser):
     errors = []
     page.on('pageerror', lambda e: errors.append(str(e)))
     boot(page, '?experience=opening&checkpoint=b4')
+    navs = watch_navigation(page)
     href = page.evaluate('() => location.href')
     D = 'window.__CAMPUS.openingDebug'
     # The relay is paired beforehand (the key the B4 port writes), so the handoff shows the dialog.
@@ -282,7 +300,7 @@ def handoff_dialog(browser):
     page.keyboard.press('f')
     # Wait for the reopened dialog itself (modal state + its Continue focused), not for a node that may linger hidden.
     again = until(page, f"() => {D}.state().modal === 'complete' && !document.querySelector('.opening-modal-root')?.hidden && document.activeElement?.textContent?.trim() === 'Continue to Chapter 2'", 30)
-    check('handoff: F at Building 4 reopens the dialog (campaign still startable in-page)', again, snap(page))
+    check('handoff: F at Building 4 reopens the dialog (campaign still startable in-page)', again, {'snap': snap(page), 'focus': focus_log(page)})
     focus = page.evaluate("""() => { const b = [...document.querySelectorAll('.opening-handoff-dialog .opening-button--primary')].find(x => /Chapter 2/.test(x.textContent));
       return {active: document.activeElement?.textContent?.trim() ?? null, activeTag: document.activeElement?.tagName, disabled: b?.disabled, hidden: b?.hidden,
         rootHidden: document.querySelector('.opening-modal-root')?.hidden ?? null, epilogue: !document.querySelector('.opening-epilogue')?.hidden}; }""")
@@ -291,6 +309,38 @@ def handoff_dialog(browser):
     started = until(page, "() => window.__CAMPUS.campaign.state()?.stage === 'to_lawn'", 30)
     s = snap(page)
     check('handoff: Continue starts Chapter 2 in this document', started and s['href'] == href and s['doc'] == 1, s)
+    check('handoff: no navigation or reload after boot', not navs, navs)
+    check('handoff: no page errors before the same-frame reopen', not errors, errors)
+    context.close()
+    handoff_same_frame(browser)
+
+
+def handoff_same_frame(browser):
+    """The deterministic form of the gate's intermittent failure: Close and F land before the
+    UI has rendered a frame in between (SwiftShader runs at ~2 fps). The reopened dialog must
+    still be a fresh dialog with Continue focused, and Continue must start Chapter 2."""
+    context = browser.new_context(viewport={'width': 1440, 'height': 810})
+    context.add_init_script(COUNT_CARDS)
+    page = context.new_page()
+    errors = []
+    page.on('pageerror', lambda e: errors.append(str(e)))
+    boot(page, '?experience=opening&checkpoint=b4')
+    navs = watch_navigation(page)
+    D = 'window.__CAMPUS.openingDebug'
+    page.evaluate("() => { const mac = window.__CAMPUS.explorer.game.inventory.slots.find(s => s?.itemId === 'macbook-air-13-silver').instanceId; localStorage.setItem('hku.b4.compute.' + mac, 'online'); }")
+    page.evaluate(f'() => {D}.arriveB4()')
+    until(page, "() => document.activeElement?.textContent?.trim() === 'Continue to Chapter 2'", 30)
+    # One task: click Close (the experience drops the modal at once), resume play, press F.
+    page.evaluate("""() => { const close = [...document.querySelectorAll('.opening-handoff-dialog .opening-button--secondary')].find(b => /Close/.test(b.textContent));
+      close.click(); window.__CAMPUS.explorer.enterCompat();
+      window.dispatchEvent(new KeyboardEvent('keydown', {code: 'KeyF', key: 'f', bubbles: true}));
+      window.dispatchEvent(new KeyboardEvent('keyup', {code: 'KeyF', key: 'f', bubbles: true})); }""")
+    again = until(page, f"() => {D}.state().modal === 'complete' && document.activeElement?.textContent?.trim() === 'Continue to Chapter 2'", 30)
+    check('handoff (same frame): Close then F re-renders the dialog with Continue focused', again, {'snap': snap(page), 'focus': focus_log(page, 4)})
+    page.keyboard.press('Enter')
+    started = until(page, "() => window.__CAMPUS.campaign.state()?.stage === 'to_lawn'", 30)
+    check('handoff (same frame): Continue starts Chapter 2 in this document', started, snap(page))
+    check('handoff (same frame): no navigation or reload', not navs, navs)
     check('handoff: no page errors', not errors, errors)
     context.close()
 

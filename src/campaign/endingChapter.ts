@@ -46,6 +46,8 @@ export const ENDING_HOLD_SECONDS=3.2;
 const CARD_WAIT_CAP_SECONDS=6;
 /** The Mac screen has faded out by here, before the 8 s release beat. */
 export const ENDING_CLEAR_AT=7;
+/** The credits wait for the atmosphere to report the dome fully up, at most this long past ENDING_SECONDS. */
+export const ENDING_DOME_WAIT_SECONDS=3;
 
 /** The credits card body. Pure, so the headless check reads the exact copy. */
 export function creditsMarkup():string{
@@ -221,11 +223,18 @@ export function createEndingChapter():Chapter{
   clock+=step;
   if(!cleared&&clock>=ENDING_CLEAR_AT)clearScreen();
   while(next<ENDING_BEATS.length&&ENDING_BEATS[next].at<=clock)fire(ENDING_BEATS[next++]);
-  if(clock>=ENDING_SECONDS){
+  if(clock>=ENDING_SECONDS&&(domeUp()||clock>=ENDING_SECONDS+ENDING_DOME_WAIT_SECONDS)){
    finished=true;
    showCredits();
    ctx?.emit('ending_finished');
   }
+ }
+
+ /** The atmosphere reports the dome back in the sky (an atmosphere without a snapshot, as in stubs, counts as up). */
+ function domeUp(){
+  const a=ctx?.atmosphere() as {snapshot?:()=>{phase:string;curtainVisible:boolean;releasing:boolean}}|undefined;
+  const s=typeof a?.snapshot==='function'?a.snapshot():null;
+  return !s||(s.phase==='day'&&!s.curtainVisible&&!s.releasing);
  }
 
  function detach(){

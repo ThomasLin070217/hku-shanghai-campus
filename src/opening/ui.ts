@@ -680,7 +680,9 @@ export function createOpeningUI(
   // ---------------------------------------------------------- Modal sync.
   function modalSignature(view: OpeningView): string {
     if (!view.modal) return 'none';
-    return view.modal;
+    // The open serial: Close then F inside one UI frame reopens the same kind; without it the
+    // signature never changes, the stale dialog stays and nothing focuses its primary (IF1 G2).
+    return view.modal + ':' + (view.modalSerial ?? 0);
   }
 
   // Reaching Building 4 hands straight over to the campaign in this page: the
@@ -879,7 +881,8 @@ export function createOpeningUI(
     epilogue.hidden = true;
     stage.classList.remove('opening-epilogue-active');
     document.body.classList.remove('opening-epilogue-active');
-    document.querySelector<HTMLElement>('.stage canvas')?.focus({ preventScroll: true });
+    // Never pull focus to the canvas from under an open dialog.
+    if (!dialog) document.querySelector<HTMLElement>('.stage canvas')?.focus({ preventScroll: true });
   }
 
   function updateCinema(view: OpeningView): void {
