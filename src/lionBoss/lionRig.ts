@@ -386,6 +386,21 @@ function buildClips(): Record<LionClipName, T.AnimationClip> {
 /* Rig                                                                 */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Visit every vertex of one authored trace. compact() records trace start/count in index
+ * space when the merged geometry keeps its index buffer, and in vertex space when it is
+ * flattened, so the index (when present) maps each slot to the real vertex.
+ */
+export function forEachTraceVertex(geometry: T.BufferGeometry, part: PrimitiveTrace, visit: (vertex: number) => void) {
+  const index = geometry.index;
+  const end = part.start + part.count;
+  if (index) {
+    for (let i = part.start, limit = Math.min(end, index.count); i < limit; i++) visit(index.getX(i));
+  } else {
+    for (let vertex = part.start, limit = Math.min(end, geometry.getAttribute('position').count); vertex < limit; vertex++) visit(vertex);
+  }
+}
+
 export interface LionRig {
   root: T.Bone;
   bones: Record<LionBoneName, T.Bone>;
@@ -471,32 +486,32 @@ export function createLionRig(body: T.Object3D): LionRig {
     const indices = new Uint16Array(count * 4);
     const weights = new Float32Array(count * 4);
     const parts = (source.userData.authorParts ?? []) as PrimitiveTrace[];
-    if (parts.length) {
-      for (const part of parts) {
-        const bounds = part.bounds;
-        const centerX = (bounds[0] + bounds[3]) / 2;
-        const rigid = boneForTrace(part.name, centerX);
-        const end = Math.min(count, part.start + part.count);
-        if (rigid) {
-          const boneIndex = boneIndexByName.get(rigid)!;
-          for (let vertex = part.start; vertex < end; vertex++) {
-            indices[vertex * 4] = boneIndex;
-            weights[vertex * 4] = 1;
-          }
-          continue;
+    const assigned = new Uint8Array(count);
+    for (const part of parts) {
+      const bounds = part.bounds;
+      const centerX = (bounds[0] + bounds[3]) / 2;
+      const rigid = boneForTrace(part.name, centerX);
+      const rigidIndex = rigid ? boneIndexByName.get(rigid)! : -1;
+      forEachTraceVertex(geometry, part, vertex => {
+        if (assigned[vertex]) return;
+        assigned[vertex] = 1;
+        if (rigidIndex >= 0) {
+          indices[vertex * 4] = rigidIndex;
+          weights[vertex * 4] = 1;
+        } else if (part.name === 'Tail') {
+          addWeights(indices, weights, vertex, tailBlend(position.getZ(vertex)));
+        } else if (part.name === 'Rounded_body_mid' || part.name === 'Shirt_front_panel'
+          || part.name.startsWith('Shirt_vertical_stripe')) {
+          addWeights(indices, weights, vertex, torsoBlend(position.getY(vertex)));
+        } else {
+          addWeights(indices, weights, vertex, fallbackBlend(position.getY(vertex)));
         }
-        for (let vertex = part.start; vertex < end; vertex++) {
-          if (part.name === 'Tail') addWeights(indices, weights, vertex, tailBlend(position.getZ(vertex)));
-          else if (part.name === 'Rounded_body_mid' || part.name === 'Shirt_front_panel'
-            || part.name.startsWith('Shirt_vertical_stripe')) {
-            addWeights(indices, weights, vertex, torsoBlend(position.getY(vertex)));
-          } else addWeights(indices, weights, vertex, fallbackBlend(position.getY(vertex)));
-        }
-      }
-    } else {
-      for (let vertex = 0; vertex < count; vertex++) {
-        addWeights(indices, weights, vertex, fallbackBlend(position.getY(vertex)));
-      }
+      });
+    }
+    // Vertices no trace reaches (no authorParts, or unreferenced by the index) still need a
+    // valid skin so the weights sum to one everywhere.
+    for (let vertex = 0; vertex < count; vertex++) {
+      if (!assigned[vertex]) addWeights(indices, weights, vertex, fallbackBlend(position.getY(vertex)));
     }
     geometry.setAttribute('skinIndex', new T.Uint16BufferAttribute(indices, 4));
     geometry.setAttribute('skinWeight', new T.Float32BufferAttribute(weights, 4));

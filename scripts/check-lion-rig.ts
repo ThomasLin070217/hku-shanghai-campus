@@ -9,9 +9,12 @@ import * as T from 'three';
 import {createLion} from '../src/model/nov13Details';
 import {compact} from '../src/model/buildCampus';
 import {AWAKEN_SECONDS, createCombat, type CombatState} from '../src/lionBoss/combat';
+import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {
-  createLionRig, LION_BONE_NAMES, LION_CLIP_NAMES, type LionBoneName, type LionClipName, type LionRig,
+  createLionRig, LION_BONE_NAMES, LION_CLIP_NAMES,
+  type LionBoneName, type LionClipName, type LionRig,
 } from '../src/lionBoss/lionRig';
+import {mergedTraces, tagChildren} from '../src/scene/authoring';
 import type {PrimitiveTrace} from '../src/scene/authoring';
 
 let failures = 0;
@@ -56,6 +59,7 @@ check('Lion_body_uniform_scale survives compact()', !!compactedBody);
 if (!compactedBody) throw new Error('cannot continue without the compacted lion body');
 const compactedMeshes = compactedBody.children.filter(child => child instanceof T.Mesh).length;
 const rig = createLionRig(compactedBody);
+const mainRig = rig;
 
 /* ------------------------------------------------------------------ */
 /* Skeleton and skinning                                               */
@@ -70,88 +74,110 @@ check('every compacted mesh became a SkinnedMesh', rig.meshes.length === compact
 check('no plain Mesh left directly under the body',
   compactedBody.children.every(child => !(child instanceof T.Mesh) || child instanceof T.SkinnedMesh));
 
-let skinProblems = 0, nanProblems = 0, indexProblems = 0, totalVertices = 0;
-for (const mesh of rig.meshes) {
-  const position = mesh.geometry.getAttribute('position');
-  const skinIndex = mesh.geometry.getAttribute('skinIndex');
-  const skinWeight = mesh.geometry.getAttribute('skinWeight');
-  totalVertices += position.count;
-  if (!skinIndex || !skinWeight || skinIndex.count !== position.count || skinWeight.count !== position.count) {
-    skinProblems += 1;
-    continue;
+/** Test-owned trace resolution, kept independent of the rig's own helper. */
+function forEachTraceVertex(geometry: T.BufferGeometry, part: PrimitiveTrace, visit: (vertex: number) => void) {
+  const slots = geometry.index;
+  for (let i = part.start; i < part.start + part.count; i++) visit(slots ? slots.getX(i) : i);
+}
+
+/**
+ * Skin-weight and trace-mapping assertions. Trace start/count are resolved through the index
+ * buffer when the merged geometry keeps one, so this runs against both compact() layouts.
+ */
+function checkSkinning(layout: string, rig: LionRig) {
+  let skinProblems = 0, nanProblems = 0, indexProblems = 0, totalVertices = 0;
+  for (const mesh of rig.meshes) {
+    const position = mesh.geometry.getAttribute('position');
+    const skinIndex = mesh.geometry.getAttribute('skinIndex');
+    const skinWeight = mesh.geometry.getAttribute('skinWeight');
+    totalVertices += position.count;
+    if (!skinIndex || !skinWeight || skinIndex.count !== position.count || skinWeight.count !== position.count) {
+      skinProblems += 1;
+      continue;
+    }
+    for (let i = 0; i < position.count; i++) {
+      let sum = 0;
+      for (let k = 0; k < 4; k++) {
+        const weight = skinWeight.getComponent(i, k);
+        const index = skinIndex.getComponent(i, k);
+        if (!Number.isFinite(weight) || !Number.isFinite(index)) nanProblems += 1;
+        if (index >= rig.boneArray.length) indexProblems += 1;
+        sum += weight;
+      }
+      if (!Number.isFinite(position.getX(i)) || !Number.isFinite(position.getY(i)) || !Number.isFinite(position.getZ(i))) nanProblems += 1;
+      if (Math.abs(sum - 1) > 1e-4) skinProblems += 1;
+    }
+    if (mesh.skeleton !== rig.skeleton) skinProblems += 1;
   }
-  for (let i = 0; i < position.count; i++) {
-    let sum = 0;
+  check(`[${layout}] skin attributes cover every vertex and weights sum to 1`, skinProblems === 0,
+    `${totalVertices} vertices, ${skinProblems} bad weights`);
+  check(`[${layout}] skin data contains no NaNs and valid bone indices`, nanProblems === 0 && indexProblems === 0,
+    `${nanProblems} NaN, ${indexProblems} bad indices`);
+  check(`[${layout}] all skinned meshes share one skeleton`, rig.meshes.every(mesh => mesh.skeleton === rig.skeleton));
+
+  const dominantBone = (mesh: T.SkinnedMesh, vertex: number): LionBoneName => {
+    const skinIndex = mesh.geometry.getAttribute('skinIndex');
+    const skinWeight = mesh.geometry.getAttribute('skinWeight');
+    let best = -1, bestWeight = -1;
     for (let k = 0; k < 4; k++) {
-      const weight = skinWeight.getComponent(i, k);
-      const index = skinIndex.getComponent(i, k);
-      if (!Number.isFinite(weight) || !Number.isFinite(index)) nanProblems += 1;
-      if (index >= rig.boneArray.length) indexProblems += 1;
-      sum += weight;
+      const weight = skinWeight.getComponent(vertex, k);
+      if (weight > bestWeight) { bestWeight = weight; best = skinIndex.getComponent(vertex, k); }
     }
-    if (!Number.isFinite(position.getX(i)) || !Number.isFinite(position.getY(i)) || !Number.isFinite(position.getZ(i))) nanProblems += 1;
-    if (Math.abs(sum - 1) > 1e-4) skinProblems += 1;
-  }
-  if (mesh.skeleton !== rig.skeleton) skinProblems += 1;
-}
-check('skin attributes cover every vertex and weights sum to 1', skinProblems === 0,
-  `${totalVertices} vertices, ${skinProblems} bad weights`);
-check('skin data contains no NaNs and valid bone indices', nanProblems === 0 && indexProblems === 0,
-  `${nanProblems} NaN, ${indexProblems} bad indices`);
-check('all skinned meshes share one skeleton', rig.meshes.every(mesh => mesh.skeleton === rig.skeleton));
+    return rig.boneArray[best].name as LionBoneName;
+  };
+  const sideOf = (part: PrimitiveTrace) => (part.bounds[0] + part.bounds[3]) / 2 < 0 ? 'L' : 'R';
 
-const boneIndex = (name: LionBoneName) => rig.boneArray.findIndex(bone => bone.name === name);
-function dominantBone(mesh: T.SkinnedMesh, vertex: number): LionBoneName {
-  const skinIndex = mesh.geometry.getAttribute('skinIndex');
-  const skinWeight = mesh.geometry.getAttribute('skinWeight');
-  let best = -1, bestWeight = -1;
-  for (let k = 0; k < 4; k++) {
-    const weight = skinWeight.getComponent(vertex, k);
-    if (weight > bestWeight) { bestWeight = weight; best = skinIndex.getComponent(vertex, k); }
-  }
-  return rig.boneArray[best].name as LionBoneName;
-}
-
-let headTraceVertices = 0, headTraceBad = 0;
-let pawTraces = 0, pawBad = 0, sleeveTraces = 0, sleeveBad = 0, tailTipTraces = 0, tailTipBad = 0;
-for (const mesh of rig.meshes) {
-  for (const part of (mesh.userData.authorParts ?? []) as PrimitiveTrace[]) {
-    const end = Math.min(mesh.geometry.getAttribute('position').count, part.start + part.count);
-    if (isHeadPart(part.name)) {
-      for (let vertex = part.start; vertex < end; vertex++) {
-        headTraceVertices += 1;
-        if (dominantBone(mesh, vertex) !== 'head') headTraceBad += 1;
+  let headVertices = 0, headBad = 0;
+  let pawTraces = 0, pawBad = 0, sleeveTraces = 0, sleeveBad = 0, tailTipTraces = 0, tailTipBad = 0;
+  let eyeTraces = 0, eyeOutside = 0;
+  for (const mesh of rig.meshes) {
+    const position = mesh.geometry.getAttribute('position');
+    for (const part of (mesh.userData.authorParts ?? []) as PrimitiveTrace[]) {
+      if (isHeadPart(part.name)) {
+        forEachTraceVertex(mesh.geometry, part, vertex => {
+          headVertices += 1;
+          if (dominantBone(mesh, vertex) !== 'head') headBad += 1;
+        });
       }
-    }
-    if (part.name === 'Paw') {
-      pawTraces += 1;
-      const expected: LionBoneName = (part.bounds[0] + part.bounds[3]) / 2 < 0 ? 'foreArmL' : 'foreArmR';
-      for (let vertex = part.start; vertex < end; vertex++) {
-        if (dominantBone(mesh, vertex) !== expected) pawBad += 1;
+      if (part.name === 'Paw') {
+        pawTraces += 1;
+        const expected = ('foreArm' + sideOf(part)) as LionBoneName;
+        forEachTraceVertex(mesh.geometry, part, vertex => { if (dominantBone(mesh, vertex) !== expected) pawBad += 1; });
       }
-    }
-    if (part.name === 'Gown_sleeve') {
-      sleeveTraces += 1;
-      const expected: LionBoneName = (part.bounds[0] + part.bounds[3]) / 2 < 0 ? 'upperArmL' : 'upperArmR';
-      for (let vertex = part.start; vertex < end; vertex++) {
-        if (dominantBone(mesh, vertex) !== expected) sleeveBad += 1;
+      if (part.name === 'Gown_sleeve') {
+        sleeveTraces += 1;
+        const expected = ('upperArm' + sideOf(part)) as LionBoneName;
+        forEachTraceVertex(mesh.geometry, part, vertex => { if (dominantBone(mesh, vertex) !== expected) sleeveBad += 1; });
       }
-    }
-    if (part.name === 'Tail_tip') {
-      tailTipTraces += 1;
-      for (let vertex = part.start; vertex < end; vertex++) {
-        if (dominantBone(mesh, vertex) !== 'tail3') tailTipBad += 1;
+      if (part.name === 'Tail_tip') {
+        tailTipTraces += 1;
+        forEachTraceVertex(mesh.geometry, part, vertex => { if (dominantBone(mesh, vertex) !== 'tail3') tailTipBad += 1; });
+      }
+      if (part.name === 'Eye' || part.name === 'Eye_glint') {
+        // The vertices a trace resolves to must sit inside that trace's recorded bounds;
+        // reading an index-space range as vertex offsets lands on the wrong primitive.
+        eyeTraces += 1;
+        const centroid = new T.Vector3();
+        let n = 0;
+        forEachTraceVertex(mesh.geometry, part, vertex => { centroid.add(new T.Vector3().fromBufferAttribute(position, vertex)); n += 1; });
+        centroid.divideScalar(Math.max(1, n));
+        const [x, y, z, xx, yy, zz] = part.bounds, eps = 1e-3;
+        if (!(n > 0 && centroid.x >= x - eps && centroid.x <= xx + eps && centroid.y >= y - eps
+          && centroid.y <= yy + eps && centroid.z >= z - eps && centroid.z <= zz + eps)) eyeOutside += 1;
       }
     }
   }
+  check(`[${layout}] head traces are rigidly weighted to the head bone`, headVertices > 0 && headBad === 0,
+    `${headVertices} trace slots across mane/face parts, ${headBad} off-head`);
+  check(`[${layout}] left and right paw traces follow their own forearms`, pawTraces >= 2 && pawBad === 0,
+    `${pawTraces} traces, ${pawBad} wrong`);
+  check(`[${layout}] left and right sleeves follow their own upper arms`, sleeveTraces >= 2 && sleeveBad === 0,
+    `${sleeveTraces} traces, ${sleeveBad} wrong`);
+  check(`[${layout}] tail tip follows the last tail bone`, tailTipTraces === 1 && tailTipBad === 0);
+  check(`[${layout}] eye trace vertices resolve inside their recorded bounds`, eyeTraces === 4 && eyeOutside === 0,
+    `${eyeTraces} eye/glint traces, ${eyeOutside} outside`);
 }
-check('head traces are rigidly weighted to the head bone', headTraceVertices > 0 && headTraceBad === 0,
-  `${headTraceVertices} vertices across mane/face parts`);
-check('left and right paw traces follow their own forearms', pawTraces >= 2 && pawBad === 0,
-  `${pawTraces} traces`);
-check('left and right sleeves follow their own upper arms', sleeveTraces >= 2 && sleeveBad === 0,
-  `${sleeveTraces} traces`);
-check('tail tip follows the last tail bone', tailTipTraces === 1 && tailTipBad === 0);
+checkSkinning('flattened', rig);
 check('leg bones exist and carry new leg meshes',
   (['thighL', 'shinL', 'footL', 'thighR', 'shinR', 'footR'] as LionBoneName[])
     .every(name => rig.bones[name].children.some(child => child instanceof T.Mesh)));
@@ -204,7 +230,7 @@ for (const name of ['idle', 'walk', 'run'] as LionClipName[]) {
 const GROUND = (0.025 - compactedBody.position.y) / compactedBody.scale.y;
 const WORLD_SCALE = compactedBody.scale.y;
 
-function evaluateBounds() {
+function evaluateBounds(rig: LionRig = mainRig) {
   const deltas = new Map<LionBoneName, T.Matrix4>();
   for (const bone of rig.boneArray) {
     const name = bone.name as LionBoneName;
@@ -350,6 +376,71 @@ const DT = 1 / 60;
   state.lion.x = 0;
   for (let i = 0; i < 20; i++) { state.yaw += 1.2 * DT; rig.update(DT, state, 0); }
   check('turning in place plays the walk cycle instead of idling', rig.current === 'walk', `clip ${rig.current}`);
+}
+
+/* ------------------------------------------------------------------ */
+/* Indexed layout                                                      */
+/* ------------------------------------------------------------------ */
+// Mirror of compact() on main after dfc7935: a material bucket keeps its index buffer when
+// every member mesh is indexed, and mergedTraces() then records start/count in index space.
+// This branch's compact() always flattens, so the rig is exercised against both layouts.
+function compactKeepingIndex(g: T.Group) {
+  tagChildren(g);
+  for (const child of [...g.children]) if (child instanceof T.Group) compactKeepingIndex(child);
+  const buckets = new Map<T.Material, T.Mesh[]>();
+  for (const c of g.children) if (c instanceof T.Mesh && !Array.isArray(c.material)) {
+    const list = buckets.get(c.material) || [];
+    list.push(c);
+    buckets.set(c.material, list);
+  }
+  for (const [material, meshes] of buckets) {
+    if (meshes.length < 2) continue;
+    const allIndexed = meshes.every(m => !!m.geometry.index);
+    const geometries = meshes.map(m => {
+      m.updateMatrix();
+      const geom = m.geometry.clone().applyMatrix4(m.matrix);
+      if (allIndexed || !geom.index) return geom;
+      const flat = geom.toNonIndexed();
+      geom.dispose();
+      return flat;
+    });
+    const geometry = mergeGeometries(geometries, false);
+    geometries.forEach(x => x.dispose());
+    if (!geometry) throw new Error(`Cannot merge ${g.name}`);
+    const combined = new T.Mesh(geometry, material);
+    combined.name = `${g.name}__${material.name}`;
+    combined.userData = {...g.userData, ...meshes[0].userData, authorParts: mergedTraces(meshes)};
+    meshes.forEach(m => { g.remove(m); m.geometry.dispose(); });
+    g.add(combined);
+  }
+}
+{
+  const indexedLion = createLion();
+  compactKeepingIndex(indexedLion as T.Group);
+  const indexedBody = indexedLion.getObjectByName(BODY_NAME) as T.Group;
+  const indexedMeshes = indexedBody.children.filter((child): child is T.Mesh => child instanceof T.Mesh);
+  const eyes = indexedMeshes.find(mesh => mesh.name.endsWith('Lion eyes and whiskers'));
+  const withIndex = indexedMeshes.filter(mesh => !!mesh.geometry.index);
+  check('[indexed] compact mirror keeps index buffers like main',
+    withIndex.length > 0 && !!eyes?.geometry.index,
+    `${withIndex.length}/${indexedMeshes.length} indexed; eyes ${eyes?.geometry.getAttribute('position').count} verts / ${eyes?.geometry.index?.count} indices`);
+  const indexedRig = createLionRig(indexedBody);
+  check('[indexed] every compacted mesh became a SkinnedMesh', indexedRig.meshes.length === indexedMeshes.length,
+    `${indexedRig.meshes.length}/${indexedMeshes.length}`);
+  checkSkinning('indexed', indexedRig);
+  const state = createCombat().state;
+  for (let i = 0; i < 6; i++) indexedRig.update(DT, state, 0);
+  const seated = evaluateBounds(indexedRig);
+  check('[indexed] seated silhouette matches the authored lion',
+    Math.abs(seated.min.y - authoredMin.y) < 1e-3 && Math.abs(seated.max.y - authoredMax.y) < 1e-3,
+    `y ${seated.min.y.toFixed(4)}..${seated.max.y.toFixed(4)}`);
+  state.phase = 'patrol'; state.awakened = true;
+  for (let i = 0; i < 90; i++) { state.lion.x += 1.4 * DT; indexedRig.update(DT, state, 1.4); }
+  const walking = evaluateBounds(indexedRig);
+  check('[indexed] walking lion stays on the ground at standing height',
+    walking.clearance > -.05 && walking.height >= 5 && walking.height <= 6.3,
+    `height ${walking.height.toFixed(2)} m, clearance ${walking.clearance.toFixed(3)} m`);
+  indexedRig.dispose();
 }
 
 // Teardown must hand the authored statue back and allow a fresh rig.
