@@ -20,8 +20,10 @@ const floorMesh=court!.getObjectByName('Court_floor') as T.Mesh;assert.ok(floorM
 const floorBox=new T.Box3().setFromObject(floorMesh);
 assert.ok(Math.abs(floorBox.max.y-SPORTS_HALL.floorTop)<.01,'court floor sits on the hall floor');
 assert.ok(Math.abs(floorBox.getSize(new T.Vector3()).x-28.8)<.01&&Math.abs(floorBox.getSize(new T.Vector3()).z-15.8)<.01,'court is 28.8 × 15.8 m');
-const lineParts=(floorMesh.parent!.getObjectByName('Basketball_Court__Ivory signage') as T.Mesh)?.userData.authorParts as unknown[]|undefined;
+const lineMesh=court!.children.find(o=>o instanceof T.Mesh&&o.name.includes('court line paint')) as T.Mesh|undefined;
+const lineParts=lineMesh?.userData.authorParts as unknown[]|undefined;
 assert.ok(lineParts&&lineParts.length>80,`court markings are modelled (${lineParts?.length??0} line parts)`);
+assert.ok((lineMesh!.material as T.MeshStandardMaterial).polygonOffset,'line paint is depth biased against the slab');
 assert.ok(courtParts.some(n=>n.includes('Mullion')),'two hoops with rims and poles');
 for(const end of [-1,1])assert.ok(nav.obstacles.some(o=>o.name==='basketball-hoop'&&Math.abs(o.x-(SPORTS_HALL.x+end*14.55))<.01),'hoop poles are solid');
 // The doorway itself must stay clear of the court furniture.

@@ -24,7 +24,7 @@ import {DEFAULT_PARAMETERS} from './parameters';
 import {BUILDINGS,SITE,validateCampus,type BuildingSpec,type SiteParameters} from './campusParameters';
 
 const material=(name:string,color:number,roughness=.6,metalness=.15)=>new T.MeshStandardMaterial({name,color,roughness,metalness});
-function materials(){return {glass:glassMaterial('office'),dark:glassMaterial('reflective'),clear:glassMaterial('clear'),guard:glassMaterial('guard'),back:material('Opaque structural core',0x47575d),silver:material('Silver facade fins',0xd6dedb,.4,.38),frame:material('Mullion aluminium',0x93aeb2),roof:material('Roof membrane',0x8b9998),concrete:material('Limestone paving',0xc3c7be,.94),white:material('Ivory signage',0xeeeadd),road:material('Asphalt',0x6c7976,.95),grass:material('Lawn',0x8d9f69,1),leaf:material('Tree foliage',0x70885f,1),bark:material('Tree bark',0x796f5b,1),court:material('Sports turf',0x678c72,.95),blue:material('Jogging surface',0x648e97,.9),mesh:material('Fence steel',0x849b9b),equipment:material('Rooftop plant provisional',0xa8b3b0),yellow:material('Road marking',0xcbbb75),wood:material('Indoor basketball court floor',0xb0854f,.92,.04)};}
+function materials(){return {glass:glassMaterial('office'),dark:glassMaterial('reflective'),clear:glassMaterial('clear'),guard:glassMaterial('guard'),back:material('Opaque structural core',0x47575d),silver:material('Silver facade fins',0xd6dedb,.4,.38),frame:material('Mullion aluminium',0x93aeb2),roof:material('Roof membrane',0x8b9998),concrete:material('Limestone paving',0xc3c7be,.94),white:material('Ivory signage',0xeeeadd),road:material('Asphalt',0x6c7976,.95),grass:material('Lawn',0x8d9f69,1),leaf:material('Tree foliage',0x70885f,1),bark:material('Tree bark',0x796f5b,1),court:material('Sports turf',0x678c72,.95),blue:material('Jogging surface',0x648e97,.9),mesh:material('Fence steel',0x849b9b),equipment:material('Rooftop plant provisional',0xa8b3b0),yellow:material('Road marking',0xcbbb75)};}
 type M=ReturnType<typeof materials>;
 function group(parent:T.Object3D,name:string,source:string,confidence:string){const g=new T.Group();g.name=name;g.userData={source,confidence};parent.add(g);return g;}
 function box(g:T.Object3D,name:string,w:number,h:number,d:number,x:number,y:number,z:number,m:T.Material){const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.name=name;o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;g.add(o);return o;}
@@ -158,7 +158,7 @@ function buildSports(g:T.Group,s:SiteParameters,m:M){const z=s.sportsZ;g.userDat
  for(const yy of [1,2,3,4])for(const side of [-1,1])box(g,'Fence_wire',w,.025,.025,x,yy,z+side*13,m.mesh);
  }
  const hall=group(g,'Sports_Hall','C03 sports-1; R02 planning','confirmed-enclosure-type_provisional-exterior');hall.position.set(-68,0,z);
- box(hall,'Hall_base',39,.2,26,0,.2,0,m.concrete);
+ box(hall,'Hall_base',39,.18,26,0,.19,0,m.concrete);
  // Indoor basketball hall (client clarification 2026-11-21): plinth + glazing band + solid head
  // band on three elevations, with the gameplay door and a canopy on the east side.
  box(hall,'Hall_wall',.18,SPORTS_HALL.headBand,26,-SPORTS_HALL.eastX,SPORTS_HALL.headBandY,0,m.white);
@@ -190,11 +190,15 @@ function buildSports(g:T.Group,s:SiteParameters,m:M){const z=s.sportsZ;g.userDat
  * two hoops. Not an observed plan: the hall interior was only a provisional block-out. */
 function basketballCourt(hall:T.Group,m:M){
  const court=group(hall,'Basketball_Court','2026-11-21 client clarification: indoor basketball hall','gameplay-addition_not_observed');court.userData.label='篮球场';
- const top=SPORTS_HALL.floorTop,lineY=top+.008;
+ const top=SPORTS_HALL.floorTop,lineY=top+.003;
+ // Depth bias: the slab sits millimetres above the hall base and the lines are embedded in
+ // the slab, so without an offset these coplanar faces flicker at grazing angles.
+ const floorMat=new T.MeshStandardMaterial({name:'Basketball court floor',color:0xb0854f,roughness:.92,metalness:.04,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
+ const lineMat=new T.MeshStandardMaterial({name:'Ivory court line paint',color:0xf1ead4,roughness:.9,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-6});
  // Offset towards the north side so the doorway on the east elevation is not behind a hoop.
  court.position.z=-2.0;
- const line=(name:string,w:number,d:number,x:number,z:number,yaw=0)=>{const o=box(court,name,w,.016,d,x,lineY,z,m.white);o.rotation.y=yaw;return o;};
- box(court,'Court_floor',28.8,.02,15.8,0,top-.01,0,m.wood);
+ const line=(name:string,w:number,d:number,x:number,z:number,yaw=0)=>{const o=box(court,name,w,.014,d,x,lineY,z,lineMat);o.rotation.y=yaw;return o;};
+ box(court,'Court_floor',28.8,.03,15.8,0,top-.015,0,floorMat);
  for(const z of [-7.5,7.5])line('Court_sideline',28,.07,0,z);
  for(const x of [-14,14])line('Court_baseline',.07,15,x,0);
  line('Halfway_line',.07,15,0,0);
