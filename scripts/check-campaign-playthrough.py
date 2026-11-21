@@ -338,6 +338,20 @@ def lawn_cinema(browser):
     check('lawn: a capture happened', page.evaluate('() => window.__CAMPUS.campaign.debug.lawn.hearts()') < hearts)
     check('lawn: no opening letterbox or title after a capture', not after['cinemaShown'] and not after['bodyClass'], after)
     shot(page, '10-lawn-after-capture.png')
+    # Reload at `lawn`: the restored run (opening save + campaign save, passed chapters re-attached).
+    page.wait_for_timeout(5500)  # past the opening save throttle, so the reload restores this run
+    page.evaluate(f'() => {D}.state() && window.__CAMPUS.experience.persist(true)')
+    page.reload(wait_until='domcontentloaded')
+    page.wait_for_function('() => window.__CAMPUS && window.__CAMPUS.campaign && window.__CAMPUS.openingDebug && window.__CAMPUS.explorer', timeout=120000)
+    page.keyboard.press('Shift')
+    page.evaluate(HELPERS)
+    page.evaluate('() => window.__CAMPUS.explorer.enterCompat()')
+    restored = until(page, "() => window.__CAMPUS.campaign.state()?.stage === 'lawn'", 60)
+    page.wait_for_timeout(2500)
+    reloaded = page.evaluate(NO_CINEMA)
+    check('lawn: the reload restores the campaign at lawn', restored, snap(page))
+    check('lawn: no opening letterbox or title after a reload at lawn', not reloaded['cinemaShown'] and not reloaded['bodyClass'], reloaded)
+    shot(page, '11-lawn-after-reload.png')
     check('lawn cinema: no page errors', not errors, errors)
     context.close()
 
