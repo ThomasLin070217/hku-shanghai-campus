@@ -1,0 +1,451 @@
+{
+ "schemaVersion": 1,
+ "album": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+ "capturedOn": "2026-08-30",
+ "items": [
+  {
+   "id": "20260830-P01",
+   "kind": "photo",
+   "title": "签约仪式主舞台 · 青绿色电路纹理背板",
+   "tags": [
+    "签约仪式",
+    "舞台",
+    "背板设计"
+   ],
+   "section": "热门",
+   "albumUrl": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+   "photoContentId": "d886dfe1b0ed39f4c4f9f2cd46ef7627",
+   "sourceFilename": "JP8_6793.JPG",
+   "path": "photos/signing-stage-teal-backdrop.jpg",
+   "pixels": [
+    1600,
+    1066
+   ],
+   "bytes": 475962,
+   "sha256": "e47b214b54a51c335b929b2810f3c09657f4a257ceb32c64c823a61f2983b924",
+   "watermarked": true,
+   "rights": "第三方活动照片（喔图/现场摄影师），仅作内部建模参考；含水印，不得直接用于发布构建或对外分发。",
+   "evidence": "",
+   "limitations": "尚无未裁切原片与拍摄参数；楼栋/楼层/朝向需现场核对。",
+   "sceneIds": []
+  },
+  {
+   "id": "20260830-P02",
+   "kind": "photo",
+   "title": "论坛主会场 · 阶梯座椅与会场全景",
+   "tags": [
+    "人才论坛",
+    "会场",
+    "座椅"
+   ],
+   "section": "人才论坛",
+   "albumUrl": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+   "photoContentId": "6b92f869ab54e4972789d3c152289ed9",
+   "sourceFilename": "MZ528463.JPG",
+   "path": "photos/auditorium-tiered-seats.jpg",
+   "pixels": [
+    1600,
+    1067
+   ],
+   "bytes": 488507,
+   "sha256": "47ae383e04b16d623b529ff3c88579d893fdd53d285820ae866565d323bd3a44",
+   "watermarked": true,
+   "rights": "第三方活动照片（喔图/现场摄影师），仅作内部建模参考；含水印，不得直接用于发布构建或对外分发。",
+   "evidence": "",
+   "limitations": "尚无未裁切原片与拍摄参数；楼栋/楼层/朝向需现场核对。",
+   "sceneIds": []
+  },
+  {
+   "id": "20260830-P03",
+   "kind": "photo",
+   "title": "论坛主会场 · 后场广角（木墙与灯带）",
+   "tags": [
+    "人才论坛",
+    "会场",
+    "木墙",
+    "灯带"
+   ],
+   "section": "人才论坛",
+   "albumUrl": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+   "photoContentId": "4d1ccda373b0960709890b913f93f425",
+   "sourceFilename": "MZ528457.JPG",
+   "path": "photos/auditorium-wide-from-back.jpg",
+   "pixels": [
+    1600,
+    1067
+   ],
+   "bytes": 458051,
+   "sha256": "510effa93c48a2f6b5ea7add9635e8413ab68aa84d79626b598297f1172c2e13",
+   "watermarked": true,
+   "rights": "第三方活动照片（喔图/现场摄影师），仅作内部建模参考；含水印，不得直接用于发布构建或对外分发。",
+   "evidence": "",
+   "limitations": "尚无未裁切原片与拍摄参数；楼栋/楼层/朝向需现场核对。",
+   "sceneIds": []
+  },
+  {
+   "id": "20260830-P04",
+   "kind": "photo",
+   "title": "论坛主会场 · 舞台与侧屏",
+   "tags": [
+    "人才论坛",
+    "舞台",
+    "侧屏"
+   ],
+   "section": "人才论坛",
+   "albumUrl": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+   "photoContentId": "8639bb631a6f54c814b6f00eb993e43c",
+   "sourceFilename": "MZ528454.JPG",
+   "path": "photos/auditorium-stage-wide.jpg",
+   "pixels": [
+    1600,
+    1067
+   ],
+   "bytes": 432285,
+   "sha256": "8c9972fcceaffbf52b4bd0b07713e3fbd05f14d67a43de2a5ab04fd5be0d0a98",
+   "watermarked": true,
+   "rights": "第三方活动照片（喔图/现场摄影师），仅作内部建模参考；含水印，不得直接用于发布构建或对外分发。",
+   "evidence": "",
+   "limitations": "尚无未裁切原片与拍摄参数；楼栋/楼层/朝向需现场核对。",
+   "sceneIds": []
+  },
+  {
+   "id": "20260830-P05",
+   "kind": "photo",
+   "title": "启用仪式 · 学位袍人群行进入场",
+   "tags": [
+    "启用仪式",
+    "学位袍",
+    "人物"
+   ],
+   "section": "启用仪式",
+   "albumUrl": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+   "photoContentId": "537a909b9e3061909bef8e1592b4f5dd",
+   "sourceFilename": "MZ528734.JPG",
+   "path": "photos/gown-group-walking.jpg",
+   "pixels": [
+    1600,
+    1067
+   ],
+   "bytes": 437566,
+   "sha256": "7f81054d0fc2ab1865d1c1b25cc13ac9b6b4376f5027bdea46d1d461cec9f6d3",
+   "watermarked": true,
+   "rights": "第三方活动照片（喔图/现场摄影师），仅作内部建模参考；含水印，不得直接用于发布构建或对外分发。",
+   "evidence": "",
+   "limitations": "尚无未裁切原片与拍摄参数；楼栋/楼层/朝向需现场核对。",
+   "sceneIds": []
+  },
+  {
+   "id": "20260830-P06",
+   "kind": "photo",
+   "title": "夜景 · 楼体投影（彩色灯带）",
+   "tags": [
+    "夜景",
+    "投影",
+    "立面"
+   ],
+   "section": "启用仪式",
+   "albumUrl": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+   "photoContentId": "6115b0c69dfec33c96473e5521af0e47",
+   "sourceFilename": "JP8_7439.JPG",
+   "path": "photos/facade-projection-rainbow.jpg",
+   "pixels": [
+    1066,
+    1600
+   ],
+   "bytes": 582309,
+   "sha256": "c826fb001f0f6f214eef35cdb41c8f96e0abf4739ef6aa26812207e7f0193af7",
+   "watermarked": true,
+   "rights": "第三方活动照片（喔图/现场摄影师），仅作内部建模参考；含水印，不得直接用于发布构建或对外分发。",
+   "evidence": "",
+   "limitations": "尚无未裁切原片与拍摄参数；楼栋/楼层/朝向需现场核对。",
+   "sceneIds": []
+  },
+  {
+   "id": "20260830-P07",
+   "kind": "photo",
+   "title": "夜景 · 楼体投影（校徽）",
+   "tags": [
+    "夜景",
+    "投影",
+    "校徽"
+   ],
+   "section": "启用仪式",
+   "albumUrl": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+   "photoContentId": "628096356a63da621d3f753764dad8a4",
+   "sourceFilename": "MZR21098.JPG",
+   "path": "photos/facade-crest-projection.jpg",
+   "pixels": [
+    1600,
+    1066
+   ],
+   "bytes": 216041,
+   "sha256": "52cbff4298d000943406e5d3dcc0d63da1c4a06284935abe5b951580218c7b93",
+   "watermarked": true,
+   "rights": "第三方活动照片（喔图/现场摄影师），仅作内部建模参考；含水印，不得直接用于发布构建或对外分发。",
+   "evidence": "",
+   "limitations": "尚无未裁切原片与拍摄参数；楼栋/楼层/朝向需现场核对。",
+   "sceneIds": []
+  },
+  {
+   "id": "20260830-P08",
+   "kind": "photo",
+   "title": "夜景 · 入口雨棚与主视觉",
+   "tags": [
+    "夜景",
+    "入口",
+    "雨棚",
+    "主视觉"
+   ],
+   "section": "启用仪式",
+   "albumUrl": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+   "photoContentId": "85885fb525a8e15935e602385bc112e3",
+   "sourceFilename": "JP8_7416.JPG",
+   "path": "photos/entrance-canopy-night.jpg",
+   "pixels": [
+    1066,
+    1600
+   ],
+   "bytes": 450762,
+   "sha256": "2633e4d5008d5eea90b2605d3fe14c047d928de6d9cccf7e9b3a865b0082d0a5",
+   "watermarked": true,
+   "rights": "第三方活动照片（喔图/现场摄影师），仅作内部建模参考；含水印，不得直接用于发布构建或对外分发。",
+   "evidence": "",
+   "limitations": "尚无未裁切原片与拍摄参数；楼栋/楼层/朝向需现场核对。",
+   "sceneIds": []
+  },
+  {
+   "id": "20260830-P09",
+   "kind": "photo",
+   "title": "夜景 · 校园街道与人群",
+   "tags": [
+    "夜景",
+    "街道",
+    "人群"
+   ],
+   "section": "启用仪式",
+   "albumUrl": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+   "photoContentId": "5f28ccc9d688be9e8b6b834bca0ca8da",
+   "sourceFilename": "JP8_7405.JPG",
+   "path": "photos/street-night-crowd.jpg",
+   "pixels": [
+    1600,
+    1066
+   ],
+   "bytes": 445823,
+   "sha256": "e8c7f37275a655cbc19c311eee14e2cf9ef3a8cb828123bdd17cbd59a2ac21a2",
+   "watermarked": true,
+   "rights": "第三方活动照片（喔图/现场摄影师），仅作内部建模参考；含水印，不得直接用于发布构建或对外分发。",
+   "evidence": "",
+   "limitations": "尚无未裁切原片与拍摄参数；楼栋/楼层/朝向需现场核对。",
+   "sceneIds": []
+  },
+  {
+   "id": "20260830-P10",
+   "kind": "photo",
+   "title": "启用仪式 · 演讲台与校徽立牌",
+   "tags": [
+    "启用仪式",
+    "演讲台",
+    "校徽"
+   ],
+   "section": "启用仪式",
+   "albumUrl": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+   "photoContentId": "de044d26191f645d078e22a720f99328",
+   "sourceFilename": "JP6_2169.JPG",
+   "path": "photos/podium-crest-banner.jpg",
+   "pixels": [
+    1064,
+    1600
+   ],
+   "bytes": 281535,
+   "sha256": "92ddbeecf45bc448a2a16c6efe46243c6da84404d922930ba681e2c809155759",
+   "watermarked": true,
+   "rights": "第三方活动照片（喔图/现场摄影师），仅作内部建模参考；含水印，不得直接用于发布构建或对外分发。",
+   "evidence": "",
+   "limitations": "尚无未裁切原片与拍摄参数；楼栋/楼层/朝向需现场核对。",
+   "sceneIds": []
+  },
+  {
+   "id": "20260830-P11",
+   "kind": "photo",
+   "title": "夜景 · 广场人群与蓝光立面",
+   "tags": [
+    "夜景",
+    "广场",
+    "立面"
+   ],
+   "section": "启用仪式",
+   "albumUrl": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+   "photoContentId": "68809dd1bc92d6d0655453126b5dafd7",
+   "sourceFilename": "JP8_7367.JPG",
+   "path": "photos/plaza-night-crowd.jpg",
+   "pixels": [
+    1600,
+    1066
+   ],
+   "bytes": 523385,
+   "sha256": "7ab49a966a1cab466be368f7d87ac327ebc55802d0dc3c08a2a5b56e1ab98120",
+   "watermarked": true,
+   "rights": "第三方活动照片（喔图/现场摄影师），仅作内部建模参考；含水印，不得直接用于发布构建或对外分发。",
+   "evidence": "",
+   "limitations": "尚无未裁切原片与拍摄参数；楼栋/楼层/朝向需现场核对。",
+   "sceneIds": []
+  },
+  {
+   "id": "20260830-P12",
+   "kind": "photo",
+   "title": "高桌晚宴 · 讲台与校旗",
+   "tags": [
+    "高桌晚宴",
+    "讲台",
+    "校旗"
+   ],
+   "section": "高桌晚宴",
+   "albumUrl": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+   "photoContentId": "5ab77b8d15d269a4cc54bca89ef6738a",
+   "sourceFilename": "JP6_2317.JPG",
+   "path": "photos/dinner-podium-banner.jpg",
+   "pixels": [
+    1600,
+    1064
+   ],
+   "bytes": 388520,
+   "sha256": "8f5127979dfcdcd6f56a348a8fe5eafb01fee0b8ad5d94250c9b4fcc79b79772",
+   "watermarked": true,
+   "rights": "第三方活动照片（喔图/现场摄影师），仅作内部建模参考；含水印，不得直接用于发布构建或对外分发。",
+   "evidence": "",
+   "limitations": "尚无未裁切原片与拍摄参数；楼栋/楼层/朝向需现场核对。",
+   "sceneIds": []
+  },
+  {
+   "id": "20260830-P13",
+   "kind": "photo",
+   "title": "高桌晚宴 · 拱顶大厅全景",
+   "tags": [
+    "高桌晚宴",
+    "大厅",
+    "拱顶"
+   ],
+   "section": "高桌晚宴",
+   "albumUrl": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+   "photoContentId": "58f8331d445db81b9bef8e1592b4f5dd",
+   "sourceFilename": "JP8_7619.JPG",
+   "path": "photos/dinner-hall-arched-wide.jpg",
+   "pixels": [
+    1600,
+    1066
+   ],
+   "bytes": 487470,
+   "sha256": "b634c2ba8cdaf6cdd1b00f7af72a88cb364eec560d09391f3a58cd42b111aade",
+   "watermarked": true,
+   "rights": "第三方活动照片（喔图/现场摄影师），仅作内部建模参考；含水印，不得直接用于发布构建或对外分发。",
+   "evidence": "",
+   "limitations": "尚无未裁切原片与拍摄参数；楼栋/楼层/朝向需现场核对。",
+   "sceneIds": []
+  },
+  {
+   "id": "20260830-P14",
+   "kind": "photo",
+   "title": "高桌晚宴 · 长桌纵深",
+   "tags": [
+    "高桌晚宴",
+    "长桌",
+    "纵深"
+   ],
+   "section": "高桌晚宴",
+   "albumUrl": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+   "photoContentId": "e2c34f86d08c9de5cc54bca89ef6738a",
+   "sourceFilename": "JP8_7602.JPG",
+   "path": "photos/dinner-hall-long-tables.jpg",
+   "pixels": [
+    1600,
+    1066
+   ],
+   "bytes": 532047,
+   "sha256": "378ee05f351c51348440ebd690122643b005f2e2f11a5287ff9fbddaa9e42df9",
+   "watermarked": true,
+   "rights": "第三方活动照片（喔图/现场摄影师），仅作内部建模参考；含水印，不得直接用于发布构建或对外分发。",
+   "evidence": "",
+   "limitations": "尚无未裁切原片与拍摄参数；楼栋/楼层/朝向需现场核对。",
+   "sceneIds": []
+  },
+  {
+   "id": "20260830-P15",
+   "kind": "photo",
+   "title": "高桌晚宴 · 吊灯与长桌透视",
+   "tags": [
+    "高桌晚宴",
+    "吊灯",
+    "透视"
+   ],
+   "section": "高桌晚宴",
+   "albumUrl": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+   "photoContentId": "104bcde161e12b0bcc54bca89ef6738a",
+   "sourceFilename": "JP8_7569.JPG",
+   "path": "photos/dinner-hall-perspective.jpg",
+   "pixels": [
+    1600,
+    1066
+   ],
+   "bytes": 473875,
+   "sha256": "19486e5637d362610045392499cd5d4bcf6aade412676a69c2d7782427908ff1",
+   "watermarked": true,
+   "rights": "第三方活动照片（喔图/现场摄影师），仅作内部建模参考；含水印，不得直接用于发布构建或对外分发。",
+   "evidence": "",
+   "limitations": "尚无未裁切原片与拍摄参数；楼栋/楼层/朝向需现场核对。",
+   "sceneIds": []
+  },
+  {
+   "id": "20260830-P16",
+   "kind": "photo",
+   "title": "高桌晚宴 · 木墙校徽与桌位",
+   "tags": [
+    "高桌晚宴",
+    "校徽",
+    "木墙"
+   ],
+   "section": "高桌晚宴",
+   "albumUrl": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+   "photoContentId": "253736794dd58f9c970340a0c43188c9",
+   "sourceFilename": "JP8_7562.JPG",
+   "path": "photos/dinner-crest-wall.jpg",
+   "pixels": [
+    1600,
+    1067
+   ],
+   "bytes": 431979,
+   "sha256": "d17e8381c4e5bc2568326a3843e36195a170b9a63c5bf2de1eb213c96d93c713",
+   "watermarked": true,
+   "rights": "第三方活动照片（喔图/现场摄影师），仅作内部建模参考；含水印，不得直接用于发布构建或对外分发。",
+   "evidence": "",
+   "limitations": "尚无未裁切原片与拍摄参数；楼栋/楼层/朝向需现场核对。",
+   "sceneIds": []
+  },
+  {
+   "id": "20260830-P17",
+   "kind": "photo",
+   "title": "高桌晚宴 · 校旗与人流",
+   "tags": [
+    "高桌晚宴",
+    "校旗",
+    "人流"
+   ],
+   "section": "高桌晚宴",
+   "albumUrl": "https://m.alltuu.com/album/e1241aba6875f5ae8f851c9abd73a9e3/2306132542",
+   "photoContentId": "310381027e69e59420c71d969a8cb8fb",
+   "sourceFilename": "JP8_7543.JPG",
+   "path": "photos/dinner-hall-banners.jpg",
+   "pixels": [
+    1600,
+    1066
+   ],
+   "bytes": 482534,
+   "sha256": "96ec35824d20e2f8131a2e6db323fa9a10f7c70db078eadb2a4d06c372848789",
+   "watermarked": true,
+   "rights": "第三方活动照片（喔图/现场摄影师），仅作内部建模参考；含水印，不得直接用于发布构建或对外分发。",
+   "evidence": "",
+   "limitations": "尚无未裁切原片与拍摄参数；楼栋/楼层/朝向需现场核对。",
+   "sceneIds": []
+  }
+ ]
+}
