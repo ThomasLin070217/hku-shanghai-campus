@@ -37,13 +37,13 @@ export const ENDING_BEATS:readonly EndingBeat[]=[
  */
 export const ENDING_SECONDS=14;
 /**
- * The rescue banner (and the host's EPILOGUE card, about 3.0 s of fade + hold)
- * must be readable before the Mac screen covers the frame. The ending holds its
- * own clock for this long, then starts the story; `cardSettled()` can extend it.
+ * The rescue banner must be readable with nothing over it. The host's EPILOGUE
+ * card (~3.0 s of fade + hold) covers it first, so the hold only starts once
+ * `cardSettled()` resolves; then the banner has this long on its own.
  */
 export const ENDING_HOLD_SECONDS=3.2;
 /** A card promise that never settles must not strand the epilogue. */
-const HOLD_CAP_SECONDS=1.5;
+const CARD_WAIT_CAP_SECONDS=6;
 /** The Mac screen has faded out by here, before the 8 s release beat. */
 export const ENDING_CLEAR_AT=7;
 
@@ -71,12 +71,12 @@ export function clearAllProgress(storage:ProgressStorage&WorldThreatStorage):str
 
 const STYLE_ID='ending-styles';
 const ENDING_CSS=`
-#ending-overlay{position:fixed;inset:0;z-index:60;display:grid;place-items:center;font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;color:#e8f4ee;opacity:0;transition:opacity .6s ease}
+#ending-overlay{position:fixed;inset:0;z-index:60;display:grid;grid-template:1fr/1fr;place-items:center;font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;color:#e8f4ee;opacity:0;transition:opacity .6s ease}
 #ending-overlay::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 42%,rgba(9,24,19,.86),rgba(2,7,5,.97) 70%);opacity:1;transition:opacity .9s ease}
 #ending-overlay.show{opacity:1}
 /* The dome lift happens on open sky: the dark layer and the Mac fade before the 8 s release. */
 #ending-overlay.is-clearing::before{opacity:0}
-#ending-overlay .ending-mac{width:min(880px,92vw);filter:drop-shadow(0 40px 90px rgba(0,0,0,.7));transition:opacity .9s ease,transform .9s ease}
+#ending-overlay .ending-mac{grid-area:1/1;width:min(880px,92vw);filter:drop-shadow(0 40px 90px rgba(0,0,0,.7));transition:opacity .9s ease,transform .9s ease}
 #ending-overlay.is-clearing .ending-mac{opacity:0;transform:translateY(-14px) scale(.985)}
 #ending-overlay .ending-screen{position:relative;background:#050b09;border:14px solid #1b2420;border-radius:16px 16px 6px 6px;box-shadow:inset 0 0 60px rgba(116,230,180,.05),inset 0 0 0 1px rgba(116,230,180,.18);min-height:min(52vh,430px);padding:34px 40px;overflow:hidden}
 #ending-overlay .ending-camera{position:absolute;top:-9px;left:50%;width:70px;height:5px;transform:translateX(-50%);border-radius:3px;background:#0a1210}
@@ -92,7 +92,7 @@ const ENDING_CSS=`
 #ending-overlay .ending-base{height:16px;margin:0 auto;width:calc(100% + 90px);max-width:calc(92vw + 90px);border-radius:0 0 20px 20px;background:linear-gradient(180deg,#2a3631,#141c18 62%,#0b110e);box-shadow:inset 0 1px 0 rgba(255,255,255,.09)}
 #ending-overlay .ending-notch{width:18%;height:5px;margin:0 auto;border-radius:0 0 6px 6px;background:#060a08}
 /* The last line stays on the cleared sky after the Mac fades. */
-#ending-overlay .ending-barrier{grid-area:1/1;align-self:center;justify-self:center;margin:0;font:400 clamp(26px,5vw,54px)/1 Georgia,"Times New Roman",serif;letter-spacing:.3em;color:#e8f4ee;text-shadow:0 0 30px rgba(116,230,180,.35);opacity:0;transition:opacity .9s ease}
+#ending-overlay .ending-barrier{grid-area:1/1;margin:0;font:400 clamp(26px,5vw,54px)/1 Georgia,"Times New Roman",serif;letter-spacing:.3em;color:#e8f4ee;text-shadow:0 0 30px rgba(116,230,180,.35);opacity:0;transition:opacity .9s ease}
 #ending-overlay .ending-barrier.show{opacity:1}
 #ending-credits{position:fixed;inset:0;z-index:61;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,rgba(10,26,21,.92),rgba(2,7,5,.985) 72%);font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;color:#e8f4ee;opacity:0;transition:opacity .7s ease}
 #ending-credits.show{opacity:1}
@@ -123,7 +123,7 @@ const ENDING_CSS=`
  */
 export function createEndingChapter():Chapter{
  let ctx:ChapterContext|null=null;
- let hold=0,clock=0,next=0;
+ let hold=0,cardWait=0,clock=0,next=0;
  let started=false,cleared=false,finished=false,released=false;
  let cardResolved=false,cardWatched=false;
  let overlay:HTMLElement|null=null,lines:HTMLElement|null=null,barrier:HTMLElement|null=null,credits:HTMLElement|null=null;
@@ -176,7 +176,7 @@ export function createEndingChapter():Chapter{
  }
 
  function attach(c:ChapterContext){
-  ctx=c;hold=0;clock=0;next=0;
+  ctx=c;hold=0;cardWait=0;clock=0;next=0;
   started=cleared=finished=released=false;
   cardResolved=false;cardWatched=false;
   // The last endgame fact. The purge itself waits for the ADMINISTRATOR beat so
@@ -202,9 +202,13 @@ export function createEndingChapter():Chapter{
   const step=Math.max(0,dt);
   watchCard();
   if(!started){
+   // The card covers the rescue banner: the banner's own hold starts after it.
+   if(!cardResolved){
+    cardWait+=step;
+    if(cardWait<CARD_WAIT_CAP_SECONDS)return;
+   }
    hold+=step;
-   const need=cardResolved?ENDING_HOLD_SECONDS:ENDING_HOLD_SECONDS+HOLD_CAP_SECONDS;
-   if(hold<need)return;
+   if(hold<ENDING_HOLD_SECONDS)return;
    started=true;
    dom();
    return;
@@ -233,7 +237,7 @@ export function createEndingChapter():Chapter{
   detach,
   debug:{
    complete(){ctx?.emit('ending_finished');return ctx?.stage();},
-   state(){return{hold,clock,next,started,cleared,finished,released,beats:ENDING_BEATS.length};},
+   state(){return{hold,cardWait,cardResolved,clock,next,started,cleared,finished,released,beats:ENDING_BEATS.length};},
   },
  };
 }

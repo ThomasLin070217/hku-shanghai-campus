@@ -23,6 +23,7 @@ import {WORLD_THREAT_KEY,loadWorldThreat,refreshedWorldThreat} from '../src/game
 import {OPENING_SAVE_KEY} from '../src/opening/persistence';
 import {clearProgress} from '../src/levels/resetProgress';
 import {SPORTS_ENTRY} from '../src/campaign/sportsChapter';
+import {createThreatRefresh} from '../src/opening/threatRefresh';
 import {ENDING_BEATS,ENDING_CLEAR_AT,ENDING_HOLD_SECONDS,ENDING_SECONDS,clearAllProgress,creditsMarkup} from '../src/campaign/endingChapter';
 import {rescueBannerMarkup} from '../src/gameplay/sportsDoorCore';
 
@@ -64,7 +65,21 @@ const game=new CampusGame(nav,BUILDINGS,SITE);
 const centre=sportsDoorWorld(SITE.sportsZ);
 
 type AtmosphereFrame={incident:boolean;curtain:boolean;paused:boolean};
-function makeHost(seed:Record<string,string>={}){
+/** A promise-shaped gate that fires `.then` synchronously when opened. */
+function cardGate(){
+ let open=false;const waiting:(()=>void)[]=[];
+ const gate={
+  then(ok?:()=>void){if(open)ok?.();else if(ok)waiting.push(ok);return gate;},
+  catch(){return gate;},
+ } as unknown as Promise<void>;
+ return{gate,open(){open=true;for(const fn of waiting.splice(0))fn();}};
+}
+/** An already-settled card: every headless host in this check starts with one. */
+function immediateCard(){
+ const gate={then(ok?:()=>void){ok?.();return gate;},catch(){return gate;}} as unknown as Promise<void>;
+ return gate;
+}
+function makeHost(seed:Record<string,string>={},card?:(kicker:string,title:string)=>Promise<void>){
  // No door reset between groups: `CampusGame.doors` is a real per-run fact and
  // the chapter must cope with a door that is already open (I4).
  game.body.velocity.set(0,0,0);
@@ -81,7 +96,7 @@ function makeHost(seed:Record<string,string>={}){
   context:{
    scene:new T.Scene(),root:()=>asset.root,explorer,notify:text=>notices.push(text),
    atmosphere:()=>atmosphere as never,openPanel:()=>{},closePanel:()=>{},resume:()=>{},
-   card:async(kicker,title)=>{cards.push([kicker,title]);},
+   card:card??((kicker,title)=>{cards.push([kicker,title]);return immediateCard();}),
   } as Omit<ChapterContext,'stage'|'emit'|'deviceId'>,
   storage:store.storage,chapters:CAMPAIGN_CHAPTERS,
  });
@@ -271,6 +286,63 @@ group('(j) the experience adopts a purge written after its cached sealed frame',
  const final=refreshedWorldThreat(purged,()=>{reads++;return sealed;});
  assert.equal(final.phase,'purged','a purged cache is final');
  assert.equal(reads,0,'a purged cache is not re-read');
+});
+
+group('(k) the rescue banner is readable before the Mac screen',()=>{
+ const gate=cardGate();
+ const harness=makeHost({[WORLD_THREAT_KEY]:SEALED_WITH_POWER},()=>gate.gate),{host}=harness;
+ host.start('mac-device','to_sports');
+ game.body.position.set(...SPORTS_ENTRY.point as [number,number,number]);
+ host.update(1/120);
+ host.update(1/120);
+ assert.equal(host.stage(),'ending');
+ const state=()=>(host.debug.ending as unknown as {state:()=>Record<string,unknown>}).state();
+ let elapsed=0;
+ const tick=(seconds:number)=>{host.update(seconds);elapsed+=seconds;};
+ // The host card covers the banner for its 3.0 s. The banner hold must not run under it.
+ for(let i=0;i<30;i++)tick(0.1);
+ assert.equal(state().cardResolved,false,'the card is still fading out at 3.0 s');
+ assert.equal(state().started,false,'the Mac screen is not up while the card covers the banner');
+ assert.equal(state().hold,0,'the banner hold does not run underneath the card');
+ gate.open();
+ tick(0.1);
+ assert.equal(state().cardResolved,true,'the ending sees the card promise resolve');
+ assert.ok((state().hold as number)>0,'the banner hold starts only after the card is gone');
+ assert.equal(state().started,false);
+ let guard=0;
+ while(!state().started&&guard<100){tick(0.1);guard++;}
+ assert.equal(state().started,true,'the Mac screen mounts after the banner hold');
+ assert.ok(elapsed>=6.1&&elapsed<=6.7,`Mac at ${elapsed.toFixed(1)} s = card 3.0 s + banner ${ENDING_HOLD_SECONDS} s`);
+});
+
+group('(l) a corrupt world-threat record is not re-read every frame',()=>{
+ const sealed=loadWorldThreat({storage:memoryStorage({[WORLD_THREAT_KEY]:SEALED_WITH_POWER}).storage});
+ const refresh=createThreatRefresh(1);
+ let reads=0;
+ let threat=sealed;
+ const loadUnchanged=()=>{reads++;return{...sealed};};
+ for(let i=0;i<600;i++)threat=refresh(threat,1/60,loadUnchanged);
+ assert.equal(threat.phase,'sealed');
+ assert.ok(reads>=10&&reads<=11,`600 frames (10 s) cause ~10 reads, not 600 (${reads})`);
+ let adopted=0;
+ const loadPurged=()=>{adopted++;return{...sealed,phase:'purged' as const,purgedAt:2000};};
+ for(let i=0;i<120;i++)threat=refresh(threat,1/60,loadPurged);
+ assert.equal(threat.phase,'purged','a mid-run purge is still adopted');
+ assert.equal(adopted,1,'the purged record is read once; a purged cache is final');
+ // A corrupt record whose repair write is blocked must not log one key per frame.
+ const data=new Map<string,string>([[WORLD_THREAT_KEY,'{not json']]);
+ const storage={
+  get length(){return data.size;},key:(index:number)=>[...data.keys()][index]??null,
+  getItem:(key:string)=>data.get(key)??null,
+  setItem:(key:string,value:string)=>{if(key!==WORLD_THREAT_KEY)data.set(key,value);},
+  removeItem:(key:string)=>{data.delete(key);},
+ };
+ const corrupt=createThreatRefresh(1);
+ let cached=sealed;
+ for(let i=0;i<600;i++)cached=corrupt(cached,1/60,()=>loadWorldThreat({storage,now:1_000_000+i}));
+ const backups=[...data.keys()].filter(key=>key.startsWith(WORLD_THREAT_KEY+'.unreadable.'));
+ assert.ok(backups.length>=1,'the corrupt record is reported once');
+ assert.ok(backups.length<=11,`10 s writes ~10 repair keys, not 600 (${backups.length})`);
 });
 
 if(failures.length){

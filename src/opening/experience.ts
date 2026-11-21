@@ -9,7 +9,8 @@ import {createOpeningState,reduceOpening} from './state';
 import {OPENING_SAVE_KEY,captureOpeningSave,parseOpeningSave} from './persistence';
 import {checkpointState,checkpointPose,checkpointCampaign,openingCheckpoint,CHECKPOINT_LABELS,type OpeningCheckpoint} from './checkpoint';
 import {createOpeningRuntime,damageOpeningHearts,healOpeningHearts,syncRuntimeWithStory,OPENING_RESPAWN_GRACE_SECONDS,OPENING_MAX_HEARTS,type OpeningRuntime} from './runtime';
-import {loadWorldThreat,sealWorld,resetWorldThreat,tryPurgeWorld,markLionDefeated,markPowerCut,markLocalModelCleared,cloneWorldThreat,refreshedWorldThreat,type WorldThreat} from '../gameplay/worldThreat';
+import {loadWorldThreat,sealWorld,resetWorldThreat,tryPurgeWorld,markLionDefeated,markPowerCut,markLocalModelCleared,cloneWorldThreat,type WorldThreat} from '../gameplay/worldThreat';
+import {createThreatRefresh} from './threatRefresh';
 import {OPENING as O,OPENING_WORLD_REVISION} from './spatialLayout';
 import {setBusDoor} from './navigation';
 import {createOpeningFleet} from './robots';
@@ -56,6 +57,7 @@ export function createOpeningExperience(
  const g=explorer.game,stage=document.querySelector<HTMLElement>('.stage')!;
  let story=createOpeningState(),runtime=createOpeningRuntime(),settings:Settings={...DEFAULT_SETTINGS,music:.2},modal:OpeningModal=null,computerPage:ComputerPage='tasks';
  let worldThreat:WorldThreat=loadWorldThreat();
+ const refreshThreat=createThreatRefresh(1);
  let busClock=0,busReady=false,saveMessage='Progress saves on this device.',protectedSave=false,ownsSave=false,storageOkay=true,lastSave=0,stamp='',disposed=false,failed=false,scanClock=0,wasPaused=true;
  let incidentClock=0,disturbancePlayed=false,incidentQueued=false,autoInvitationShown=false,heartbeatClock=0,chaseCueClock=0,respawnGrace=0,compatBeforePanel=false;
  /** A restored save at `complete`: the completion dialog is decided on the next frame, once the campaign host has loaded. */
@@ -437,9 +439,10 @@ export function createOpeningExperience(
   // The sky is owned by the persistent world state, not by the chapter flag.
   // A sealed runtime without a world record is repaired here, and a purged
   // world record always wins over a stale curtain flag.
-  // Another module (the ending) can purge the shared record mid-run. Adopt it,
+  // Another module (the ending) can purge the shared record mid-run. Adopt it
+  // (at most once a second: a corrupt record must not be re-read per frame),
   // otherwise the sealed curtain below would re-close the sky every frame (I3).
-  worldThreat=refreshedWorldThreat(worldThreat,()=>loadWorldThreat());
+  worldThreat=refreshThreat(worldThreat,dt,()=>loadWorldThreat());
   if(runtime.curtain_deployed&&worldThreat.phase==='clear')worldThreat=sealWorld();
   const sealed=worldThreat.phase==='sealed';
   if(sealed&&!runtime.curtain_deployed)runtime={...runtime,curtain_deployed:true};
