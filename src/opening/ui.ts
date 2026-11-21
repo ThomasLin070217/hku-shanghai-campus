@@ -555,16 +555,17 @@ export function createOpeningUI(
       row.append(node('dt', '', label), node('dd', '', value));
       facts.append(row);
     }
-    body.append(facts, node('p', 'opening-endofslice', T.game.endOfSlice), node('p', 'opening-muted', T.complete.note));
+    body.append(facts, node('p', 'opening-muted', T.complete.note));
     shell.append(body);
-    const close = makeButton(T.complete.close, 'primary', requestClose);
-    close.dataset.autofocus = 'true';
+    // Closing leaves the run at Building 4; F there reopens this dialog.
+    const close = makeButton(T.complete.close, 'secondary', requestClose);
     // One world: this dialog only shows once the MacBook is already paired with
     // the B4 supercomputer, so the run continues on foot to the lawn in this page.
     const deviceId = device.instanceId();
-    const lawn = makeButton('Continue to Chapter 2', 'primary', () => {
+    const lawn = makeButton(T.complete.continue, 'primary', () => {
       if (deviceId) actions.startCampaign?.(deviceId, {stage: 'to_lawn', gesture: true});
     });
+    lawn.dataset.autofocus = 'true';
     lawn.disabled = true;
     // A running campaign is never restarted from here (it would rewind the save).
     lawn.hidden = !!currentView?.campaign;
@@ -574,7 +575,7 @@ export function createOpeningUI(
     quick.append(node('summary', '', 'Quick restore (skip the puzzle)'), quickRow);
     body.append(quick);
     const replay = makeButton(T.epilogue.replay, 'secondary', () => actions.action('restart'));
-    shell.append(actionRow(close, lawn, replay));
+    shell.append(actionRow(lawn, close, replay));
     return shell;
   }
 

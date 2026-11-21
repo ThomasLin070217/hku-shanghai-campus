@@ -13,6 +13,9 @@ import type {Chapter,ChapterContext} from './types';
 export const LAWN_ENTRY:Chapter['entry']={point:[SAFE.x,LION.groundY,SAFE.z],radius:3,event:'reach_lawn'};
 const EVENTS:CampaignEvent[]=['reach_lawn','guardian_shutdown'];
 
+/** Same rule as the explorer's key handler: keys typed into a HUD field or dialog are not game keys. */
+const editable=(t:EventTarget|null)=>typeof HTMLElement!=='undefined'&&t instanceof HTMLElement&&!!t.closest('input,select,textarea,[contenteditable="true"],dialog');
+
 /** Placement only: the prompt itself wears the opening `.opening-prompt` console style and tokens. */
 const PROMPT_CSS=`.opening-prompt.lawn-prompt{bottom:132px;gap:18px}
 .lawn-prompt .lawn-chip{display:inline-flex;align-items:center;gap:8px;opacity:.55;transition:opacity .15s}
@@ -94,7 +97,7 @@ export function createLawnChapter():Chapter{
   return result;
  }
  function keydown(event:KeyboardEvent){
-  if(event.code!=='KeyQ'||event.repeat||event.defaultPrevented||event.isComposing||event.ctrlKey||event.metaKey||event.altKey)return;
+  if(event.code!=='KeyQ'||event.repeat||event.defaultPrevented||event.isComposing||event.ctrlKey||event.metaKey||event.altKey||editable(event.target))return;
   if(!canAct())return;   // Q belongs to the lawn only while the fight runs
   event.preventDefault();interrupt();
  }
@@ -107,8 +110,9 @@ export function createLawnChapter():Chapter{
    // A run already past the lawn (resume or checkpoint) keeps the guardian shut down.
    const done=stageIndex(c.stage())>stageIndex('lawn')||hasCorePowerCut(c.deviceId());
    combat=createCombat(done?1:0);finished=done;started=done;
-   // The opening campus model always carries L001 (check:campaign-lawn); a bare root (host checks) runs the rules only.
-   if(c.root().getObjectByName(NOV13.lion.id)){visuals=createBossScene(c.root(),c.explorer.world,c.scene);visuals.render(combat.state,0);}
+   // The opening campus model always carries L001 (check:campaign-lawn); a bare root or an explorer
+   // without navigation (host and sports checks) runs the rules only.
+   if(c.root().getObjectByName(NOV13.lion.id)&&c.explorer.world){visuals=createBossScene(c.root(),c.explorer.world,c.scene);visuals.render(combat.state,0);}
    prompt=createKeyPrompt();
    if(typeof window!=='undefined'&&typeof window.addEventListener==='function'){
     events=new AbortController();

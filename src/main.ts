@@ -88,7 +88,7 @@ if(openingMode){
  }else if((experience as {story?:{stage:string}}).story?.stage!=='complete'||checkpoint)host.reset();
  else if(!host.active&&mac)host.start(mac,relayRestored(mac)?'to_lawn':'b4_enter'); // a Chapter 1 save from before the campaign existed
  viewer.beforeRender.add(dt=>host.update(dt));
- explorer.interactions.add(()=>{host.interact();});
+ // F reaches the campaign through the opening's one interact handler (campaign first).
 }
 if(!openingMode){
  let dragControls=false;
