@@ -199,6 +199,9 @@ export function createB4Chapter():Chapter{
   // Square-on to the panel's centre, far enough back that the whole panel fits the view.
   const cam=ctx.explorer.camera,pose=focusPose(B4_FOCUS_FRAME[id],cam.fov,cam.aspect);
   focusEye.fromArray(pose.eye);focusTarget.fromArray(pose.target);
+  // The wall owns the frame: the HUD collapses to one line, the minimap hides
+  // and the vitals become one row (see opening.css `body[data-campaign-focus]`).
+  if(typeof document!=='undefined')document.body.dataset.campaignFocus=id;
   ctx.openPanel('b4-focus');hint(FOCUS_HINT[id]);applyFocus();startLoop();
  }
  /** The explorer puts the camera at the body's eye every frame; the focus view overrides it
@@ -210,6 +213,7 @@ export function createB4Chapter():Chapter{
  }
  function leaveFocus(){
   if(!ctx||!focus)return;focus=null;sweeping=false;lastCell=null;stopLoop();hint(null);
+  if(typeof document!=='undefined')delete document.body.dataset.campaignFocus;
   const a=arms();if(a)a.visible=true;
   ctx.closePanel();ctx.resume();
  }
