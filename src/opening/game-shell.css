@@ -40,6 +40,31 @@ body.game-shell.exploring[data-ai-control="human"] #control-badge {
   display: none;
 }
 
+/* Visible chapter select on every player screen. Top right: the opening HUD
+   occupies the top left, and the pause overlay (z-index 12) covers it. */
+.shell-chapters {
+  position: fixed;
+  top: 16px;
+  right: 18px;
+  z-index: 11;
+  padding: 8px 12px;
+  border: 1px solid #7d9a88aa;
+  background: #0d211bd9;
+  color: #e6efe6;
+  font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.shell-chapters:hover,
+.shell-chapters:focus-visible {
+  background: #17352b;
+  outline: 2px solid #b8efa3;
+  outline-offset: 2px;
+}
+
 /* One quiet Esc affordance, below the pause overlay so the menu covers it. */
 body.game-shell .shell-hint {
   position: absolute;

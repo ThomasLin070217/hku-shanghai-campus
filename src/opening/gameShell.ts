@@ -11,6 +11,7 @@
  */
 
 const MENU_HINT = 'Esc · menu';
+const CHAPTERS_HREF = '?experience=levels';
 
 export function applyOpeningShell(): void {
   const card = document.querySelector<HTMLElement>('#pause-panel .pause-card');
@@ -25,6 +26,16 @@ export function applyOpeningShell(): void {
   }
 
   const stage = document.querySelector<HTMLElement>('.stage');
+  if (stage && !stage.querySelector('.shell-chapters')) {
+    // A visible way out of the chapter: the authoring header (and its Chapters
+    // link) is hidden by the player shell, so the chapter select gets its own
+    // fixed button away from the top-left HUD.
+    const chapters = document.createElement('a');
+    chapters.className = 'shell-chapters';
+    chapters.href = CHAPTERS_HREF;
+    chapters.textContent = 'Chapters';
+    stage.append(chapters);
+  }
   if (stage && !stage.querySelector('.shell-hint')) {
     const hint = document.createElement('div');
     hint.className = 'shell-hint';

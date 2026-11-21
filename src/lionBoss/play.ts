@@ -35,7 +35,7 @@ document.body.classList.add('lion-game');
 document.querySelector('#app')!.innerHTML = `
   <main id="boss-field" aria-label="Campus lawn lion encounter"><div id="boss-view"></div>
     <header class="boss-header"><div><span>HKU SHANGHAI</span><strong>Lawn Defense / L001</strong></div>
-    <div class="boss-telemetry"><div id="boss-health"></div><b id="boss-progress"></b><small id="boss-compute" hidden></small><button id="boss-pause">Pause Esc</button></div></header>
+    <div class="boss-telemetry"><div id="boss-health"></div><b id="boss-progress"></b><small id="boss-compute" hidden></small><a id="boss-chapters" class="boss-chapters" href="?experience=levels">Chapters</a><button id="boss-pause">Pause Esc</button></div></header>
     <div id="boss-waypoint" hidden></div><div id="boss-aim" hidden>+ Beacon</div>
     <aside id="boss-alert" hidden role="status"><small>CAMPUS DEFENSE SYSTEM</small><strong>Unauthorized administrator detected</strong><span>THREAT LEVEL: HIGH · DEFENSE UNIT L001</span><b>NEUTRALIZE INTRUDER</b></aside>
     <div id="boss-black" hidden role="status">Connection lost · Returning to the maintenance area</div>

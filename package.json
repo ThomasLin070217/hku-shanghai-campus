@@ -33,6 +33,7 @@
     "check:glass": "tsx scripts/check-glass.ts",
     "check:survey": "tsx scripts/check-survey.ts",
     "check:experience": "tsx scripts/check-experience-fix.ts",
+    "check:chapter-select": "tsx scripts/check-chapter-select.ts",
     "check:nov14": "tsx scripts/check-nov14-video.ts",
     "build:review": "tsc --noEmit && vite build --mode review",
     "check:review": "tsx scripts/check-workbuddy.ts",
