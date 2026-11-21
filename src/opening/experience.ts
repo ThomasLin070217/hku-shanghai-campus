@@ -1,6 +1,6 @@
 import * as T from 'three';
 import type {createExplorer} from '../exploration/controller';
-import {createStaffVoice} from './voice';
+import {createStaffVoice,STAFF_INTRO_TIMING} from './voice';
 import {CampusAudio} from '../gameplay/audio';
 import {DEFAULT_SETTINGS,type Settings} from '../gameplay/save';
 import type {Outcome} from '../gameplay/survey';
@@ -16,6 +16,7 @@ import {createOpeningUI} from './ui';
 import {drawOpeningMap} from './map';
 import type {createOpeningWorld} from './world';
 import type {OpeningAtmosphere} from './atmosphere';
+import {STAFF_DIALOGUE} from '../../content/voice/staff-dialogue';
 
 type ComputerPage='map'|'tasks'|'agent';
 
@@ -32,11 +33,10 @@ const objectives:Record<OpeningState['stage'],[string,string]>={
 const WAKE_SECONDS=4.4;
 const INTRO_VERSION='cod-intro-v3';
 const INTRO_KEY='hku.opening.introVersion';
-const STAFF_LINES=[
- 'DINNER COORDINATOR — You must be the Student Ambassador. Good timing.',
- 'We need the presentation MacBook from Building 6 before the Dean arrives.',
- 'It is on the office table. Bring it back here, and mind the security units.',
-];
+const STAFF_LINES=STAFF_DIALOGUE.intro;
+const STAFF_START_TIMEOUT=2.5;
+const STAFF_FALLBACK_DONE=STAFF_INTRO_TIMING.total+0.8;
+const STAFF_SKIP_DISTANCE=10;
 
 export function createOpeningExperience(
  scene:T.Scene,
@@ -50,14 +50,51 @@ export function createOpeningExperience(
  let busClock=0,busReady=false,saveMessage='Progress saves on this device.',protectedSave=false,ownsSave=false,storageOkay=true,lastSave=0,stamp='',disposed=false,failed=false,scanClock=0,wasPaused=true;
  let incidentClock=0,disturbancePlayed=false,incidentQueued=false,autoInvitationShown=false,heartbeatClock=0,chaseCueClock=0,respawnGrace=0,compatBeforePanel=false;
  let wakeStarted=false,wakeClock=0,wakeDone=false,subtitleText='',subtitleSeconds=0,titleText='',titleSubtitle='',titleSeconds=0,introPromptClock=0,introAutoOpened=false,introCompleted=false;
- let staffTalkStarted=false,staffTalkDone=false,staffTalkClock=0,staffTalkLine=0;
+ let staffTalkStarted=false,staffTalkDone=false,staffTalkClock=0,staffTalkLine=0,staffVoiceStarted=false,acceptVoicePlayed=false,acceptVoiceBusy=false,repeatVoiceBusy=false;
  let fleet=createOpeningFleet(explorer.world);scene.add(fleet.root);
- const npcs=createOpeningNPCs();scene.add(npcs.root);const audio=new CampusAudio(settings);audio.enableStory();const voice=createStaffVoice(audio,()=>modal==='staff'||(staffTalkStarted&&!staffTalkDone),()=>modal===null&&story.stage==='to_b6'&&!failed&&explorer.enabled);
+ const npcs=createOpeningNPCs();scene.add(npcs.root);const audio=new CampusAudio(settings);audio.enableStory();const voice=createStaffVoice(audio);
  const writerToken=crypto.randomUUID(),writerKey=OPENING_SAVE_KEY+'.writer',events=new AbortController();
  const atmo=()=>getAtmosphere?.();
  function showSubtitle(text:string,seconds:number){subtitleText=text;subtitleSeconds=seconds;}
  function showTitle(title:string,subtitle:string,seconds:number){titleText=title;titleSubtitle=subtitle;titleSeconds=seconds;}
  function startWake(){wakeStarted=true;wakeDone=false;wakeClock=0;g.pitch=.52;g.yaw=2.24;audio.openingCue('wake');}
+
+ function staffLineFor(clock:number){
+  return clock>=STAFF_INTRO_TIMING.starts[2]?2:clock>=STAFF_INTRO_TIMING.starts[1]?1:0;
+ }
+ function staffVoicePosition(){return modal==='staff'?null:npcs.staffPosition();}
+ function startStaffIntro(force=false){
+  if(staffTalkStarted&&!force)return;
+  staffTalkStarted=true;staffTalkDone=false;staffTalkClock=0;staffTalkLine=0;staffVoiceStarted=false;
+  npcs.startStaffTalk();
+  void voice.playIntro({
+   eligible:()=>!failed&&(modal==='staff'||(staffTalkStarted&&!staffTalkDone)),
+   position:staffVoicePosition,
+   onItem:(index)=>{staffTalkLine=index;},
+   onStart:()=>{staffVoiceStarted=true;staffTalkClock=0;staffTalkLine=0;},
+   onError:()=>{staffVoiceStarted=true;staffTalkClock=0;staffTalkLine=0;},
+   onDone:()=>{if(modal==='staff')staffTalkDone=true;else completeStaffIntro();},
+  });
+ }
+ function playAcceptanceVoices(){
+  if(acceptVoicePlayed||acceptVoiceBusy)return;
+  acceptVoiceBusy=true;
+  void voice.playAcceptance({
+   eligible:()=>!failed&&story.stage==='to_b6'&&!g.panel,
+   position:(_item,index)=>index===0?null:staffVoicePosition(),
+   onItem:(index,item,duration)=>showSubtitle(`${index===0?'YOU':'COORDINATOR'} — ${item.text}`,duration+.35),
+   onError:()=>{showSubtitle(`YOU — ${STAFF_DIALOGUE.playerAccept}`,1.8);window.setTimeout(()=>showSubtitle(`COORDINATOR — ${STAFF_DIALOGUE.thanks}`,3.6),1900);},
+  }).then(ok=>{if(ok)acceptVoicePlayed=true;}).finally(()=>{acceptVoiceBusy=false;});
+ }
+ function completeStaffIntro(){
+  if(staffTalkDone)return;
+  staffTalkDone=true;runtime={...runtime,staff_task_received:true};
+  if(!transition('accept_errand'))return;
+  showTitle('OBJECTIVE UPDATED','BUILDING 6 · PRESENTATION MACBOOK',1.25);
+  // Let the objective banner clear before the acceptance line so its subtitle is not covered.
+  window.setTimeout(()=>{if(!disposed&&story.stage==='to_b6'&&!failed&&!g.panel)playAcceptanceVoices();},1300);
+  notify('MacBook: Building 6 · office table.');
+ }
 
  function applySettings(){explorer.setSensitivity(settings.sensitivity);explorer.setComfort(settings.fov,settings.bob);audio.apply(settings);}
  function pose(position:readonly number[],yaw=0){g.body.position.fromArray([...position]);g.body.velocity.set(0,0,0);g.body.grounded=true;g.yaw=yaw;g.pitch=0;}
@@ -72,7 +109,7 @@ export function createOpeningExperience(
  function validPose(s:OpeningSave){const [x,y,z]=s.position,w=explorer.world,h=w.support(x,z,y+.24);return s.worldRevision===OPENING_WORLD_REVISION&&h!==null&&Math.abs(h-y)<.3&&!w.blocked(x,z,h+.003)&&[[.18,0],[-.18,0],[0,.18],[0,-.18]].every(([dx,dz])=>{const n=w.support(x+dx,z+dz,h);return n!==null&&Math.abs(n-h)<.3;});}
  function restore(s:OpeningSave){
   explorer.pause('opening_load');story=structuredClone(s.story);runtime=syncRuntimeWithStory(s.runtime??createOpeningRuntime(),story);settings={...s.settings};
-  g.inventory.slots.splice(0,36,...s.slots.map(i=>i?{...i}:null));g.inventory.selectedHotbar=s.selectedHotbar;g.inventory.revision++;g.view=s.view;modal=null;g.closePanel();failed=runtime.hearts<=0;respawnGrace=OPENING_RESPAWN_GRACE_SECONDS;wakeStarted=story.stage!=='bus'||story.invitation_read;wakeDone=wakeStarted;introPromptClock=0;introAutoOpened=false;staffTalkStarted=false;staffTalkDone=false;staffTalkClock=0;staffTalkLine=0;npcs.reset();fleet.reset();
+  g.inventory.slots.splice(0,36,...s.slots.map(i=>i?{...i}:null));g.inventory.selectedHotbar=s.selectedHotbar;g.inventory.revision++;g.view=s.view;modal=null;g.closePanel();failed=runtime.hearts<=0;respawnGrace=OPENING_RESPAWN_GRACE_SECONDS;wakeStarted=story.stage!=='bus'||story.invitation_read;wakeDone=wakeStarted;introPromptClock=0;introAutoOpened=false;staffTalkStarted=false;staffTalkDone=false;staffTalkClock=0;staffTalkLine=0;staffVoiceStarted=false;acceptVoicePlayed=false;acceptVoiceBusy=false;repeatVoiceBusy=false;npcs.reset();fleet.reset();
   if(validPose(s)&&story.stage!=='incident'&&story.stage!=='to_b4')pose(s.position,s.yaw);else safePose();
   g.pitch=s.pitch;busClock=8;busReady=story.invitation_read;setBusDoor(explorer.world,story.stage==='bus'&&!busReady);applySettings();
   if(failed)open('caught');
@@ -82,7 +119,7 @@ export function createOpeningExperience(
  function persist(force=false){if(disposed||protectedSave||!ownsSave||!force&&performance.now()-lastSave<5000)return;try{if(localStorage.getItem(writerKey)!==writerToken){ownsSave=false;return;}const safe=story.stage==='incident'||story.stage==='to_b4'?([...O.encounterSafe] as [number,number,number]):undefined;localStorage.setItem(OPENING_SAVE_KEY,JSON.stringify(captureOpeningSave(g,story,settings,safe,runtime)));lastSave=performance.now();storageOkay=true;saveMessage='Saved on this device.';}catch{storageOkay=false;saveMessage='Storage unavailable. Progress remains in this session.';}}
  function claimSave(){if(protectedSave)return;try{if(localStorage.getItem(writerKey)!==writerToken){const latestRaw=localStorage.getItem(OPENING_SAVE_KEY);if(latestRaw){let saved:OpeningSave|null=null;try{saved=parseOpeningSave(JSON.parse(latestRaw));}catch{}if(!saved){protectedSave=true;saveMessage='Unrecognized save protected. Start a new opening to back it up.';return;}if(lastSave>0||saved.savedAt>loadedAt){restore(saved);saveMessage='Latest checkpoint continued from another window.';}}localStorage.setItem(writerKey,writerToken);}ownsSave=true;}catch{ownsSave=true;storageOkay=false;}}
  function transition(event:OpeningEvent){const next=reduceOpening(story,event);if(next===story)return false;story=next;persist(true);return true;}
- function open(next:OpeningModal){if(failed&&next!=='caught')return;voice.stop();compatBeforePanel=explorer.state.compat;modal=next;explorer.openPanel(next==='settings'?'settings':'computer');audio.setActive(false);audio.stopOpeningCues();audio.stopPreviews();if(next==='invitation')audio.story?.cue('invitation_open',undefined,true);else if(next==='computer')audio.story?.cue('macbook_open',undefined,true);else if(next==='staff')void voice.play();}
+ function open(next:OpeningModal){if(failed&&next!=='caught')return;voice.stop();compatBeforePanel=explorer.state.compat;modal=next;explorer.openPanel(next==='settings'?'settings':'computer');audio.setActive(false);audio.stopOpeningCues();audio.stopPreviews();if(next==='invitation')audio.story?.cue('invitation_open',undefined,true);else if(next==='computer')audio.story?.cue('macbook_open',undefined,true);else if(next==='staff'&&story.stage==='to_b5')startStaffIntro(true);}
  function close(){if(modal==='caught')return;const was=modal;voice.stop();audio.stopPreviews();if(modal==='invitation')audio.story?.cue('invitation_close',undefined,true);else if(modal==='computer')audio.story?.cue('macbook_close',undefined,true);modal=null;explorer.closePanel();persist(true);
   // A story panel should hand control straight back to the player. The same click
   // that closed it is still a user gesture, so pointer lock can be requested here.
@@ -92,9 +129,12 @@ export function createOpeningExperience(
  function outcome(ok:boolean,code:string,message:string):Outcome{return{ok,code,message};}
  function target(){
   if(story.stage==='bus')return story.invitation_read?null:{id:'opening-invitation',position:O.invitation,label:'Pick up your dinner invitation'};
-  const item=story.stage==='to_b5'?{id:'opening-staff',position:O.staff,label:'Speak to the coordinator'}:story.stage==='to_b6'?{id:'opening-laptop',position:O.laptop,label:'Pick up MacBook Air'}:null;
+  const staffRoot=npcs.staffRootPosition();
+  const nearStaff=story.stage==='to_b6'&&staffTalkDone&&!acceptVoiceBusy&&!story.laptop_acquired&&g.body.position.distanceTo(staffRoot)<3.2;
+  const repeat=nearStaff?{id:'opening-staff-repeat',position:[staffRoot.x,staffRoot.y,staffRoot.z] as [number,number,number],label:'Ask the coordinator about the laptop'}:null;
+  const item=story.stage==='to_b5'?{id:'opening-staff',position:O.staff,label:'Speak to the coordinator'}:repeat??(story.stage==='to_b6'?{id:'opening-laptop',position:O.laptop,label:'Pick up MacBook Air'}:null);
   if(!item)return null;
-  const origin=g.body.position.clone().add(new T.Vector3(0,1.64,0)),point=new T.Vector3(...item.position).add(new T.Vector3(0,item.id==='opening-staff'?1.3:.1,0)),offset=point.clone().sub(origin),distance=offset.length();
+  const origin=g.body.position.clone().add(new T.Vector3(0,1.64,0)),point=new T.Vector3(...item.position).add(new T.Vector3(0,item.id.startsWith('opening-staff')?1.3:.1,0)),offset=point.clone().sub(origin),distance=offset.length();
   if(distance>2.7)return null;
   const facing=new T.Vector3(-Math.sin(g.yaw)*Math.cos(g.pitch),-Math.sin(g.pitch),-Math.cos(g.yaw)*Math.cos(g.pitch));
   if(distance>.02&&facing.dot(offset.clone().normalize())<.80)return null;
@@ -106,8 +146,15 @@ export function createOpeningExperience(
   const t=target();if(!t||id&&id!==t.id)return outcome(false,'no_target','Move closer and face the interaction.');
   if(t.id==='opening-invitation'){open('invitation');return outcome(true,'invitation_opened','High Table Dinner invitation.');}
   if(t.id==='opening-staff'){
-   if(!staffTalkStarted){staffTalkStarted=true;staffTalkClock=0;staffTalkLine=0;npcs.startStaffTalk();void voice.play();}
+   startStaffIntro();
    return outcome(true,'dialogue_started','Dinner coordinator.');
+  }
+  if(t.id==='opening-staff-repeat'){
+   if(repeatVoiceBusy)return outcome(true,'dialogue_repeat','Dinner coordinator.');
+   repeatVoiceBusy=true;
+   showSubtitle(`COORDINATOR — ${STAFF_DIALOGUE.repeat}`,2.6);
+   void voice.playRepeat({eligible:()=>!failed&&story.stage==='to_b6'&&!story.laptop_acquired,position:()=>npcs.staffPosition()}).finally(()=>{repeatVoiceBusy=false;});
+   return outcome(true,'dialogue_repeat','Dinner coordinator.');
   }
   if(t.id==='opening-laptop')return collectLaptop();
   return outcome(false,'invalid_target','No interaction available.');
@@ -152,7 +199,7 @@ export function createOpeningExperience(
  function restart(){
   try{const raw=localStorage.getItem(OPENING_SAVE_KEY);if(raw)localStorage.setItem(OPENING_SAVE_KEY+'.backup.'+Date.now(),raw);localStorage.removeItem(INTRO_KEY);localStorage.setItem(writerKey,writerToken);protectedSave=false;ownsSave=true;}catch{notify('Could not back up the save. Restart cancelled.');return;}
   audio.story?.reset();audio.stopPreviews();
-  story=createOpeningState();runtime=createOpeningRuntime();g.inventory.slots.fill(null);g.inventory.selectedHotbar=0;g.inventory.revision++;g.records.clear();g.last=null;failed=false;busClock=0;busReady=false;incidentClock=0;disturbancePlayed=false;incidentQueued=false;autoInvitationShown=false;respawnGrace=0;wakeStarted=false;wakeDone=false;wakeClock=0;subtitleSeconds=0;titleSeconds=0;introPromptClock=0;introAutoOpened=false;introCompleted=false;staffTalkStarted=false;staffTalkDone=false;staffTalkClock=0;staffTalkLine=0;npcs.reset();fleet.reset();modal=null;explorer.closePanel();safePose();setBusDoor(explorer.world,true);atmo()?.reset();audio.openingAmbience('day');audio.stopOpeningCues();persist(true);
+  story=createOpeningState();runtime=createOpeningRuntime();g.inventory.slots.fill(null);g.inventory.selectedHotbar=0;g.inventory.revision++;g.records.clear();g.last=null;failed=false;busClock=0;busReady=false;incidentClock=0;disturbancePlayed=false;incidentQueued=false;autoInvitationShown=false;respawnGrace=0;wakeStarted=false;wakeDone=false;wakeClock=0;subtitleSeconds=0;titleSeconds=0;introPromptClock=0;introAutoOpened=false;introCompleted=false;staffTalkStarted=false;staffTalkDone=false;staffTalkClock=0;staffTalkLine=0;staffVoiceStarted=false;acceptVoicePlayed=false;acceptVoiceBusy=false;repeatVoiceBusy=false;npcs.reset();fleet.reset();modal=null;explorer.closePanel();safePose();setBusDoor(explorer.world,true);atmo()?.reset();audio.openingAmbience('day');audio.stopOpeningCues();persist(true);
  }
  function beginIncident(announce=true){
   if(runtime.curtain_deployed)return;
@@ -166,7 +213,7 @@ export function createOpeningExperience(
  function action(action:string){
   if(failed&&!'retry recover restart'.split(' ').includes(action))return;
   if(action==='read_invitation'){transition('read_invitation');close();}
-  else if(action==='accept_errand'&&story.stage==='to_b5'){runtime={...runtime,staff_task_received:true};transition('accept_errand');close();void voice.reply();notify('You: Yeah, I will collect it.');}
+  else if(action==='accept_errand'&&story.stage==='to_b5'){runtime={...runtime,staff_task_received:true};if(transition('accept_errand')){close();playAcceptanceVoices();notify('You: Yeah, I will collect it.');}}
   else if(action==='read_alert'){transition('read_alert');runtime={...runtime,agent_chat_unlocked:true,go_to_building4_objective_unlocked:true};modal='computer';computerPage='agent';audio.openingCue('unlock');persist(true);}
   else if(action==='retry')recoverFromCatch(false);
   else if(action==='recover')recoverFromCatch(true);
@@ -175,7 +222,7 @@ export function createOpeningExperience(
   else if(action==='safe'){explorer.pause('opening_safe_checkpoint');safePose();fleet.reset();failed=false;modal=null;g.closePanel();persist(true);}
   else if(action==='settings')open('settings');
   else if(action==='map'||action==='computer'){const r=computer(action==='map'?'map':'tasks');if(!r.ok)notify(r.message);}
-  else if(action==='replay_voice'&&modal==='staff')void voice.play();
+  else if(action==='replay_voice'&&modal==='staff'&&story.stage==='to_b5')startStaffIntro(true);
   else if(action==='retry_audio')void audio.start(true);
   else if(action==='preview_ambient')void audio.preview('ambient');
   else if(action==='preview_steps')void audio.preview('steps');
@@ -194,16 +241,21 @@ export function createOpeningExperience(
    const z0=O.bus.z-O.bus.width/2;
    if(busReady&&g.body.position.z<z0-0.12&&Math.abs(g.body.position.x-O.bus.doorX)<1.6&&transition('exit_bus'))showTitle('BUILDING 4 FORECOURT','18:12 · HEAD TO BUILDING 5',2.8);
   }
-  if(story.stage==='to_b5'&&!staffTalkStarted&&!staffTalkDone&&!g.panel&&!g.inventoryOpen&&g.body.position.distanceTo(new T.Vector3(...O.staff))<6.5){
-   staffTalkStarted=true;staffTalkClock=0;staffTalkLine=0;npcs.startStaffTalk();void voice.play();
+  if(story.stage==='to_b5'&&!staffTalkStarted&&!staffTalkDone&&!g.panel&&!g.inventoryOpen&&!g.paused&&g.body.position.distanceTo(new T.Vector3(...O.staff))<6.5){
+   startStaffIntro();
   }
   if(staffTalkStarted&&!staffTalkDone){
    staffTalkClock+=dt;
-   const line=Math.min(STAFF_LINES.length-1,Math.floor(staffTalkClock/3.2));
-   if(line!==staffTalkLine){staffTalkLine=line;audio.play('select','ui');}
-   if(staffTalkClock>=9.6){
-    staffTalkDone=true;runtime={...runtime,staff_task_received:true};
-    if(transition('accept_errand')){showTitle('OBJECTIVE UPDATED','BUILDING 6 · PRESENTATION MACBOOK',2.8);void voice.reply();notify('MacBook: Building 6 · office table.');}
+   if(!staffVoiceStarted){
+    if(staffTalkClock>=STAFF_START_TIMEOUT){staffVoiceStarted=true;staffTalkClock=0;staffTalkLine=0;}
+   }else{
+    const line=staffLineFor(staffTalkClock);
+    if(line!==staffTalkLine)staffTalkLine=line;
+    if(staffTalkClock>=STAFF_FALLBACK_DONE&&modal!=='staff')completeStaffIntro();
+   }
+   if(g.body.position.distanceTo(npcs.staffPosition())>STAFF_SKIP_DISTANCE){
+    voice.stop();
+    if(modal!=='staff')completeStaffIntro();
    }
   }
   if(story.stage==='return_b5'&&story.laptop_acquired){
@@ -320,12 +372,12 @@ export function createOpeningExperience(
   }else{
    cinema={mode:'off',title:'',subtitle:'',hint:'',opacity:0,letterbox:false};
   }
-  const view:OpeningView={story,runtime,modal:active?modal:null,objective:objectiveFor(),detail:detailFor(),prompt,saveStatus:saveMessage,busReady,computerPage,robotState,robotWarning,settings,audioStatus:sound.failed?`${sound.failedFiles.length} sounds unavailable. Retry audio to load them again.`:sound.loading.length?'Loading audio…':sound.state==='uninitialized'?'Use a preview or start the opening to enable audio.':sound.resumeError||'Audio ready.',handoffEvent:'opening.building4_reached',player:g.body.position.toArray() as [number,number,number],yaw:g.yaw,target:[...goal] as [number,number,number],cinema};
+  const view:OpeningView={story,runtime,modal:active?modal:null,objective:objectiveFor(),detail:detailFor(),prompt,saveStatus:saveMessage,busReady,computerPage,robotState,robotWarning,settings,audioStatus:sound.failed?`${sound.failedFiles.length} sounds unavailable. Retry audio to load them again.`:sound.loading.length?'Loading audio…':sound.state==='uninitialized'?'Use a preview or start the opening to enable audio.':sound.resumeError||'Audio ready.',handoffEvent:'opening.building4_reached',player:g.body.position.toArray() as [number,number,number],yaw:g.yaw,target:[...goal] as [number,number,number],voiceLine:staffTalkLine,cinema};
   ui.update(view);
   const next=[story.stage,story.events.length,story.invitation_read,g.inventory.revision,g.view,runtime.curtain_deployed,runtime.robot_chase_started,runtime.agent_chat_unlocked,runtime.hearts].join(':');
   if(stamp!==next){stamp=next;persist(true);}else if(!g.paused)persist();
   const enter=document.getElementById('enter-game');if(enter)enter.textContent=story.elapsedSeconds>0?'Continue':'Start opening';
   const status=document.getElementById('session-save');if(status)status.textContent=saveMessage;
  }
- return{update,relocate(){fleet.dispose();fleet=createOpeningFleet(explorer.world);scene.add(fleet.root);setBusDoor(explorer.world,story.stage==='bus'&&!busReady);safePose();},openComputer(page:ComputerPage='tasks'){const r=computer(page);if(!r.ok)notify(r.message);},openSettings(){open('settings');},persist,audio,debug:{openInvitation(){open('invitation');},readInvitation(){if(story.stage==='bus'){transition('read_invitation');if(modal==='invitation')close();}},openStaff(){open('staff');},acceptErrand(){if(story.stage==='to_b5'){runtime={...runtime,staff_task_received:true};transition('accept_errand');if(modal==='staff')close();}},takeLaptop(){return collectLaptop();},setBusReady(){busClock=8;busReady=true;setBusDoor(explorer.world,false);},exitBus(){if(story.stage==='bus'){busClock=8;busReady=true;setBusDoor(explorer.world,false);transition('exit_bus');}},triggerIncident(){beginIncident();},reachB5(){if(story.stage==='return_b5'){transition('return_b5');runtime={...runtime,curtain_deployed:true};atmo()?.startIncident();audio.openingAmbience('dark');}},readAlert(){action('read_alert');},openComputer(page:ComputerPage='tasks'){return computer(page);},arriveB4(){if(story.stage==='to_b4'){transition('reach_b4');open('complete');}},catchNow(){catchPlayer();},recover(){recoverFromCatch(true);},setHearts(n:number){runtime={...runtime,hearts:Math.max(0,Math.min(OPENING_MAX_HEARTS,Math.round(n)))};},state(){return{story:structuredClone(story),runtime:structuredClone(runtime),modal};}},get settings(){return settings;},get saveStatus(){return{message:saveMessage,storageOkay,ownsSave};},get story(){return story;},get runtime(){return runtime;},dispose(){persist(true);disposed=true;events.abort();explorer.interactions.delete(humanInteract);explorer.computers.delete(humanComputer);g.scenario=null;fleet.dispose();npcs.dispose();ui.dispose();voice.dispose();audio.dispose();}};
+ return{update,relocate(){fleet.dispose();fleet=createOpeningFleet(explorer.world);scene.add(fleet.root);setBusDoor(explorer.world,story.stage==='bus'&&!busReady);safePose();},openComputer(page:ComputerPage='tasks'){const r=computer(page);if(!r.ok)notify(r.message);},openSettings(){open('settings');},persist,audio,debug:{openInvitation(){open('invitation');},readInvitation(){if(story.stage==='bus'){transition('read_invitation');if(modal==='invitation')close();}},openStaff(){open('staff');},acceptErrand(){if(story.stage==='to_b5'){runtime={...runtime,staff_task_received:true};if(transition('accept_errand')){if(modal==='staff')close();playAcceptanceVoices();}}},takeLaptop(){return collectLaptop();},setBusReady(){busClock=8;busReady=true;setBusDoor(explorer.world,false);},exitBus(){if(story.stage==='bus'){busClock=8;busReady=true;setBusDoor(explorer.world,false);transition('exit_bus');}},triggerIncident(){beginIncident();},reachB5(){if(story.stage==='return_b5'){transition('return_b5');runtime={...runtime,curtain_deployed:true};atmo()?.startIncident();audio.openingAmbience('dark');}},readAlert(){action('read_alert');},openComputer(page:ComputerPage='tasks'){return computer(page);},arriveB4(){if(story.stage==='to_b4'){transition('reach_b4');open('complete');}},catchNow(){catchPlayer();},recover(){recoverFromCatch(true);},setHearts(n:number){runtime={...runtime,hearts:Math.max(0,Math.min(OPENING_MAX_HEARTS,Math.round(n)))};},state(){return{story:structuredClone(story),runtime:structuredClone(runtime),modal,staffTalkStarted,staffTalkDone,staffTalkLine,staffVoiceStarted,acceptVoicePlayed,repeatVoiceBusy};}},get settings(){return settings;},get saveStatus(){return{message:saveMessage,storageOkay,ownsSave};},get story(){return story;},get runtime(){return runtime;},dispose(){persist(true);disposed=true;events.abort();explorer.interactions.delete(humanInteract);explorer.computers.delete(humanComputer);g.scenario=null;fleet.dispose();npcs.dispose();ui.dispose();voice.dispose();audio.dispose();}};
 }

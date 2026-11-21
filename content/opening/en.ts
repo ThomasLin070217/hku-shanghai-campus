@@ -5,6 +5,8 @@
  * The HUD objective / detail / interaction prompt are authored in
  * `src/opening/experience.ts` and rendered as-is by `src/opening/ui.ts`.
  */
+import {STAFF_DIALOGUE} from '../voice/staff-dialogue';
+
 export const OPENING_UI = {
   hud: {
     objectiveLabel: 'Current objective',
@@ -59,9 +61,12 @@ export const OPENING_UI = {
     eyebrow: 'Building 5 · Dining hall',
     title: 'Dinner coordinator',
     speaker: 'Staff · Dinner coordinator',
-    line1: "You're one of our Student Ambassadors, right?",
-    line2: 'We need the presentation MacBook from Building 6 for tonight’s dinner. Could you collect it and bring it back here?',
-    line3: 'The device is waiting on the office table in Building 6.',
+    line1: STAFF_DIALOGUE.intro[0],
+    line2: STAFF_DIALOGUE.intro[1],
+    line3: STAFF_DIALOGUE.intro[2],
+    thanks: STAFF_DIALOGUE.thanks,
+    repeat: STAFF_DIALOGUE.repeat,
+    voiceCredit: 'English voice · DaVinci AI · ElevenLabs V3',
     accept: "I'll collect it",
     later: 'Not now',
   },

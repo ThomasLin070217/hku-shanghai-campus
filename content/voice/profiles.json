@@ -1,0 +1,250 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-21T14:35:00+08:00",
+  "provider": "DaVinci AI",
+  "providerUrl": "https://davinci.ai/app/voice/voices",
+  "model": {
+    "title": "ElevenLabs TTS V3",
+    "key": "eleven-v3",
+    "upstream": "fal-ai/elevenlabs/tts/eleven-v3",
+    "baseCredits": 25,
+    "hasStabilityFeature": true
+  },
+  "quota": {
+    "plan": "No active plan",
+    "freeAudioUses": "one free audio generation (profile showed Audio 1/1)",
+    "before": {
+      "audio": "1/1",
+      "video": "1/1",
+      "photo": "1/1",
+      "music": "1/1"
+    },
+    "after": {
+      "audio": "0/1",
+      "video": "1/1",
+      "photo": "1/1",
+      "music": "1/1"
+    },
+    "paidCreditsCharged": 0,
+    "policy": "No top-up, upgrade, subscription, paid API, or voice cloning. Generation stopped when free audio reached 0/1."
+  },
+  "api": {
+    "publicApiDocumented": false,
+    "finding": "No public DaVinci voice-generation API is documented. The account used the normal web UI only.",
+    "webUiContractFromPublicBundle": {
+      "method": "POST",
+      "path": "/voice/process",
+      "fields": [
+        "modelKey",
+        "text",
+        "voice",
+        "stability",
+        "languageCode"
+      ],
+      "usedDirectly": false,
+      "note": "Read from the public client bundle for capability reporting only; all generation was through the normal UI."
+    }
+  },
+  "profiles": [
+    {
+      "npcId": "opening-staff",
+      "displayName": "Dinner coordinator",
+      "role": "HKU campus staff \u00b7 Building 5 dinner coordinator",
+      "fictional": true,
+      "status": "generated",
+      "provider": "DaVinci AI",
+      "model": "ElevenLabs TTS V3",
+      "modelKey": "eleven-v3",
+      "voiceId": "tMvyQtpCVQ0DkixuYm6J",
+      "voiceName": "Asher",
+      "language": "en",
+      "accent": "American",
+      "age": "Middle Aged",
+      "descriptive": "Casual",
+      "stability": 0.4,
+      "style": "Friendly university staff member, 25\u201340, natural conversational English, slightly rushed but warm, subtle pauses, relaxed tone, authentic human delivery, no announcer voice, no exaggerated acting.",
+      "takeId": "staff-take1",
+      "takeContentHash": "f01f8876bf96fb8f719d132d8330e3ebab74e89d285548acb729546a71df7578",
+      "sourceFile": "assets/audio/npc/staff/source/staff-take1.mp3",
+      "sourceFileHash": "d35a56117b1f5ede530f630a0d9f787114f2ac481bf78b1aaf105cad041218c4",
+      "sourceDurationSeconds": 21.159125,
+      "clipManifest": "assets/audio/npc/staff/clips.json",
+      "clips": [
+        {
+          "dialogueId": "staff.act1.line1",
+          "id": "staff-line1",
+          "text": "Hey \u2014 you're one of the Student Ambassadors, right?",
+          "file": "assets/audio/npc/staff/staff-line1.wav",
+          "sourceStart": 0,
+          "sourceEnd": 2.55,
+          "duration": 2.55,
+          "sampleRate": 44100,
+          "sha256": "a2500de93ad57050840c19373c1bb4bf4735d9423e3c9a430353c9ed88f28e1a",
+          "rmsDb": -21.45,
+          "peakDb": -3.65
+        },
+        {
+          "dialogueId": "staff.act1.line2",
+          "id": "staff-line2",
+          "text": "Could you do me a quick favour? We need the presentation MacBook from Building 6 for tonight's dinner.",
+          "file": "assets/audio/npc/staff/staff-line2.wav",
+          "sourceStart": 3.12,
+          "sourceEnd": 8.88,
+          "duration": 5.76,
+          "sampleRate": 44100,
+          "sha256": "8d160857ac740fd612cc4a05d39217aecab0c8e70d55a81d33bdd279e92ff7e5",
+          "rmsDb": -21.6,
+          "peakDb": -2.84
+        },
+        {
+          "dialogueId": "staff.act1.line3",
+          "id": "staff-line3",
+          "text": "It's on the office table. Mind picking it up? We're running a bit behind.",
+          "file": "assets/audio/npc/staff/staff-line3.wav",
+          "sourceStart": 9.24,
+          "sourceEnd": 13.89,
+          "duration": 4.65,
+          "sampleRate": 44100,
+          "sha256": "78ab9ea9b4861a9cb977bd75f6de6db7654da5e223ce87e245a0f778e1e9034b",
+          "rmsDb": -22.16,
+          "peakDb": -3.08
+        },
+        {
+          "dialogueId": "staff.act1.line4",
+          "id": "staff-line4",
+          "text": "Perfect, thanks! Just bring it back here when you've got it.",
+          "file": "assets/audio/npc/staff/staff-line4.wav",
+          "sourceStart": 14.61,
+          "sourceEnd": 17.94,
+          "duration": 3.33,
+          "sampleRate": 44100,
+          "sha256": "39b7e5e6b2ca2bcf2d9c6ca7ca2c43ab856edbc6b285ec0aa49ffd0a60e08807",
+          "rmsDb": -22.08,
+          "peakDb": -2
+        },
+        {
+          "dialogueId": "staff.act1.line5",
+          "id": "staff-line5",
+          "text": "Hey \u2014 any luck with that laptop?",
+          "file": "assets/audio/npc/staff/staff-line5.wav",
+          "sourceStart": 19.05,
+          "sourceEnd": 21.159,
+          "duration": 2.109,
+          "sampleRate": 44100,
+          "sha256": "783e03321c0e372d3a1587f39f7bd52081b6a2d140d53db8283e96c91bb74257",
+          "rmsDb": -20.69,
+          "peakDb": -1.71
+        }
+      ]
+    },
+    {
+      "npcId": "npc.student.guide",
+      "displayName": "Michael Zhang",
+      "role": "Student Ambassador leader",
+      "fictional": true,
+      "status": "planned",
+      "provider": "DaVinci AI (planned)",
+      "model": "ElevenLabs TTS V3",
+      "modelKey": "eleven-v3",
+      "voiceId": null,
+      "voiceName": "Recommended: Josh (young, pleasant) or Ryan Kurk (young, pleasant)",
+      "language": "en",
+      "accent": "American",
+      "age": "Young",
+      "descriptive": "Pleasant / natural",
+      "stability": 0.5,
+      "style": "Young male Student Ambassador leader. Natural, approachable English; calm normally, then faster and tense after the AI takeover while still trying to stay composed. Not a military commander or trailer narrator.",
+      "takeId": null,
+      "sourceFile": null,
+      "clips": [],
+      "blockedBy": "Free audio quota exhausted (Audio 0/1). No paid generation used."
+    },
+    {
+      "npcId": "npc.campus.tech",
+      "displayName": "Ruibang",
+      "role": "Campus facilities technician",
+      "fictional": true,
+      "status": "planned",
+      "provider": "DaVinci AI (planned)",
+      "model": "ElevenLabs TTS V3",
+      "modelKey": "eleven-v3",
+      "voiceId": null,
+      "voiceName": "Recommended: Jon (middle-aged, calm)",
+      "language": "en",
+      "accent": "American",
+      "age": "Middle Aged",
+      "descriptive": "Calm / explanatory",
+      "stability": 0.55,
+      "style": "Clear, direct technical English with natural thinking pauses when explaining a procedure. Practical, not reading a manual; not an AI narrator.",
+      "takeId": null,
+      "sourceFile": null,
+      "clips": [],
+      "blockedBy": "Free audio quota exhausted (Audio 0/1). No paid generation used."
+    },
+    {
+      "npcId": "npc.terminal.echo",
+      "displayName": "Lam",
+      "role": "Offline AI terminal",
+      "fictional": true,
+      "status": "planned",
+      "provider": "DaVinci AI (planned)",
+      "model": "ElevenLabs TTS V3",
+      "modelKey": "eleven-v3",
+      "voiceId": null,
+      "voiceName": "Recommended: a deliberately low-emotion voice; evaluate Adam or a purpose-built offline terminal voice",
+      "language": "en",
+      "accent": "Neutral",
+      "age": "N/A",
+      "descriptive": "Calm / precise",
+      "stability": 0.85,
+      "style": "Clear, calm, precise, low emotion. Deliberately more machine-like than the human cast, forming an audible contrast. Short status lines, no acting flourishes.",
+      "takeId": null,
+      "sourceFile": null,
+      "clips": [],
+      "blockedBy": "Free audio quota exhausted (Audio 0/1). No paid generation used."
+    },
+    {
+      "npcId": "player.student-ambassador",
+      "displayName": "Player \u00b7 Student Ambassador",
+      "role": "Player acceptance reply (existing local synthesis, not a DaVinci generation)",
+      "fictional": true,
+      "status": "existing-local-synth",
+      "provider": "macOS Samantha (existing asset)",
+      "model": "macOS speech synthesis",
+      "voiceId": null,
+      "voiceName": "Samantha",
+      "language": "en",
+      "accent": "American",
+      "age": "Young",
+      "descriptive": "Soft / neutral",
+      "stability": null,
+      "style": "Existing 1.53 s player acceptance line; retained for continuity and clearly labelled as local synthesis, not a cloned or DaVinci voice.",
+      "takeId": null,
+      "sourceFile": "assets/audio/opening-foley/player-accept-english.wav",
+      "clips": [
+        {
+          "dialogueId": "player.act1.accept",
+          "text": "Yeah, I will collect it.",
+          "file": "assets/audio/opening-foley/player-accept-english.wav",
+          "duration": 1.53
+        }
+      ]
+    }
+  ],
+  "backgroundCast": {
+    "policy": "Background guests and unnamed staff keep text-only ambient roles; no new dialogue or voice was invented.",
+    "npcIds": [
+      "opening-student-1",
+      "opening-student-2",
+      "opening-guest-1",
+      "opening-guest-2",
+      "opening-guest-3",
+      "opening-guest-4",
+      "opening-guest-5",
+      "opening-guest-6",
+      "opening-guest-7",
+      "opening-guest-8",
+      "opening-guest-9"
+    ]
+  }
+}

@@ -7,3 +7,8 @@
 Processed outputs in `campus/`: 10 step variations with rumble reduction, modest level and short edge fades; a 45-second restrained wind loop from a quiet 48-second window, high-pass 220 Hz, low-pass 4.5 kHz, 3-second overlap crossfade. See `scripts/prepare-campus-audio.py` and `evidence/experience-fix/audio-assets.json` for exact source offsets, measured levels and hashes. CC0 permits modification and redistribution.
 
 Audit limitation: AudioContext playback and system afplay were executed; recording captures actual final game mix. The agent's tool channel rejects audio input, so subjective timbre/listening approval is **not verified**. Do not describe numeric checks or playback as a completed human listening review.
+
+## NPC voice · 2026-11-21
+
+- **Staff (Act 1 Dinner coordinator) — DaVinci AI / ElevenLabs TTS V3, voice Asher (`tMvyQtpCVQ0DkixuYm6J`).** Generated once through the normal DaVinci AI web UI on 2026-11-21 with the account's free Audio 1/1 allowance. No paid credits, subscription, top-up, voice cloning or real-person voice were used. The five line clips, original take, text, hashes and quota log are in `npc/staff/`; the source take is `npc/staff/source/staff-take1.mp3`. The synthetic voice is generated content, not a CC0 recording; DaVinci AI and ElevenLabs terms apply. The agent could not subjectively audition the timbre; technical and browser integration checks are recorded in `docs/voice/DAVINCI-VOICE-REPORT.md`.
+- The existing player acceptance line remains the earlier macOS Samantha local synthesis, clearly labelled `existing-local-synth` in `content/voice/profiles.json`; it is not a DaVinci generation.

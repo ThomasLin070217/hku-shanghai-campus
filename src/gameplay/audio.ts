@@ -31,6 +31,8 @@ export class CampusAudio {
  private openingAmbienceGain:GainNode|null=null;
  private openingAmbienceNodes:{osc:OscillatorNode[];noise:AudioBufferSourceNode|null;filter:BiquadFilterNode|null}|null=null;
  private openingAmbienceMode:'off'|'day'|'dark'='off';
+ /** Dialogue ducking is multiplicative on the user's music/ambient settings. */
+ private dialogueDuck=1;
  story:StoryAudio|null=null;
  private urls={...audioUrls};private seenGrounded=true;private seenY=0;
  private shots=new Map<AudioBufferSourceNode,{group:string;gain:GainNode;panner?:PannerNode;preview:boolean}>();
@@ -87,9 +89,12 @@ export class CampusAudio {
  apply(settings:Settings){this.settings={...settings};if(!this.context)return;const t=this.context.currentTime;
   const gain=(p:AudioParam,value:number)=>{if(this.context!.state!=='running'){p.cancelScheduledValues(t);p.value=value;}else{if(typeof p.cancelAndHoldAtTime==='function')p.cancelAndHoldAtTime(t);else{const current=p.value;p.cancelScheduledValues(t);p.setValueAtTime(current,t);}p.setTargetAtTime(value,t,.02);}};
   if(settings.muted){this.master!.gain.cancelScheduledValues(t);this.master!.gain.value=0;}else gain(this.master!.gain,1);
-  for(const n of ['ambient','steps','ui','music','sfx']as const)if(this.groups[n])gain(this.groups[n].gain,settings[n]);
+  for(const n of ['ambient','steps','ui','music','sfx']as const)if(this.groups[n])gain(this.groups[n].gain,settings[n]*(n==='ambient'||n==='music'?this.dialogueDuck:1));
  }
- setActive(value:boolean,force=false){value=value&&!document.hidden&&!this.disposed;if(value===this.active&&!force)return;this.active=value;if(!this.context)return;if(value&&this.context.state==='suspended')void this.context.resume().then(()=>{this.resumeError='';},()=>{this.resumeError='浏览器尚未启用声音，请点击重试';});const t=this.context.currentTime;this.ambientGate?.gain.setTargetAtTime(value&&!this.story ? .48:0,t,.12);this.stepGate?.gain.setTargetAtTime(value?1:0,t,.006);if(!value){this.stopShots('steps');this.stopShots('sfx',true);this.story?.pause();}}
+ /** Lower music/ambient under a spoken NPC line without changing the user's saved settings. */
+ setDialogueDuck(active:boolean){const next=active?.42:1;if(next===this.dialogueDuck)return;this.dialogueDuck=next;if(!this.context||!this.groups.music||!this.groups.ambient)return;const t=this.context.currentTime;
+  for(const n of ['ambient','music']as const){const p=this.groups[n].gain,target=this.settings.muted?0:this.settings[n]*this.dialogueDuck;if(typeof p.cancelAndHoldAtTime==='function')p.cancelAndHoldAtTime(t);else{const current=p.value;p.cancelScheduledValues(t);p.setValueAtTime(current,t);}p.setTargetAtTime(target,t,.12);}}
+ setActive(value:boolean,force=false){value=value&&!document.hidden&&!this.disposed;if(value===this.active&&!force)return;this.active=value;if(!this.context)return;if(value&&this.context.state==='suspended')void this.context.resume().then(()=>{this.resumeError='';},()=>{this.resumeError='浏览器尚未启用声音，请点击重试';});const t=this.context.currentTime;this.ambientGate?.gain.setTargetAtTime(value&&!this.story ? .48:0,t,.12);this.stepGate?.gain.setTargetAtTime(value?1:0,t,.006);if(!value){this.setDialogueDuck(false);this.stopShots('steps');this.stopShots('sfx',true);this.story?.pause();}}
  private stopShots(group?:string,immediate=false){
   for(const [source,node]of this.shots)if(!group||node.group===group){
    if(immediate||this.context?.state!=='running'){this.releaseShot(source);continue;}
@@ -106,6 +111,26 @@ export class CampusAudio {
   this.shots.set(source,{group,gain:volume,panner,preview});source.onended=()=>this.releaseShot(source);
   if(preview){const duration=Math.min(source.buffer.duration/rate,2.5),t=c.currentTime;volume.gain.value=0;volume.gain.setTargetAtTime(gain,t,.012);volume.gain.setTargetAtTime(0,t+Math.max(.02,duration-.08),.012);source.start();source.stop(t+duration);}else source.start();
   this.counts[name]=(this.counts[name]??0)+1;
+ }
+ /**
+  * Play an already-decoded NPC voice buffer through the shared SFX bus.
+  * Returns a stop handle so a dialogue controller can cancel one line without
+  * stopping unrelated effects. `onended` fires only on natural completion.
+  */
+ playVoice(buffer:AudioBuffer,options:{position?:Point;gain?:number;onended?:()=>void}={}){
+  const c=this.context;if(!c||this.disposed||c.state!=='running'||document.hidden)return null;
+  if(this.voiceCount>=16){const oldest=this.shots.keys().next().value;if(oldest)this.releaseShot(oldest);else return null;}
+  const source=c.createBufferSource(),volume=c.createGain();source.buffer=buffer;volume.gain.value=options.gain??1;source.connect(volume);
+  let panner:PannerNode|undefined;
+  if(options.position){panner=c.createPanner();panner.panningModel='equalpower';panner.distanceModel='inverse';panner.refDistance=4;panner.rolloffFactor=.4;panner.maxDistance=28;panner.positionX.value=options.position.x;panner.positionY.value=options.position.y;panner.positionZ.value=options.position.z;volume.connect(panner);panner.connect(this.groups.sfx);}
+  else volume.connect(this.groups.sfx);
+  let done=false;
+  const handle={stop:()=>{if(done)return;done=true;this.releaseShot(source);}};
+  this.shots.set(source,{group:'sfx',gain:volume,panner,preview:false});
+  source.onended=()=>{if(done)return;done=true;this.releaseShot(source);options.onended?.();};
+  source.start();
+  this.counts['npc-voice']=(this.counts['npc-voice']??0)+1;
+  return handle;
  }
  /** Local opening cues share the existing context, mixer and voice budget. */
  openingCue(kind:'bus'|'door'|'disturbance'|'scan'|'alert'|'curtain'|'caught'|'heartbeat'|'unlock'|'chase'|'wake'){
@@ -189,6 +214,6 @@ export class CampusAudio {
    counts:{...this.counts},failed:this.failed,failedFiles:[...this.failedFiles],loading:[...this.pending.keys()],loaded:this.buffers.size,total:Object.keys(this.urls).length,voiceCount:this.voiceCount,story:this.story?.diagnostics??null,
    buffers:[...this.buffers].map(([name,b])=>({name,duration:b.duration,channels:b.numberOfChannels,sampleRate:b.sampleRate,decodedBytes:b.length*b.numberOfChannels*4})),gains};
  }
- dispose(){if(this.disposed)return;this.disposed=true;document.removeEventListener('visibilitychange',this.visibility);this.stopPreviews();this.stopShots(undefined,true);this.story?.dispose();for(const abort of this.pending.values())abort.abort();try{this.ambient?.stop();}catch{}this.ambient?.disconnect();this.ambient=null;if(this.openingAmbienceNodes){for(const o of this.openingAmbienceNodes.osc){try{o.stop();}catch{}o.disconnect();}try{this.openingAmbienceNodes.noise?.stop();}catch{}this.openingAmbienceNodes.noise?.disconnect();this.openingAmbienceNodes.filter?.disconnect();this.openingAmbienceNodes=null;}this.openingAmbienceGain?.disconnect();this.openingAmbienceGain=null;this.capture?.stream.getTracks().forEach(t=>t.stop());this.capture?.disconnect();this.master?.disconnect();this.stepGate?.disconnect();this.ambientGate?.disconnect();Object.values(this.groups).forEach(g=>g.disconnect());this.buffers.clear();void this.context?.close();}
+ dispose(){if(this.disposed)return;this.disposed=true;this.dialogueDuck=1;document.removeEventListener('visibilitychange',this.visibility);this.stopPreviews();this.stopShots(undefined,true);this.story?.dispose();for(const abort of this.pending.values())abort.abort();try{this.ambient?.stop();}catch{}this.ambient?.disconnect();this.ambient=null;if(this.openingAmbienceNodes){for(const o of this.openingAmbienceNodes.osc){try{o.stop();}catch{}o.disconnect();}try{this.openingAmbienceNodes.noise?.stop();}catch{}this.openingAmbienceNodes.noise?.disconnect();this.openingAmbienceNodes.filter?.disconnect();this.openingAmbienceNodes=null;}this.openingAmbienceGain?.disconnect();this.openingAmbienceGain=null;this.capture?.stream.getTracks().forEach(t=>t.stop());this.capture?.disconnect();this.master?.disconnect();this.stepGate?.disconnect();this.ambientGate?.disconnect();Object.values(this.groups).forEach(g=>g.disconnect());this.buffers.clear();void this.context?.close();}
 
 }

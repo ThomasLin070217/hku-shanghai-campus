@@ -2370,3 +2370,15 @@ body.opening-cinema-letter .opening-dialog--invitation {
 body.opening-cinema-letter .opening-invite-card {
   max-height: calc(100dvh - 26vh);
 }
+
+/* Staff voice: dim the whole turn and lift the line currently being spoken.
+   The modal is normally a debug/story fallback; the cinematic subtitle remains
+   the primary in-world presentation. */
+.opening-dialog--staff[data-voice-line] .opening-line {
+  opacity: 0.48;
+  transition: opacity 120ms linear, color 120ms linear;
+}
+.opening-dialog--staff[data-voice-line] .opening-line.is-speaking {
+  opacity: 1;
+  color: #1f3a2d;
+}

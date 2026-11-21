@@ -40,3 +40,17 @@ in `scripts/audio/`. Raw archive bundles are excluded from the runtime distribut
 - Spark 2.4.0 — World Labs, MIT. https://github.com/sparkjsdev/spark . Full license: `assets/third-party/spark/LICENSE`. Loaded only by the SPZ study page.
 - World Labs client SDK 0.7.0 — Apache-2.0, server-side workflow scripts. https://www.npmjs.com/package/@worldlabsai/client . License remains in its npm distribution.
 - Atlas-generated SPZ and RGBD-derived mesh originate from the user's authorized U02 video frames. They are project reference assets, not third-party CC0 assets. Atlas service terms apply; no broader open-content license is asserted.
+
+## NPC voice · DaVinci AI / ElevenLabs · 2026-11-21
+
+The Act 1 Staff voice was generated on DaVinci AI using the ElevenLabs TTS V3
+model and the Asher voice. It was produced with the account's one free audio
+generation; no paid credits, subscription, top-up or voice cloning were used.
+The bundled clips are in `assets/audio/npc/staff/`; provenance, hashes, quota
+log and the dialogue text are in that directory and in
+`docs/voice/DAVINCI-VOICE-REPORT.md`.
+
+This is AI-generated voice content, not a CC0 recording and not a real person's
+voice. DaVinci AI and ElevenLabs terms apply to the generated audio. The agent
+could not subjectively audition the voice; only technical, transcript and browser
+integration checks are claimed.
