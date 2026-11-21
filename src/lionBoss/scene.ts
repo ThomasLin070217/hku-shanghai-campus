@@ -154,20 +154,14 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
   const signal=new T.Mesh(new T.OctahedronGeometry(.55),new T.MeshBasicMaterial({color:0x82f4ff,wireframe:true}));
   signal.position.y=1.2;beacon.add(echo,signal);props.add(beacon);
   const dark=new T.MeshStandardMaterial({color:0x18343b,roughness:.65});
-  const nodes=NODES.map((node,i)=>{
+  const nodes=NODES.map(node=>{
     const group=new T.Group();group.position.set(node.x,GROUND,node.z);
     const lamp=new T.MeshBasicMaterial({color:INACTIVE});
     const boundary=ring(1.96,.075,INACTIVE);
     group.add(boundary);
-    if(i===2){
-      box(group,0,.62,0,.84,1.23,.57,dark);
-      for(const y of [.42,.63,.84])box(group,0,y,.31,.51,.09,.07,lamp);
-    }else{
-      box(group,0,.09,0,.65,.15,.58,dark);
-      box(group,0,.53,0,.32,.79,.3,dark);
-      box(group,0,.94,0,.51,.13,.44,lamp);
-    }
-    group.add(numberPlate(['A','B','PWR'][i]));
+    box(group,0,.62,0,.84,1.23,.57,dark);
+    for(const y of [.42,.63,.84])box(group,0,y,.31,.51,.09,.07,lamp);
+    group.add(numberPlate('PWR'));
     props.add(group);
     return {lamp,boundary};
   });
@@ -224,8 +218,8 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
     }
     dog.position.set(state.helper.x,GROUND+(phase==='helperRun'?.045*Math.abs(Math.sin(state.elapsed*21)):0),state.helper.z);
     dog.rotation.y=state.helperYaw;
-    for(const [i,node] of nodes.entries()) {
-      const color=i===2&&phase==='complete'?INACTIVE:i<state.repaired?ONLINE:i===state.repaired?(canSubmit(state)?ONLINE:ACTIVE):INACTIVE;
+    for(const node of nodes) {
+      const color=canSubmit(state)?ONLINE:phase==='complete'?INACTIVE:ACTIVE;
       node.lamp.color.setHex(color);node.boundary.material.color.setHex(color);
     }
   }

@@ -46,8 +46,8 @@ const target=new EventTarget();Object.defineProperty(globalThis,'window',{value:
 const saved=new Map<string,string>();Object.defineProperty(globalThis,'localStorage',{value:{
  getItem:(key:string)=>saved.get(key)??null,setItem:(key:string,value:string)=>saved.set(key,value)},configurable:true});
 let events=0;target.addEventListener(CORE_EVENT,()=>events++);
-assert.equal(recordCorePowerCut('qa-device',2),false);assert.equal(hasCorePowerCut('qa-device'),false);
-assert.equal(recordCorePowerCut('qa-device',3),true);assert.equal(recordCorePowerCut('qa-device',3),false);
+assert.equal(recordCorePowerCut(''),false);assert.equal(hasCorePowerCut('qa-device'),false);
+assert.equal(recordCorePowerCut('qa-device'),true);assert.equal(recordCorePowerCut('qa-device'),false);
 assert.equal(events,1);assert.equal(hasCorePowerCut('qa-device'),true);assert.equal(hasCorePowerCut('other'),false);
 assert.equal(new URLSearchParams(sportsRescueLink('qa-device')).get('experience'),'sports-hall');
 console.log('PASS lawn controls: permission, expiry contract, rejection, cancellation, compile, cast, deduplication, readonly state and once-only rescue handoff');
