@@ -5,6 +5,8 @@ import {CampusGame} from '../src/exploration/game';
 import {createNavigation} from '../src/exploration/navigation';
 import {BUILDINGS,SITE} from '../src/model/campusParameters';
 import {OPENING as O,OFFICE_LAYOUT} from '../src/opening/spatialLayout';
+import {findPath} from '../src/exploration/pathfind';
+import {EXPLORATION as C} from '../src/exploration/config';
 import {buildSite} from '../src/model/buildSite';
 import {PLANTING_BED} from '../src/model/groundLayout';
 import {sceneRegistry} from '../src/scene/registry';
@@ -29,6 +31,25 @@ for(const {x,z} of [OFFICE_LAYOUT.presentation,OFFICE_LAYOUT.credenza,OFFICE_LAY
 }
 route('Building6 back to Building5',pickup,[...O.routeB6].reverse());
 route('Building5 to Building4 handoff',O.staff,O.routeB4);
+// The AI navigation directive and the agent bridge use findPath over the same world.
+// Every Chapter 1 leg a human can walk must also be plannable; lengths are logged so a
+// regression shows up as a distance change, not only as ok flipping to false.
+const pickupPoint:[number,number,number]=[pickup[0],O.b6.floor,pickup[2]];
+const pathLegs:[string,[number,number,number],[number,number,number]][]=[
+ ['spawn -> busExit',[...O.spawn] as [number,number,number],[...O.busExit] as [number,number,number]],
+ ['busExit -> staff',[...O.busExit] as [number,number,number],[...O.staff] as [number,number,number]],
+ ['staff -> B6 pickup',[...O.staff] as [number,number,number],pickupPoint],
+ ['B6 pickup -> staff',pickupPoint,[...O.staff] as [number,number,number]],
+ ['staff -> handoff',[...O.staff] as [number,number,number],[...O.handoff] as [number,number,number]],
+ ['B5 door -> handoff',[O.b5.door,0,-53.8], [...O.handoff] as [number,number,number]],
+ ['b5safe -> handoff',[...O.checkpoints.b5safe] as [number,number,number],[...O.handoff] as [number,number,number]],
+];
+for(const [name,from,to] of pathLegs){
+ const r=findPath(w,from,to,{clearance:C.radius,maxStepHeight:C.maxStep,maxDrop:C.maxDrop});
+ assert.ok(r.ok,`findPath ${name} must be ok: ${JSON.stringify({ok:r.ok,reason:r.reason,length:r.length,last:r.path.at(-1)})}`);
+ console.log('PASS pathfind',name,r.length+'m');
+ results.push({name:'findPath '+name,length:r.length,points:r.path.length,visited:r.visited,end:r.path.at(-1)});
+}
 // The planting bed used to seal the Building 5 door axis. Walking straight north
 // must cross the strip and reach its far (Building 4) edge, not stop on it.
 const bedEdge=PLANTING_BED.middleRow-PLANTING_BED.setback+PLANTING_BED.depth/2;

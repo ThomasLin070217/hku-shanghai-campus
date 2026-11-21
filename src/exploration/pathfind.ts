@@ -55,10 +55,21 @@ export function findPath(world:Navigation,from:readonly number[],to:readonly num
    const z0=Math.floor((o.z-ez-pad)/BUCKET),z1=Math.floor((o.z+ez+pad)/BUCKET);
    for(let bx=x0;bx<=x1;bx++)for(let bz=z0;bz<=z1;bz++){const k=bx*1000+bz;let list=bucketMap.get(k);if(!list){list=[];bucketMap.set(k,list);}list.push(o);}
   }
+  // A low collision box whose top is also a support surface is a step, not a wall: the
+  // body may overhang it and walk up. Keeping the clearance halo around such boxes made
+  // authored goals beside the shuttle steps (OPENING.busExit) unreachable.
+  const steppable=new Set<typeof world.obstacles[number]>();
+  for(const o of world.obstacles){
+   const top=world.support(o.x,o.z,o.top+maxStep+EPS);
+   if(top!==null&&top>=o.top-EPS)steppable.add(o);
+  }
   const blockedAt=(x:number,z:number,y:number):boolean=>{
    const list=bucketMap.get(Math.floor(x/BUCKET)*1000+Math.floor(z/BUCKET));
    if(!list)return false;
-   for(const o of list)if(y+C.height>o.bottom+.003&&y<o.top-.003&&world.overlaps(o,x,z,clearance))return true;
+   for(const o of list)if(y+C.height>o.bottom+.003&&y<o.top-.003&&world.overlaps(o,x,z,clearance)){
+    if(o.top<=y+maxStep+EPS&&steppable.has(o))continue; // step onto it instead of stopping at its halo
+    return true;
+   }
    return false;
   };
   const centerX=(ix:number)=>minX+(ix+.5)*cs,centerZ=(iz:number)=>minZ+(iz+.5)*cs;
@@ -71,23 +82,26 @@ export function findPath(world:Navigation,from:readonly number[],to:readonly num
   };
 
   // Exact destination first: snapping alone would teleport an out-of-bounds target onto the rim.
-  const exactY=world.support(tx,tz,startY+maxStep);
+  // The target may sit on another storey (the B6 office is 5.1 m above the B5 floor), so its
+  // authored y is the height reference; the walker's own floor would read the slab underside.
+  const goalHint=finite(ty)?Math.max(startY,ty):startY;
+  const exactY=world.support(tx,tz,goalHint+maxStep);
   const exactOk=exactY!==null&&!blockedAt(tx,tz,exactY);
   const goal=cellOf(tx,tz);
-  let goalIx=goal.ix,goalIz=goal.iz,exactGoal=true;
-  const goalCellH=cellFeasible(goalIx,goalIz,startY);
+  let goalIx=goal.ix,goalIz=goal.iz,exactGoal=true,snapDist=0;
+  const goalCellH=cellFeasible(goalIx,goalIz,goalHint);
   if(!exactOk||goalCellH===null){
    // Nearest walkable cell to the requested point; A* still needs a real grid goal.
    let best:number[]|null=null,bestD=Infinity;
    for(let r=0;r<=12;r++)for(let dx=-r;dx<=r;dx++)for(let dz=-r;dz<=r;dz++){
     if(Math.max(Math.abs(dx),Math.abs(dz))!==r)continue;
     const ix=goal.ix+dx,iz=goal.iz+dz;if(ix<0||iz<0||ix>=W||iz>=H)continue;
-    if(cellFeasible(ix,iz,startY)===null)continue;
+    if(cellFeasible(ix,iz,goalHint)===null)continue;
     const d=Math.hypot(centerX(ix)-tx,centerZ(iz)-tz);
     if(d<bestD-EPS){bestD=d;best=[ix,iz];}
    }
    if(!best)return fail('unreachable');
-   goalIx=best[0];goalIz=best[1];exactGoal=exactOk;
+   goalIx=best[0];goalIz=best[1];exactGoal=exactOk;snapDist=bestD;
   }
   const goalIdx=indexOf(goalIx,goalIz),startCell=cellOf(fx,fz),startIdx=indexOf(startCell.ix,startCell.iz);
   const startPoint:CellPoint=[fx,startY,fz];
@@ -159,16 +173,18 @@ export function findPath(world:Navigation,from:readonly number[],to:readonly num
    if(Math.hypot(last[0]-tx,last[2]-tz)>1e-3)pts.push([tx,exactY,tz]);
    else{last[0]=tx;last[1]=exactY;last[2]=tz;}
   }
-  const simplified=simplify(pts,world,maxStep,maxDrop,clearance);
+  const simplified=simplify(pts,world,maxStep,maxDrop,blockedAt);
   const output=simplified.length>MAX_POINTS?decimate(simplified,MAX_POINTS):simplified;
   let length=0;for(let i=1;i<output.length;i++)length+=Math.hypot(output[i][0]-output[i-1][0],output[i][1]-output[i-1][1],output[i][2]-output[i-1][2]);
-  const ok=found&&exactGoal;
+  // A goal blocked only by a clearance halo (or by its own cell centre) still counts as
+  // reached when the walkable cell A* actually stood on is within one grid step of it.
+  const ok=found&&(exactGoal||snapDist<=cs+EPS);
   return{ok,path:output,length:Math.round(length*1000)/1000,reachable:ok,partial:!ok&&output.length>1,reason:ok?undefined:limit?'limit':'unreachable',visited};
  }catch{return fail('blocked');}
 }
 
 /** String pulling: keep only points joined by a walkable straight segment. */
-function simplify(points:CellPoint[],world:Navigation,maxStep:number,maxDrop:number,clearance:number):CellPoint[]{
+function simplify(points:CellPoint[],world:Navigation,maxStep:number,maxDrop:number,blocked:(x:number,z:number,y:number)=>boolean):CellPoint[]{
  if(points.length<3)return points.map(p=>[p[0],p[1],p[2]]);
  const seg=(a:CellPoint,b:CellPoint):boolean=>{
   const dx=b[0]-a[0],dz=b[2]-a[2],horiz=Math.hypot(dx,dz);
@@ -176,7 +192,7 @@ function simplify(points:CellPoint[],world:Navigation,maxStep:number,maxDrop:num
   for(let i=1;i<=n;i++){
    const t=i/n,x=a[0]+dx*t,z=a[2]+dz*t,h=world.support(x,z,prevY+maxStep);
    if(h===null||h-prevY>maxStep+EPS||prevY-h>maxDrop+EPS)return false;
-   if(world.blocked(x,z,h,clearance))return false;
+   if(blocked(x,z,h))return false;
    prevY=h;
   }
   return true;
