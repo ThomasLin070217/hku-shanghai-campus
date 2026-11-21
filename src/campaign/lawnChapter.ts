@@ -5,7 +5,7 @@ import {NODES,SAFE,canSubmit,createCombat} from '../lionBoss/combat';
 import {INTERRUPT_LABEL,INTERRUPT_RULE,SHUTDOWN_LABEL,distanceToNode,lawnHint,placeAtShelter,shutDownGuardian} from '../lionBoss/encounter';
 import {hasCorePowerCut} from '../lionBoss/mission';
 import {createBossScene} from '../lionBoss/scene';
-import {OPENING_MAX_HEARTS,OPENING_RESPAWN_GRACE_SECONDS,createOpeningRuntime,damageOpeningHearts,healOpeningHearts} from '../opening/runtime';
+import {OPENING_CAPTURE_DAMAGE,OPENING_MAX_HEARTS,OPENING_RESPAWN_GRACE_SECONDS} from '../opening/runtime';
 import {stageIndex,type CampaignEvent} from './state';
 import type {Chapter,ChapterContext} from './types';
 
@@ -44,23 +44,6 @@ function createKeyPrompt(){
 }
 
 /**
- * The campaign has one hearts display: the opening vitals. The chapter context
- * carries no hearts channel, so the lawn keeps its own count (seeded from the
- * opening runtime) and draws it into that shared element the way `ui/vitals.ts` does.
- */
-function showHearts(hp:number,previous:number){
- if(typeof document==='undefined')return;
- const el=document.querySelector<HTMLElement>('.stage .opening-hearts');if(!el)return;
- el.querySelectorAll('.opening-heart').forEach((icon,i)=>{
-  icon.classList.toggle('is-full',i<hp);icon.classList.toggle('is-empty',i>=hp);
-  if(i>=hp&&i<previous)icon.classList.add('is-hit');else if(i<hp)icon.classList.remove('is-hit');
- });
- const count=el.querySelector('.opening-hearts-count');if(count)count.textContent=`${hp} / ${OPENING_MAX_HEARTS}`;
- el.setAttribute('aria-label',`${hp} of ${OPENING_MAX_HEARTS} hearts`);
- el.classList.toggle('is-low',hp>0&&hp<=4);el.classList.toggle('is-empty',hp===0);
-}
-
-/**
  * Chapter 2 in the one world: the rigged L001 on the opening campus model with
  * Thomas's gameplay (Q interrupts the charge wind-up, hold F in the lit ring).
  * Rules, hints and the shutdown writers are shared with `?experience=lion-boss`.
@@ -68,7 +51,7 @@ function showHearts(hp:number,previous:number){
 export function createLawnChapter():Chapter{
  let ctx:ChapterContext|null=null,visuals:ReturnType<typeof createBossScene>|null=null;
  let combat:ReturnType<typeof createCombat>|null=null,prompt:ReturnType<typeof createKeyPrompt>=null;
- let runtime=createOpeningRuntime(),holding=false,started=false,finished=false,grace=0;
+ let localHearts=OPENING_MAX_HEARTS,holding=false,started=false,finished=false,grace=0;
  let events:AbortController|null=null;
 
  const game=()=>ctx!.explorer.game;
@@ -77,27 +60,27 @@ export function createLawnChapter():Chapter{
  const running=()=>fighting()&&!game().paused&&!game().panel&&!game().inventoryOpen;
  const canAct=()=>running()&&!game().armed;
 
- /** Arriving on the lawn: hearts continue from Chapter 1's run. */
- function openingHearts(){
-  const hearts=(game().scenario?.snapshot() as {runtime?:{hearts?:unknown}}|undefined)?.runtime?.hearts;
-  return typeof hearts==='number'&&Number.isInteger(hearts)&&hearts>0?Math.min(hearts,OPENING_MAX_HEARTS):OPENING_MAX_HEARTS;
- }
- function setHearts(next:typeof runtime){const before=runtime.hearts;runtime=next;showHearts(runtime.hearts,before);}
+ /** Hearts are the opening runtime's, through ctx.hearts (the opening vitals HUD and save follow).
+  * Stub contexts without the channel (headless host checks) keep a local count and touch no DOM. */
+ const hearts={
+  get:()=>ctx?.hearts?.get()??localHearts,
+  damage:(n:number)=>ctx?.hearts?ctx.hearts.damage(n):(localHearts=Math.max(0,localHearts-n)),
+  heal:()=>ctx?.hearts?ctx.hearts.heal():(localHearts=OPENING_MAX_HEARTS),
+ };
  function begin(){
   started=true;holding=false;grace=0;
-  setHearts({...runtime,hearts:openingHearts()});
   combat!.start();
   ctx!.notify('L001 is awake. Press Q when it winds up a charge, then hold F in the lit ring.');
  }
  /** Caught by L001: lose hearts, back to the shelter; at zero, heal and retry there. No game over, no reload. */
  function capture(){
   if(grace>0)return;
-  const hit=damageOpeningHearts(runtime);
-  setHearts(hit.dead?healOpeningHearts(hit.runtime):hit.runtime);
+  const before=hearts.get(),left=hearts.damage(OPENING_CAPTURE_DAMAGE),lost=before-left,dead=left<=0;
+  if(dead)hearts.heal();
   holding=false;grace=OPENING_RESPAWN_GRACE_SECONDS;
   combat!.reset(0);combat!.start();
   placeAtShelter(ctx!.explorer.world,game());visuals?.syncCollision(combat!.state);
-  ctx!.notify(hit.dead?'Signal lost · Hearts restored, try again from the shelter':`Caught by L001 · −${hit.lost} hearts`);
+  ctx!.notify(dead?'Signal lost · Hearts restored, try again from the shelter':`Caught by L001 · −${lost} hearts`);
  }
  function finish(){
   finished=true;holding=false;
@@ -163,18 +146,20 @@ export function createLawnChapter():Chapter{
    events?.abort();events=null;
    prompt?.dispose();prompt=null;
    visuals?.dispose();visuals=null;
-   ctx=null;combat=null;holding=false;started=false;finished=false;
+   ctx=null;combat=null;holding=false;started=false;finished=false;localHearts=OPENING_MAX_HEARTS;
   },
   debug:{
+   /** Lawn shortcut only: from any stage other than to_lawn/lawn it changes nothing. */
    complete(){
     if(!ctx||!combat)return ctx?.stage();
     if(ctx.stage()==='to_lawn')ctx.emit(EVENTS[0]);
+    if(ctx.stage()!=='lawn')return ctx.stage();
     if(!finished){combat.reset(1);finish();}
     return ctx.stage();
    },
    rig:()=>visuals?{meshes:visuals.rig.meshes,clips:visuals.rig.clips}:null,
    state:()=>combat?structuredClone(combat.state):null,
-   hearts:()=>runtime.hearts,
+   hearts:()=>hearts.get(),
   },
  };
 }
