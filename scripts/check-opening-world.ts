@@ -10,6 +10,7 @@
 import assert from 'node:assert/strict';
 import * as T from 'three';
 import {createOpeningWorld} from '../src/opening/world';
+import {setOpeningLift} from '../src/opening/navigation';
 import {OPENING as O} from '../src/opening/spatialLayout';
 
 const results:{name:string;passed:boolean}[]=[];
@@ -158,9 +159,41 @@ group('5. The dinner area switches between the tidy and the abandoned state');
  ok('the dinner area toggles cleanly and both floors match the support heights');
 }
 
-group('6. The furniture leaves the walking routes open');
+group('6. The Building 6 side door, lobby and lift follow the shared layout');
 {
- const routes=[O.routeB5,O.routeB6,O.routeB4];
+ // The office is a lined room now; its south wall replaces the old stair doorway.
+ for(const name of ['opening-b6-wall-south','opening-b6-wall-north','opening-b6-wall-west','opening-b6-ceiling'])assert.ok(world.root.getObjectByName(name),`${name} must close the office`);
+ const floorParts=['opening-b6-floor','opening-b6-floor-north','opening-b6-floor-south'].map(name=>{
+  const mesh=world.root.getObjectByName(name) as T.Mesh;
+  assert.ok(mesh,`${name} must exist`);
+  return new T.Box3().setFromObject(mesh);
+ });
+ for(const box of floorParts)assert.ok(Math.abs(box.max.y-O.b6.floor)<1e-6,`every office floor part must top out at ${O.b6.floor}`);
+ // The shaft column is open from the ground lobby up to the 5F office.
+ assert.ok(!floorParts[0].intersectsBox(new T.Box3(new T.Vector3(O.b6Lift.x0+.05,O.b6.floor-.5,O.b6Lift.z0+.05),new T.Vector3(O.b6Lift.x1-.05,O.b6.floor+.5,O.b6Lift.z1-.05))),'the office floor must not cover the lift shaft');
+ const car=world.root.getObjectByName('Opening_b6_lift_car') as T.Group;
+ assert.ok(car,'the lift car must exist');
+ assert.ok(world.root.getObjectByName('opening-b6-side-door-sign'),'the side door needs its sign');
+ assert.ok(world.root.getObjectByName('opening-b6-lift-call-ground')&&world.root.getObjectByName('opening-b6-lift-call-upper'),'both landings need call buttons');
+ const y=()=>car.getWorldPosition(new T.Vector3()).y;
+ world.update({incident:false,laptopAcquired:false,doorOpen:false},0);
+ assert.ok(Math.abs(y()-O.b6Lift.ground)<1e-6,`the car must start at the ground floor, got ${y()}`);
+ setOpeningLift({obstacles:[]},{carY:O.b6Lift.upper,doorGround:0,doorUpper:1});
+ world.update({incident:false,laptopAcquired:false,doorOpen:false},0);
+ assert.ok(Math.abs(y()-O.b6Lift.upper)<1e-6,`the car must rise to the 5F office, got ${y()}`);
+ const leaves=['0','1'].map(i=>world.root.getObjectByName('opening-b6-lift-door-upper-'+i) as T.Mesh);
+ assert.ok(leaves.every(Boolean),'the upper landing needs two door leaves');
+ const openZ=leaves.map(leaf=>leaf.position.z);
+ setOpeningLift({obstacles:[]},{doorUpper:0});
+ world.update({incident:false,laptopAcquired:false,doorOpen:false},0);
+ assert.ok(leaves.every((leaf,i)=>Math.abs(leaf.position.z-openZ[i])>.4),'closing the upper doors must slide the leaves');
+ setOpeningLift({obstacles:[]},{carY:O.b6Lift.ground,doorGround:0,doorUpper:0});
+ ok('side door, sealed office, shaft, car travel and landing doors match the shared layout');
+}
+
+group('7. The furniture leaves the walking routes open');
+{
+ const routes=[O.routeB5,O.routeB6,O.routeB6Office,O.routeB4];
  // Nothing in the dining or office groups may stand on a walking waypoint. The last
  // waypoint of a route is the interaction anchor itself, where a stand is expected.
  const blocked:string[]=[];
@@ -183,7 +216,8 @@ group('6. The furniture leaves the walking routes open');
  // exist within the interaction range, and the desk must not swallow the anchor.
  const desk=new T.Box3().setFromObject(world.root.getObjectByName('opening-b6-desk')!);
  const anchor=new T.Vector3(O.laptop[0],O.laptop[1],O.laptop[2]);
- const stand=new T.Vector3(O.laptop[0],O.b6.floor,O.laptop[2]+1.2);
+ // The desk now faces the room's north side; the old +Z stand was behind the new south wall.
+ const stand=new T.Vector3(O.laptop[0],O.b6.floor,O.laptop[2]-1.0);
  assert.ok(!desk.containsPoint(stand),'the desk must leave a standing spot in front of the laptop');
  assert.ok(stand.distanceTo(anchor)<2.7,'the standing spot must be within the interaction range of the laptop');
  // The staff must stand in the dinner area, not inside a table.
@@ -207,7 +241,7 @@ group('6. The furniture leaves the walking routes open');
  ok('tables, counters and desks do not block the walking routes');
 }
 
-group('7. Dispose releases the world');
+group('8. Dispose releases the world');
 {
  const disposable=createOpeningWorld();
  const geometries=new Set<T.BufferGeometry>();
