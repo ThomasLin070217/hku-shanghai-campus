@@ -134,14 +134,17 @@ def main_run(browser):
     resume(page)
     page.evaluate(f'() => {{ {D}.exitBus(); {D}.acceptErrand(); }}')
     page.evaluate(f'() => {D}.takeLaptop()')
-    page.evaluate(f'() => {{ {D}.triggerIncident(); {D}.reachB5(); {D}.readAlert(); }}')
+    # The player opens the MacBook (C) and reads the alert inside it: open it through the
+    # same path (openComputer -> open('computer') pauses and opens the panel), then readAlert.
+    page.evaluate(f'() => {{ {D}.triggerIncident(); {D}.reachB5(); {D}.openComputer("tasks"); {D}.readAlert(); }}')
     page.wait_for_timeout(600)
-    page.keyboard.press('Escape')
-    until(page, f'() => {D}.state().modal === null', 20)
-    if page.evaluate(f'() => {D}.state().modal') is not None:
-        page.evaluate("() => document.querySelector('.opening-dialog-close')?.click()")
-        until(page, f'() => {D}.state().modal === null', 20)
-    check('Chapter 1: the MacBook closes', page.evaluate(f'() => {D}.state().modal') is None, snap(page))
+    # Real keys close it: C closes the MacBook; Escape first closes an open app inside it.
+    for key in ('c', 'Escape', 'Escape', 'c'):
+        if page.evaluate(f'() => {D}.state().modal') is None:
+            break
+        page.keyboard.press(key)
+        until(page, f'() => {D}.state().modal === null', 8)
+    check('Chapter 1: the MacBook closes with real keys', page.evaluate(f'() => {D}.state().modal') is None, snap(page))
     resume(page)
     check('Chapter 1: story reached to_b4', page.evaluate(f'() => {D}.state().story.stage') == 'to_b4', snap(page))
     shot(page, '00-chapter1-to-b4.png')
@@ -222,7 +225,8 @@ def main_run(browser):
     boundary(page, 'Chapter 3 -> ending', 'ending', 'EPILOGUE', href, '06-ending-card.png')
     resume(page)
     t0 = time.time()
-    done = until(page, "() => window.__CAMPUS.campaign.state()?.stage === 'done' && !!document.querySelector('#ending-credits-card')", 420)
+    done = until(page, "() => window.__CAMPUS.campaign.state()?.stage === 'done' && !!document.querySelector('#ending-credits.show')", 420)
+    page.wait_for_timeout(1500)  # let the credits fade finish before the screenshot
     print(f'  ending took {time.time() - t0:.0f} s of wall time', flush=True)
     check('ending: the campaign reaches done', done, snap(page))
     final = page.evaluate("""() => {
@@ -231,7 +235,9 @@ def main_run(browser):
       const box = credits?.getBoundingClientRect();
       return {mac, relay: localStorage.getItem('hku.b4.compute.' + mac), power: localStorage.getItem('hku.missions.core-power.v1.' + mac),
         threat: window.__CAMPUS.worldThreat().phase, atmosphere: window.__CAMPUS.atmosphere.snapshot(),
-        credits: !!credits && box.width > 0 && box.height > 0 && getComputedStyle(credits).visibility !== 'hidden',
+        // Visible = the overlay has faded in and is what the player sees at the card's centre (nothing on top).
+        credits: !!credits && box.width > 0 && document.getElementById('ending-credits')?.classList.contains('show')
+          && !!document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)?.closest('#ending-credits'),
         href: location.href, doc: window.__doc, view: window.__CAMPUS.explorer.game.view};
     }""")
     check('end: relay online for the device', final['relay'] == 'online', final)
@@ -274,9 +280,13 @@ def handoff_dialog(browser):
     page.evaluate("() => document.querySelector('.opening-epilogue button')?.click()")
     resume(page)
     page.keyboard.press('f')
-    again = until(page, "() => !!document.querySelector('.opening-handoff-dialog')", 15)
+    # Wait for the reopened dialog itself (modal state + its Continue focused), not for a node that may linger hidden.
+    again = until(page, f"() => {D}.state().modal === 'complete' && !document.querySelector('.opening-modal-root')?.hidden && document.activeElement?.textContent?.trim() === 'Continue to Chapter 2'", 30)
     check('handoff: F at Building 4 reopens the dialog (campaign still startable in-page)', again, snap(page))
-    page.wait_for_timeout(500)
+    focus = page.evaluate("""() => { const b = [...document.querySelectorAll('.opening-handoff-dialog .opening-button--primary')].find(x => /Chapter 2/.test(x.textContent));
+      return {active: document.activeElement?.textContent?.trim() ?? null, activeTag: document.activeElement?.tagName, disabled: b?.disabled, hidden: b?.hidden,
+        rootHidden: document.querySelector('.opening-modal-root')?.hidden ?? null, epilogue: !document.querySelector('.opening-epilogue')?.hidden}; }""")
+    check('handoff: the reopened dialog focuses "Continue to Chapter 2"', focus['active'] == 'Continue to Chapter 2' and not focus['disabled'], focus)
     page.keyboard.press('Enter')
     started = until(page, "() => window.__CAMPUS.campaign.state()?.stage === 'to_lawn'", 30)
     s = snap(page)
