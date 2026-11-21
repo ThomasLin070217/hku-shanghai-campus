@@ -59,6 +59,8 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters,opening=f
  box('sports-hall-lintel',hx+SPORTS_HALL.eastX,hz,.18,SPORTS_DOOR.width,hh,SPORTS_DOOR.height);
  box(SPORTS_DOOR.id,hx+SPORTS_HALL.eastX,hz,.18,SPORTS_DOOR.width,SPORTS_DOOR.height);
  box('sports-hall-roof',hx,hz,hw,hd,SPORTS_HALL.ridge,hh);
+ // The two basketball hoops stand inside; keep the poles solid so the player cannot walk through them.
+ for(const end of [-1,1])box('basketball-hoop',hx+end*14.55,hz-2.0,.2,.2,3.75);
  for(const [x,w]of [[-5,44],[53,51]])for(const side of [-1,1])box('court-fence',x,s.sportsZ+side*13,w,.12,4);
  for(const x of [-15.5,5.5])box('tennis-net',x,s.sportsZ,19,.1,1.3);
  // Continuous top rim, with openings only at the two observed curved stair landings.

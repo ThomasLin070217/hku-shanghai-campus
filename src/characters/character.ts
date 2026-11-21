@@ -21,12 +21,26 @@ export function createCharacter(input:Appearance=STUDENT){
  });rig.nodes.forEach((n,i)=>n.children?.forEach(c=>nodes[i].add(nodes[c])));visual.add(nodes[0]);
  const get=(name:string)=>nodes.find(n=>n.name===name)!;
  const torso=get('torso'),head=get('head'),left=get('arm-left'),right=get('arm-right');
+ // A narrower face is just a head-node scale; hair blocks are children, so they follow.
+ if(config.faceWidth&&config.faceWidth!==1)head.scale.x*=config.faceWidth;
  for(const [arm,sign] of [[left,1],[right,-1]] as const){const hand=new T.Mesh(new T.BoxGeometry(.20,.30,.25),new T.MeshStandardMaterial({color:config.skin,roughness:.95}));hand.name='Student_hand';hand.position.set(sign*.20,-.80,0);arm.add(hand);}
  const green=new T.MeshStandardMaterial({color:config.coat,roughness:1}),trim=new T.MeshStandardMaterial({color:config.trim,roughness:1});
  const box=(p:T.Object3D,n:string,w:number,h:number,d:number,x:number,y:number,z:number,m:T.Material)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.name=n;o.position.set(x,y,z);p.add(o);o.castShadow=true;return o;};
  if(config.gown){box(torso,'Gown_back',.87,1.32,.065,0,.55,-.335,green);for(const s of [-1,1]){box(torso,'Open_gown_panel',.25,1.3,.055,s*.30,.55,.333,green);box(torso,'Gown_facing',.045,1.31,.015,s*.175,.55,.37,trim);box(torso,'Back_pleat',.035,1.17,.02,s*.20,.55,-.38,trim);}}
  // Continuous hair cap on all sides is painted into the six-face atlas, with a shallow solid crown.
  const hair=new T.MeshStandardMaterial({color:config.hair,roughness:1});box(head,'Short_hair_crown',8.12,.28,8.12,0,7.94,0,hair);
+ // 'long' builds a layered silhouette instead of one slab: sweep fringe, two-length back
+ // mass, side panels down to the shoulders and front locks that frame the face. Outer faces
+ // sit just outside the head box so nothing is coplanar with it.
+ if(config.hairStyle==='long'){
+  box(head,'Long_hair_sweep',4.6,1.35,1.2,-.55,7.15,3.65,hair);
+  box(head,'Long_hair_back_upper',8.5,4.6,1.8,0,5.4,-4.85,hair);
+  box(head,'Long_hair_back_lower',7.9,2.6,1.5,0,1.9,-4.9,hair);
+  for(const side of [-1,1]){
+   box(head,'Long_hair_side',.62,6.8,5.4,side*4.35,3.8,-1.0,hair);
+   box(head,'Long_hair_front_lock',.58,3.8,1.0,side*4.05,4.6,3.4,hair);
+  }
+ }
  const sockets={leftHand:new T.Group(),rightHand:new T.Group(),back:new T.Group()};
  left.add(sockets.leftHand);right.add(sockets.rightHand);torso.add(sockets.back);
  sockets.leftHand.name='slot_left_hand';sockets.rightHand.name='slot_right_hand';sockets.back.name='slot_back';

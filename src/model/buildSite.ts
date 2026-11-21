@@ -175,18 +175,75 @@ function buildSports(g:T.Group,s:SiteParameters,m:M){const z=s.sportsZ;g.userDat
  for(const yy of [1,2,3,4])for(const side of [-1,1])box(g,'Fence_wire',w,.025,.025,x,yy,z+side*13,m.mesh);
  }
  const hall=group(g,'Sports_Hall','C03 sports-1; R02 planning','confirmed-enclosure-type_provisional-exterior');hall.position.set(-68,0,z);
- box(hall,'Hall_base',39,.2,26,0,.2,0,m.concrete);
- // West end stays solid; the east elevation is split around the game-play glazed door.
- box(hall,'Hall_wall',.18,7,26,-SPORTS_HALL.eastX,3.5,0,m.white);
+ box(hall,'Hall_base',39,.18,26,0,.19,0,m.concrete);
+ // Indoor basketball hall (client clarification 2026-11-21): plinth + glazing band + solid head
+ // band on three elevations, with the gameplay door and a canopy on the east side.
+ box(hall,'Hall_wall',.18,SPORTS_HALL.headBand,26,-SPORTS_HALL.eastX,SPORTS_HALL.headBandY,0,m.white);
+ box(hall,'Hall_west_plinth',.18,2.6,26,-SPORTS_HALL.eastX,1.3,0,m.white);
+ for(let i=0;i<=10;i++)box(hall,'Hall_west_mullion',.14,2.2,.14,-SPORTS_HALL.eastX,3.7,-12.6+i*2.52,m.frame);
+ pane(hall,'Hall_west_glazing',25.8,2.2,-SPORTS_HALL.eastX,3.7,0,m.dark,-Math.PI/2);
  const eastSegment=(SPORTS_HALL.depth-SPORTS_DOOR.width)/2,eastOffset=(SPORTS_HALL.depth+SPORTS_DOOR.width)/4;
  for(const dz of [-eastOffset,eastOffset])box(hall,'Hall_wall',.18,SPORTS_HALL.wallHeight,eastSegment,SPORTS_HALL.eastX,SPORTS_HALL.wallHeight/2,dz,m.white);
  box(hall,'Hall_lintel',.18,SPORTS_HALL.wallHeight-SPORTS_DOOR.height,SPORTS_DOOR.width,SPORTS_HALL.eastX,(SPORTS_HALL.wallHeight+SPORTS_DOOR.height)/2,0,m.white);
+ box(hall,'Hall_entry_canopy',SPORTS_DOOR.width+2.6,.16,2.6,SPORTS_HALL.eastX+.9,3.15,0,m.silver);
+ for(const dz of [-1,1])beam(hall,new T.Vector3(SPORTS_HALL.eastX+.05,2.6,dz*(SPORTS_DOOR.width/2+.4)),new T.Vector3(SPORTS_HALL.eastX+2.1,3.05,dz*(SPORTS_DOOR.width/2+.4)),.05,m.frame,'Canopy_brace');
  buildSportsDoor(hall,m);
  for(const side of [-1,1]){const roof=box(hall,'Pitched_membrane_roof',20.5,.18,26,side*9.75,8.75,0,m.white);roof.rotation.z=-side*Math.atan2(3.5,19.5);}
- for(const side of [-1,1]){box(hall,'Hall_end',39,7,.18,0,3.5,side*13,m.white);pane(hall,'Closed_sports_glass_door',5,3,0,1.5,side*13.15,m.clear,side<0?Math.PI:0);}
+ const plinthSeg=(39-5)/2,plinthOff=(39+5)/4;
+ for(const side of [-1,1]){
+  box(hall,'Hall_end',39,SPORTS_HALL.headBand,.18,0,SPORTS_HALL.headBandY,side*13,m.white);
+  for(const dx of [-plinthOff,plinthOff])box(hall,'Hall_end_plinth',plinthSeg,2.6,.18,dx,1.3,side*13,m.white);
+  box(hall,'Hall_door_head',5,.4,.18,0,2.8,side*13,m.white);
+  for(const dx of [-plinthOff,plinthOff])pane(hall,'Hall_end_glazing',plinthSeg-.35,2.2,dx,3.7,side*13.02,m.dark);
+  pane(hall,'Hall_end_transom',4.8,1.8,0,3.9,side*13.02,m.dark);
+  for(let i=0;i<=4;i++)box(hall,'Hall_end_mullion',.12,2.2,.2,-16.6+i*8.3,3.7,side*13.06,m.frame);
+  pane(hall,'Closed_sports_glass_door',4.9,2.95,0,1.48,side*13.15,m.clear,side<0?Math.PI:0);
+ }
+ basketballCourt(hall,m);
  for(let zz=-12;zz<=12;zz+=6){beam(hall,new T.Vector3(-19.5,7,zz),new T.Vector3(0,10.5,zz),.10,m.frame);beam(hall,new T.Vector3(0,10.5,zz),new T.Vector3(19.5,7,zz),.10,m.frame);}
 }
 
+/** Indoor basketball court inside the sports hall: 28×15 m slab, full FIBA-ish markings,
+ * two hoops. Not an observed plan: the hall interior was only a provisional block-out. */
+function basketballCourt(hall:T.Group,m:M){
+ const court=group(hall,'Basketball_Court','2026-11-21 client clarification: indoor basketball hall','gameplay-addition_not_observed');court.userData.label='篮球场';
+ const top=SPORTS_HALL.floorTop,lineY=top+.003;
+ // Depth bias: the slab sits millimetres above the hall base and the lines are embedded in
+ // the slab, so without an offset these coplanar faces flicker at grazing angles.
+ const floorMat=new T.MeshStandardMaterial({name:'Basketball court floor',color:0xb0854f,roughness:.92,metalness:.04,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
+ const lineMat=new T.MeshStandardMaterial({name:'Ivory court line paint',color:0xf1ead4,roughness:.9,polygonOffset:true,polygonOffsetFactor:-6,polygonOffsetUnits:-6});
+ // Offset towards the north side so the doorway on the east elevation is not behind a hoop.
+ court.position.z=-2.0;
+ const line=(name:string,w:number,d:number,x:number,z:number,yaw=0)=>{const o=box(court,name,w,.014,d,x,lineY,z,lineMat);o.rotation.y=yaw;return o;};
+ box(court,'Court_floor',28.8,.03,15.8,0,top-.015,0,floorMat);
+ for(const z of [-7.5,7.5])line('Court_sideline',28,.07,0,z);
+ for(const x of [-14,14])line('Court_baseline',.07,15,x,0);
+ line('Halfway_line',.07,15,0,0);
+ // Keys, free-throw lines and the arc for each end, drawn from the hoop outwards.
+ for(const end of [-1,1]){
+  const base=end*14,free=end*8.2;
+  for(const z of [-2.45,2.45])line('Key_side',Math.abs(base-free),.07,end*11.1,z);
+  line('Key_top',.07,4.9,free,0);
+  for(let i=0;i<24;i++){const a0=i/24*Math.PI*2,a1=(i+1)/24*Math.PI*2;
+   const p0={x:free+Math.cos(a0)*1.8,z:Math.sin(a0)*1.8},p1={x:free+Math.cos(a1)*1.8,z:Math.sin(a1)*1.8};
+   line('Free_throw_circle',Math.hypot(p1.x-p0.x,p1.z-p0.z),.06,(p0.x+p1.x)/2,(p0.z+p1.z)/2,-Math.atan2(p1.z-p0.z,p1.x-p0.x));}
+  const arcStart=end<0?-75:105;
+  for(let i=0;i<26;i++){const a0=(arcStart+(i/26)*150)*Math.PI/180,a1=(arcStart+((i+1)/26)*150)*Math.PI/180;
+   const p0={x:base+Math.cos(a0)*6.75,z:Math.sin(a0)*6.75},p1={x:base+Math.cos(a1)*6.75,z:Math.sin(a1)*6.75};
+   line('Three_point_arc',Math.hypot(p1.x-p0.x,p1.z-p0.z),.06,(p0.x+p1.x)/2,(p0.z+p1.z)/2,-Math.atan2(p1.z-p0.z,p1.x-p0.x));}
+  for(const z of [-6.52,6.52])line('Three_point_corner',1.75,.06,end*13.12,z);
+  // Hoop: pole behind the baseline, arm, backboard, rim.
+  box(court,'Hoop_pole',.14,3.7,.14,end*14.55,1.85,0,m.frame);
+  box(court,'Hoop_arm',.9,.09,.09,end*14.2,3.35,0,m.frame);
+  box(court,'Hoop_backboard',.06,1.05,1.8,end*14.05,3.35,0,m.silver);
+  box(court,'Hoop_backboard_mark',.02,.30,.5,end*14.01,3.28,0,m.white);
+  const rim=mesh(court,'Hoop_rim',new T.TorusGeometry(.23,.025,5,14),m.frame);rim.rotation.x=Math.PI/2;rim.position.set(end*13.85,3.05,0);
+ }
+ // Centre circle on top of the halfway line.
+ for(let i=0;i<24;i++){const a0=i/24*Math.PI*2,a1=(i+1)/24*Math.PI*2;
+  const p0={x:Math.cos(a0)*1.8,z:Math.sin(a0)*1.8},p1={x:Math.cos(a1)*1.8,z:Math.sin(a1)*1.8};
+  line('Centre_circle',Math.hypot(p1.x-p0.x,p1.z-p0.z),.06,(p0.x+p1.x)/2,(p0.z+p1.z)/2,-Math.atan2(p1.z-p0.z,p1.x-p0.x));}
+}
 /** R01: thin entrance canopy retained; low planted beds, level forecourt and road markings. */
 function buildEntranceExterior(parent:T.Group,b:BuildingSpec,m:M){
  const g=group(parent,'CDS1_Entrance_Forecourt','R01 official CDS-1 entrance','observed-components_estimated-layout');g.position.set(b.x,0,b.z);g.rotation.y=b.rotation*Math.PI/180;const f=b.depth/2;

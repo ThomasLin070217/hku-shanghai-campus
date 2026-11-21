@@ -5,7 +5,7 @@ import {pane,solid} from './glazing';
  * sports hall, to be opened by a sudoku puzzle later. The hall itself is a closed
  * block-out in the C03/R02 evidence, so this door is a game-play addition: its size
  * follows the existing 5×3 m hall doors, its position is inferred from the block-out. */
-export const SPORTS_HALL={x:-68,width:39,depth:26,wallHeight:7,ridge:10.5,floorTop:.3,eastX:19.5};
+export const SPORTS_HALL={x:-68,width:39,depth:26,wallHeight:7,ridge:10.5,floorTop:.3,eastX:19.5,glazingBase:2.6,glazingTop:4.8,headBand:2.2,headBandY:5.9};
 export const SPORTS_DOOR={
  id:'sports-east-door',
  name:'Sports_East_Door',

@@ -8,7 +8,10 @@ export function characterTexture(part:string,a:Appearance){
   let c=a.coat;
   if(part==='head'){
    c=a.skin;
-   if(f===2||f===5&&y<13||(f<2&&y<9))c=a.hair;
+   // 'long' keeps the same crown but drops the hair down the sides and the nape.
+   const long=a.hairStyle==='long';
+   if(f===2||f===5&&y<(long?16:13)||(f<2&&y<(long?14:9)))c=a.hair;
+   if(long&&f===4&&(x<2||x>13)&&y<12)c=a.hair;
    if(f===4){if(y<4||y===4&&(a.hairStyle==='short'?x<6||x>11:x<10)||y===5&&x<3)c=a.hair;
     if(y===7&&(x>=3&&x<=5||x>=10&&x<=12))c=a.hair;
     if(y===9&&(x>=3&&x<=5||x>=10&&x<=12))c=0xf5efe0;
