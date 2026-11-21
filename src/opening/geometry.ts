@@ -1,5 +1,5 @@
 import * as T from 'three';
-import {tagChildren} from '../scene/authoring';
+import {tagChildren,type PrimitiveTrace} from '../scene/authoring';
 import {OPENING} from './spatialLayout';
 type V={p:T.Vector3;n:T.Vector3;uv:T.Vector2};
 function split(poly:V[],axis:'x'|'y'|'z',value:number,above:boolean){
@@ -15,17 +15,20 @@ function subtract(poly:V[],box:T.Box3){let inside=poly;const result:V[][]=[];
 /** Cut scenic core/backings before compact(). Existing author keys survive; removed parts are reported by scene migration check. */
 export function cutOpeningBuildings(root:T.Group){
  function tag(o:T.Object3D){if(o instanceof T.Group)tagChildren(o);for(const c of o.children)tag(c);}tag(root);root.updateMatrixWorld(true);
- for(const room of [OPENING.b5,OPENING.b6]){
+ for(const room of [OPENING.b4,OPENING.b5,OPENING.b6]){
   const building=root.getObjectByName(room.id);if(!building)continue;
-  const boxes=[new T.Box3(new T.Vector3(room.x0+.01,room.floor+.015,room.z0+.12),new T.Vector3(room.x1-.01,room.floor+room.clearHeight,room.z1-.24)),new T.Box3(new T.Vector3(room.door-room.doorWidth/2,room.floor-.02,room.z1-3.3),new T.Vector3(room.door+room.doorWidth/2,room.floor+room.doorHeight,room.z1+.9))];
+  const boxes=[new T.Box3(new T.Vector3(room.x0+.01,room.floor+.015,room.z0+.12),new T.Vector3(room.x1-.01,room.floor+room.clearHeight,room.z1-.24)),new T.Box3(new T.Vector3(room.door-room.doorWidth/2,room.floor-.02,room.z1-3.3),new T.Vector3(room.door+room.doorWidth/2,room.floor+room.doorHeight,room.z1+('doorDepth' in room?room.doorDepth:.9)))];
   const meshes:T.Mesh[]=[];building.traverse(o=>{if(o instanceof T.Mesh)meshes.push(o);});
   for(const mesh of meshes){const old=mesh.geometry;old.computeBoundingBox();const bounds=old.boundingBox!.clone().applyMatrix4(mesh.matrixWorld);if(!boxes.some(b=>b.intersectsBox(bounds)))continue;
    const g=old.index?old.toNonIndexed():old.clone(),p=g.getAttribute('position'),n=g.getAttribute('normal'),uv=g.getAttribute('uv'),positions:number[]=[],normals:number[]=[],uvs:number[]=[],inverse=mesh.matrixWorld.clone().invert();
-   for(let i=0;i<p.count;i+=3){let polygons:V[][]=[Array.from({length:3},(_,k)=>({p:new T.Vector3().fromBufferAttribute(p,i+k).applyMatrix4(mesh.matrixWorld),n:n?new T.Vector3().fromBufferAttribute(n,i+k):new T.Vector3(0,1,0),uv:uv?new T.Vector2(uv.getX(i+k),uv.getY(i+k)):new T.Vector2()}))];
+   // Merged meshes carry many authored parts; keep each part that survives the cut (ranges follow triangle order).
+   const traces=(mesh.userData.authorParts as PrimitiveTrace[]|undefined)?.slice().sort((a,b)=>a.start-b.start),starts=new Map<number,number>(),counts=new Map<number,number>();let ti=0;
+   for(let i=0;i<p.count;i+=3){const before=positions.length/3;let polygons:V[][]=[Array.from({length:3},(_,k)=>({p:new T.Vector3().fromBufferAttribute(p,i+k).applyMatrix4(mesh.matrixWorld),n:n?new T.Vector3().fromBufferAttribute(n,i+k):new T.Vector3(0,1,0),uv:uv?new T.Vector2(uv.getX(i+k),uv.getY(i+k)):new T.Vector2()}))];
     for(const box of boxes)polygons=polygons.flatMap(poly=>subtract(poly,box));
-    for(const poly of polygons)for(let j=1;j<poly.length-1;j++)for(const v of [poly[0],poly[j],poly[j+1]]){positions.push(...v.p.clone().applyMatrix4(inverse).toArray());normals.push(...v.n.clone().normalize().toArray());uvs.push(...v.uv.toArray());}}
+    for(const poly of polygons)for(let j=1;j<poly.length-1;j++)for(const v of [poly[0],poly[j],poly[j+1]]){positions.push(...v.p.clone().applyMatrix4(inverse).toArray());normals.push(...v.n.clone().normalize().toArray());uvs.push(...v.uv.toArray());}
+    const added=positions.length/3-before;if(traces&&added){while(ti<traces.length&&i>=traces[ti].start+traces[ti].count)ti++;if(ti<traces.length&&i>=traces[ti].start){if(!starts.has(ti))starts.set(ti,before);counts.set(ti,(counts.get(ti)??0)+added);}}}
    g.dispose();if(!positions.length){mesh.removeFromParent();old.dispose();continue;}
-   const clipped=new T.BufferGeometry();clipped.setAttribute('position',new T.Float32BufferAttribute(positions,3));clipped.setAttribute('normal',new T.Float32BufferAttribute(normals,3));clipped.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));clipped.computeBoundingBox();clipped.computeBoundingSphere();mesh.geometry=clipped;old.dispose();delete mesh.userData.authorParts;mesh.userData.sourceFile='src/opening/geometry.ts';mesh.userData.openingAperture=true;
+   const clipped=new T.BufferGeometry();clipped.setAttribute('position',new T.Float32BufferAttribute(positions,3));clipped.setAttribute('normal',new T.Float32BufferAttribute(normals,3));clipped.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));clipped.computeBoundingBox();clipped.computeBoundingSphere();mesh.geometry=clipped;old.dispose();const kept=traces?.flatMap((t,j)=>counts.get(j)?[{...t,start:starts.get(j)!,count:counts.get(j)!}]:[]);if(kept?.length)mesh.userData.authorParts=kept;else delete mesh.userData.authorParts;mesh.userData.sourceFile='src/opening/geometry.ts';mesh.userData.openingAperture=true;
   }
  }
 }
