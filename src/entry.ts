@@ -1,5 +1,12 @@
-const entry = new URLSearchParams(location.search).get('experience') ??
+import './opening/game-shell.css';
+
+const params = new URLSearchParams(location.search);
+const entry = params.get('experience') ??
   (import.meta.env.MODE === 'playtest' ? 'levels' : 'opening');
+// Player shell: the opening page also hosts the campus authoring chrome. Strip
+// it for players; `?tools=1` and the review build keep the full tooling.
+const gameShell = entry === 'opening' && params.get('tools') !== '1' && import.meta.env.MODE !== 'review';
+if (gameShell) document.body.classList.add('game-shell');
 if ((import.meta.env.DEV || import.meta.env.MODE === 'review') && entry === 'macbook-lab') {
   void import('./review/macbookLab');
 } else if (entry === 'levels') {
@@ -7,5 +14,9 @@ if ((import.meta.env.DEV || import.meta.env.MODE === 'review') && entry === 'mac
 } else if (entry === 'lion-boss') {
   void import('./lionBoss/play');
 } else {
-  void import('./main');
+  void import('./main').then(async () => {
+    if (!gameShell) return;
+    const {applyOpeningShell} = await import('./opening/gameShell');
+    applyOpeningShell();
+  });
 }
