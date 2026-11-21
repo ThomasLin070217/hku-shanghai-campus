@@ -5,7 +5,7 @@ import {DEFAULT_SETTINGS} from '../gameplay/save';
 import {setHidden, setText} from '../ui/dom';
 import {createLocalAgent} from './agent';
 import {createMacBookExperience} from './macbook';
-import {bindBackupRelay} from './backupRelay';
+import {bindBackupRelay, relayRestored} from './backupRelay';
 import {OPENING_CAPTURE_DAMAGE} from './runtime';
 import {createVitalsHud} from '../ui/vitals';
 
@@ -690,8 +690,35 @@ export function createOpeningUI(
     return view.modal;
   }
 
+  // Reaching Building 4 hands straight over to the playable Keyboard Wall
+  // puzzle (backup power + supercomputer). The hand-off dialog only shows once
+  // this MacBook is already paired, or when the puzzle page cannot be reached.
+  let b4Entering = false;
+  function enterB4Puzzle(): boolean {
+    const id = device.instanceId();
+    if (!id || relayRestored(id)) return false;
+    if (b4Entering) return true;
+    b4Entering = true;
+    const card = document.createElement('div');
+    card.className = 'opening-b4-transition';
+    card.dataset.b4Transition = 'true';
+    card.setAttribute('role', 'status');
+    card.style.cssText = 'position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:rgba(6,14,10,.94);color:#f2efe3;font:16px/1.5 system-ui;text-align:center;opacity:0;transition:opacity .5s ease';
+    card.innerHTML = '<div><p style="margin:0 0 6px;font-size:12px;letter-spacing:.2em;color:#8fd3a8">CHAPTER 1 · BUILDING 4</p><h2 style="margin:0 0 10px;font-size:30px;font-weight:600">The Keyboard Wall</h2><p style="margin:0;color:#c9d6cc">The backup supercomputer is hidden behind this wall. Bring it online to fight back.</p></div>';
+    document.body.append(card);
+    requestAnimationFrame(() => { card.style.opacity = '1'; });
+    window.setTimeout(() => {
+      location.assign(`interiors.html?chapter=b4&device=${encodeURIComponent(id)}`);
+    }, 2200);
+    return true;
+  }
+
   function renderModal(view: OpeningView): void {
     if (!view.modal) {
+      hideDialog();
+      return;
+    }
+    if (view.modal === 'complete' && enterB4Puzzle()) {
       hideDialog();
       return;
     }
