@@ -3596,7 +3596,7 @@
     "issues": {
       "numErrors": 0,
       "numWarnings": 0,
-      "numInfos": 47,
+      "numInfos": 44,
       "numHints": 0,
       "messages": [
         {
@@ -3862,24 +3862,6 @@
           "message": "This object may be unused.",
           "severity": 2,
           "pointer": "/meshes/43/primitives/0/attributes/TEXCOORD_0"
-        },
-        {
-          "code": "UNUSED_OBJECT",
-          "message": "This object may be unused.",
-          "severity": 2,
-          "pointer": "/meshes/44/primitives/0/attributes/TEXCOORD_0"
-        },
-        {
-          "code": "UNUSED_OBJECT",
-          "message": "This object may be unused.",
-          "severity": 2,
-          "pointer": "/meshes/45/primitives/0/attributes/TEXCOORD_0"
-        },
-        {
-          "code": "UNUSED_OBJECT",
-          "message": "This object may be unused.",
-          "severity": 2,
-          "pointer": "/meshes/46/primitives/0/attributes/TEXCOORD_0"
         }
       ],
       "truncated": false
@@ -3892,18 +3874,18 @@
           "pointer": "/buffers/0",
           "mimeType": "application/gltf-buffer",
           "storage": "glb",
-          "byteLength": 51672
+          "byteLength": 141168
         }
       ],
       "animationCount": 0,
-      "materialCount": 8,
+      "materialCount": 10,
       "hasMorphTargets": false,
       "hasSkins": false,
       "hasTextures": false,
       "hasDefaultScene": true,
-      "drawCallCount": 47,
-      "totalVertexCount": 1464,
-      "totalTriangleCount": 804,
+      "drawCallCount": 44,
+      "totalVertexCount": 5971,
+      "totalTriangleCount": 6639,
       "maxUVs": 1,
       "maxInfluences": 0,
       "maxAttributes": 3
@@ -4764,7 +4746,7 @@
     "issues": {
       "numErrors": 0,
       "numWarnings": 0,
-      "numInfos": 79,
+      "numInfos": 80,
       "numHints": 0,
       "messages": [
         {
@@ -5239,7 +5221,13 @@
           "code": "UNUSED_OBJECT",
           "message": "This object may be unused.",
           "severity": 2,
-          "pointer": "/meshes/163/primitives/0/attributes/TEXCOORD_0"
+          "pointer": "/meshes/155/primitives/0/attributes/TEXCOORD_0"
+        },
+        {
+          "code": "UNUSED_OBJECT",
+          "message": "This object may be unused.",
+          "severity": 2,
+          "pointer": "/meshes/164/primitives/0/attributes/TEXCOORD_0"
         }
       ],
       "truncated": false
@@ -5303,7 +5291,7 @@
       "hasSkins": false,
       "hasTextures": true,
       "hasDefaultScene": true,
-      "drawCallCount": 165,
+      "drawCallCount": 166,
       "totalVertexCount": 117802,
       "totalTriangleCount": 39428,
       "maxUVs": 1,
@@ -5687,7 +5675,7 @@
         }
       ],
       "animationCount": 0,
-      "materialCount": 58,
+      "materialCount": 59,
       "hasMorphTargets": false,
       "hasSkins": false,
       "hasTextures": true,

@@ -149,7 +149,7 @@ export function buildCampus(parameters:ModelParameters={...DEFAULT_PARAMETERS}):
   const lobby=new THREE.Group();lobby.name='Lobby_visual_recess_PROVISIONAL';lobby.position.set(ex,y0,front);entrance.add(lobby);
   shallowDepth(lobby,p.entranceWidth,p.entranceHeight,GD.lobby,8,true);box(lobby,'Lobby_rear_shadow_PROVISIONAL',[p.doorWidth*.82,p.doorHeight+.6,.06],[0,(p.doorHeight+.6)/2,-GD.lobby+.10],M.core);
   const flank=(p.entranceWidth-p.doorWidth)/2;
-  for(const side of [-1,1])pane(entrance,'Portal_side_glass',flank,p.entranceHeight,ex+side*(p.doorWidth/2+flank/2),y0+p.entranceHeight/2,front,M.glassLight);
+  for(const side of [-1,1])pane(entrance,'Portal_side_glass',flank,p.entranceHeight,ex+side*(p.doorWidth/2+flank/2),y0+p.entranceHeight/2,front,M.glass);
   pane(entrance,'Portal_upper_glass',p.doorWidth,p.entranceHeight-p.doorHeight,ex,y0+(p.doorHeight+p.entranceHeight)/2,front,M.glassLight);
   // Observed ceiling arches simplified to rectangular light ribs; depth is provisional.
   const light=mat('Night_lobby_arch_light',0xe6d4af);light.emissive.setHex(0xffdfac);light.userData.nightIntensity=1.8;

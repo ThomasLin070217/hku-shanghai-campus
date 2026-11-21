@@ -328,12 +328,21 @@ function buildDinner(root:T.Group){
  // same geometry in either state.
  const props=tag(new T.Group(),'opening-b5-props','Opening_b5_props');
  hallFrame.add(props);
+ const settings=tag(new T.Group(),'opening-b5-table-settings','Opening_b5_table_settings');
+ props.add(settings);
+ settings.userData.source='HKU phase2-02, 30 August 2026; arrangement estimated';
  const chairs=tag(new T.Group(),'opening-b5-static-chairs','Opening_b5_static_chairs');props.add(chairs);
  DINNER_TABLES.forEach(([x,z],i)=>{
   box(props,'opening-b5-table-'+i,D.tableWidth,.08,D.tableLength,x,floorTop+.74,z,materials.table);
   box(props,'opening-b5-table-leg-'+i,.10,.70,.10,x-.43,.35,z-2,materials.frame);
   for(const [j,[dx,dz]] of [[.43,-2],[-.43,2],[.43,2]].entries())box(props,'opening-b5-extra-leg-'+i+'-'+j,.10,.70,.10,x+dx,.35,z+dz,materials.frame);
+  // Green formal linens and place settings from the opening-night photograph.
+  const settingKey='opening-b5-setting-'+i;
+  box(settings,settingKey+'-linen',D.tableWidth+.035,.025,D.tableLength+.045,x,floorTop+.79,z,materials.green);
   for(const [j,dz]of D.chairOffsets.entries())for(const side of [-1,1]){
+   const place=settingKey+'-'+j+'-'+side;
+   box(settings,place+'-plate',.22,.018,.22,x+side*.31,floorTop+.814,z+dz,materials.plate);
+   box(settings,place+'-cup',.065,.095,.065,x+side*.16,floorTop+.852,z+dz+.17,materials.cup);
    // The three recorded capture chairs are animated below instead of duplicated.
    if(i<3&&j===0&&side===-1)continue;
    const key='opening-b5-long-chair-'+i+'-'+j+'-'+side,cx=x+side*.95;
@@ -343,6 +352,7 @@ function buildDinner(root:T.Group){
   }
  });
  compact(chairs);
+ compact(settings);
  // Chairs that stand for dinner and topple once the hall is abandoned. One chair,
  // two poses: the geometry never changes, only the transform.
  const tipping:{node:T.Group;upright:T.Vector3;uprightYaw:number;fallen:T.Vector3;fallenEuler:number}[]=[];
@@ -440,7 +450,7 @@ export function createOpeningWorld(){
   }
   for(const item of dinner.dropped)item.node.position.copy(next?item.fallen:item.upright);
   for(const strip of incidentStrips)strip.material.emissiveIntensity=next?strip.incident:strip.normal;
-  for(const light of dinner.roomLights){light.color.setHex(next?0xff5a45:0xffe7b8);light.intensity=next?7:26;}
+  dinner.roomLights.forEach((light,index)=>{light.color.setHex(next?0xff5a45:index===0?0xc7b8ff:0x91beff);light.intensity=next?7:30;});
   office.roomLight.color.setHex(next?0xff5a45:0xffe9c0);office.roomLight.intensity=next?6:20;
  }
  function update(state:{incident:boolean;laptopAcquired:boolean;doorOpen:boolean},dt:number){

@@ -67,7 +67,20 @@ function frameTower(s:BuildingSpec,m:M){const root=new T.Group();const mass=grou
 function amenities(s:BuildingSpec,m:M){const root=new T.Group();const mass=group(root,'01_MainBody',s.source,'confirmed-form_estimated');const gl=group(root,'02_Glass',s.source,'confirmed-grid_estimated-count');const fins=group(root,'03_Fins_and_Floating_Frame',s.source,'confirmed-form');const rt=group(root,'07_Roof',s.source,'inferred-green-roof');const W=s.width,D=s.depth,H=s.height;
  box(mass,'Low_rise_core',W-2*GD.facade,H-.9,D-2*GD.facade,0,(H-.9)/2,0,m.back);
  const fw=W*.72,fh=H*.40,fy=H*.53;
- for(const side of [-1,1]){glazedFace(gl,W,H,0,0,side*D/2,s.bays,s.floors,m,false,side<0?{x:0,y:fy,w:fw,h:fh}:undefined);for(let i=0;i<=s.bays;i++)for(const tier of [0,1])box(fins,'Low_rise_fins',tier===0?.4:.7,H*.46,.4,-W/2+i*W/s.bays,H*(tier===0?.24:.75),side*(D/2+.25),m.silver);}
+ for(const side of [-1,1]){
+  glazedFace(gl,W,H,0,0,side*D/2,s.bays,s.floors,m,false,side<0?{x:0,y:fy,w:fw,h:fh}:undefined);
+  for(let i=0;i<=s.bays;i++)for(const tier of [0,1]){
+   const x=-W/2+i*W/s.bays,finWidth=tier===0?.4:.7;
+   let bottom=H*(tier===0?.01:.52),top=H*(tier===0?.47:.98);
+   // A06 shows uninterrupted glazing inside the projecting rectangle.
+   // Keep both authored fins, terminating them at the outside frame edges.
+   if(side<0&&Math.abs(x)<fw/2+finWidth/2){
+    if(tier===0)top=fy-fh/2-.45;
+    else bottom=fy+fh/2+.45;
+   }
+   box(fins,'Low_rise_fins',finWidth,top-bottom,.4,x,(top+bottom)/2,side*(D/2+.25),m.silver);
+  }
+ }
  for(const side of [-1,1])glazedFace(gl,D,H,side*W/2,0,0,12,s.floors,m,true);
  // North-facing broad floating rectangular window visible from sports area.
  featureWindow(gl,'Floating_glazed_bay',fw,fh,0,fy,-D/2-.5,m);
@@ -77,7 +90,8 @@ function amenities(s:BuildingSpec,m:M){const root=new T.Group();const mass=group
 }
 function auditorium(s:BuildingSpec,m:M){const root=new T.Group();const mass=group(root,'01_MainBody',s.source,'confirmed-rectangular-hall');const glass=group(root,'02_Glass',s.source,'confirmed-front');const framing=group(root,'03_Columns',s.source,'confirmed-wide-frame');const ent=group(root,'05_Entrance',s.source,'confirmed-form_estimated-dimensions');const rt=group(root,'07_Roof',s.source,'provisional');const W=s.width,D=s.depth,H=s.height;
  box(mass,'Opaque_hall_base_recess',W*.83-2*GD.facade,8,D*.88-2*GD.facade,0,4,0,m.back);box(mass,'Opaque_elevated_hall_core',W-2*GD.facade,H-8.9,D-10,0,8+(H-8.9)/2,-3,m.back);
- for(const side of [-1,1]){glazedFace(glass,W*.83,8,0,0,side*D*.44,12,2,m,false,undefined,true);glazedFace(glass,D*.88,8,side*W*.415,0,0,12,2,m,true,undefined,true);}
+ const baseGlazing={...m,clear:m.dark};
+ for(const side of [-1,1]){glazedFace(glass,W*.83,8,0,0,side*D*.44,12,2,baseGlazing,false,undefined,true);glazedFace(glass,D*.88,8,side*W*.415,0,0,12,2,baseGlazing,true,undefined,true);}
 
  for(const side of [-1,1]){if(side<0)glazedFace(glass,W-2.4,H-10,0,9,side*(D/2+.1),14,3,m,false,undefined,true);else{const eastGlass=glazedFace(glass,W*.47,H-10,W*.24,9,D/2+.1,7,5,m,false,undefined,true);eastGlass.traverse(o=>{if(o instanceof T.Mesh&&(o.material as T.Material).userData?.surfaceRole==='glass')o.material=m.glass;});glazedFace(glass,W*.46,H-10,-W*.25,9,D/2-3.8,7,3,m,false,undefined,true);box(ent,'Recessed_exterior_terrace',W*.48,.25,4,-W*.25,8.8,D/2-1.8,m.silver);pane(ent,'Terrace_glass_guard',W*.46,1.05,-W*.25,9.5,D/2+.12,m.guard);box(ent,'Terrace_guard_handrail',W*.46,.06,.06,-W*.25,10.05,D/2+.13,m.frame);for(let i=0;i<=7;i++)box(ent,'Terrace_guard_post',.06,1.1,.06,-W*.48+i*W*.46/7,9.5,D/2+.13,m.frame);}for(const a of [-1,1]){box(framing,'Wide_frame',1.3,H-8,1.5,a*(W/2-.5),8+(H-8)/2,side*(D/2+.4),m.silver);box(framing,'Wide_frame',W,1.3,1.5,0,a===1?H-.6:8.6,side*(D/2+.4),m.silver);}}
  for(const x of [-W*.4,W*.4])box(framing,'Pilotis',1.1,8,1.1,x,4,D*.4,m.silver);

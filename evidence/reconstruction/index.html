@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-Hans">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>港大张江 · 建模前后对照</title>
+<style>
+  body { max-width: 1500px; margin: 2rem auto; padding: 0 1rem; font: 16px system-ui,sans-serif; background: #17232a; color: #f1f5f4; }
+  a { color: #b4e4d6; }
+  section { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(280px,100%),1fr)); gap: 1rem; }
+  figure { margin: 0; }
+  img { display: block; width: 100%; aspect-ratio: 8/5; object-fit: contain; background: #0d171c; }
+  figcaption { margin-block: .5rem 1rem; }
+  select { font: inherit; padding: .35rem; margin-right: 1rem; }
+</style>
+<h1>港大张江 · 建模前后对照</h1>
+<p>游戏图使用同一组固定机位。实景列用于核对特征，拍摄参数与游戏机位有差异。</p>
+<label>场景 <select id="scene"></select></label>
+<label>机位 <select id="angle"></select></label>
+<section id="images" aria-live="polite"></section>
+<script>
+const scene = document.querySelector('#scene');
+const angle = document.querySelector('#angle');
+const images = document.querySelector('#images');
+const buildings = ['B01','B02','B03','B04','B05','B06','B07'];
+const refs = {
+ 'B04-entry': ['photos/01-cds-shanghai-main-entrance-samu6478.webp','CDS-1 入口 · 港大 CDS'],
+ 'B05-entry': ['opening-nov19/IMG_4380/0012s-upright.jpg','雅堂门厅内侧 · IMG_4380'],
+ 'B06-front': ['photos/07-Main-Site-3-scaled.jpeg','中央礼堂南面 · 港大 CDS'],
+ 'campus-north': ['architect/A06.jpg','北侧实景 · Chapman Taylor'],
+ 'dinner-normal': ['campus/phase2-02.jpg','启用晚宴 · 香港大学']
+};
+const options = (select, rows) => select.replaceChildren(...rows.map(([key,label])=>new Option(label,key)));
+options(scene,[['dinner','5 号楼 · 大学雅堂'],['campus','校园北侧'],...buildings.map(id=>[id,id])]);
+function show() {
+ const key = scene.value+'-'+angle.value;
+ const rows = [['before/'+key+'.png','修改前'],['after/'+key+'.png','修改后']];
+ const ref = refs[key];
+ if(ref) rows.push(['../../references/'+ref[0],ref[1]]);
+ images.replaceChildren(...rows.map(([src,label])=>{
+  const figure=document.createElement('figure'),img=new Image(),caption=document.createElement('figcaption');
+  img.src=src;img.alt=label;caption.textContent=label;figure.append(img,caption);return figure;
+ }));
+}
+function selectScene() {
+ const values = scene.value==='dinner'?[['normal','正常晚宴'],['incident','异常后']]:scene.value==='campus'?[['north','北侧高位']]:[['front','正面'],['left','左前方'],['right','右前方'],['entry','入口附近'],['player','玩家眼高']];
+ options(angle,values);show();
+}
+scene.addEventListener('change',selectScene);angle.addEventListener('change',show);selectScene();
+</script>
+</html>

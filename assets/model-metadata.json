@@ -182,10 +182,10 @@
   },
   "assets": {
     "HKU-Shanghai-Campus": {
-      "bytes": 22672884,
+      "bytes": 24740936,
       "before": {
-        "triangles": 173036,
-        "meshes": 1085,
+        "triangles": 194155,
+        "meshes": 1099,
         "size": [
           208,
           85.59999848008155,
@@ -203,8 +203,8 @@
         ]
       },
       "after": {
-        "triangles": 173036,
-        "meshes": 1085,
+        "triangles": 194155,
+        "meshes": 1099,
         "size": [
           208,
           85.59999848008155,
@@ -224,10 +224,10 @@
       "reload": "passed"
     },
     "HKU-Shanghai-Opening": {
-      "bytes": 25513764,
+      "bytes": 27829228,
       "before": {
-        "triangles": 191198,
-        "meshes": 1724,
+        "triangles": 214333,
+        "meshes": 1741,
         "size": [
           208,
           85.59999848008155,
@@ -245,8 +245,8 @@
         ]
       },
       "after": {
-        "triangles": 191198,
-        "meshes": 1724,
+        "triangles": 214333,
+        "meshes": 1741,
         "size": [
           208,
           85.59999848008155,
@@ -266,10 +266,10 @@
       "reload": "passed"
     },
     "HKU-Shanghai-Campus-no-ground": {
-      "bytes": 18274168,
+      "bytes": 18332132,
       "before": {
-        "triangles": 136594,
-        "meshes": 1006,
+        "triangles": 136982,
+        "meshes": 1017,
         "size": [
           190,
           85.59999848008155,
@@ -287,8 +287,8 @@
         ]
       },
       "after": {
-        "triangles": 136594,
-        "meshes": 1006,
+        "triangles": 136982,
+        "meshes": 1017,
         "size": [
           190,
           85.59999848008155,
@@ -434,10 +434,10 @@
       "reload": "passed"
     },
     "buildings/B04": {
-      "bytes": 5120620,
+      "bytes": 5121564,
       "before": {
         "triangles": 39428,
-        "meshes": 165,
+        "meshes": 166,
         "size": [
           60.779998779296875,
           67.1800003528595,
@@ -456,7 +456,7 @@
       },
       "after": {
         "triangles": 39428,
-        "meshes": 165,
+        "meshes": 166,
         "size": [
           60.779998779296875,
           67.1800003528595,
@@ -518,7 +518,7 @@
       "reload": "passed"
     },
     "buildings/B06": {
-      "bytes": 685300,
+      "bytes": 686156,
       "before": {
         "triangles": 4888,
         "meshes": 87,
