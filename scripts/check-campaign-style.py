@@ -576,6 +576,11 @@ def credits_checks(page):
           style(page, '.ending-barrier'))
     check('ending: the opening HUD is hidden under the credits', not visible(page, '.opening-hud'),
           style(page, '.opening-hud'))
+    check('ending: the walking hint and shell chrome are hidden under the credits',
+          not visible(page, '.stage-bottom > span:first-child') and not visible(page, '.shell-hint')
+          and not visible(page, '.shell-chapters'),
+          {'hint': style(page, '.stage-bottom > span:first-child'), 'esc': style(page, '.shell-hint'),
+           'chapters': style(page, '.shell-chapters')})
     credits_text = page.evaluate(
         "() => { const c = document.getElementById('ending-credits-card');"
         " return c ? c.textContent.toUpperCase() : ''; }")

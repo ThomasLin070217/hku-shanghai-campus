@@ -818,8 +818,8 @@ export function createOpeningUI(
 
   // ------------------------------------------------------------- Update.
   /** A save is a short toast ("Saved on this device"), never a permanent line.
-   *  Only a successful device write raises it: a load, a checkpoint start or
-   *  another status message changes the text but not the save tick. */
+   *  Only a forced device write raises it: a load, a checkpoint start, the 5 s
+   *  autosave or another status message changes the text but not the save tick. */
   function updateSaveToast(text: string, tick: number): void {
     const first = lastSaveTick < 0;
     const saved = !first && tick > lastSaveTick;

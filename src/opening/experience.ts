@@ -59,7 +59,7 @@ export function createOpeningExperience(
  let story=createOpeningState(),runtime=createOpeningRuntime(),settings:Settings={...DEFAULT_SETTINGS,music:.2},modal:OpeningModal=null,computerPage:ComputerPage='tasks';
  let worldThreat:WorldThreat=loadWorldThreat();
  const refreshThreat=createThreatRefresh(1);
- let busClock=0,busReady=false,saveMessage='Progress saves on this device.',saveTick=0,protectedSave=false,ownsSave=false,storageOkay=true,lastSave=0,stamp='',disposed=false,failed=false,scanClock=0,wasPaused=true;
+ let busClock=0,busReady=false,saveMessage='Progress saves on this device.',saveTick=0,protectedSave=false,ownsSave=false,storageOkay=true,lastSave=0,stamp='',stampReady=false,disposed=false,failed=false,scanClock=0,wasPaused=true;
  let incidentClock=0,disturbancePlayed=false,incidentQueued=false,autoInvitationShown=false,heartbeatClock=0,chaseCueClock=0,respawnGrace=0,compatBeforePanel=false;
  /** A restored save at `complete`: the completion dialog is decided on the next frame, once the campaign host has loaded. */
  let completePending=false;
@@ -139,7 +139,7 @@ export function createOpeningExperience(
   if(worldThreat.phase==='sealed'){atmo()?.restoreSealed();audio.openingAmbience('dark');}
   else if(worldThreat.phase==='purged'){audio.openingAmbience('day');}
  }
- function persist(force=false){if(disposed||protectedSave||!ownsSave||!force&&performance.now()-lastSave<5000)return;try{if(localStorage.getItem(writerKey)!==writerToken){ownsSave=false;return;}const safe=story.stage==='incident'||story.stage==='to_b4'?([...O.encounterSafe] as [number,number,number]):undefined;localStorage.setItem(OPENING_SAVE_KEY,JSON.stringify(captureOpeningSave(g,story,settings,safe,runtime)));lastSave=performance.now();storageOkay=true;saveMessage='Saved on this device.';saveTick++;}catch{storageOkay=false;saveMessage='Storage unavailable. Progress remains in this session.';}}
+ function persist(force=false,announce=force){if(disposed||protectedSave||!ownsSave||!force&&performance.now()-lastSave<5000)return;try{if(localStorage.getItem(writerKey)!==writerToken){ownsSave=false;return;}const safe=story.stage==='incident'||story.stage==='to_b4'?([...O.encounterSafe] as [number,number,number]):undefined;localStorage.setItem(OPENING_SAVE_KEY,JSON.stringify(captureOpeningSave(g,story,settings,safe,runtime)));lastSave=performance.now();storageOkay=true;saveMessage='Saved on this device.';if(announce)saveTick++;}catch{storageOkay=false;saveMessage='Storage unavailable. Progress remains in this session.';}}
  function claimSave(){if(protectedSave)return;try{if(localStorage.getItem(writerKey)!==writerToken){const latestRaw=localStorage.getItem(OPENING_SAVE_KEY);if(latestRaw){let saved:OpeningSave|null=null;try{saved=parseOpeningSave(JSON.parse(latestRaw));}catch{}if(!saved){protectedSave=true;saveMessage='Unrecognized save protected. Start a new opening to back it up.';return;}if(lastSave>0||saved.savedAt>loadedAt){restore(saved);saveMessage='Latest checkpoint continued from another window.';}}localStorage.setItem(writerKey,writerToken);}ownsSave=true;}catch{ownsSave=true;storageOkay=false;}}
  /** The one hearts store: campaign chapters damage and heal this runtime, so the vitals HUD and the save follow. */
  const hearts=createHeartsChannel(()=>runtime,next=>{runtime=next;persist(true);});
@@ -486,7 +486,7 @@ export function createOpeningExperience(
   const view:OpeningView={story,runtime,modal:active?modal:null,objective:objectiveFor(),detail:detailFor(),prompt,saveStatus:saveMessage,saveTick,busReady,computerPage,robotState,robotWarning,settings,audioStatus:sound.failed?`${sound.failedFiles.length} sounds unavailable. Retry audio to load them again.`:sound.loading.length?'Loading audio…':sound.state==='uninitialized'?'Use a preview or start the opening to enable audio.':sound.resumeError||'Audio ready.',handoffEvent:'opening.building4_reached',player:g.body.position.toArray() as [number,number,number],yaw:g.yaw,target:goal?[...goal] as [number,number,number]:null,campaign:!!campaign(),voiceLine:staffTalkLine,cinema};
   ui.update(view);
   const next=[story.stage,story.events.length,story.invitation_read,g.inventory.revision,g.view,runtime.curtain_deployed,runtime.robot_chase_started,runtime.agent_chat_unlocked,runtime.hearts].join(':');
-  if(stamp!==next){stamp=next;persist(true);}else if(!g.paused)persist();
+  if(stamp!==next){const first=!stampReady;stampReady=true;stamp=next;persist(true,!first);}else if(!g.paused)persist();
   const enter=document.getElementById('enter-game');if(enter)enter.textContent=story.elapsedSeconds>0?'Continue':'Start opening';
   const status=document.getElementById('session-save');if(status)status.textContent=saveMessage;
  }
