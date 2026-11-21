@@ -4,8 +4,9 @@ import {CampusGame} from '../src/exploration/game';
 import {createNavigation} from '../src/exploration/navigation';
 import {BUILDINGS,SITE} from '../src/model/campusParameters';
 import {OPENING as O} from '../src/opening/spatialLayout';
-import {B4_PHRASE,createKeyboardState,pressKeyboard,createFlipState,flipTiles,flipSolved,pullBreaker,connectMacBook,b4StepOf,sweepTiles} from '../src/campaign/b4Puzzle';
-import {B4_LAYOUT,B4_OBSTACLES,B4_STATIONS,B4_DOOR_OBSTACLE,setB4FlipPanel,partBounds} from '../src/opening/b4Layout';
+import {B4_PHRASE,createKeyboardState,pressKeyboard,createFlipState,flipTiles,flipSolved,pullBreaker,connectMacBook,b4StepOf,sweepTiles,autoFinishTiles} from '../src/campaign/b4Puzzle';
+import {B4_LAYOUT,B4_OBSTACLES,B4_STATIONS,B4_DOOR_OBSTACLE,B4_FOCUS_FRAME,setB4FlipPanel,partBounds} from '../src/opening/b4Layout';
+import {buildB4Shell} from '../src/opening/b4Shell';
 import {createCampaignState,reduceCampaign,type CampaignState} from '../src/campaign/state';
 import type {ChapterContext,Explorer} from '../src/campaign/types';
 import {createB4Chapter} from '../src/campaign/b4Chapter';
@@ -37,6 +38,8 @@ import {disposeAsset} from '../src/model/buildCampus';
  f=flipTiles(f,Array.from({length:560},(_,i)=>i),true);assert.equal(flipSolved(f),false,'560 of 561 is not enough');
  f=flipTiles(f,[560],true);assert.equal(flipSolved(f),true);
  f=flipTiles(f,[3]);assert.equal(flipSolved(f),false,'a toggle turns a tile back');
+ const near95=flipTiles(createFlipState(561),Array.from({length:533},(_,i)=>i),true);assert.deepEqual(autoFinishTiles(near95),Array.from({length:28},(_,i)=>533+i),'at 95% the last tiles turn over by themselves');
+ assert.deepEqual(autoFinishTiles(flipTiles(createFlipState(561),Array.from({length:532},(_,i)=>i),true)),[],'below 95% nothing turns by itself');
 }
 {
  assert.equal(b4StepOf('b4_keyboard'),'keyboard');assert.equal(b4StepOf('b4_flip'),'flip');assert.equal(b4StepOf('b4_breaker'),'breaker');assert.equal(b4StepOf('b4_connect'),'connect');
@@ -102,15 +105,26 @@ const doorRay=()=>new T.Raycaster(new T.Vector3(O.b4.door,O.b4.floor+1.3,O.hando
  assert.ok(site.root.getObjectByName('B04_room_shell'),'the B04 room shell is part of the opening build');
  const inside=new T.Raycaster(new T.Vector3(O.b4.door,O.b4.floor+1.3,O.b4.z1-.3),new T.Vector3(0,0,-1),0,O.b4.z1-O.b4.z0).intersectObject(site.root,true)[0];
  assert.ok(inside&&inside.point.z>=O.b4.z0-.01&&inside.point.z<=O.b4.z0+.2,`B04 is capped behind the door (back wall), got ${inside?hitPath(inside.object):'nothing'} at z=${inside?.point.z}`);
- console.log('PASS Chapter 1: closed, solid B04 door; capped room shell');
+ let shellLights=0;buildB4Shell().traverse(o=>{if(o instanceof T.Light)shellLights++;});assert.equal(shellLights,0,'the B04 shell carries no lights: the room cannot glow by itself in the daytime');
+ const roomLights:string[]=[];site.root.traverse(o=>{if(o instanceof T.Light){const p=o.getWorldPosition(new T.Vector3());if(p.x>O.b4.x0&&p.x<O.b4.x1&&p.z>O.b4.z0&&p.z<O.b4.z1)roomLights.push(o.name||o.type);}});
+ assert.deepEqual(roomLights,[],'Chapter 1: no light inside the B04 rooms');
+ console.log('PASS Chapter 1: closed, solid B04 door; capped room shell; no room lights');
 }
 let cs:CampaignState={...createCampaignState('mac-1'),stage:'b4_enter'};
-const camera=new T.PerspectiveCamera(70,16/9,.05,500),socket=new T.Group(),notes:string[]=[];
-const explorer={game:g2,world:w2,camera,firstPerson:{socket},enabled:true} as unknown as Explorer;
+const camera=new T.PerspectiveCamera(70,16/9,.05,500),arms=new T.Group(),socket=new T.Group(),notes:string[]=[];arms.add(socket);
+const explorer={game:g2,world:w2,camera,firstPerson:{socket,root:arms},enabled:true} as unknown as Explorer;
 const ctx:ChapterContext={scene:new T.Scene(),root:()=>site.root,explorer,deviceId:()=>'mac-1',stage:()=>cs.stage,
  emit:e=>{const r=reduceCampaign(cs,e);cs=r.state;return r.changed;},notify:t=>{notes.push(t);},atmosphere:()=>undefined,
  openPanel:()=>{g2.openPanel('door');},closePanel:()=>{g2.closePanel();},resume:()=>{g2.paused=false;},card:async()=>{}};
 const b4=createB4Chapter(),dbg=b4.debug as Record<string,(...a:unknown[])=>any>;
+/** The focus camera looks square-on at the station and the whole panel is inside the view. */
+function framed(id:'keyboard'|'flip'){
+ camera.updateMatrixWorld();const forward=camera.getWorldDirection(new T.Vector3()),angle=forward.angleTo(new T.Vector3(0,0,-1))*180/Math.PI;
+ assert.ok(angle<=10,`${id} focus camera is ${angle.toFixed(1)}° off the wall normal`);
+ const f=B4_FOCUS_FRAME[id];
+ for(const [x,y] of [[f.x0,f.y0],[f.x1,f.y0],[f.x0,f.y1],[f.x1,f.y1]]){const v=new T.Vector3(x,y,f.z1).project(camera);assert.ok(Math.abs(v.x)<=1&&Math.abs(v.y)<=1&&v.z<1,`${id} corner ${x.toFixed(2)},${y.toFixed(2)} projects outside the view: ${v.toArray().map(n=>n.toFixed(2))}`);}
+ console.log('PASS',id,'focus framing: square-on',angle.toFixed(1)+'°, all four corners in view');
+}
 const step=(n=6)=>{for(let i=0;i<n;i++)b4.update(.5);};
 b4.attach(ctx);step();
 {
@@ -157,19 +171,25 @@ const lights=()=>{const out:T.PointLight[]=[];site.root.traverse(o=>{if(o instan
  const text=b4.objective('b4_keyboard')!.text;assert.match(text,/Press F/);assert.doesNotMatch(text,/\bE\b/);
  g2.body.position.set(...O.handoff);step(1);assert.equal(socket.visible,true,'the held MacBook shows again outside B4');
  g2.body.position.set(...B4_STATIONS.keyboard.stand);step(1);
- dbg.focus('keyboard');assert.equal(socket.visible,false,'focus view hides the held MacBook');
+ dbg.focus('keyboard');step(1);assert.equal(socket.visible,false,'focus view hides the held MacBook');assert.equal(arms.visible,false,'focus view hides the first-person arms');
+ framed('keyboard');
  dbg.type('ILOVECDS');dbg.enter();step(1);assert.equal(cs.stage,'b4_flip');
  // Flipped tiles read clearly: the back faces glow.
  const tile=site.root.getObjectByName('FlipTile_r0c0')!,face=(tile.children[0] as T.Mesh).material as T.MeshStandardMaterial[];
  assert.ok(face[5].emissiveIntensity>0&&face[5].emissive.getHex()!==face[4].emissive.getHex(),'the flipped face is clearly different');
  // Three full-screen drags from the flip stand finish the wall.
- g2.body.position.set(...B4_STATIONS.flip.stand);step(1);dbg.focus('flip');step(1);
- camera.position.copy(g2.body.position).add(new T.Vector3(0,1.6,0));camera.rotation.set(-g2.pitch,g2.yaw,0,'YXZ');camera.updateMatrixWorld();
+ g2.body.position.set(...B4_STATIONS.flip.stand);step(1);dbg.focus('flip');step(1);framed('flip');assert.equal(arms.visible,false);
  const one=dbg.sweepNdc([[-.98,0],[.98,0]]);assert.ok(one>=Math.ceil(561/8),`one drag flips ${one} tiles; needs >= ${Math.ceil(561/8)}`);
- const all=dbg.sweepNdc([[-.98,.55],[.98,.55]])&&dbg.sweepNdc([[-.98,-.55],[.98,-.55]]);
- console.log('PASS sweep: one drag',one,'tiles, three drags',dbg.state().flipped);
- assert.equal(dbg.state().flipped,561,'three drags finish the wall');
- await new Promise(r=>setTimeout(r,1400));assert.equal(cs.stage,'b4_breaker','the solved wall opens the closet');void all;
+ const two=dbg.sweepNdc([[-.98,.55],[.98,.55]]);
+ console.log('PASS sweep: one drag',one,'tiles, two drags',two);
+ // 95%: the last tiles turn over by themselves in a short sweep and the step completes.
+ const left=dbg.flipAllBut(28);assert.equal(left,561,'at 95% the wall completes itself');
+ const last=site.root.getObjectByName('FlipTile_r16c32')!;step(0);b4.update(.05);
+ assert.ok(last.rotation.y<Math.PI/2,'the last tile has not turned instantly');
+ for(let i=0;i<14;i++)b4.update(.05);assert.ok(last.rotation.y>Math.PI/2,`after 0.75 s the last tile has turned (${last.rotation.y.toFixed(2)})`);
+ assert.equal(cs.stage,'b4_flip','the step waits for the last tiles to turn');
+ await new Promise(r=>setTimeout(r,2100));assert.equal(cs.stage,'b4_breaker','the solved wall opens the closet');
+ console.log('PASS auto-finish: 28 last tiles turn over by themselves within 0.75 s');
  g2.body.position.set(...B4_STATIONS.breaker.stand);step(1);
  assert.ok(outline('breaker').visible,'the breaker is outlined in range');
  const lever=site.root.getObjectByName('Aux_breaker_lever') as T.Mesh,lm=lever.material as T.MeshStandardMaterial;

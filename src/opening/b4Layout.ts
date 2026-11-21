@@ -25,6 +25,8 @@ export const B4_BUILDER={
   bounds:{x0:-3.87,x1:4.83,y0:.72,y1:3.74,z0:-4.24,z1:-3.66},
   /** `Keyboard_wall` panel centre; its front face is bounds.z1. */
   panel:[.48,2.64,-3.79] as V3,
+  /** `Keyboard_wall` (backing frame + caps): what the focus view frames. */
+  panelBox:{x0:-3.42,x1:4.38,y0:1.56,y1:3.72,z0:-4.24,z1:-3.66},
  },
  flip:{
   /** `HKU_flip_wall` (frame + 561 tiles), closed. */
@@ -98,6 +100,15 @@ export const B4_STATIONS:Record<B4StationId,B4Station>={
  breaker:{id:'breaker',label:'Breaker lever',point:leverAt,box:at(flipOrigin,FW.breakerPanel),stand:[62.6,F,9.7]},
  port:{id:'port',label:'Supercomputer port',point:[(railBox.x0+railBox.x1)/2,(railBox.y0+railBox.y1)/2,railBox.z1],box:railBox,stand:[64.4,F,9.6]},
 };
+/** What each focus view frames, square-on: the whole Keyboard Wall panel, the whole flip wall. */
+export const B4_FOCUS_FRAME:Record<'keyboard'|'flip',B4Box>={keyboard:at(keyboardOrigin,K.panelBox),flip:flipWallBox};
+/** Focus camera for a vertical, +z-facing panel: eye on the panel's centre line, far enough
+ * back that the panel plus `margin` fits a camera with vertical `fovDeg` and `aspect`. */
+export function focusPose(frame:B4Box,fovDeg:number,aspect:number,margin=.25){
+ const cx=(frame.x0+frame.x1)/2,cy=(frame.y0+frame.y1)/2,hw=(frame.x1-frame.x0)/2+margin,hh=(frame.y1-frame.y0)/2+margin,t=Math.tan(fovDeg*Math.PI/360);
+ const d=Math.min(Math.max(hh/t,hw/(t*Math.max(.2,aspect))),R.z1-.6-frame.z1);
+ return{eye:[cx,cy,frame.z1+d] as V3,target:[cx,cy,frame.z1] as V3,distance:d};
+}
 /** Horizontal reach from the body to the nearest point of a station's interactable. */
 export const B4_REACH=2.2;
 export function stationDistance(s:B4Station,x:number,z:number){

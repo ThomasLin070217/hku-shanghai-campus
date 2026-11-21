@@ -80,3 +80,12 @@ export function sweepTiles(grid:{rows:number;columns:number},from:FlipCell|null,
  }
  return[...out];
 }
+
+/** Once this share of the wall is turned, the last tiles turn over by themselves. */
+export const AUTO_FINISH=.95;
+/** Tiles that turn over by themselves: every unflipped tile once at least AUTO_FINISH
+ * of the wall is flipped (and the wall is not yet complete), otherwise none. */
+export function autoFinishTiles(s:FlipState,ratio=AUTO_FINISH):number[]{
+ const total=s.flipped.length;if(!total||flipSolved(s)||flipCount(s)<Math.ceil(ratio*total))return[];
+ return s.flipped.flatMap((f,i)=>f?[]:[i]);
+}
