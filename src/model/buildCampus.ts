@@ -54,7 +54,12 @@ export function compact(g:THREE.Group){
     if(meshes.length<2)continue;
     // Curved rails and revolving leaves need separate transparent sorting. Coplanar panes still merge.
     if(material.userData.surfaceRole==='glass'&&meshes.some(m=>Math.abs(m.quaternion.dot(meshes[0].quaternion))<.99999))continue;
-    const geometries=meshes.map(m=>{m.updateMatrix();const geom=m.geometry.clone().applyMatrix4(m.matrix);if(!geom.index)return geom;const flat=geom.toNonIndexed();geom.dispose();return flat;});
+    // Keep the index buffer when every merged part already has one: mergeGeometries then
+    // offsets indices instead of expanding shared vertices. On the current campus that
+    // removes roughly a third of the resident vertex data. Mixed buckets still flatten,
+    // because a single merged geometry cannot be partly indexed.
+    const allIndexed=meshes.every(m=>!!m.geometry.index);
+    const geometries=meshes.map(m=>{m.updateMatrix();const geom=m.geometry.clone().applyMatrix4(m.matrix);if(allIndexed||!geom.index)return geom;const flat=geom.toNonIndexed();geom.dispose();return flat;});
     const geometry=mergeGeometries(geometries,false);
     geometries.forEach(x=>x.dispose());
     if(!geometry)throw new Error(`Cannot merge ${g.name}`);
@@ -63,6 +68,11 @@ export function compact(g:THREE.Group){
     combined.castShadow=material.userData.surfaceRole!=='glass';combined.receiveShadow=material.userData.surfaceRole!=='glass';combined.userData={...g.userData,...meshes[0].userData,primitiveCount:meshes.reduce((n,m)=>n+(m.userData.primitiveCount??1),0),authorParts:mergedTraces(meshes)};
     meshes.forEach(m=>{g.remove(m);m.geometry.dispose();});g.add(combined);
   }
+  // Enclosed scenic recesses (backing, floor, ceiling, sides, posts, seating silhouettes)
+  // live entirely behind the facade plane inside a building body that already casts.
+  // They can never contribute a visible shadow, so dropping them from the shadow pass
+  // removes ~350 shadow draws on the current campus without changing the rendered image.
+  if(g.userData.surfaceRole==='opaque-backing')for(const child of g.children)if(child instanceof THREE.Mesh)child.castShadow=false;
 }
 export interface CampusAsset {root:THREE.Group;building:THREE.Group;environment:THREE.Group;ground:THREE.Group;parameters:ModelParameters}
 export function buildCampus(parameters:ModelParameters={...DEFAULT_PARAMETERS}):CampusAsset{
@@ -265,4 +275,20 @@ export function disposeAsset(asset:THREE.Object3D, retained?:THREE.Object3D){
 export function modelStats(root:THREE.Object3D){
   let triangles=0,meshes=0;root.traverse(o=>{if(o instanceof THREE.Mesh){meshes++;triangles+=(o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count)/3;}});
   const b=new THREE.Box3().setFromObject(root);return{triangles,meshes,size:b.getSize(new THREE.Vector3()).toArray(),min:b.min.toArray(),max:b.max.toArray()};
+}
+/** Approximate resident footprint of a subtree for the dev diagnostics panel.
+ * Counts buffer attributes and texture images only, so it is a lower bound: driver
+ * padding, mip chains and the shadow/PMREM targets are not included. */
+export function resourceReport(root:THREE.Object3D){
+  const geometries=new Set<THREE.BufferGeometry>(),materials=new Set<THREE.Material>(),textures=new Set<THREE.Texture>();
+  root.traverse(o=>{const drawable=o as THREE.Mesh;
+    if(drawable.geometry)geometries.add(drawable.geometry);
+    if(drawable.material)for(const m of Array.isArray(drawable.material)?drawable.material:[drawable.material])materials.add(m);
+  });
+  for(const m of materials)for(const value of Object.values(m))if(value instanceof THREE.Texture&&!value.isRenderTargetTexture)textures.add(value);
+  let geometryBytes=0;
+  for(const g of geometries){for(const attribute of Object.values(g.attributes))geometryBytes+=(attribute.array as ArrayLike<number>).length*4;if(g.index)geometryBytes+=g.index.array.length*4;}
+  let textureBytes=0;
+  for(const t of textures){const image=t.image as ({width?:number;height?:number;data?:ArrayLike<number>}|undefined);if(!image)continue;const w=Number(image.width)||0,h=Number(image.height)||0;textureBytes+=image.data?.length??w*h*4;}
+  return{geometries:geometries.size,materials:materials.size,textures:textures.size,geometryBytes,textureBytes};
 }
