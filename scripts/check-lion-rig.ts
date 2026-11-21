@@ -306,11 +306,11 @@ const DT = 1 / 60;
   for (let i = 0; i < 30; i++) rig.update(DT, state, 0);
   check('awakened idle starts after the one-shot', rig.current === 'idle', `clip ${rig.current}`);
   const bounds = evaluateBounds();
-  check('standing height is within 5.0–6.2 m', bounds.height >= 5 && bounds.height <= 6.2,
+  check('standing height is within 5.0–7.4 m', bounds.height >= 5 && bounds.height <= 7.4,
     `${bounds.height.toFixed(2)} m`);
   check('standing feet rest on the ground plane', Math.abs(bounds.clearance) < .08,
     `clearance ${bounds.clearance.toFixed(3)} m`);
-  check('standing lion is shorter than the seated statue', bounds.max.y < authoredMax.y,
+  check('standing lion is taller than the seated statue', bounds.max.y > authoredMax.y,
     `${bounds.max.y.toFixed(3)} vs ${authoredMax.y.toFixed(3)} body-local`);
 }
 
@@ -438,7 +438,7 @@ function compactKeepingIndex(g: T.Group) {
   for (let i = 0; i < 90; i++) { state.lion.x += 1.4 * DT; indexedRig.update(DT, state, 1.4); }
   const walking = evaluateBounds(indexedRig);
   check('[indexed] walking lion stays on the ground at standing height',
-    walking.clearance > -.05 && walking.height >= 5 && walking.height <= 6.3,
+    walking.clearance > -.05 && walking.height >= 5 && walking.height <= 7.4,
     `height ${walking.height.toFixed(2)} m, clearance ${walking.clearance.toFixed(3)} m`);
   indexedRig.dispose();
 }

@@ -122,10 +122,10 @@ interface Pose {
 }
 
 const ZERO: V3 = [0, 0, 0];
-// A forward-hunched beast stance: a standing lion is broad and low, and the lean keeps the
-// mane crown under the seated statue's height instead of towering over the lawn. The rear mane
-// tufts stick out behind the skull, so any head lift above the torso line raises the crown fast.
-const BASE_SPINE = .50, BASE_CHEST = .48, BASE_NECK = -.02, BASE_HEAD = -.04;
+// An upright stance: only a slight forward lean through the spine and chest, with the neck and
+// head tilted back so the face looks forward rather than at the ground. The rear mane tufts
+// stick out behind the skull, so any further head lift raises the crown fast.
+const BASE_SPINE = .16, BASE_CHEST = .12, BASE_NECK = -.10, BASE_HEAD = -.14;
 const STAND: Pose = {
   hips: [0, .55, -.02],
   bones: {
@@ -270,7 +270,7 @@ function chargeWarnPose(t: number): Pose {
     hips: [0, .40 + pulse, -.18],
     bones: {
       hips: [0, 0, 0],
-      spine: [.26 + pulse, 0, 0], chest: [.24, 0, 0], neck: [-.02, 0, 0], head: [-.06, 0, 0],
+      spine: [.18 + pulse, 0, 0], chest: [.16, 0, 0], neck: [-.06, 0, 0], head: [-.08, 0, 0],
       thighL: [-.55, 0, 0], shinL: [.95, 0, 0], footL: [-.40, 0, 0],
       thighR: [-.55, 0, 0], shinR: [.95, 0, 0], footR: [-.40, 0, 0],
       upperArmL: [.62, 0, -.12], upperArmR: [.62, 0, .12],
@@ -286,7 +286,7 @@ function chargePose(t: number): Pose {
     hips: [0, .39, .36],
     bones: {
       hips: [0, 0, 0],
-      spine: [.52 + pulse, 0, 0], chest: [.46, 0, 0], neck: [-.22, 0, 0], head: [-.26, 0, 0],
+      spine: [.26 + pulse, 0, 0], chest: [.20, 0, 0], neck: [-.08, 0, 0], head: [-.10, 0, 0],
       thighL: [-.62, 0, 0], shinL: [.30, 0, 0], footL: [.32, 0, 0],
       thighR: [.28, 0, 0], shinR: [.42, 0, 0], footR: [-.70, 0, 0],
       upperArmL: [.12, 0, -.16], upperArmR: [.12, 0, .16],
@@ -302,7 +302,7 @@ function swipeWarnPose(t: number): Pose {
     hips: [0, .50, -.06],
     bones: {
       hips: [0, -.10, 0],
-      spine: [.30, .18 + wind, 0], chest: [.28, .30, 0],
+      spine: [.20, .18 + wind, 0], chest: [.18, .30, 0],
       neck: [-.06, -.16, 0], head: [-.10, -.24, 0],
       thighL: [-.26, 0, 0], shinL: [.56, 0, 0], footL: [-.30, 0, 0],
       thighR: [-.26, 0, 0], shinR: [.56, 0, 0], footR: [-.30, 0, 0],
@@ -366,11 +366,11 @@ function buildClips(): Record<LionClipName, T.AnimationClip> {
       neck: [-.03, 0, 0], head: [-.05, 0, 0],
       thighL: [-1.10, 0, 0], shinL: [2.00, 0, 0], footL: [-.30, 0, 0],
       thighR: [-1.50, 0, 0], shinR: [2.70, 0, 0], footR: [-.35, 0, 0]}}),
-    mergePose(STAND, {hips: [0, .55, -.02], bones: {spine: [.24, 0, 0], chest: [.20, 0, 0],
+    mergePose(STAND, {hips: [0, .55, -.02], bones: {spine: [.16, 0, 0], chest: [.12, 0, 0],
       neck: [-.06, 0, 0], head: [-.09, 0, 0],
       thighL: [0, 0, 0], shinL: [0, 0, 0], footL: [0, 0, 0],
       thighR: [-1.20, 0, 0], shinR: [2.20, 0, 0], footR: [-.35, 0, 0]}}),
-    mergePose(STAND, {hips: [0, .55, -.01], bones: {spine: [.38, 0, 0], chest: [.36, 0, 0],
+    mergePose(STAND, {hips: [0, .55, -.01], bones: {spine: [.22, 0, 0], chest: [.18, 0, 0],
       neck: [-.04, 0, 0], head: [-.06, 0, 0],
       thighL: [0, 0, 0], shinL: [0, 0, 0], footL: [0, 0, 0],
       thighR: [-.30, 0, 0], shinR: [.55, 0, 0], footR: [-.25, 0, 0]}}),
@@ -378,7 +378,7 @@ function buildClips(): Record<LionClipName, T.AnimationClip> {
   ];
   clips.awaken = buildClip('awaken', AWAKEN_SECONDS, awakenTimes, awakenPoses);
   clips.shutdown = buildClip('shutdown', 1.6, [0, .45, 1.0, 1.6],
-    [STAND, mergePose(STAND, {hips: [0, .54, -.02], bones: {spine: [.42, 0, 0], chest: [.4, 0, 0]}}), SHUTDOWN_END, SHUTDOWN_END]);
+    [STAND, mergePose(STAND, {hips: [0, .54, -.02], bones: {spine: [.24, 0, 0], chest: [.22, 0, 0]}}), SHUTDOWN_END, SHUTDOWN_END]);
   return clips;
 }
 
