@@ -4,7 +4,7 @@ This folder records the first real in-game run of the new Staff voice.
 
 ## Recording
 
-- `staff-in-game.wav` / `.webm` — 20.58 s of the game's final master mix, recorded
+- `staff-in-game.wav` / `.webm` — 20.46 s of the game's final master mix, recorded
   with `CampusAudio.recordingStream()` while the auto Staff intro, player
   acceptance and Staff thanks played. Staff is DaVinci Asher; the player line is
   local Piper Kristin. The recording is stereo 48 kHz.

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Normalise the local Piper player acceptance line for the game.
 
-The raw file is produced offline with Piper (en_US-kristin-medium, a public-domain
-LibriVox voice; length_scale 1.0) from the text
+The raw file is produced offline with Piper (en_US-ryan-high, a CC BY-NC-SA 4.0
+RyanSpeech voice; length_scale 1.0) from the text
 "Yeah, I'll collect it." This script trims the peak to -3 dBFS and adds short
 fades. It is stdlib-only so it can run without Piper.
 
@@ -18,8 +18,8 @@ import wave
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE = ROOT / "assets/audio/npc/player/source/player-accept-kristin-raw.wav"
-OUT = ROOT / "assets/audio/npc/player/player-accept-kristin.wav"
+SOURCE = ROOT / "assets/audio/npc/player/source/player-accept-ryan-raw.wav"
+OUT = ROOT / "assets/audio/npc/player/player-accept-ryan.wav"
 TEXT = "Yeah, I'll collect it."
 TARGET_PEAK_DB = -3.0
 FADE_IN_S = 0.008
@@ -65,13 +65,13 @@ def main() -> None:
         w.setframerate(rate)
         w.writeframes(out.tobytes())
     meta = {
-        "id": "player-accept-kristin",
+        "id": "player-accept-ryan",
         "text": TEXT,
-        "file": "assets/audio/npc/player/player-accept-kristin.wav",
-        "source": "assets/audio/npc/player/source/player-accept-kristin-raw.wav",
-        "tts": "Piper (local neural TTS), en_US-kristin-medium, length_scale 1.0",
+        "file": "assets/audio/npc/player/player-accept-ryan.wav",
+        "source": "assets/audio/npc/player/source/player-accept-ryan-raw.wav",
+        "tts": "Piper (local neural TTS), en_US-ryan-high, length_scale 1.0",
         "provider": "local Piper, not DaVinci",
-        "voiceLicense": "public domain, LibriVox voice (see Piper model card)",
+        "voiceLicense": "CC BY-NC-SA 4.0, RyanSpeech dataset (see Piper model card)",
         "duration": round(len(out) / rate, 3),
         "sampleRate": rate,
         "sha256": hashlib.sha256(OUT.read_bytes()).hexdigest(),

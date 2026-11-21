@@ -10,7 +10,7 @@
 
 **LLM 端点（2026-11-21）：** `npm run llm` 支持 DeepSeek 平台（`DEEPSEEK_API_KEY`，游戏里 MacBook 助手「岚 LAN」的默认模型 `deepseek-flash`）、Gemini 直连（`GEMINI_API_KEY`）与 LiteLLM 代理，可用 `--provider` 或 `LLM_PROVIDER` 选择；密钥只存本地 `.env`，不提交、不回显。大陆/香港出口会被 Google 判定为不支持（密钥本身有效）；设 `LLM_PROXY` 复用本机代理（出口在支持区域）即可直连，`npm run llm -- --ping` 已验证；DeepSeek 可直连，不需要代理。`npm run play` 还会启动本机 LLM 桥（`127.0.0.1:8790`），让游戏里的 MacBook AI 使用同一份 `.env`，密钥不进入浏览器；助手的人设与离线话术在 `src/opening/persona.ts`。说明见 [LLM 端点](docs/LLM-ENDPOINT.md)，MacBook 交互见 [MacBook 与 Harness](docs/MACBOOK-UI.md)，离线校验 `npm run check:llm` 与 `npm run check:opening-assistant`。
 
-**NPC 英文配音（2026-11-21）：** 第一幕 Building 5 的 Staff 已使用 DaVinci AI / ElevenLabs TTS V3 生成英文配音；本轮只用账号免费的 1 次 Audio 额度，没有付费、升级或声音克隆。声音、字幕、接受回应和“回来问电脑”的重复句已接入固定剧情。玩家接受句同时从旧的 macOS Samantha 换成本地 Piper 神经声线（Kristin），因为 DaVinci Audio 免费额度已用尽；它不是 DaVinci 结果，报告中已明确区分。平台额度、生成记录、台词对照、Five Voice Profile 和未完成的 Michael / Ruibang / Lam 计划见 [配音报告](docs/voice/DAVINCI-VOICE-REPORT.md) · [Voice Profiles](docs/voice/PROFILES.md) · [台词对照](docs/voice/STAFF-DIALOGUE-DIFF.md)。
+**NPC 英文配音（2026-11-21）：** 第一幕 Building 5 的 Staff 已使用 DaVinci AI / ElevenLabs TTS V3 生成英文配音；本轮只用账号免费的 1 次 Audio 额度，没有付费、升级或声音克隆。声音、字幕、接受回应和“回来问电脑”的重复句已接入固定剧情。玩家接受句同时从旧的 macOS Samantha 换成本地 Piper 神经声线（Ryan），因为 DaVinci Audio 免费额度已用尽；它不是 DaVinci 结果，报告中已明确区分。平台额度、生成记录、台词对照、Five Voice Profile 和未完成的 Michael / Ruibang / Lam 计划见 [配音报告](docs/voice/DAVINCI-VOICE-REPORT.md) · [Voice Profiles](docs/voice/PROFILES.md) · [台词对照](docs/voice/STAFF-DIALOGUE-DIFF.md)。
 
 **11 月 16 日照片更新：** 学院石牌夜间侧灯、CDS-1 正门错排地灯与门厅细节已更新。室内预览补了键盘墙前的弧形沙发、进门走廊和环形屏公共区。[照片与建模说明](references/campus-media/UPDATE-20261116.md)。
 
