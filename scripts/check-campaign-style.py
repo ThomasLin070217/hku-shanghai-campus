@@ -446,6 +446,13 @@ def focus_checks(page):
     hearts = style(page, '.opening-hearts')
     check('b4 focus: vitals shrink to one compact row (<= 30 px)',
           bool(hearts) and hearts['height'] <= 30, hearts and hearts['height'])
+    corner = page.evaluate("""() => {
+      const hud = document.querySelector('.opening-hud');
+      const cs = getComputedStyle(hud, '::after');
+      return {content: cs.content, display: cs.display, width: cs.width, height: cs.height};
+    }""")
+    check('b4 focus: the collapsed card drops the corner bracket',
+          bool(corner) and corner['display'] == 'none', corner)
     read_caps = """() => {
       try { const b = window.__CAMPUS.campaign.debug.b4; return b && b.caps ? b.caps() : null; }
       catch (e) { return null; }
@@ -463,6 +470,17 @@ def focus_checks(page):
     typed = [c for c in (page.evaluate(read_caps) or []) if c['emissive'] == 0x74e6b4]
     check('b4 focus: a typed cap reads distinct from the gold targets',
           len(typed) == 1, typed)
+    # The 8th cap makes the wall ready; the hint switches to "Press Enter to
+    # boot", so Enter must glow the same gold as the targets.
+    page.evaluate("() => { try { window.__CAMPUS.campaign.debug.b4.type('lovecds'); } catch (e) {} }")
+    ready = page.evaluate("""() => { const s = window.__CAMPUS.campaign.debug.b4.state();
+      return {typed: s.typed, solved: s.solved}; }""")
+    enter_cap = [c for c in (page.evaluate(read_caps) or []) if c.get('enter')]
+    check('b4 focus: at 8/8 the Enter cap glows gold like the targets',
+          ready.get('typed') == 'ILOVECDS' and ready.get('solved') is False
+          and len(enter_cap) == 1 and enter_cap[0]['emissive'] == 0xffb648
+          and enter_cap[0]['intensity'] >= 0.8,
+          {'ready': ready, 'enter': enter_cap})
     page.evaluate('() => window.__CAMPUS.campaign.debug.b4.leave()')
     page.wait_for_timeout(300)
     check('b4 focus: minimap returns after stepping back', visible(page, '.opening-mapcard'), style(page, '.opening-mapcard'))

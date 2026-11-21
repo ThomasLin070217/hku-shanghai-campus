@@ -131,7 +131,7 @@ export function createB4Chapter():Chapter{
    if(keyboard.solved){m.emissive.setHex(cap.userData.enter?0x4aa3ff:cap.userData.phrase?0xffb648:0x6dffb0);m.emissiveIntensity=.9;}
    else if(error&&cap.userData.phrase){m.emissive.setHex(0xff3322);m.emissiveIntensity=1.2;}
    else if(litCaps.has(cap)){m.emissive.setHex(0x74e6b4);m.emissiveIntensity=1.15;}
-   else if(cap===enterCap&&keyboard.typed===B4_PHRASE){m.emissive.setHex(0x4aa3ff);m.emissiveIntensity=1.0;}
+   else if(cap===enterCap&&keyboard.typed===B4_PHRASE){m.emissive.setHex(0xffb648);m.emissiveIntensity=1.1;}
    // The hint says "click the gold caps": the targets must read gold under the
    // red emergency light, before any key is typed. Typed caps above are mint.
    else if(cap.userData.phrase){m.emissive.setHex(0xffb648);m.emissiveIntensity=1.1;}

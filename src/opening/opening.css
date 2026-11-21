@@ -3251,6 +3251,10 @@ body[data-campaign-focus] .opening-hud .opening-distance,
 body[data-campaign-focus] .opening-mapcard {
   display: none !important;
 }
+/* The 14 px corner bracket squashes to a stray hairline in the one-line card. */
+body[data-campaign-focus] .opening-hud::after {
+  display: none;
+}
 body[data-campaign-focus] .opening-hud .opening-objective {
   margin: 0;
   font-size: 12.5px;
