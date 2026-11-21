@@ -61,13 +61,28 @@ export function crowdPlacements(count=CROWD.count,seed=20401121){
  }
  return out;
 }
-export function createStudentCrowd(placements=crowdPlacements(),variants=crowdVariants()){
+export function createStudentCrowd(placements=crowdPlacements(),variants=crowdVariants(),nearestFemale=12){
  const root=new T.Group();
  root.name=CROWD.name;root.userData={sourceFile:CROWD.sourceFile,source:'2026-11-21 client request: 100 green-gown students inside the sports hall, 20% international, mixed gender, random scatter',confidence:'fictional-gameplay-addition_not-observed',label:'体育馆内的学生',count:placements.length,variants:variants.map(v=>({key:v.key,label:v.label,count:v.count}))};
  // Pass 1: build one standalone character per variant and collect every part texture into one atlas.
  type Prototype={variant:CrowdVariant;root:T.Group;textured:{mesh:T.Mesh;slot:number}[];plain:T.Mesh[]};
  const atlasSlots:T.DataTexture[]=[],slotOf=new Map<string,number>();
  const prototypes:Prototype[]=[];
+ // The students nearest the door are the long-haired ones, so opening it shows them first;
+ // everyone else keeps the same variant counts but is mixed across the remaining seats.
+ const expanded=variants.flatMap(variant=>Array.from({length:variant.count},()=>({variant})));
+ const doorX=SPORTS_HALL.x+SPORTS_HALL.eastX,doorZ=-117;
+ const order=placements.map((p,i)=>({i,d:Math.hypot(p.x-doorX,p.z-doorZ)})).sort((a,b)=>a.d-b.d).map(o=>o.i);
+ const women=expanded.filter(e=>e.variant.female),men=expanded.filter(e=>!e.variant.female),shuffle=random(77123);
+ // Shuffle the women so the doorway group mixes ethnicities instead of one variant.
+ for(let i=women.length-1;i>0;i--){const j=Math.floor(shuffle()*(i+1));[women[i],women[j]]=[women[j],women[i]];}
+ const nearestCount=Math.min(nearestFemale,women.length);
+ const rest=[...women.slice(nearestCount),...men];
+ for(let i=rest.length-1;i>0;i--){const j=Math.floor(shuffle()*(i+1));[rest[i],rest[j]]=[rest[j],rest[i]];}
+ const seats=new Map<number,CrowdVariant>();
+ order.forEach((index,k)=>{const seat=k<nearestCount?women[k]:rest[k-nearestCount];if(seat)seats.set(index,seat.variant);});
+ const placed=new Map<CrowdVariant,{x:number;z:number;yaw:number;scale:number}[]>();
+ for(const [index,variant] of seats){const list=placed.get(variant)??[];list.push(placements[index]);placed.set(variant,list);}
  for(const variant of variants){
   const character=createCharacter(variant.appearance);character.root.updateWorldMatrix(true,true);
   const textured:{mesh:T.Mesh;slot:number}[]=[],plain:T.Mesh[]=[];
@@ -92,7 +107,7 @@ export function createStudentCrowd(placements=crowdPlacements(),variants=crowdVa
  const plainMaterial=new T.MeshStandardMaterial({name:'Crowd_flat',vertexColors:true,roughness:.95});
  // Pass 2: bake every variant once, then instance it across that variant's students.
  const meshes:T.InstancedMesh[]=[],matrix=new T.Matrix4(),quaternion=new T.Quaternion(),up=new T.Vector3(0,1,0),position=new T.Vector3(),scale=new T.Vector3(),color=new T.Color();
- let cursor=0,triangles=0;
+ let triangles=0;
  const bake=(mesh:T.Mesh,remapUv:boolean)=>{
   const source=mesh.geometry.index?mesh.geometry.toNonIndexed():mesh.geometry.clone();
   for(const name of Object.keys(source.attributes))if(!['position','normal','uv'].includes(name))source.deleteAttribute(name);
@@ -103,7 +118,7 @@ export function createStudentCrowd(placements=crowdPlacements(),variants=crowdVa
   source.applyMatrix4(mesh.matrixWorld);return source;
  };
  for(const prototype of prototypes){
-  const slots=placements.slice(cursor,cursor+prototype.variant.count);cursor+=slots.length;if(!slots.length)continue;
+  const slots=placed.get(prototype.variant)??[];if(!slots.length)continue;
   const groups:[T.Material,T.BufferGeometry[]][]=[[skinMaterial,[]],[plainMaterial,[]]];
   for(const {mesh,slot} of prototype.textured){mesh.userData['atlasSlot']=slot;groups[0][1].push(bake(mesh,true));}
   for(const mesh of prototype.plain){
@@ -127,5 +142,5 @@ export function createStudentCrowd(placements=crowdPlacements(),variants=crowdVa
   }
  }
  for(const prototype of prototypes)prototype.root.removeFromParent();
- return{root,meshes,variants,count:placements.length,triangles:Math.round(triangles),atlas:slotCount,atlasInfo:{data:atlasData,width:atlasW,height:atlasH,slots:slotOf,slotCount},dispose(){for(const mesh of meshes){mesh.geometry.dispose();mesh.removeFromParent();}meshes.length=0;skinMaterial.dispose();plainMaterial.dispose();atlas.dispose();root.removeFromParent();}};
+ return{root,meshes,variants,seatOf:seats,count:placements.length,triangles:Math.round(triangles),atlas:slotCount,atlasInfo:{data:atlasData,width:atlasW,height:atlasH,slots:slotOf,slotCount},dispose(){for(const mesh of meshes){mesh.geometry.dispose();mesh.removeFromParent();}meshes.length=0;skinMaterial.dispose();plainMaterial.dispose();atlas.dispose();root.removeFromParent();}};
 }

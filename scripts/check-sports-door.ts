@@ -75,6 +75,18 @@ assert.ok(crowd.triangles<40000,`crowd triangles stay small (${crowd.triangles})
 let closest=Infinity;for(let i=0;i<placements.length;i++)for(let j=i+1;j<placements.length;j++)closest=Math.min(closest,Math.hypot(placements[i].x-placements[j].x,placements[i].z-placements[j].z));
 assert.ok(closest>1.0,`students do not overlap (closest ${closest.toFixed(2)} m)`);
 assert.ok(new Set(placements.map(p=>p.x.toFixed(2))).size>90,'positions are scattered, not on a grid');
+// The twelve students closest to the door must be the long-haired ones.
+const doorX=SPORTS_HALL.x+SPORTS_HALL.eastX,doorZ=SITE.sportsZ;
+const nearest=placements.map((p,i)=>({i,d:Math.hypot(p.x-doorX,p.z-doorZ)})).sort((a,b)=>a.d-b.d).slice(0,12);
+for(const seat of nearest){const variant=crowd.seatOf.get(seat.i);assert.ok(variant&&variant.female,`seat ${seat.i} at ${seat.d.toFixed(2)} m is a long-haired student`);}
+// The long-hair geometry must read as hair: more parts, deeper silhouette, shorter body.
+const flatOf=(key:string)=>crowd.meshes.find(m=>m.name.includes(`__${key}__`)&&m.name.endsWith('flat'))!;
+const boundsOf=(key:string)=>{const g=flatOf(key).geometry;return{verts:g.getAttribute('position').count,box:new T.Box3().setFromBufferAttribute(g.getAttribute('position') as T.BufferAttribute)};};
+const maleBounds=boundsOf('cn-man'),femaleBounds=boundsOf('cn-woman');
+const maleSize=maleBounds.box.getSize(new T.Vector3()),femaleSize=femaleBounds.box.getSize(new T.Vector3());
+assert.ok(femaleBounds.verts>=maleBounds.verts+200,`long hair adds geometry (${maleBounds.verts} → ${femaleBounds.verts} vertices)`);
+assert.ok(femaleSize.z>maleSize.z+.05,`long hair deepens the silhouette (${maleSize.z.toFixed(2)} → ${femaleSize.z.toFixed(2)} m)`);
+assert.ok(femaleSize.y<maleSize.y,`female students are shorter (${maleSize.y.toFixed(2)} → ${femaleSize.y.toFixed(2)} m)`);
 // The atlas must hold each variant's own head texture, so every face shows the right skin.
 const atlas=crowd.atlasInfo;
 for(const variant of variants){
