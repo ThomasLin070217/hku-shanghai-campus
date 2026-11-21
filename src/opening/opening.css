@@ -2232,3 +2232,141 @@ body:not(.exploring) .opening-danger-vignette {
   transition: transform 0.12s linear;
 }
 .opening-distance-text { color: #315544; }
+
+/* ================================================================== */
+/* Cinematic wake-up / title / walk-and-talk subtitle                  */
+/* ================================================================== */
+
+.opening-cinema {
+  position: absolute;
+  inset: 0;
+  z-index: 42;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+  color: #f3f0e3;
+  font-family: Inter, "PingFang SC", system-ui, sans-serif;
+}
+.opening-cinema[hidden] { display: none !important; }
+.opening-cinema-black {
+  position: absolute;
+  inset: 0;
+  background: #030605;
+  opacity: 0;
+  transition: opacity 0.12s linear;
+}
+.opening-cinema-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: block;
+  height: 0;
+  background: #030605;
+  transition: height 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.opening-cinema-bar.top { top: 0; }
+.opening-cinema-bar.bottom { bottom: 0; }
+.opening-cinema.has-letterbox .opening-cinema-bar { height: 7.2vh; }
+.opening-cinema-copy {
+  position: relative;
+  z-index: 3;
+  flex: 1;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 6px;
+  text-align: center;
+  padding: 0 8vw;
+  text-shadow: 0 2px 18px #000c;
+}
+.opening-cinema-copy[hidden] { display: none !important; }
+.opening-cinema-title {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(30px, 5vw, 62px);
+  line-height: 1;
+  letter-spacing: 0.18em;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: #f4f0e1;
+}
+.opening-cinema-subtitle-line {
+  margin: 8px 0 0;
+  font-size: clamp(10px, 1.1vw, 14px);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #c8a85e;
+}
+.opening-cinema-hint {
+  margin: 24px 0 0;
+  font: 600 10px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #b9c9bf;
+  opacity: 0.8;
+}
+.opening-cinema[data-mode="wake"] .opening-cinema-hint { animation: opening-cinema-breathe 2s ease-in-out infinite; }
+@keyframes opening-cinema-breathe { 50% { opacity: 0.35; } }
+.opening-cinema-speech {
+  position: absolute;
+  left: 50%;
+  bottom: 10.5vh;
+  transform: translateX(-50%);
+  z-index: 3;
+  width: max-content;
+  max-width: min(900px, 84vw);
+  margin: 0;
+  padding: 12px 20px 12px 22px;
+  border-left: 3px solid #c8a85e;
+  background: #06110dd9;
+  box-shadow: 0 8px 30px #0008;
+  color: #f0ead7;
+  font-family: Georgia, "Times New Roman", "PingFang SC", serif;
+  font-size: clamp(14px, 1.5vw, 19px);
+  line-height: 1.55;
+  text-align: left;
+  text-shadow: 0 1px 3px #000;
+}
+.opening-cinema-speech[hidden] { display: none !important; }
+.opening-cinema[data-mode="title"] .opening-cinema-title { font-size: clamp(26px, 4vw, 52px); letter-spacing: 0.14em; }
+.opening-cinema[data-mode="subtitle"] .opening-cinema-copy { display: none; }
+
+/* During the wake-up the HUD stays out of the shot, like a COD intro. */
+.stage.opening-cinema-active .opening-hud,
+.stage.opening-cinema-active .opening-hearts,
+.stage.opening-cinema-active .opening-mapcard,
+.stage.opening-cinema-active .opening-prompt,
+.stage.opening-cinema-active .opening-warning {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+/* Hide game chrome while a cinematic title card is up. */
+body.opening-cinema-active #inventory-hud,
+body.opening-cinema-active #crosshair,
+body.opening-cinema-active #control-badge {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.stage.opening-cinema-active .stage-bottom { opacity: 0; }
+
+/* The invitation is part of the intro: keep a cinematic frame above the modal
+   while the letter is open, so the intro visibly ends only after Accept. */
+.opening-cinema.is-letter { z-index: 70; }
+.opening-cinema.is-letter .opening-cinema-bar { height: 7.2vh; }
+.opening-cinema.is-letter .opening-cinema-speech { display: none; }
+
+/* While the invitation is part of the intro, keep the card inside the letterbox. */
+body.opening-cinema-letter .opening-modal-root[data-kind="invitation"] {
+  padding-top: 9.5vh;
+  padding-bottom: 9.5vh;
+}
+body.opening-cinema-letter .opening-dialog--invitation {
+  max-height: calc(100dvh - 21vh);
+}
+body.opening-cinema-letter .opening-invite-card {
+  max-height: calc(100dvh - 26vh);
+}

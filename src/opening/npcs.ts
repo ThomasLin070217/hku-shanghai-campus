@@ -24,9 +24,28 @@ export const OPENING_CAST:{position:readonly [number,number,number];appearance:A
 export function createOpeningNPCs(){
  const root=new T.Group();root.name='Opening_people';root.userData.dynamicGameplay=true;
  const actors=OPENING_CAST.map(a=>{const model=createCharacter(a.appearance);model.root.position.fromArray([...a.position]);model.root.rotation.y=a.yaw;root.add(model.root);return model;});
- return{root,update(dt:number,incident:boolean,paused:boolean,player:T.Vector3){
+ const staff=actors[0];
+ let staffTarget:T.Vector3|null=null;
+ const startStaffTalk=()=>{staffTarget=new T.Vector3(61.5,.02,-59.0);};
+ const reset=()=>{
+  staffTarget=null;
+  actors.forEach((actor,index)=>{actor.root.position.fromArray([...OPENING_CAST[index].position]);actor.root.rotation.y=OPENING_CAST[index].yaw;});
+ };
+ return{root,startStaffTalk,reset,update(dt:number,incident:boolean,paused:boolean,player:T.Vector3){
   root.visible=!incident;if(incident||paused||dt<=0)return;
   for(const actor of actors){
+   if(actor===staff&&staffTarget){
+    const dx=staffTarget.x-actor.root.position.x,dz=staffTarget.z-actor.root.position.z,distance=Math.hypot(dx,dz);
+    if(distance>.12){
+     // Walk-and-talk: the coordinator leads the player toward the dinner tables.
+     const step=Math.min(distance,.85*dt);
+     actor.root.position.x+=dx/distance*step;actor.root.position.z+=dz/distance*step;
+     actor.root.rotation.y=Math.atan2(-dx,-dz);
+     actor.animate(dt,step,true,0,.85);
+     continue;
+    }
+    staffTarget=null;
+   }
    actor.animate(dt,0,true,0,0);
    const dx=player.x-actor.root.position.x,dz=player.z-actor.root.position.z;
    if(Math.hypot(dx,dz)<5.5&&Math.hypot(dx,dz)>.05){

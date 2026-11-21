@@ -108,9 +108,9 @@ export class CampusAudio {
   this.counts[name]=(this.counts[name]??0)+1;
  }
  /** Local opening cues share the existing context, mixer and voice budget. */
- openingCue(kind:'bus'|'door'|'disturbance'|'scan'|'alert'|'curtain'|'caught'|'heartbeat'|'unlock'|'chase'){
+ openingCue(kind:'bus'|'door'|'disturbance'|'scan'|'alert'|'curtain'|'caught'|'heartbeat'|'unlock'|'chase'|'wake'){
   const c=this.context;if(!c||!this.active)return;
-  if(this.story){
+  if(this.story&&kind!=='wake'){
    if(kind==='disturbance')this.story.disturbance();
    else if(kind==='curtain')this.story.curtain();
    else if(kind==='caught')this.story.cue('robot_capture',undefined,true);
@@ -121,12 +121,13 @@ export class CampusAudio {
   }
   if(!this.groups.opening){this.groups.opening=c.createGain();this.groups.opening.connect(this.story?this.groups.sfx:this.groups.ambient);}
   const name='opening-'+kind;if(!this.buffers.has(name)){
-   const seconds=kind==='curtain'?4.6:kind==='disturbance'?2.3:kind==='bus'?1.6:kind==='caught'?.9:kind==='heartbeat'?.55:kind==='unlock'?.7:.32;
+   const seconds=kind==='wake'?3.0:kind==='curtain'?4.6:kind==='disturbance'?2.3:kind==='bus'?1.6:kind==='caught'?.9:kind==='heartbeat'?.55:kind==='unlock'?.7:.32;
    const buffer=c.createBuffer(1,Math.round(c.sampleRate*seconds),c.sampleRate),data=buffer.getChannelData(0);
    for(let i=0;i<data.length;i++){
     const t=i/c.sampleRate,u=i/data.length,fade=Math.sin(Math.PI*u);
     let sample=0;
-    if(kind==='heartbeat'){const beat=(t%.34)<.09?Math.exp(-((t%.34)*26))*Math.sin(t*54*Math.PI*2):0;sample=beat*.55;}
+    if(kind==='wake'){const engine=Math.sin(t*41*Math.PI*2)*.12+Math.sin(t*63*Math.PI*2)*.05;const noise=(Math.random()-.5)*.05;sample=(engine+noise)*Math.sin(Math.PI*Math.min(1,t/2.6));}
+    else if(kind==='heartbeat'){const beat=(t%.34)<.09?Math.exp(-((t%.34)*26))*Math.sin(t*54*Math.PI*2):0;sample=beat*.55;}
     else if(kind==='caught'){sample=(Math.sin(t*44*Math.PI*2)*.32+(Math.random()-.5)*.22)*Math.exp(-t*3.4);}
     else if(kind==='unlock'){sample=Math.sin(t*(420+t*520)*Math.PI*2)*.12*fade;}
     else if(kind==='chase'){sample=(Math.sin(t*880*Math.PI*2)>0?.10:-.10)*fade;}

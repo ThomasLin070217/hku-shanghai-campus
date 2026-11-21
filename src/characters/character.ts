@@ -65,8 +65,25 @@ export function createCharacter(input:Appearance=STUDENT){
 function disposeOwned(root:T.Object3D,shared=false){const mats=new Set<T.Material>(),textures=new Set<T.Texture>();root.traverse(o=>{if(o instanceof T.Mesh){if(!shared||!geometries.includes(o.geometry))o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material]){mats.add(m);if('map'in m&&m.map)textures.add(m.map as T.Texture);}}});mats.forEach(m=>m.dispose());textures.forEach(t=>t.dispose());}
 export function createFirstPersonArms(a:Appearance=STUDENT){
  const root=new T.Group();root.name='First_person_HKU_arms';
- // Same atlas, materials and original arm geometry as the complete actor.
- for(const [i,s] of [-1,1].entries()){const m=rig.meshes[3+i],arm=new T.Mesh(geometries[3+i],new T.MeshStandardMaterial({map:characterTexture(m.name,a),roughness:.9}));arm.scale.set(.35,.35,.35);arm.rotation.x=-1.1;arm.position.set(s*.19,-.24,-.30);const hand=new T.Mesh(new T.BoxGeometry(.20,.30,.25),new T.MeshStandardMaterial({color:a.skin,roughness:.95}));hand.position.set(i===0?.2:-.2,-.80,0);arm.add(hand);root.add(arm);}
- const socket=new T.Group();socket.name='First_person_item_socket';socket.position.set(0,-.30,-.56);socket.rotation.x=.10;root.add(socket);let id:string|null=null,held:T.Group|null=null;
+ // Same atlas, sleeve geometry, trim and skin as the complete actor. The arm group is
+ // oriented along the forearm instead of hanging down, so the sleeves rise into the
+ // lower corners of the lens with the hands at the tips (the old -X rotation pointed
+ // the arms behind the near plane, leaving only clipped green slabs on screen).
+ const handGeometry=new T.BoxGeometry(.105,.13,.115),skin=new T.MeshStandardMaterial({color:a.skin,roughness:.95});
+ const sleeveLength=.55,sleeveScale=sleeveLength/.75;
+ for(const side of [-1,1]){
+  const arm=new T.Group(),index=side<0?3:4,m=rig.meshes[index];
+  arm.name=side<0?'First_person_arm_left':'First_person_arm_right';
+  arm.position.set(side*.27,-.55,.10);
+  arm.quaternion.setFromUnitVectors(new T.Vector3(0,-1,0),new T.Vector3(-side*.11,.33,-.52).normalize());
+  const sleeve=new T.Mesh(geometries[index],new T.MeshStandardMaterial({map:characterTexture(m.name,a),roughness:.9}));
+  // Centre the offset rig geometry on the forearm axis; the sleeve top sits at the group origin.
+  sleeve.scale.set(.25,sleeveScale,.25);sleeve.position.set(-(index===3?.2:-.2)*.25,-.1*sleeveScale,0);
+  sleeve.castShadow=false;sleeve.receiveShadow=false;arm.add(sleeve);
+  const hand=new T.Mesh(handGeometry,skin);hand.name='First_person_hand';hand.position.set(0,-(sleeveLength+.062),0);
+  hand.castShadow=false;hand.receiveShadow=false;arm.add(hand);
+  root.add(arm);
+ }
+ const socket=new T.Group();socket.name='First_person_item_socket';socket.position.set(0,-.22,-.30);socket.rotation.x=.10;root.add(socket);let id:string|null=null,held:T.Group|null=null;
  return{root,socket,equip(next:string|null){if(next===id)return;held?.removeFromParent();if(held)disposeOwned(held);held=null;id=next;if(next){const def=ITEMS[next],h=def.hold.firstPerson;held=def.createModel();socket.position.fromArray(h.position);socket.rotation.fromArray(h.rotation);socket.scale.setScalar(h.scale);socket.add(held);}},dispose(){disposeOwned(root,true);},get held(){return held;}};
 }

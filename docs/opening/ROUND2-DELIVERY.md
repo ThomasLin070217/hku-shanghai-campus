@@ -5,6 +5,35 @@ MacBook → AI takeover / curtain → robots / hearts → Building 5 empty hall 
 Local Agent → Building 4 handoff. Harry's Building 4 puzzles, WHL's lion and Frost's
 sports-hall rescue are untouched.
 
+## 0. COD-style intro pass (2026-11-21)
+
+The opening now follows the grammar of a Call of Duty campaign intro rather than a
+modal tutorial:
+
+- **Wake-up:** the first entry starts with a short black/letterboxed wake-up, bus
+  engine and low vibration, the camera lifts from a downward angle, and the HUD is
+  hidden until the player is seated.
+- **Diegetic invitation:** the High Table card is a physical paper + wax seal on the
+  seat. The player can press `F`, or after a short beat the intro opens the letter
+  automatically. The intro stays HUD-free and seated, and the letter is framed by the
+  same letterbox, until `Accept invitation` records `invitation_read` and ends the
+  intro.
+- **Location card:** `BUILDING 4 FORECOURT · 18:12` after the wake.
+- **Driver line:** the door opens with a subtitled `DRIVER — Building 4. Mind the step
+  when you leave.`
+- **Staff walk-and-talk:** entering Building 5 starts a short in-world dialogue while
+  the coordinator walks toward the tables. The player keeps control; there is no staff
+  modal. After the last line the objective updates to Building 6 automatically.
+- **No pause-menu hand-off:** closing the invitation, staff, MacBook, or settings panel
+  returns control from the same click/key (pointer lock or drag mode) instead of asking
+  the player to find `Continue`.
+- **Objective bearing:** the HUD now shows a bearing arrow and `N m to objective`, and
+  hides itself during the wake/title cards.
+
+See [COD-INTRO-PASS.md](COD-INTRO-PASS.md) for the beat sheet and next steps. A
+one-time `hku.opening.introVersion` guard replays the intro for a legacy bus save that
+already had `invitation_read=true`; `Restart opening` also clears the guard.
+
 ## 1. What changed
 
 | Area | Result | Main files |
@@ -106,7 +135,7 @@ npm run build
 
 Browser evidence:
 
-- Screenshots and the 51 s captioned QA reel: `evidence/thomas-opening-round2/` (see §6).
+- Screenshots and the 70 s captioned QA reel: `evidence/thomas-opening-round2/` (see §6).
 - Live browser runs used the real `CampusGame.step` / `CharacterPhysics` for the
   bus → B5 and B5 → B6 legs, and the live DOM for the invitation, staff, MacBook,
   alert, agent and caught screens.
@@ -122,10 +151,10 @@ Browser evidence:
 | `npm run check:audio-review` (incl. chase fades, curtain pause/resume, capture feedback) | PASS |
 | `npm run build` | PASS |
 | Browser QA flow (headless SwiftShader) | invitation → B5 → B6 → laptop → curtain → incident → Mac alert → agent reply → capture/retry reached in live runs; the single-take run was stopped when the renderer stalled on repeated screenshots |
+| Browser intro pass (2026-11-21) | wake title/subtitle, physical invitation pickup, staff walk-and-talk, automatic `to_b6` task update and no page errors |
 | Physical route walk (browser, `CampusGame.step`) | bus → B5 and B5 → B6 completed in the QA run; B6 → B5 → B4 is covered by the offline integration walk |
 
-The optional browser harnesses are `scripts/check-opening-browser.mjs` (real walking)
-and `scripts/check-opening-flow.mjs` (fast state/UI flow). They are not part of
+The optional browser harness is `scripts/check-opening-flow.mjs` (fast state/UI flow). They are not part of
 `check:all` because headless SwiftShader can throttle requestAnimationFrame; run them in
 a visible Chrome window for the full single-take pass.
 
@@ -146,9 +175,15 @@ a visible Chrome window for the full single-take pass.
 
 | File | What it shows |
 | --- | --- |
-| `evidence/thomas-opening-round2/opening-beat-reel.webm` | 15-beat QA reel (51 s, captioned) |
-| `evidence/thomas-opening-round2/01-invitation.png` | High Table invitation card |
+| `evidence/thomas-opening-round2/opening-beat-reel.webm` | 22-beat QA reel (70 s, captioned) |
+| `evidence/thomas-opening-round2/00-wake-up.png` | Wake-up title card over the shuttle interior |
+| `evidence/thomas-opening-round2/01b-invitation-on-seat.png` | The invitation as a physical item on the seat |
+| `evidence/thomas-opening-round2/01c-intro-prompt.png` | HUD-free intro prompt: `Press F to pick it up` |
+| `evidence/thomas-opening-round2/05b-staff-walk-talk.png` | Staff walk-and-talk in Building 5 |
+| `evidence/thomas-opening-round2/05c-objective-updated.png` | Objective updated to Building 6 |
+| `evidence/thomas-opening-round2/01-invitation.png` | High Table invitation card, framed inside the intro letterbox |
 | `evidence/thomas-opening-round2/02-bus-interior-hearts.png` | Shuttle interior, 10/10 hearts, open door |
+| `evidence/thomas-opening-round2/02b-after-invitation.png` | After reading: HUD returns, the intro ends, door open |
 | `evidence/thomas-opening-round2/03-bus-exterior-south.png` | Shuttle parallel to the road, wheels/windows/sign |
 | `evidence/thomas-opening-round2/04-bus-exterior-north.png` | Shuttle door and steps from the forecourt |
 | `evidence/thomas-opening-round2/05-staff-dialog.png` | Building 5 dinner coordinator |
