@@ -22,14 +22,14 @@ export const CROWD={
 export interface CrowdVariant {key:string;label:string;appearance:Appearance;count:number;international:boolean;female:boolean}
 /** Weights are shares of the whole crowd; counts are then rounded to sum to `total`. */
 const BASE:Omit<CrowdVariant,'count'>[]=[
- {key:'cn-man',label:'本地男生',female:false,international:false,appearance:{...STUDENT,id:'crowd-cn-man',name:'绿袍学生 · 本地男生'}},
- {key:'cn-woman',label:'本地女生',female:true,international:false,appearance:{...STUDENT,id:'crowd-cn-woman',name:'绿袍学生 · 本地女生',height:1.68,build:.94,hairStyle:'long',faceWidth:.84,coat:0x0f6b56,trim:0x05493c}},
- {key:'af-man',label:'非洲裔男生',female:false,international:true,appearance:{...STUDENT,id:'crowd-af-man',name:'绿袍学生 · 非洲裔男生',skin:0x7a5138,hair:0x141010,coat:0x5e2733,trim:0x39161f,shirt:0xf2ecdd}},
- {key:'af-woman',label:'非洲裔女生',female:true,international:true,appearance:{...STUDENT,id:'crowd-af-woman',name:'绿袍学生 · 非洲裔女生',skin:0x8a5c40,hair:0x191211,hairStyle:'long',faceWidth:.85,height:1.69,build:.95,coat:0x74303f,trim:0x451a26,shirt:0xf2ecdd}},
- {key:'sa-man',label:'南亚裔男生',female:false,international:true,appearance:{...STUDENT,id:'crowd-sa-man',name:'绿袍学生 · 南亚裔男生',skin:0xb87a50,hair:0x241a14,coat:0x24395c,trim:0x14243b,shirt:0xf4f1e4}},
- {key:'sa-woman',label:'南亚裔女生',female:true,international:true,appearance:{...STUDENT,id:'crowd-sa-woman',name:'绿袍学生 · 南亚裔女生',skin:0xc98a60,hair:0x2a1d16,hairStyle:'long',faceWidth:.85,height:1.67,build:.94,coat:0x2d4a72,trim:0x1a2e49,shirt:0xf6f2e6}},
- {key:'eu-man',label:'欧美裔男生',female:false,international:true,appearance:{...STUDENT,id:'crowd-eu-man',name:'绿袍学生 · 欧美裔男生',skin:0xf0c8a8,hair:0xd9b06a,coat:0x3b4148,trim:0x23282d,shirt:0xf6f2e8}},
- {key:'eu-woman',label:'欧美裔女生',female:true,international:true,appearance:{...STUDENT,id:'crowd-eu-woman',name:'绿袍学生 · 欧美裔女生',skin:0xf2ccae,hair:0xc79a52,hairStyle:'long',faceWidth:.84,height:1.7,build:.94,coat:0x8a7350,trim:0x574530,shirt:0xf7f3e8}},
+ {key:'cn-man',label:'Local man',female:false,international:false,appearance:{...STUDENT,id:'crowd-cn-man',name:'Green gown student · local man'}},
+ {key:'cn-woman',label:'Local woman',female:true,international:false,appearance:{...STUDENT,id:'crowd-cn-woman',name:'Green gown student · local woman',height:1.68,build:.94,hairStyle:'long',faceWidth:.84,coat:0x0f6b56,trim:0x05493c}},
+ {key:'af-man',label:'African man',female:false,international:true,appearance:{...STUDENT,id:'crowd-af-man',name:'Green gown student · African man',skin:0x7a5138,hair:0x141010,coat:0x5e2733,trim:0x39161f,shirt:0xf2ecdd}},
+ {key:'af-woman',label:'African woman',female:true,international:true,appearance:{...STUDENT,id:'crowd-af-woman',name:'Green gown student · African woman',skin:0x8a5c40,hair:0x191211,hairStyle:'long',faceWidth:.85,height:1.69,build:.95,coat:0x74303f,trim:0x451a26,shirt:0xf2ecdd}},
+ {key:'sa-man',label:'South Asian man',female:false,international:true,appearance:{...STUDENT,id:'crowd-sa-man',name:'Green gown student · South Asian man',skin:0xb87a50,hair:0x241a14,coat:0x24395c,trim:0x14243b,shirt:0xf4f1e4}},
+ {key:'sa-woman',label:'South Asian woman',female:true,international:true,appearance:{...STUDENT,id:'crowd-sa-woman',name:'Green gown student · South Asian woman',skin:0xc98a60,hair:0x2a1d16,hairStyle:'long',faceWidth:.85,height:1.67,build:.94,coat:0x2d4a72,trim:0x1a2e49,shirt:0xf6f2e6}},
+ {key:'eu-man',label:'European and American man',female:false,international:true,appearance:{...STUDENT,id:'crowd-eu-man',name:'Green gown student · European and American man',skin:0xf0c8a8,hair:0xd9b06a,coat:0x3b4148,trim:0x23282d,shirt:0xf6f2e8}},
+ {key:'eu-woman',label:'European and American woman',female:true,international:true,appearance:{...STUDENT,id:'crowd-eu-woman',name:'Green gown student · European and American woman',skin:0xf2ccae,hair:0xc79a52,hairStyle:'long',faceWidth:.84,height:1.7,build:.94,coat:0x8a7350,trim:0x574530,shirt:0xf7f3e8}},
 ];
 const split=(total:number,parts:number)=>{const base=Math.floor(total/parts),rest=total-base*parts;return Array.from({length:parts},(_,i)=>base+(i<rest?1:0));};
 /** 20% international (three regions, both genders) and a configurable female share. */
@@ -63,7 +63,7 @@ export function crowdPlacements(count=CROWD.count,seed=20401121){
 }
 export function createStudentCrowd(placements=crowdPlacements(),variants=crowdVariants(),nearestFemale=12){
  const root=new T.Group();
- root.name=CROWD.name;root.userData={sourceFile:CROWD.sourceFile,source:'2026-11-21 client request: 100 green-gown students inside the sports hall, 20% international, mixed gender, random scatter',confidence:'fictional-gameplay-addition_not-observed',label:'体育馆内的学生',count:placements.length,variants:variants.map(v=>({key:v.key,label:v.label,count:v.count}))};
+ root.name=CROWD.name;root.userData={sourceFile:CROWD.sourceFile,source:'2026-11-21 client request: 100 green-gown students inside the sports hall, 20% international, mixed gender, random scatter',confidence:'fictional-gameplay-addition_not-observed',label:'Students inside the sports hall',count:placements.length,variants:variants.map(v=>({key:v.key,label:v.label,count:v.count}))};
  // Pass 1: build one standalone character per variant and collect every part texture into one atlas.
  type Prototype={variant:CrowdVariant;root:T.Group;textured:{mesh:T.Mesh;slot:number}[];plain:T.Mesh[]};
  const atlasSlots:T.DataTexture[]=[],slotOf=new Map<string,number>();

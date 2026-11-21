@@ -3,7 +3,8 @@ import {KEYS,keyLabel} from '../exploration/config';
 import {ITEMS} from './definitions';
 import {setHidden} from '../ui/dom';
 /** DOM only: all mutations are through the game's single inventory. No detached drag stack. */
-export function createInventoryUI(getGame:()=>CampusGame,open:()=>void,close:()=>void,english=false){
+export function createInventoryUI(getGame:()=>CampusGame,open:()=>void,close:()=>void,_english=false){
+ const english=true;
  const hud=document.createElement('div');hud.id='inventory-hud';
  hud.innerHTML=`<div id="held-name" aria-live="polite"></div><div class="inventory-dock"><div class="hotbar" aria-label="物品快捷栏"></div><button class="bag-open" title="打开背包 (${keyLabel(KEYS.inventory)})">背包 <kbd>${keyLabel(KEYS.inventory)}</kbd></button></div>`;
  const modal=document.createElement('div');modal.id='inventory-modal';modal.hidden=true;
@@ -17,15 +18,15 @@ export function createInventoryUI(getGame:()=>CampusGame,open:()=>void,close:()=
   b.ondragover=e=>{if(source!==null){e.preventDefault();if(e.dataTransfer)e.dataTransfer.dropEffect='move';}};
   b.ondrop=e=>{e.preventDefault();if(source!==null){getGame().takeover('human_inventory_drop');getGame().inventory.move(source,index);}source=null;revision=-1;refresh();};
   b.ondragend=()=>{source=null;revision=-1;refresh();};
-  b.onmouseenter=()=>{const s=getGame().inventory.slots[index];modal.querySelector('#bag-description')!.textContent=s?(english?'MacBook Air · 13-inch · Unique item':ITEMS[s.itemId].name+' · '+(ITEMS[s.itemId].stackable?'可堆叠':'不可堆叠')):(english?'Empty slot':'空槽位');};return b;};
+  b.onmouseenter=()=>{const s=getGame().inventory.slots[index];modal.querySelector('#bag-description')!.textContent=s?(english?'MacBook Air · 13-inch · Unique item':ITEMS[s.itemId].name+' · '+(ITEMS[s.itemId].stackable?'Stackable':'Not stackable')):'Empty slot';};return b;};
  for(let i=0;i<9;i++){hotbar.append(make(i,false));bagbar.append(make(i,true));}for(let i=9;i<36;i++)storage.append(make(i,true));
  hud.querySelector('button.bag-open')!.addEventListener('click',open);modal.querySelector('#bag-close')!.addEventListener('click',close);
  modal.addEventListener('wheel',e=>e.preventDefault(),{passive:false});
  function refresh(){const g=getGame(),inv=g.inventory;setHidden(hud,!document.body.classList.contains('exploring'));setHidden(modal,!g.inventoryOpen);
   if(g.inventoryOpen&&!wasOpen)(modal.querySelector('#bag-close') as HTMLButtonElement).focus();if(!g.inventoryOpen&&wasOpen)source=null;wasOpen=g.inventoryOpen;
   if(priorGame===g&&revision===inv.revision)return;priorGame=g;revision=inv.revision;
-  for(const b of Array.from(document.querySelectorAll<HTMLButtonElement>('#inventory-hud .item-slot,#inventory-modal .item-slot'))){const i=Number(b.dataset.slot),s=inv.slots[i],def=s?ITEMS[s.itemId]:null,img=b.querySelector('img')!;b.classList.toggle('empty',!s);b.draggable=b.dataset.bag==='true'&&!!s;b.classList.toggle('selected',i===inv.selectedHotbar);b.classList.toggle('picked',i===source);b.setAttribute('aria-label',`${english?(i<9?'Hotbar':'Bag'):(i<9?'快捷栏':'背包')} ${i<9?i+1:i-8}: ${def?(english?'MacBook Air':def.name):(english?'Empty':'空')}${s?' × '+s.count:''}`);b.setAttribute('aria-pressed',String(i===inv.selectedHotbar));img.hidden=!def;if(def)img.src=def.icon;b.querySelector('.slot-count')!.textContent=s&&s.count>1?String(s.count):'';}
-  hud.querySelector('#held-name')!.textContent=inv.equipped?(english?'MacBook Air · 13-inch':ITEMS[inv.equipped.itemId].name):(english?'Empty hands':'空手');
+  for(const b of Array.from(document.querySelectorAll<HTMLButtonElement>('#inventory-hud .item-slot,#inventory-modal .item-slot'))){const i=Number(b.dataset.slot),s=inv.slots[i],def=s?ITEMS[s.itemId]:null,img=b.querySelector('img')!;b.classList.toggle('empty',!s);b.draggable=b.dataset.bag==='true'&&!!s;b.classList.toggle('selected',i===inv.selectedHotbar);b.classList.toggle('picked',i===source);b.setAttribute('aria-label',`${english?(i<9?'Hotbar':'Bag'):(i<9?'Hotbar':'Bag')} ${i<9?i+1:i-8}: ${def?(english?'MacBook Air':def.name):'Empty'}${s?' × '+s.count:''}`);b.setAttribute('aria-pressed',String(i===inv.selectedHotbar));img.hidden=!def;if(def)img.src=def.icon;b.querySelector('.slot-count')!.textContent=s&&s.count>1?String(s.count):'';}
+  hud.querySelector('#held-name')!.textContent=inv.equipped?(english?'MacBook Air · 13-inch':ITEMS[inv.equipped.itemId].name):'Empty hands';
  }
  return{refresh,dispose(){hud.remove();modal.remove();}};
 }
