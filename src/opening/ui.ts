@@ -571,15 +571,23 @@ export function createOpeningUI(
     shell.append(body);
     const close = makeButton(T.complete.close, 'primary', requestClose);
     close.dataset.autofocus = 'true';
-    // B4 handoff: the chapter's recovery procedure pairs this MacBook with the
-    // backup supercomputer before the lawn entry carries the save forward.
+    // B4 handoff: the playable Keyboard Wall chapter pairs this MacBook with the
+    // backup supercomputer; the lawn entry then carries the save forward.
+    const deviceId = device.instanceId();
+    const b4 = makeButton('Go to the Keyboard Wall (B4)', 'primary', () => {
+      location.assign(`interiors.html?chapter=b4&device=${encodeURIComponent(deviceId ?? '')}`);
+    });
     const lawn = makeButton('Play L001 lawn encounter', 'secondary', () => {
       location.assign('?experience=lion-boss');
     });
     lawn.disabled = true;
-    body.append(bindBackupRelay(device.instanceId(), () => { lawn.disabled = false; }));
+    const quick = node('details', 'opening-other-slices');
+    const quickRow = node('div', 'opening-other-slices-row');
+    quickRow.append(bindBackupRelay(deviceId, () => { lawn.disabled = false; }));
+    quick.append(node('summary', '', 'Quick restore (skip the puzzle)'), quickRow);
+    body.append(quick);
     const replay = makeButton(T.epilogue.replay, 'secondary', () => actions.action('restart'));
-    shell.append(actionRow(close, lawn, replay));
+    shell.append(actionRow(close, b4, lawn, replay));
     return shell;
   }
 

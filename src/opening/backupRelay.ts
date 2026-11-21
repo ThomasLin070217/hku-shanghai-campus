@@ -13,6 +13,14 @@ export function relayRestored(id:string){
   if(granted.has(id))return true;
   try{return localStorage.getItem('hku.b4.compute.'+id)==='online';}catch{return false;}
 }
+/** Mark the B4 backup supercomputer as paired with this MacBook. The chapter 1
+ * puzzle and the legacy quick-restore procedure both end here, so the key has
+ * exactly one writer. */
+export function markRelayRestored(id:string){
+  if(!id)return;
+  granted.add(id);
+  try{localStorage.setItem('hku.b4.compute.'+id,'online');}catch{/* Available for this open chapter. */}
+}
 export function bindBackupRelay(id:string|undefined,onReady:()=>void){
   const body=document.createElement('section');body.className='opening-backup-relay';
   if(!id)return body;
@@ -28,8 +36,7 @@ export function bindBackupRelay(id:string|undefined,onReady:()=>void){
       if(key!==procedure.correctOrder[index]){reply.textContent='Interlock active. Next step: '+labels[procedure.correctOrder[index]]+'.';return;}
       index++;button.disabled=true;reply.textContent=index+' / '+procedure.correctOrder.length+' · '+labels[key];
       if(index===procedure.correctOrder.length){
-        granted.add(id);
-        try{localStorage.setItem('hku.b4.compute.'+id,'online');}catch{/* Available for this open chapter. */}
+        markRelayRestored(id);
         reply.textContent='Backup supercomputer online. MacBook paired.';onReady();
       }
     };
