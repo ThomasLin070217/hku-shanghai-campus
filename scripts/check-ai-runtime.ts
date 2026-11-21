@@ -101,7 +101,7 @@ test('perception: hotbar equipment + computer/submit only with MacBook',()=>{
  assert.equal(eq!.verb,'equip');assert.equal(eq!.distance,0);assert.equal(eq!.reachable,true);
  assert.ok(p.interactables.some(a=>a.id==='computer'&&a.verb==='open'));
  assert.ok(p.interactables.some(a=>a.id==='computer-submit'&&a.verb==='submit'));
- assert.ok(p.hud.some(line=>line.includes('已装备')));
+ assert.ok(p.hud.some(line=>(line.includes('Equipped')||line.includes('已装备'))));
  return{equipped:game.inventory.equipped?.itemId,hud:p.hud};
 });
 test('perception: nearby obstacles 12 m / max 8 / HUD lines',()=>{
