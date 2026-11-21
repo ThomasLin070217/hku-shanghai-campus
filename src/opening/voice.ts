@@ -40,7 +40,7 @@ export const STAFF_VOICE_URLS: Record<string, URL> = {
   'staff-line5': new URL('../../assets/audio/npc/staff/staff-line5.wav', import.meta.url),
 };
 
-export const PLAYER_ACCEPT_URL = new URL('../../assets/audio/npc/player/player-accept-kristin.wav', import.meta.url);
+export const PLAYER_ACCEPT_URL = new URL('../../assets/audio/npc/player/player-accept-ryan.wav', import.meta.url);
 
 const clipById = new Map(clipManifest.clips.map((clip) => [clip.id, clip]));
 
@@ -59,7 +59,7 @@ const PLAYER_ACCEPT_ITEM: VoiceItem = {
   id: 'player-accept',
   url: PLAYER_ACCEPT_URL,
   text: STAFF_DIALOGUE.playerAccept,
-  duration: 1.37,
+  duration: 1.022,
 };
 
 /** Test-only surface: the exact text that is bundled with the generated clips. */

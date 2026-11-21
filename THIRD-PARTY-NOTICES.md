@@ -150,13 +150,15 @@ voice. DaVinci AI and ElevenLabs terms apply to the generated audio. The agent
 could not subjectively audition the voice; only technical, transcript and browser
 integration checks are claimed.
 
-## Local player voice · Piper / Kristin · 2026-11-21
+## Local player voice · Piper / Ryan · 2026-11-21
 
 The player acceptance line was re-rendered locally with Piper 1.2.0 and the
-`en_US-kristin-medium` voice after the DaVinci free Audio allowance reached 0/1.
+`en_US-ryan-high` voice after the DaVinci free Audio allowance reached 0/1.
 Piper is an open-source local neural TTS project (MIT); its Python package and
 voice model are not bundled with the game, only the generated WAV is. The Piper
-model card describes Kristin as a public-domain LibriVox-derived voice.
+model card lists the RyanSpeech dataset under CC BY-NC-SA 4.0. The game is
+a non-commercial project; attribution and share-alike apply. Re-render with a
+permissive voice before any commercial release.
 No paid API, DaVinci credit, subscription or unauthorised real-person clone was
 used. Files and hashes: `assets/audio/npc/player/`; report:
 `docs/voice/DAVINCI-VOICE-REPORT.md`.
