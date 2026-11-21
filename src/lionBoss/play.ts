@@ -496,7 +496,7 @@ viewer.beforeRender.add(dt => {
   explorer.update(dt);
   if(inWorkbench)workbench.update();
   scenery.update(explorer.camera);
-  visuals.render(state);
+  visuals.render(state,dt);
   const p = game.body.position;
   sound.update(explorer.student.gait,!playing || game.paused,explorer.world.surface(p.x,p.z,p.y),p,explorer.camera.position,game.yaw);
   if (savedRevision !== game.inventory.revision || savedView !== game.view) saveProgress();
