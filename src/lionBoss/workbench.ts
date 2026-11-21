@@ -1,248 +1,139 @@
-import {COOLDOWN, STUN_WINDOW, LURE_WINDOW, evaluateSkill, type SkillContext, type SkillRule} from './rules';
-import {CHARGE_WARNING, SWIPE_WARNING} from './combat';
+import type {CompileSlots, ProjectId, SkillPlan, VibeService,ValidationCase} from './consoleService';
 import './workbench.css';
+export {compileBossIntent} from './intent';
 
-type Kind = SkillRule['kind'];
-type Slot = {draft:string; deployed:SkillRule|null; source:string};
-type Options = {
-  host:HTMLElement;
-  onClose:()=>void;
-  onDeploy?:(rule:SkillRule)=>void;
-  storageKey?:string;
-  keys?:Record<Kind,string>;
-};
+export const skillMark:Record<ProjectId,string>={stun:'❄',lure:'⌘',ghost:'◎'};
 
-const kinds:Kind[] = ['stun','lure'];
-const labels:Record<Kind,string> = {stun:'短时麻痹',lure:'助手牵制'};
-const examples:Record<Kind,string> = {
-  stun:'如果 8 米内的狮子正在蓄力冲撞，我按下技能时就让它短暂停机，打断冲撞。',
-  lure:'等狮子挥完爪，我按下技能时，让阿树从左侧牵制它。',
-};
-const emptySlot = ():Slot=>({draft:'',deployed:null,source:''});
-const newSlots = ():Record<Kind,Slot>=>({stun:emptySlot(),lure:emptySlot()});
-
-type CompileResult = {ok:true;rule:SkillRule}|{ok:false;message:string};
-
-export function compileBossIntent(input:string, kind:Kind):CompileResult {
-  const normalized=input.normalize('NFKC').trim().toLowerCase();
-  const intent=normalized.replace(/[零一二三四五六七八九](?=\s*(?:米|公尺))/g,ch=>String('零一二三四五六七八九'.indexOf(ch)));
-  const fail = (message:string):CompileResult=>({ok:false,message});
-  if (!intent) return fail('先写一句话，描述狮子在做什么，以及你想释放的效果。');
-  if (/自动|一直|永久|automatically|permanent/.test(intent)) return fail('工作台支持手动释放的短时技能。请写出招式阶段和想要的效果。');
-
-  const distances = Array.from(intent.matchAll(/(-?\d+(?:\.\d+)?)\s*(?:米|公尺|m(?:et(?:er|re)s?)?\b)/g));
-  const maxRange = Number(distances[0]?.[1] ?? 8);
-  const unsupportedDistance=/[十百千半点零一二三四五六七八九]\s*(?:\d+\s*)?(?:米|公尺)|(?:超过|远于|大于)\s*\d+\s*(?:米|公尺)|\d+\s*(?:米|公尺)(?:以外|之外)/.test(intent);
-  if (unsupportedDistance || distances.length>1 || maxRange<4 || maxRange>8 || !Number.isInteger(maxRange)) {
-    return fail('有效距离可写成 4 至 8 米之间的一个整数，例如「6 米内」。');
-  }
-  if (kind==='stun') {
-    const charge = /冲(?:撞|锋|刺)|猛冲|charg(?:e|es|ing)|rush|wind.?up/.test(intent);
-    const stop = /麻痹|停机|打断|瘫痪|定住|眩晕|定身|制动|停下|stun|stop|interrupt|immobili[sz]e/.test(intent);
-    if (!charge || !stop || /挥爪|冲(?:撞|锋)(?:完|结束|之后|过后)|after (?:the |its )?charge/.test(intent)) {
-      return fail('麻痹模块需要「冲撞预警」和「打断」两项信息，例如「狮子蓄力冲撞时让它停机」。');
-    }
-    return {ok:true,rule:{kind,side:'right',maxRange}};
-  }
-  const recovery = /(?:挥|出|拍|扫).{0,4}爪.{0,7}(?:后|完|结束|收)|(?:挥完|收回|收起|挥过|挥了).{0,2}爪|收招|after.{0,30}(?:swip|claw)|(?:swip|claw).{0,25}(?:recover|end|finish)/.test(intent);
-  const lure = /牵制|吸引|引开|诱导|引走|诱敌|分散|distract|lure|draw.{0,12}(?:away|attention)|decoy/.test(intent);
-  if (!recovery || !lure) return fail('牵制模块需要「挥爪收招」和「牵制」两项信息，例如「挥爪后让阿树从右边引开它」。');
-  const left = /左|\bleft\b/.test(intent), right = /右|\bright\b/.test(intent);
-  if (left===right) return fail('阿树需要明确的牵制点。请在意图里选「左侧」或「右侧」，然后重新生成。');
-  return {ok:true,rule:{kind,side:left?'left':'right',maxRange}};
-}
-
-function restoreSlots(key:string) {
-  const slots = newSlots();
-  try {
-    const save = JSON.parse(localStorage.getItem(key) || 'null');
-    if (save?.version!==1) return slots;
-    for (const kind of kinds) {
-      const data = save.slots?.[kind];
-      if (typeof data?.draft==='string') slots[kind].draft=data.draft.slice(0,400);
-      if (typeof data?.source!=='string' || !data.source) continue;
-      // Recompile the deployed source; drafts can be newer than what is in the slot.
-      const source=data.source.slice(0,400);
-      const compiled = compileBossIntent(source,kind);
-      if (compiled.ok) Object.assign(slots[kind],{deployed:compiled.rule,source});
-    }
-  } catch { /* Local storage can be disabled. The current session still works. */ }
-  return slots;
-}
-
-export function createBossWorkbench(options:Options) {
-  const storageKey = options.storageKey ?? 'hku.lion-boss.workbench.v1';
-  const keys = options.keys ?? {stun:'Q',lure:'R'};
-  let slots = restoreSlots(storageKey);
-  let kind:Kind = 'stun';
-  let candidate:SkillRule|null = null;
-  let tested = false;
-  const root = document.createElement('div');
-  root.className='lion-workbench';
-  root.hidden=true;
-  root.setAttribute('role','region');
-  root.setAttribute('aria-label','MacBook 技能工作台');
-  root.innerHTML = `
-    <section class="lwb-case">
-      <div class="lwb-screen">
-        <header class="lwb-title"><h2>技能工作台</h2><span data-wb="count"></span><button type="button" data-wb="close">返回桌面</button></header>
-        <nav class="lwb-slots" aria-label="选择技能槽">
-          <button type="button" data-slot="stun"><kbd></kbd><span><b>短时麻痹</b><small>打断冲撞</small></span><em></em></button>
-          <button type="button" data-slot="lure"><kbd></kbd><span><b>助手牵制</b><small>引开 L001</small></span><em></em></button>
-        </nav>
-        <div class="lwb-edit">
-          <div class="lwb-heading"><label for="lwb-intent">技能意图</label><button type="button" data-wb="sample">使用示例 ↙</button></div>
-          <textarea id="lwb-intent" maxlength="400" rows="3" spellcheck="false"></textarea>
-          <button type="button" data-wb="generate" class="lwb-generate">生成规则 →</button>
-        </div>
-        <section class="lwb-review" aria-label="规则与模拟">
-          <div class="lwb-rules"><h3>规则预览</h3><p data-wb="empty">生成后可在这里检查施放条件与效果。</p>
-          <dl data-wb="spec" hidden><dt>触发</dt><dd data-wb="trigger"></dd><dt>条件</dt><dd data-wb="condition"></dd><dt>效果</dt><dd data-wb="effect"></dd><dt>冷却</dt><dd>${COOLDOWN} 秒</dd></dl></div>
-          <div class="lwb-sandbox"><div class="lwb-heading"><h3>模拟回放</h3><button type="button" data-wb="test">▶ 测试技能</button></div>
-          <div class="lwb-map" aria-hidden="true"><span class="lwb-actor">你</span><i class="lwb-line"></i><span class="lwb-lion">L001</span><span class="lwb-helper">阿树</span></div>
-          <div class="lwb-log" data-wb="log">测试会分别模拟有效和无效时机。</div></div>
-        </section>
-      </div>
-      <footer class="lwb-footer"><p role="status" data-wb="status"></p><button type="button" class="lwb-deploy" data-wb="deploy">部署到技能槽</button></footer>
-    </section>`;
+export function createBossWorkbench(options:{host:HTMLElement;onClose:()=>void;service:VibeService;onDeploy?:()=>void}) {
+  const {service}=options;
+  let selected=service.projects[0].id;
+  let plan:SkillPlan|null=null,tests:ValidationCase[]=[];
+  let serial=0,busy=false,installed=false,disposed=false,lastRead='';
+  const root=document.createElement('div');
+  root.className='lion-workbench';root.hidden=true;
+  root.setAttribute('aria-label','Vibe Console');
+  root.innerHTML=`
+    <div class="vc-workspace">
+      <aside class="vc-projects"><h3>Skill workspace</h3><label class="vc-newproject"><span>＋ 新建技能</span><select aria-label="新建技能项目" data-wb="new"><option value="">选择项目</option></select></label><div data-wb="projects"></div>
+        <section class="vc-slots"><h3>编译槽</h3><ul data-wb="slots"></ul><small data-wb="count"></small></section></aside>
+      <section class="vc-editor">
+        <header class="vc-file"><i data-wb="symbol"></i><div><small>技能项目</small><h2 data-wb="title"></h2></div></header>
+        <p class="vc-description" data-wb="description"></p>
+        <div class="vc-label"><label for="lwb-intent">自然语言指令</label><button type="button" data-wb="sample">使用示例</button></div>
+        <textarea id="lwb-intent" data-wb="input" rows="4" maxlength="400" spellcheck="false"></textarea>
+        <button class="vc-primary" type="button" data-wb="generate">生成规则</button>
+        <section class="vc-test"><div class="vc-label"><h3>规则测试</h3><button type="button" data-wb="test">测试技能</button></div>
+          <div data-wb="log">生成方案后，验证施放时机与目标距离。</div></section>
+      </section>
+      <aside class="vc-inspector"><h3>Skill inspector</h3><dl data-wb="spec"></dl></aside>
+    </div>
+    <footer class="vc-footer"><div><small data-wb="provider"></small><p data-wb="status" role="status" aria-live="polite"></p></div>
+    <button type="button" data-wb="close">返回桌面</button><button class="vc-primary" type="button" data-wb="deploy">编译并部署</button></footer>`;
   options.host.append(root);
   const el=<T extends HTMLElement=HTMLElement>(name:string)=>root.querySelector<T>('[data-wb="'+name+'"]')!;
-  const textarea=root.querySelector('textarea')!;
-  const testButton=el<HTMLButtonElement>('test');
-  const deployButton=el<HTMLButtonElement>('deploy');
-  const map=root.querySelector<HTMLElement>('.lwb-map')!;
-  const log=el('log');
-  let animation:Animation|undefined;
-
-  function save() {
-    try {localStorage.setItem(storageKey,JSON.stringify({version:1,slots}));} catch { /* In-memory state remains playable. */ }
+  const input=el<HTMLTextAreaElement>('input');
+  const buttons={generate:el<HTMLButtonElement>('generate'),test:el<HTMLButtonElement>('test'),deploy:el<HTMLButtonElement>('deploy')};
+  const project=()=>service.projects.find(p=>p.id===selected)!;
+  const projectButtons=new Map<ProjectId,HTMLButtonElement>();
+  function message(value:string,error=false){el('status').textContent=value;el('status').classList.toggle('vc-error',error);}
+  function resourceBlock(s:CompileSlots){
+    const providerReason=plan&&service.blockedReason?.(plan);if(providerReason)return providerReason;
+    if(!s.equipped[selected]&&Object.keys(s.equipped).length>=s.capacity)return '技能槽已满。';
+    if(!s.equipped[selected]&&plan?.computeCost!=null&&s.budget&&plan.computeCost>s.budget.available)return '剩余计算资源不足。';
+    return '';
   }
-  function status(message:string,error=false) {
-    el('status').textContent=message;
-    el('status').classList.toggle('is-error',error);
-  }
-  function updateSlots() {
-    const count=kinds.filter(k=>slots[k].deployed).length;
-    el('count').textContent='已部署 '+count+' / 2';
-    for (const k of kinds) {
-      const button=root.querySelector<HTMLButtonElement>('[data-slot="'+k+'"]')!;
-      button.setAttribute('aria-pressed',String(k===kind));
-      button.querySelector('kbd')!.textContent=keys[k];
-      button.querySelector('em')!.textContent=slots[k].deployed?'已部署':'空槽';
+  function render(){
+    const p=project(),s=service.slots(),reason=resourceBlock(s),blocked=!!reason;
+    const spec=plan??service.installedPlan?.(selected);
+    lastRead=JSON.stringify([s,service.cooldown(selected)]);
+    for(const [id,b] of projectButtons){
+      b.setAttribute('aria-pressed',String(id===selected));b.disabled=busy;
+      b.querySelector('small')!.textContent=s.equipped[id]?'已部署 · '+s.equipped[id]:service.projects.find(it=>it.id===id)?.supported?'可编辑':'待接入';
     }
+    el('symbol').textContent=skillMark[selected];el('title').textContent=p.name;el('description').textContent=p.description;
+    const slots=Object.entries(s.equipped);
+    const entries=slots.map(([id,key])=>key+' · '+(service.projects.find(it=>it.id===id)?.name??id));
+    while(entries.length<s.capacity)entries.push('空闲');
+    el('slots').replaceChildren(...entries.map(value=>{const li=document.createElement('li');li.textContent=value;return li;}));
+    el('count').textContent=slots.length+' / '+s.capacity+' 已用 · 剩余 '+Math.max(0,s.capacity-slots.length)+' 槽';
+    el('provider').textContent=service.name;
+    input.disabled=busy;el<HTMLButtonElement>('sample').disabled=busy;el<HTMLSelectElement>('new').disabled=busy;
+    buttons.generate.disabled=busy||!p.supported||!input.value.trim();
+    buttons.test.disabled=busy||!plan;
+    buttons.deploy.disabled=busy||installed||!plan||!tests.length||tests.some(t=>t.actual!==t.expected)||blocked;
+    buttons.deploy.textContent=installed?'已部署':s.equipped[selected]?'编译并更新 '+s.equipped[selected]:'编译并部署';
+    const fields:[string,string][]=[['版本',plan&&!installed?'当前草案':s.equipped[selected]?'已装备':'未编译'],['类型',p.category],['目标',p.target],
+      ['持续',spec?.duration==null?'—':spec.duration+' s'],['冷却',spec?.cooldown==null?'—':spec.cooldown+' s'],
+      ['资源消耗',spec?.computeCost==null?'未提供计量':String(spec.computeCost)],
+      ['可用算力',s.budget?s.budget.available+' / '+s.budget.total:'未提供计量'],
+      ['施放条件',spec?.condition??'—'],['效果',spec?.effect??'—']];
+    if(s.equipped[selected]){const cooldown=service.cooldown(selected);fields.push(['当前状态',cooldown==null?'未知':cooldown>0?cooldown.toFixed(1)+' s 后就绪':'已就绪']);}
+    el('spec').replaceChildren(...fields.flatMap(([key,value])=>{const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=key;dd.textContent=value;return [dt,dd];}));
+    el('log').replaceChildren();
+    if(tests.length)for(const test of tests){
+      const line=document.createElement('div');line.className='vc-case';line.dataset.ok=String(test.actual===test.expected);
+      const title=document.createElement('strong'),detail=document.createElement('small');
+      title.textContent=(test.actual===test.expected?'✓ ':'× ')+test.name;detail.textContent=test.detail;line.append(title,detail);el('log').append(line);
+    }else el('log').textContent=plan?'规则已生成，等待测试。':'生成方案后，验证施放时机与目标距离。';
+    if(blocked&&!busy&&plan)message(reason,true);
   }
-  function review() {
-    el('empty').hidden=Boolean(candidate);
-    el('spec').hidden=!candidate;
-    testButton.disabled=!candidate;
-    deployButton.disabled=!tested || !candidate || slots[kind].source===slots[kind].draft;
-    deployButton.textContent='部署到 '+keys[kind]+' 槽';
-    if (!candidate) return;
-    const stun=candidate.kind==='stun';
-    el('trigger').textContent='玩家按 '+keys[kind];
-    el('condition').textContent='L001 在 '+(candidate.maxRange??8)+' 米内，'+(stun?'正在蓄力冲撞':'刚挥完爪，阿树就绪');
-    el('effect').textContent=stun?'打断冲撞，停机 '+STUN_WINDOW+' 秒':'阿树移到'+(candidate.side==='left'?'左':'右')+'侧，到点后牵制 '+LURE_WINDOW+' 秒';
+  function resetDraft(){
+    serial++;busy=false;plan=null;tests=[];installed=false;
+    message(project().supported?'描述希望在草坪执行的操作。':'接口预览 · 此项目可保存草稿，战斗端接入后可编译。');
   }
-  function clearTest() {
-    animation?.cancel();
-    tested=false;
-    map.dataset.state='idle';
-    log.textContent='测试会分别模拟有效和无效时机。';
+  function select(id:ProjectId){
+    selected=id;resetDraft();input.value=service.draft(id);input.placeholder=project().example;render();
   }
-  function edit() {
-    slots[kind].draft=textarea.value;
-    candidate=null;
-    clearTest();
-    review();
-    status(slots[kind].deployed?'编辑中的草稿。原技能仍可在草坪使用。':'描述技能后，点击「生成规则」。');
-    save();
+  for(const p of service.projects){
+    el<HTMLSelectElement>('new').add(new Option(p.name,p.id));
+    const b=document.createElement('button');b.type='button';b.dataset.slot=p.id;
+    const mark=document.createElement('i'),text=document.createElement('span'),name=document.createElement('b'),state=document.createElement('small');
+    mark.textContent=skillMark[p.id];name.textContent=p.name;text.append(name,state);b.append(mark,text);projectButtons.set(p.id,b);
+    b.addEventListener('click',()=>{if(p.id!==selected)select(p.id);});el('projects').append(b);
   }
-  function selectKind(k:Kind) {
-    kind=k;
-    const slot=slots[kind];
-    textarea.value=slot.draft;
-    textarea.placeholder=examples[kind];
-    clearTest();
-    candidate=slot.deployed && slot.source===slot.draft ? slot.deployed:null;
-    tested=Boolean(candidate);
-    review();
-    updateSlots();
-    status(candidate?'当前版本已部署。可改写距离或重新测试。':'描述你想在什么时机施放技能，或从示例开始改写。');
-  }
-  function runTest() {
-    if (!candidate) return;
-    const stun=kind==='stun';
-    const distance=candidate.maxRange??8;
-    const validPhase=stun?'chargeWarn':'swipeRecover';
-    const good:SkillContext={phase:validPhase,distance,cooldown:0,helperReady:true};
-    const correct=evaluateSkill(candidate,good);
-    const wrong=evaluateSkill(candidate,{...good,phase:stun?'charge':'swipeWarn'});
-    const far=evaluateSkill(candidate,{...good,distance:distance+1});
-    tested=correct.ok && !wrong.ok && !far.ok;
-    log.replaceChildren();
-    const cases=[
-      {label:stun?'蓄力':'收招',time:stun?CHARGE_WARNING/2:SWIPE_WARNING+.25,result:correct},
-      {label:stun?'冲出':'挥爪中',time:stun?CHARGE_WARNING+.1:SWIPE_WARNING/2,result:wrong},
-      {label:'超出射程',time:stun?CHARGE_WARNING/2:SWIPE_WARNING+.25,result:far},
-    ];
-    const trace=document.createElement('p');
-    const selectors=document.createElement('div');
-    selectors.className='lwb-cases';
-    const rule=candidate;
-    for (const sample of cases) {
-      const button=document.createElement('button');
-      button.type='button';button.textContent=sample.label;
-      selectors.append(button);
-      button.addEventListener('click',()=>{
-        for (const b of Array.from(selectors.children)) b.setAttribute('aria-pressed',String(b===button));
-        map.dataset.state=sample.result.ok?kind:'blocked';
-        trace.textContent='预警开始 → '+sample.time.toFixed(2)+' 秒按 '+keys[kind]+'（'+(sample===cases[2]?distance+1:distance)+' m）→ '+sample.result.message;
-        if (sample.result.ok) trace.textContent+=stun?'。停机后立即可提交。':'。阿树到达侧翼后可提交。';
-        animation?.cancel();
-        if (sample.result.ok && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          const node=map.querySelector(stun?'.lwb-lion':'.lwb-helper')!;
-          const travel=stun?[{transform:'translateX(8px)'},{transform:'translateX(-6px)'},{transform:'none'}]:
-            [{transform:'translateX(0)'},{transform:'translateX('+(rule.side==='left'?-36:36)+'px)'}];
-          animation=node.animate(travel,{duration:650,fill:'forwards',easing:'ease-out'});
-        }
-      });
-    }
-    log.append(selectors,trace);
-    selectors.querySelector('button')!.click();
-    const deployed=slots[kind].source===slots[kind].draft;
-    const success=deployed?'复测通过，当前版本已部署。':'测试通过，可以部署此版本。';
-    status(tested?success:'规则与预期不符，请检查后重新生成。',!tested);
-    review();
-  }
-  for (const k of kinds) root.querySelector('[data-slot="'+k+'"]')!.addEventListener('click',()=>selectKind(k));
-  textarea.addEventListener('input',edit);
-  el('sample').addEventListener('click',()=>{
-    textarea.value=examples[kind]; edit(); textarea.focus();
+  function edit(){service.edit(selected,input.value);resetDraft();render();}
+  el<HTMLSelectElement>('new').addEventListener('change',e=>{
+    const menu=e.currentTarget as HTMLSelectElement,found=service.projects.find(p=>p.id===menu.value);menu.value='';
+    if(found){select(found.id);input.focus();}
   });
-  el('generate').addEventListener('click',()=>{
-    clearTest();
-    const result=compileBossIntent(textarea.value,kind);
-    candidate=result.ok?result.rule:null;
-    review();
-    status(result.ok?'规则已生成。核对条件后点击「测试技能」。':result.message,!result.ok);
-  });
-  testButton.addEventListener('click',runTest);
-  deployButton.addEventListener('click',()=>{
-    if (!candidate || !tested) return;
-    slots[kind]={draft:textarea.value,source:textarea.value,deployed:{...candidate}};
-    save(); review(); updateSlots();
-    options.onDeploy?.({...candidate});
-    const next=kinds.find(k=>!slots[k].deployed);
-    status(next?'已装入 '+keys[kind]+' 槽。选择「'+labels[next]+'」准备第二项技能。':'两项技能已部署。合上电脑，到草坪选择时机施放。');
-  });
-  function close() {root.hidden=true;animation?.cancel();}
-  function exit() {close();options.onClose();}
-  el('close').addEventListener('click',exit);
-  return {
-    open() {root.hidden=false;selectKind(kinds.find(k=>!slots[k].deployed)??kind);textarea.focus();},
-    close,
-    getSkill(k:Kind) {const rule=slots[k].deployed;return rule?{...rule}:null;},
-    reset() {slots=newSlots();save();selectKind('stun');},
-    dispose() {animation?.cancel();root.remove();},
-  };
+  el('close').addEventListener('click',options.onClose);
+  input.addEventListener('input',edit);
+  el('sample').addEventListener('click',()=>{input.value=project().example;edit();input.focus();});
+  async function run(job:'generate'|'test'|'deploy'){
+    if(busy||buttons[job].disabled)return;
+    const request=++serial;busy=true;
+    const stillCurrent=()=>!disposed&&serial===request;
+    message(job==='generate'?'正在解析指令…':job==='test'?'正在测试规则…':'等待运行时确认编译…');render();
+    try{
+      if(job==='generate'){
+        tests=[];installed=false;plan=null;
+        const result=await service.preview(selected,input.value);
+        if(!stillCurrent())return;
+        if(!result.ok){message(result.message,true);return;}
+        plan=result.value;message('规则已生成。检查参数后运行测试。');
+      }else if(job==='test'&&plan){
+        tests=[];const result=await service.test(plan);
+        if(!stillCurrent())return;
+        if(!result.ok){message(result.message,true);return;}
+        tests=result.value;
+        const passed=tests.length>0&&tests.every(t=>t.actual===t.expected);
+        message(passed?'测试通过，可以编译并部署。':'测试未通过，请修改指令。',!passed);
+      }else if(plan){
+        const reason=resourceBlock(service.slots());
+        if(reason){message(reason,true);return;}
+        const result=await service.install(plan);
+        if(!stillCurrent())return;
+        if(!result.ok){message(result.message,true);return;}
+        const key=service.slots().equipped[selected];
+        if(!key){message('运行时未返回装备槽。请重新检查连接。',true);return;}
+        installed=true;options.onDeploy?.();message('运行时已确认部署到 '+key+' 槽。');
+      }
+    }catch(error){if(stillCurrent())message(error instanceof Error?error.message:'编译接口暂时不可用，请重试。',true);}
+    finally{if(stillCurrent()){busy=false;render();}}
+  }
+  for(const job of ['generate','test','deploy'] as const)buttons[job].addEventListener('click',()=>void run(job));
+  select(selected);
+  return {open(){root.hidden=false;render();},
+    refresh(){if(JSON.stringify([service.slots(),service.cooldown(selected)])!==lastRead)render();},
+    dispose(){disposed=true;serial++;root.remove();}};
 }

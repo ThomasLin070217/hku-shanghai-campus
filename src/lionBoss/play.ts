@@ -16,7 +16,10 @@ import {createCombat, BOSS, NODES, SAFE, checkpoint, canSubmit, SUBMIT_RADIUS} f
 import {createBossScene} from './scene';
 import {batchLawnScenery} from './scenery';
 import {createBossMacBook} from './macbook';
-import type {SkillRule} from './rules';
+import {COOLDOWN,evaluateSkill,type SkillKind} from './rules';
+import type {FieldSkillStatus} from './deviceServices';
+import type {ProjectId} from './consoleService';
+import {skillMark} from './workbench';
 import '../style.css';
 import './play.css';
 
@@ -28,7 +31,7 @@ document.querySelector('#app')!.innerHTML = `
     <div class="boss-telemetry"><div id="boss-health"></div><b id="boss-progress"></b><button id="boss-pause">暂停 Esc</button></div></header>
     <div id="boss-waypoint" hidden></div>
     <div id="boss-live" hidden><div id="boss-hint"></div><div id="boss-feedback" role="status"></div>
-      <div id="boss-actions"><span id="boss-q"></span><span id="boss-r"></span><span id="boss-f"></span></div>
+      <div id="boss-actions"><div id="boss-q" class="boss-skill"></div><div id="boss-r" class="boss-skill"></div><span id="boss-f"></span></div>
       <div class="boss-controls">WASD 移动 · 拖动鼠标转向 · Shift 奔跑 · V 切换视角</div></div>
     <section id="boss-brief"><div class="boss-card"><small>第一章　失控的开学典礼</small><h1 id="boss-title"></h1>
       <p id="boss-story"></p><div class="boss-buttons"><button class="boss-primary" id="boss-mac">打开 MacBook　C</button>
@@ -134,13 +137,13 @@ for (const kind of ['stun','lure'] as const) {
   };
 }
 const workbench = createBossMacBook({
-  opening:openingSave, game,
-  status:() => ({repaired:state.repaired,runtime,player:[game.body.position.x,game.body.position.y,game.body.position.z]}),
+  opening:openingSave,game,instanceId:mac.instanceId,requestDistract:()=>localCast('lure'),
+  status:() => ({repaired:state.repaired,runtime,player:[game.body.position.x,game.body.position.y,game.body.position.z],combat:state,canAct:canCast()}),
   host:element('workbench-host'), storageKey:saveKey+'.skills', keys:skillKeys,
-  onClose() { workbench.close(); inWorkbench = false; explorer.closePanel(); refresh(); },
+  onClose() { redrawUntil=performance.now()+900;workbench.close(); inWorkbench = false; explorer.closePanel(); refresh(); },
   onDeploy() { sound.play('equip'); refresh(); },
 });
-const equipped = () => !!workbench.getSkill('stun') && !!workbench.getSkill('lure');
+const equipped = () => Object.keys(workbench.session().vibe.slots().equipped).length===2;
 let savedRevision = game.inventory.revision, savedView = game.view;
 function saveProgress() {
   savedRevision = game.inventory.revision; savedView = game.view;
@@ -169,7 +172,8 @@ function openMac() {
   if (!game.inventory.equipItem(macId)) return;
   if (playing) returnToMaintenance();
   holding = false; inWorkbench = true;
-  explorer.openPanel('computer');
+  redrawUntil=performance.now()+900;
+  explorer.openPanel('computer',true);
   workbench.open();
   refresh();
 }
@@ -195,14 +199,42 @@ function launch() {
   explorer.enterCompat();
   refresh();
 }
-function cast(kind:SkillRule['kind']) {
-  if (!playing || game.paused || game.panel || game.inventoryOpen) return;
-  if (game.inventory.equipped?.instanceId !== mac.instanceId) { feedback('请在快捷栏选中 MacBook，或按 E 从背包取出。'); return; }
-  const rule = workbench.getSkill(kind);
-  if (!rule) { feedback('请先在 MacBook 部署这个技能。'); return; }
-  const result = combat.cast(rule,game.body.position);
-  feedback(result.message);
-  if (result.ok) sound.play('equip');
+function canCast(){
+  return playing&&!game.paused&&!game.panel&&!game.inventoryOpen&&game.inventory.equipped?.instanceId===mac.instanceId;
+}
+function localCast(id:SkillKind) {
+  if(!canCast())return {ok:false,message:'请在草坪装备 MacBook 后施放。'};
+  const rule=workbench.getSkill(id);
+  if(!rule)return {ok:false,message:'此技能尚未部署。'};
+  return combat.cast(rule,game.body.position);
+}
+function fieldStatus(id:ProjectId):FieldSkillStatus{
+  const service=workbench.session();
+  if(service.field)return service.field.read(id);
+  const rule=id==='ghost'?null:workbench.getSkill(id);
+  if(!rule)return {target:null,canCast:false,reason:'未连接到战斗端',cooldown:0,cooldownTotal:0};
+  const cooldown=state.cooldown[rule.kind];
+  const check=evaluateSkill(rule,{phase:state.phase,cooldown,distance:distanceTo(state.lion),helperReady:state.phase!=='helperRun'&&state.phase!=='lured'});
+  return {target:rule.kind==='stun'?'L001':'阿树 → L001',canCast:canCast()&&check.ok,reason:check.message,cooldown,cooldownTotal:COOLDOWN};
+}
+const castsInFlight=new Set<ProjectId>();
+async function cast(id:ProjectId) {
+  if(!canCast()){feedback('请在快捷栏选中 MacBook 后施放。');return;}
+  if(castsInFlight.has(id))return;
+  castsInFlight.add(id);
+  try{
+    const field=workbench.session().field;
+    let result:{ok:boolean;message:string};
+    if(field){
+      const status=field.read(id);
+      if(!status.canCast){feedback(status.reason);return;}
+      const confirmed=await field.cast(id);
+      result={ok:confirmed.ok,message:confirmed.ok?confirmed.value:confirmed.message};
+    }else result=id==='ghost'?{ok:false,message:'运行时未注册此技能。'}:localCast(id);
+    feedback(result.message);workbench.logCast(id,result.message);
+    if(result.ok)sound.play('equip');
+  }catch(error){feedback(error instanceof Error?error.message:'技能接口未响应。');}
+  finally{castsInFlight.delete(id);}
 }
 const distanceTo = (point:{x:number;z:number}) => Math.hypot(game.body.position.x-point.x,game.body.position.z-point.z);
 const phases:Record<string,string> = {
@@ -245,18 +277,24 @@ explorer.interactions.add(() => { if (playing) holding = true; });
 const events = new AbortController();
 window.addEventListener('keydown', event => {
   if (event.repeat || game.paused || event.ctrlKey || event.metaKey || event.altKey || game.panel || game.inventoryOpen) return;
-  for (const kind of ['stun','lure'] as const) {
-    if (event.code === 'Key'+skillKeys[kind]) { event.preventDefault(); cast(kind); }
+  for(const [id,key] of Object.entries(workbench.session().vibe.slots().equipped)){
+    if(event.code==='Key'+key.toUpperCase()){event.preventDefault();void cast(id as ProjectId);break;}
   }
 },{signal:events.signal});
 window.addEventListener('keyup',e => { if (e.code === 'KeyF') holding = false; },{signal:events.signal});
 const point = new Vector3();
+const hudSlots=['q','r'].map(name=>{
+  const node=element(name);
+  node.innerHTML='<kbd></kbd><i aria-hidden="true"></i><b></b><small></small><progress value="0" max="1" aria-label="冷却进度"></progress>';
+  return {node,key:node.querySelector('kbd')!,icon:node.querySelector('i')!,label:node.querySelector('b')!,status:node.querySelector('small')!,progress:node.querySelector('progress')!};
+});
 function refresh() {
   const idx = state.repaired;
   const done = idx === 3;
   const briefing = !inWorkbench && !game.inventoryOpen && (game.paused || !playing);
   const live = !briefing && !inWorkbench && !game.inventoryOpen && !done;
   document.body.classList.toggle('exploring',live);
+  document.body.classList.toggle('mac-in-use',inWorkbench);
   if (!live) holding = false;
   element('brief').hidden = !briefing;
   element('live').hidden = !live;
@@ -273,7 +311,8 @@ function refresh() {
     element('back').hidden = done || (!playing && !hurt);
     element('start').hidden = !done && !equipped();
     setText(element('start'),done?'再次挑战':hurt?'重试当前节点':playing?'继续战斗':'进入草坪');
-    setText(element('slots'),done?'维修记录　3 / 3':(skillKeys.stun+' 短时麻痹　'+(workbench.getSkill('stun')?'已部署':'未部署')+'　　 '+skillKeys.lure+' 助手牵制　'+(workbench.getSkill('lure')?'已部署':'未部署')));
+    const slots=workbench.session().vibe.slots();
+    setText(element('slots'),done?'维修记录　3 / 3':'Vibe Console　'+Object.keys(slots.equipped).length+' / '+slots.capacity+' 已部署');
   }
   element('waypoint').hidden = !live;
   if (!live) return;
@@ -290,9 +329,18 @@ function refresh() {
   else if (state.phase === 'stunned' || state.phase === 'lured') hint += '　·　本节点需要'+(node.kind === 'stun'?'麻痹':'助手牵制');
   setText(element('hint'),node.name+'　/　'+hint);
   setText(element('feedback'),noticeTime > 0 ? notice : '');
-  for (const [id,kind,label] of [['q','stun','短时麻痹'],['r','lure','助手牵制']] as const) {
-    const cooldown = state.cooldown[kind];
-    setText(element(id),skillKeys[kind]+'　'+label+'　'+(cooldown > 0 ? cooldown.toFixed(1)+'s' : '就绪'));
+  const service=workbench.session().vibe,equipment=service.slots().equipped;
+  const loadout=service.projects.filter(project=>equipment[project.id]);
+  for(const [index,slot] of hudSlots.entries()){
+    const project=loadout[index];slot.node.hidden=!project;
+    if(!project)continue;
+    const status=fieldStatus(project.id);
+    setText(slot.key,equipment[project.id]!);setText(slot.icon,skillMark[project.id]);setText(slot.label,project.name);
+    setText(slot.status,status.cooldown>0?'冷却 '+status.cooldown.toFixed(1)+' s':status.canCast?'目标就绪 · '+status.target:'等待合法目标');
+    slot.node.title=status.reason;
+    slot.node.classList.toggle('can-cast',status.canCast);
+    const fraction=status.cooldownTotal>0?1-Math.min(1,status.cooldown/status.cooldownTotal):1;
+    if(slot.progress.value!==fraction)slot.progress.value=fraction;
   }
   setText(element('f'),state.submit > 0?'F　提交 '+Math.round(state.submit*100)+'%':'F　长按提交');
   point.set(node.x,1.1,node.z).project(explorer.camera);
@@ -313,6 +361,7 @@ viewer.beforeRender.add(dt => {
   if (!game.paused) redrawUntil=performance.now()+1800;
   if (savedRevision !== game.inventory.revision || savedView !== game.view) redrawUntil=performance.now()+150;
   explorer.update(dt);
+  if(inWorkbench)workbench.update();
   scenery.update(explorer.camera);
   visuals.render(state);
   const p = game.body.position;

@@ -4,6 +4,8 @@ import {EXPLORATION as C,KEYS} from './config';
 import {createNavigation} from './navigation';
 import {createStudent} from './student';
 import {createFirstPersonArms} from '../characters/character';
+import {createDeviceView} from './deviceView';
+import './deviceView.css';
 import {createInventoryUI} from '../items/inventoryUI';
 import {CampusGame} from './game';
 import type {BuildingSpec,SiteParameters} from '../model/campusParameters';
@@ -16,6 +18,7 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  const student=createStudent();scene.add(student.root);
  const camera=new T.PerspectiveCamera(72,1,.045,700);camera.name='Exploration_Camera';scene.add(camera);
  const firstPerson=createFirstPersonArms();const arms=firstPerson.root;camera.add(arms);
+ const deviceView=createDeviceView(camera,arms);
  const keys=new Set<string>(),ray=new T.Raycaster();let bob=false;let distance=Number(C.cameraDistance),actualDistance=distance,sensitivity=Number(C.mouseSensitivity);
  const editable=(t:EventTarget|null)=>t instanceof HTMLElement&&!!t.closest('input,select,textarea,[contenteditable="true"],dialog');
  const locked=()=>document.pointerLockElement===canvas;
@@ -31,9 +34,8 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  listenDocument('pointerlockchange',()=>{clear();if(locked()&&!game.panel&&!game.inventoryOpen){game.takeover('human_pointer_lock');game.paused=false;}else if(locked()){document.exitPointerLock();}else if(!game.armed)game.pause('pointer_unlock');});
  listenDocument('pointerlockerror',()=>{pause('pointer_lock_failed');document.dispatchEvent(new CustomEvent('game-notice',{detail:opening?'Pointer lock unavailable. Use drag mode to continue.':'此浏览器无法锁定鼠标。请用 Chrome 打开，或选择拖动兼容模式。'}));});
  listenWindow('keydown',e=>{
-  if(!enabled||e.metaKey||e.ctrlKey||e.altKey)return;
+  if(!enabled||e.defaultPrevented||e.isComposing||e.metaKey||e.ctrlKey||e.altKey||game.panel)return;
   if(e.code===KEYS.inventory&&!e.repeat&&!((e.target as HTMLElement)?.matches('input,textarea,select'))){e.preventDefault();game.inventoryOpen?closeInventory():openInventory();return;}
-  if(game.panel)return;
   if(game.inventoryOpen){if(e.code===KEYS.pause){e.preventDefault();closeInventory();}return;}
   if(editable(e.target))return;
   if(e.code===KEYS.computer&&!e.repeat){e.preventDefault();for(const fn of computers)fn();return;}
@@ -73,13 +75,15 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
   const d=game.body.position.clone().sub(before),travel=Math.hypot(d.x,d.z);
   if(travel>.00001){const desired=Math.atan2(-d.x,-d.z);turn+=Math.atan2(Math.sin(desired-turn),Math.cos(desired-turn))*(1-Math.exp(-C.turnSharpness*dt));}
   student.root.position.copy(game.body.position);student.root.rotation.y=turn;student.animate(game.paused?0:dt,travel,game.body.grounded,game.body.velocity.y,Math.hypot(game.body.velocity.x,game.body.velocity.z));updateCamera(dt);
+  const first=game.view==='first';
+  deviceView.update(dt,first,first?firstPerson.held:student.held);
  }
  function reset(){pause('reset');game.spawn();student.gait.reset();student.animate(.02,0,true,0);turn=game.yaw;actualDistance=distance;updateCamera(1);}
  reset();student.root.visible=false;
- return{camera,student,interactions,computers,enter,enterCompat(){if(game.inventoryOpen||game.panel)return;game.takeover('human_compat');compat=true;game.paused=false;clear();canvas.focus();},update,reset,pause,openInventory,closeInventory,firstPerson,openPanel(panel:'computer'|'settings'|'door'){clear();compat=false;game.openPanel(panel);if(locked())document.exitPointerLock();},closePanel(){clear();game.closePanel();},setComfort(fov:number,shake:boolean){camera.fov=T.MathUtils.clamp(fov,60,90);camera.updateProjectionMatrix();bob=shake;}, get game(){return game;},get position(){return game.body.position;},get world(){return world;},get enabled(){return enabled;},get state(){return{...game.observe(),yaw:game.yaw,pitch:game.pitch,distance,actualDistance,locked:locked(),compat,keys:[...keys]};},
+ return{camera,student,interactions,computers,enter,enterCompat(){if(game.inventoryOpen||game.panel)return;game.takeover('human_compat');compat=true;game.paused=false;clear();canvas.focus();},update,reset,pause,openInventory,closeInventory,firstPerson,openPanel(panel:'computer'|'settings'|'door',physicalScreen=false){deviceView.show(physicalScreen&&panel==='computer');clear();compat=false;game.openPanel(panel);if(locked())document.exitPointerLock();},closePanel(){deviceView.show(false);clear();game.closePanel();},setComfort(fov:number,shake:boolean){camera.fov=T.MathUtils.clamp(fov,60,90);camera.updateProjectionMatrix();bob=shake;}, get game(){return game;},get position(){return game.body.position;},get world(){return world;},get enabled(){return enabled;},get state(){return{...game.observe(),yaw:game.yaw,pitch:game.pitch,distance,actualDistance,locked:locked(),compat,keys:[...keys]};},
   setSensitivity(v:number){sensitivity=T.MathUtils.clamp(v,.0004,.006);},takeover(){pause('human_takeover');},enableAI(){if(locked())document.exitPointerLock();clear();game.enableAI();},
-  setEnabled(v:boolean){game.inventoryOpen=false;enabled=v;pause('mode_change');student.root.visible=v&&game.view==='third';arms.visible=v&&game.view==='first';if(v)updateCamera(1);},
+  setEnabled(v:boolean){if(!v)deviceView.show(false);game.inventoryOpen=false;enabled=v;pause('mode_change');student.root.visible=v&&game.view==='third';arms.visible=v&&game.view==='first';if(v)updateCamera(1);},
   inspectAt(x:number,y:number,z:number,heading=0){pause('qa_inspection');student.gait.reset();student.animate(.02,0,true,0);game.body.position.set(x,y,z);game.body.velocity.set(0,0,0);game.yaw=heading;game.pitch=0;turn=heading;student.root.position.copy(game.body.position);updateCamera(1);},
   resize(w:number,h:number){if(w<=0||h<=0||!Number.isFinite(w/h)||camera.aspect===w/h)return;camera.aspect=w/h;camera.updateProjectionMatrix();},
-  rebuild(next:BuildingSpec[],s:SiteParameters){pause('rebuild');world.dispose();specs=next;site=s;world=createNavigation(specs,site,opening);game.replaceWorld(world,specs,site);reset();},dispose(){if(disposed)return;disposed=true;enabled=false;events.abort();pause('dispose');interactions.clear();computers.clear();world.dispose();student.root.removeFromParent();camera.removeFromParent();student.dispose();inventoryUI.dispose();firstPerson.dispose();firstPerson.root.removeFromParent();disposeAsset(camera);}};
+  rebuild(next:BuildingSpec[],s:SiteParameters){pause('rebuild');world.dispose();specs=next;site=s;world=createNavigation(specs,site,opening);game.replaceWorld(world,specs,site);reset();},dispose(){if(disposed)return;disposed=true;enabled=false;deviceView.show(false);events.abort();pause('dispose');interactions.clear();computers.clear();world.dispose();student.root.removeFromParent();camera.removeFromParent();student.dispose();inventoryUI.dispose();firstPerson.dispose();firstPerson.root.removeFromParent();disposeAsset(camera);}};
 }

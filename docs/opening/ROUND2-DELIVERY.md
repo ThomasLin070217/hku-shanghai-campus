@@ -74,13 +74,15 @@ core. No remote service and no API key are required in the repository.
 // optional, in the browser devtools of the game page
 localStorage['hku.opening.agent.endpoint'] = 'http://127.0.0.1:11434/api/chat'; // Ollama default
 localStorage['hku.opening.agent.model']    = 'deepseek-r1:8b';
-localStorage['hku.opening.agent.key']      = '';   // only for a local OpenAI-compatible server
 localStorage['hku.opening.agent.offline']  = '1';  // force the built-in core
 ```
 
 The transport accepts Ollama (`message.content` or `response`) and OpenAI-style
-(`choices[0].message.content`) replies. A 2.2 s timeout prevents a missing model from
-freezing the UI. The agent can read the live story, hearts and capture count, but it
+(`choices[0].message.content`) replies. For an authenticated model, point the endpoint
+setting to your same-origin model proxy and configure credentials on that server. The
+browser only sends the model name and messages. Players can stop a pending request;
+the client switches to labeled offline guidance after a network error or 30 s timeout.
+The static public playtest uses the offline guide. The agent can read the live story, hearts and capture count, but it
 cannot move the player or change game state.
 
 ## 4. Controls and test hooks

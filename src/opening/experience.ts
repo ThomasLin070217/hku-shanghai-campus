@@ -70,7 +70,7 @@ export function createOpeningExperience(
  function persist(force=false){if(disposed||protectedSave||!ownsSave||!force&&performance.now()-lastSave<5000)return;try{if(localStorage.getItem(writerKey)!==writerToken){ownsSave=false;return;}const safe=story.stage==='incident'||story.stage==='to_b4'?([...O.encounterSafe] as [number,number,number]):undefined;localStorage.setItem(OPENING_SAVE_KEY,JSON.stringify(captureOpeningSave(g,story,settings,safe,runtime)));lastSave=performance.now();storageOkay=true;saveMessage='Saved on this device.';}catch{storageOkay=false;saveMessage='Storage unavailable. Progress remains in this session.';}}
  function claimSave(){if(protectedSave)return;try{if(localStorage.getItem(writerKey)!==writerToken){const latestRaw=localStorage.getItem(OPENING_SAVE_KEY);if(latestRaw){let saved:OpeningSave|null=null;try{saved=parseOpeningSave(JSON.parse(latestRaw));}catch{}if(!saved){protectedSave=true;saveMessage='Unrecognized save protected. Start a new opening to back it up.';return;}if(lastSave>0||saved.savedAt>loadedAt){restore(saved);saveMessage='Latest checkpoint continued from another window.';}}localStorage.setItem(writerKey,writerToken);}ownsSave=true;}catch{ownsSave=true;storageOkay=false;}}
  function transition(event:OpeningEvent){const next=reduceOpening(story,event);if(next===story)return false;story=next;persist(true);return true;}
- function open(next:OpeningModal){if(failed&&next!=='caught')return;voice.stop();compatBeforePanel=explorer.state.compat;modal=next;explorer.openPanel(next==='settings'?'settings':'computer');audio.setActive(false);audio.stopOpeningCues();audio.stopPreviews();if(next==='invitation')audio.story?.cue('invitation_open',undefined,true);else if(next==='computer')audio.story?.cue('macbook_open',undefined,true);else if(next==='staff')void voice.play();}
+ function open(next:OpeningModal){if(failed&&next!=='caught')return;voice.stop();compatBeforePanel=explorer.state.compat;modal=next;explorer.openPanel(next==='settings'?'settings':'computer',next==='computer');audio.setActive(false);audio.stopOpeningCues();audio.stopPreviews();if(next==='invitation')audio.story?.cue('invitation_open',undefined,true);else if(next==='computer')audio.story?.cue('macbook_open',undefined,true);else if(next==='staff')void voice.play();}
  function close(){if(modal==='caught')return;const was=modal;voice.stop();audio.stopPreviews();if(modal==='invitation')audio.story?.cue('invitation_close',undefined,true);else if(modal==='computer')audio.story?.cue('macbook_close',undefined,true);modal=null;explorer.closePanel();persist(true);
   // A story panel should hand control straight back to the player. The same click
   // that closed it is still a user gesture, so pointer lock can be requested here.
@@ -166,7 +166,13 @@ export function createOpeningExperience(
   else if(action==='preview_sfx')void audio.preview('sfx');
   else if(action==='preview_music')void audio.preview('music');
  }
- const ui=createOpeningUI(stage,{action,close,setting(key,value){if(key==='muted'||key==='bob')settings[key]=Boolean(value);else settings[key]=Number(value);applySettings();persist(true);},drawMap:(canvas,large)=>drawOpeningMap(canvas,g,story,large)});
+ const ui=createOpeningUI(stage,{action,close,setting(key,value){if(key==='muted'||key==='bob')settings[key]=Boolean(value);else settings[key]=Number(value);applySettings();persist(true);},drawMap:(canvas,large)=>drawOpeningMap(canvas,g,story,large)},{
+  instanceId:()=>g.inventory.slots.find(slot=>slot?.itemId==='macbook-air-13-silver')?.instanceId,
+  units:()=>fleet.units.map((unit,index)=>({
+    id:String(unit.root.userData.fleetId),name:'Campus guard '+(index+1),
+    status:story.campus_alert_triggered?'Compromised · '+unit.state:'Standby',
+  })),
+ });
 
  function tick(dt:number){
   story.elapsedSeconds+=dt;

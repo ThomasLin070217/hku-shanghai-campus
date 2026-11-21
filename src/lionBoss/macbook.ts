@@ -6,16 +6,26 @@ import {drawCampusMap} from '../opening/map';
 import {syncRuntimeWithStory,type OpeningRuntime} from '../opening/runtime';
 import {OPENING_EVENT_LOG} from '../opening/state';
 import {BOSS,NODES,SAFE} from './combat';
-import {createBossWorkbench} from './workbench';
+import {createLawnVibeService,type ProjectId} from './consoleService';
+import {getCampusComputeSession,type CampusComputeSession,type RobotDevice} from './deviceServices';
+import {createDeviceApps} from './deviceApps';
+import {evaluateSkill,type SkillKind} from './rules';
+import type {CombatState} from './combat';
 import '../opening/opening.css';
 import './macbook.css';
 
-interface BossMacOptions extends ParametersOfWorkbench {
+interface BossMacOptions {
+  host:HTMLElement;
+  storageKey:string;
+  instanceId:string;
+  keys:Record<SkillKind,string>;
+  onDeploy:()=>void;
+  onClose:()=>void;
   opening:OpeningSave|null;
   game:CampusGame;
-  status:()=>{repaired:number;runtime:OpeningRuntime;player:[number,number,number]};
+  status:()=>{repaired:number;runtime:OpeningRuntime;player:[number,number,number];combat:CombatState;canAct:boolean};
+  requestDistract:()=>{ok:boolean;message:string};
 }
-type ParametersOfWorkbench=Parameters<typeof createBossWorkbench>[0];
 
 export function createBossMacBook(options:BossMacOptions) {
   // A standalone lawn entry starts after the same B4 handoff as a continued game.
@@ -27,9 +37,35 @@ export function createBossMacBook(options:BossMacOptions) {
   overlay.className='boss-mac-overlay';overlay.hidden=true;
   overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');
   overlay.setAttribute('aria-label','MacBook Air');
-  const content=document.createElement('div');content.className='boss-mac-content';
-  const workbench=createBossWorkbench({...options,host:content,onClose:()=>goDesktop()});
-  const keys=options.keys??{stun:'Q',lure:'R'};
+  const {keys}=options;
+  const localVibe=createLawnVibeService(options.storageKey,keys,kind=>options.status().combat.cooldown[kind]);
+  let lastHelperResult='';
+  function devices():RobotDevice[]{
+    const {combat,player,canAct}=options.status();
+    const active=combat.phase==='helperRun'||combat.phase==='lured';
+    const rule=localVibe.getFieldRule('lure');
+    const distance=Math.hypot(player[0]-combat.lion.x,player[2]-combat.lion.z);
+    const check=rule?evaluateSkill(rule,{phase:combat.phase,distance,cooldown:combat.cooldown.lure,helperReady:!active}):{ok:false,message:'请先部署 Robot Hijack。'};
+    return [{id:'lawn/ashu',name:'阿树 · 草坪助手',status:active?'执行牵制':'在线',permission:rule?'已装备侧翼牵制程序。':'可读遥测；牵制程序未部署。',
+      remainingSeconds:combat.phase==='lured'?combat.remaining:undefined,lastResult:lastHelperResult,
+      commands:[{id:'telemetry',label:'读取遥测',enabled:true},
+        {id:'distract',label:'Distract',enabled:canAct&&check.ok,reason:rule&&!canAct?'返回草坪后按 '+keys.lure+'，在挥爪收招时发送。':check.ok?'':check.message}]},
+      {id:'L001',name:'草坪防御单元',status:combat.repaired===3?'已停机':'防御协议激活',permission:'仅开放观测遥测。',commands:[]}];
+  }
+  const localSession:CampusComputeSession={vibe:localVibe,robotics:{devices,async execute(id,cmd){
+    const device=devices().find(d=>d.id===id),command=device?.commands.find(c=>c.id===cmd);
+    if(!command?.enabled)return {ok:false,message:command?.reason||'当前未获得设备指令权限。'};
+    if(cmd==='telemetry'){
+      const {helper,phase}=options.status().combat;
+      const reply='阿树已应答 · x '+helper.x.toFixed(1)+' / z '+helper.z.toFixed(1)+' m · '+phase;
+      lastHelperResult=reply;return {ok:true,value:reply};
+    }
+    const result=options.requestDistract();lastHelperResult=result.message;
+    return result.ok?{ok:true,value:result.message}:{ok:false,message:result.message};
+  }}};
+  const connected=()=>getCampusComputeSession(options.instanceId);
+  const session=()=>connected()??localSession;
+  const apps=createDeviceApps(session,()=>goDesktop(),options.onDeploy);
   function objective() {
     const repaired=options.status().repaired;
     return NODES[repaired] ? '节点 '+(repaired+1)+' · '+NODES[repaired].name : '草坪修复完成';
@@ -37,7 +73,8 @@ export function createBossMacBook(options:BossMacOptions) {
   function instruction() {
     const node=NODES[options.status().repaired];
     if(!node)return 'L001 已安全关机。';
-    if(!workbench.getSkill('stun')||!workbench.getSkill('lure'))return '打开技能工作台。分别描述短时麻痹与助手牵制，查看生成规则，测试通过后部署到两个槽位。';
+    if(Object.keys(session().vibe.slots().equipped).length<2)return '在 Vibe Console 编写项目、检查方案、测试并部署到两个槽位。';
+    if(session().field)return '查看 HUD 上的已编译技能和合法目标。选择合适的施放时机，然后在节点光圈内长按 F。';
     return (node.kind==='stun'?'等冲撞预警亮起，按 '+keys.stun+' 麻痹 L001。':'先退出挥爪扇区，再在收招时按 '+keys.lure+' 呼叫助手。')+'在节点光圈内长按 F，提交修复。';
   }
   const agent=createLocalAgent({
@@ -51,7 +88,10 @@ export function createBossMacBook(options:BossMacOptions) {
     },
   });
   const mac=createMacBookExperience({
-    agent,onClose:options.onClose,
+    agent,onClose:options.onClose,sessionKey:'hku.macbook.chat.'+options.instanceId,
+    computeAccess:()=>connected()?'connected':'exercise',
+    energy:()=>session().energy?.()??'Local device power',
+    robotics:{body:apps.roboticsBody,activate:apps.openRobotics},
     drawMap(canvas,large){
       const target=NODES[options.status().repaired]??SAFE;
       drawCampusMap(canvas,options.game,{
@@ -63,39 +103,43 @@ export function createBossMacBook(options:BossMacOptions) {
       },large);
     },
     mission:{
-      title:'技能工作台',location:'L001 · 草坪维护区',mapLegend:'上方为北。蓝色箭头标出你的位置，橙色标记是当前维护节点。',
+      title:'Vibe Console',location:'L001 · 草坪维护区',mapLegend:'上方为北。蓝色箭头标出你的位置，橙色标记是当前维护节点。',
       terminal:()=>[
         'HKU-SHANGHAI-MACBOOK — lawn recovery shell',
         'external network .... offline', 'local maintenance ... connected',
         '', 'L001  '+objective(),'修复进度  '+options.status().repaired+' / 3',
-        ...(['stun','lure'] as const).map(k=>keys[k]+'  '+(workbench.getSkill(k)?'已部署':'空槽')),
+        ...Object.entries(session().vibe.slots().equipped).map(([project,key])=>key+'  '+project),
         '', 'recovery@macbook ~ %',
       ],
-      body:content,activate:()=>workbench.open(),
+      body:apps.missionBody,activate:apps.openVibe,
     },
   });
   overlay.append(mac.root);options.host.append(overlay);
   const desktopIcon=()=>mac.root.querySelector<HTMLButtonElement>('[data-launch-mission]')!;
-  function goDesktop(){mac.showDesktop();desktopIcon().focus();}
+  function goDesktop(){mac.showDesktop();desktopIcon()?.focus();}
   function currentView(){
     const {runtime,player}=options.status();
     return {story,runtime:syncRuntimeWithStory(runtime,story),objective:objective(),detail:instruction(),player,computerPage:'tasks' as const};
   }
   let previousFocus:HTMLElement|null=null;
+  let lastUpdate=0;
   overlay.addEventListener('keydown',event=>{
-    if(event.key==='Escape'&&!event.isComposing){event.preventDefault();event.stopPropagation();options.onClose();return;}
+    if(event.defaultPrevented)return;
+    if(event.key==='Escape'&&!event.isComposing){event.preventDefault();event.stopPropagation();if(!mac.handleEscape())options.onClose();return;}
     if(event.key!=='Tab')return;
-    const items=Array.from(overlay.querySelectorAll<HTMLElement>('button:not(:disabled),textarea:not(:disabled)')).filter(e=>e.offsetParent!==null);
+    const items=Array.from(overlay.querySelectorAll<HTMLElement>('button:not(:disabled),textarea:not(:disabled),select:not(:disabled),input:not(:disabled),a[href],[tabindex="0"]')).filter(e=>e.offsetParent!==null);
     const first=items[0],last=items[items.length-1];
     if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus();}
     else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}
-  },true);
+  });
   overlay.addEventListener('keydown',e=>e.stopPropagation());
   overlay.addEventListener('keyup',e=>e.stopPropagation());
   return {
-    open(){previousFocus=document.activeElement instanceof HTMLElement?document.activeElement:null;overlay.hidden=false;mac.open(currentView());desktopIcon().focus();},
-    close(){workbench.close();overlay.hidden=true;previousFocus?.focus({preventScroll:true});previousFocus=null;},
-    getSkill:workbench.getSkill, reset:workbench.reset,
-    dispose(){workbench.dispose();mac.dispose();overlay.remove();},
+    open(){previousFocus=document.activeElement instanceof HTMLElement?document.activeElement:null;overlay.hidden=false;mac.open(currentView());desktopIcon()?.focus();},
+    close(){mac.suspend();overlay.hidden=true;previousFocus?.focus({preventScroll:true});previousFocus=null;},
+    update(){const now=performance.now();if(!overlay.hidden&&now-lastUpdate>=450){lastUpdate=now;mac.update(currentView());}},
+    getSkill:(id:SkillKind)=>session().vibe.getFieldRule(id),
+    session,logCast:(id:ProjectId,result:string)=>{if(id==='lure')lastHelperResult=result;},
+    dispose(){apps.dispose();mac.dispose();overlay.remove();},
   };
 }

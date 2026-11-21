@@ -1,0 +1,5 @@
+body:has(.device-lab) {margin:0;background:#142126;color:#ecf6f3;font-family:system-ui,sans-serif}
+.device-lab {min-height:100dvh;box-sizing:border-box;display:grid;align-content:center;justify-items:center;padding:12px;gap:8px}
+.device-lab>p {margin:0;font-size:13px}
+.device-lab>.opening-mac {width:min(1180px,100%);height:min(800px,calc(100dvh - 64px))}
+.device-lab>button {font:inherit;padding:.6em 1em;border:1px solid #a5d4bc;background:#cce4d6;color:#152d26;border-radius:5px}
