@@ -4,9 +4,10 @@ import type {PrimitiveTrace} from '../scene/authoring';
 import {LION} from '../model/lionParameters';
 import {NOV13} from '../model/nov13Parameters';
 import {
-  AWAKEN_SECONDS, BOSS, canSubmit, CHARGE_HALF_WIDTH, CHARGE_LENGTH, CHARGE_WARNING, NODES, SAFE,
+  AWAKEN_SECONDS, BOSS, canSubmit, CHARGE_HALF_WIDTH, CHARGE_LENGTH, NODES, SAFE,
   SWIPE_HALF_ANGLE, SWIPE_RADIUS, type CombatState,
 } from './combat';
+import {createLionRig} from './lionRig';
 
 const GROUND=LION.groundY;
 const INACTIVE=0x557079;
@@ -110,8 +111,11 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
   // Body and collision shape share this local pivot; no regenerated lion or edited asset.
   const pivot=new T.Group();
   anchor.add(pivot);pivot.add(body);
+  // Skeleton and skinning are created at boss runtime only; the campus statue stays authored.
+  const rig=createLionRig(body);
   // The campus uses a baked sun shadow; the moving lion has its own contact shadow.
-  // Merged campus meshes retain each eye's authored local bounds.
+  // Merged campus meshes retain each eye's authored local bounds. Child meshes of a SkinnedMesh
+  // do not follow the skin, so each eye is parented to the head bone instead.
   const eyeGeometry=new T.SphereGeometry(1,12,8);
   const eyeLight=new T.MeshBasicMaterial({color:0xff291b,transparent:true,depthWrite:false,toneMapped:false});
   const eyes:T.Mesh[]=[];
@@ -123,7 +127,7 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
       const [x,y,z,xx,yy,zz]=part.bounds,eye=new T.Mesh(eyeGeometry,eyeLight);
       eye.position.set((x+xx)/2,(y+yy)/2,(z+zz)/2+.025);
       eye.scale.set((xx-x)*.56,(yy-y)*.55,(zz-z)*.68);
-      eyes.push(eye);object.add(eye);
+      eyes.push(eye);rig.attachToHead(eye);
     }
   });
 
@@ -186,7 +190,7 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
   let completionStarted:number|null=null;
   let previouslyActive=false;
   const frost=new T.Color(0x58d0ff),hostile=new T.Color(0xff291b);
-  function render(state:CombatState) {
+  function render(state:CombatState, dt=0) {
     const phase=state.phase;
     syncCollision(state);
     const localYaw=state.yaw-LION.yaw;
@@ -198,12 +202,12 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
     else {previouslyActive=true;completionStarted=null;}
     const powerOff=completionStarted===null?0:Math.min((performance.now()-completionStarted)/1600,1);
     const boot=phase==='awakening'?1-state.remaining/AWAKEN_SECONDS:state.awakened?1:0;
-    const bow=powerOff*.16+(phase==='awakening'?-.055*Math.sin(boot*Math.PI):0);
     eyeLight.opacity=boot*(1-powerOff);
     eyeLight.color.copy(phase==='stunned'?frost:hostile);
     for(const eye of eyes)eye.visible=eyeLight.opacity>.005;
-    const lean=phase==='chargeWarn'?.09*(1-state.remaining/CHARGE_WARNING):phase==='charge'?-.08:0;
-    pivot.rotation.order='YXZ';pivot.rotation.set(bow+lean,localYaw,phase==='swipeWarn'?-.075:0);
+    // Translation and facing stay on the pivot; bow/lean/crouch now live in the animation clips.
+    pivot.rotation.order='YXZ';pivot.rotation.set(0,localYaw,0);
+    rig.update(dt,state);
     telegraph.charge.visible=phase==='chargeWarn'||phase==='charge';
     telegraph.swipe.visible=phase==='swipeWarn';
     telegraph.root.position.set(state.origin.x,GROUND+.045,state.origin.z);
@@ -229,6 +233,7 @@ export function createBossScene(campusRoot:T.Object3D,world:Navigation,scene:T.S
     contactMap.dispose();
     for(const eye of eyes)eye.removeFromParent();
     eyeGeometry.dispose();eyeLight.dispose();
+    rig.dispose();
     anchor!.add(body!);pivot.removeFromParent();
     if(originalCollision && obstacle) Object.assign(obstacle,originalCollision);
     if(originalMesh && collisionMesh) {
