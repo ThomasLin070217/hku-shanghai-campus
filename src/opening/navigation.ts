@@ -1,7 +1,7 @@
 import * as T from 'three';
 import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H,OFFICE_LAYOUT as B6,dinnerHallPoint} from './spatialLayout';
 import type {Obstacle} from '../exploration/navigation';
-import {B4_OBSTACLES} from '../campaign/b4Layout';
+import {B4_OBSTACLES} from './b4Layout';
 
 /** Door clearance is shared by the scenery, collision and the step transition. */
 export function openingBusDoorSpan(){

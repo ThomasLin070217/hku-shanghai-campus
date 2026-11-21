@@ -1,6 +1,7 @@
 import * as T from 'three';
 import {tagChildren,type PrimitiveTrace} from '../scene/authoring';
 import {OPENING} from './spatialLayout';
+import {buildB4Shell} from './b4Shell';
 type V={p:T.Vector3;n:T.Vector3;uv:T.Vector2};
 function split(poly:V[],axis:'x'|'y'|'z',value:number,above:boolean){
  const yes:V[]=[],no:V[]=[];if(!poly.length)return[yes,no];
@@ -31,4 +32,8 @@ export function cutOpeningBuildings(root:T.Group){
    const clipped=new T.BufferGeometry();clipped.setAttribute('position',new T.Float32BufferAttribute(positions,3));clipped.setAttribute('normal',new T.Float32BufferAttribute(normals,3));clipped.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));clipped.computeBoundingBox();clipped.computeBoundingSphere();mesh.geometry=clipped;old.dispose();const kept=traces?.flatMap((t,j)=>counts.get(j)?[{...t,start:starts.get(j)!,count:counts.get(j)!}]:[]);if(kept?.length)mesh.userData.authorParts=kept;else delete mesh.userData.authorParts;mesh.userData.sourceFile='src/opening/geometry.ts';mesh.userData.openingAperture=true;
   }
  }
+ // B04's cut cavity is capped by the static room shell (floor, walls, ceiling, closed
+ // entrance door) in every opening build, so Chapter 1 never shows a hollow tower.
+ const b04=root.getObjectByName(OPENING.b4.id);
+ if(b04){const shell=buildB4Shell();b04.updateMatrixWorld(true);shell.applyMatrix4(b04.matrixWorld.clone().invert());b04.add(shell);tag(shell);}
 }

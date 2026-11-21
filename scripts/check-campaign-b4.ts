@@ -4,8 +4,10 @@ import {CampusGame} from '../src/exploration/game';
 import {createNavigation} from '../src/exploration/navigation';
 import {BUILDINGS,SITE} from '../src/model/campusParameters';
 import {OPENING as O} from '../src/opening/spatialLayout';
-import {B4_PHRASE,createKeyboardState,pressKeyboard,createFlipState,flipTiles,flipSolved,pullBreaker,connectMacBook,b4StepOf} from '../src/campaign/b4Puzzle';
-import {B4_LAYOUT,B4_OBSTACLES,B4_STATIONS,B4_DOOR_OBSTACLE,setB4FlipPanel} from '../src/campaign/b4Layout';
+import {B4_PHRASE,createKeyboardState,pressKeyboard,createFlipState,flipTiles,flipSolved,pullBreaker,connectMacBook,b4StepOf,sweepTiles} from '../src/campaign/b4Puzzle';
+import {B4_LAYOUT,B4_OBSTACLES,B4_STATIONS,B4_DOOR_OBSTACLE,setB4FlipPanel,partBounds} from '../src/opening/b4Layout';
+import {createCampaignState,reduceCampaign,type CampaignState} from '../src/campaign/state';
+import type {ChapterContext,Explorer} from '../src/campaign/types';
 import {createB4Chapter} from '../src/campaign/b4Chapter';
 import {buildSite} from '../src/model/buildSite';
 import {disposeAsset} from '../src/model/buildCampus';
@@ -70,7 +72,7 @@ const chapter=createB4Chapter();
 route('handoff -> B04 entry',[[O.handoff[0],O.handoff[2]],[chapter.entry.point[0],chapter.entry.point[2]]]);
 assert.ok(Math.abs(g.body.position.y-O.b4.floor)<.05,`entry stands on the B04 floor, y=${g.body.position.y}`);
 const order=['keyboard','flip','breaker','port'] as const;
-for(const id of order){const s=B4_STATIONS[id];route('entry -> '+id,[...s.path,[s.stand[0],s.stand[2]]]);}
+let from='entry';for(const id of order){const s=B4_STATIONS[id];route(from+' -> '+id,[[s.stand[0],s.stand[2]]]);from=id;}
 // The closed flip panel is solid; with it gone the closet mouth is open.
 assert.ok(w.blocked(B4_STATIONS.flip.point[0],B4_LAYOUT.flipPanel.z0+.05,O.b4.floor+.003),'closed flip panel blocks');
 setB4FlipPanel(w,false);assert.ok(!w.obstacles.some(o=>o.name==='opening-b4-flip-panel'),'opened flip panel leaves no obstacle');
@@ -84,12 +86,106 @@ for(const id of order){const s=B4_STATIONS[id];const eye=new T.Vector3(s.stand[0
 }
 // The B04 doorway is open for collision once the chapter unlocks it.
 assert.equal(w.blocked(O.b4.door,O.b4.z1-.3,O.b4.floor+.003),false,'B04 door passage is open');
-// The model cut matches the collision opening: a ray through the B04 doorway at chest height
-// meets no hidden core, glass or revolving door until the room's back wall.
+// Sweep: one full horizontal drag covers at least an eighth of the wall.
+assert.ok(sweepTiles({rows:17,columns:33},{row:8,column:0},{row:8,column:32}).length>=Math.ceil(561/8),'one full sweep must cover >= 561/8 tiles');
+w.dispose();
+
+// ---- The opening world with no campaign (Chapter 1), then the chapter attached. ----
+const site=buildSite(undefined,undefined,true),w2=createNavigation(BUILDINGS,SITE,true),g2=new CampusGame(w2,BUILDINGS,SITE);
+site.root.updateMatrixWorld(true);
+const hitPath=(o:T.Object3D|null)=>{const names:string[]=[];for(;o;o=o.parent)names.push(o.name);return names.join('<');};
+const doorRay=()=>new T.Raycaster(new T.Vector3(O.b4.door,O.b4.floor+1.3,O.handoff[2]),new T.Vector3(0,0,-1),0,O.handoff[2]-O.b4.z0).intersectObject(site.root,true)[0];
 {
- const site=buildSite(undefined,undefined,true),b04=site.byId.get('B04')!;b04.updateWorldMatrix(true,true);
- const ray=new T.Raycaster(new T.Vector3(O.b4.door,O.b4.floor+1.3,O.b4.z1+1.1),new T.Vector3(0,0,-1),0,O.b4.z1+1.1-O.b4.z0-.5);
- const hits=ray.intersectObject(b04,true);assert.equal(hits.length,0,`B04 doorway has hidden backing: ${hits[0]?.object.name} at z=${hits[0]?.point.z}`);
- disposeAsset(site.root);console.log('PASS B04 doorway ray is clear in the opening model');
+ const hit=doorRay();assert.ok(hit,'something closes the B04 doorway in Chapter 1');
+ assert.match(hitPath(hit.object),/B04_entrance_door/,`Chapter 1: the first thing in the B04 doorway is the closed door, got ${hitPath(hit.object)} at z=${hit.point.z}`);
+ assert.ok(w2.blocked(O.b4.door,O.b4.z1+.9,O.b4.floor+.06),'Chapter 1: the closed B04 door is solid');
+ assert.ok(site.root.getObjectByName('B04_room_shell'),'the B04 room shell is part of the opening build');
+ const inside=new T.Raycaster(new T.Vector3(O.b4.door,O.b4.floor+1.3,O.b4.z1-.3),new T.Vector3(0,0,-1),0,O.b4.z1-O.b4.z0).intersectObject(site.root,true)[0];
+ assert.ok(inside&&inside.point.z>=O.b4.z0-.01&&inside.point.z<=O.b4.z0+.2,`B04 is capped behind the door (back wall), got ${inside?hitPath(inside.object):'nothing'} at z=${inside?.point.z}`);
+ console.log('PASS Chapter 1: closed, solid B04 door; capped room shell');
 }
-w.dispose();console.log('PASS campaign b4 checks');
+let cs:CampaignState={...createCampaignState('mac-1'),stage:'b4_enter'};
+const camera=new T.PerspectiveCamera(70,16/9,.05,500),socket=new T.Group(),notes:string[]=[];
+const explorer={game:g2,world:w2,camera,firstPerson:{socket},enabled:true} as unknown as Explorer;
+const ctx:ChapterContext={scene:new T.Scene(),root:()=>site.root,explorer,deviceId:()=>'mac-1',stage:()=>cs.stage,
+ emit:e=>{const r=reduceCampaign(cs,e);cs=r.state;return r.changed;},notify:t=>{notes.push(t);},atmosphere:()=>undefined,
+ openPanel:()=>{g2.openPanel('door');},closePanel:()=>{g2.closePanel();},resume:()=>{g2.paused=false;},card:async()=>{}};
+const b4=createB4Chapter(),dbg=b4.debug as Record<string,(...a:unknown[])=>any>;
+const step=(n=6)=>{for(let i=0;i<n;i++)b4.update(.5);};
+b4.attach(ctx);step();
+{
+ const hit=doorRay();assert.ok(!hit||!/B04_entrance_door/.test(hitPath(hit.object)),`campaign: the door leaves slide open, got ${hit&&hitPath(hit.object)}`);
+ assert.ok(hit&&hit.point.z<O.b4.z1-1,'campaign: the doorway ray reaches into the room');
+ assert.equal(w2.blocked(O.b4.door,O.b4.z1+.9,O.b4.floor+.06),false,'campaign: the B04 door no longer blocks');
+ console.log('PASS campaign start opens the B04 door (visual + collision)');
+}
+cs={...cs,stage:'b4_keyboard'};step();
+// Render vs nav: builder parts placed by the chapter equal the layout rects within 5 cm.
+{
+ const props=site.root.getObjectByName('B04_campaign_rooms');assert.ok(props,'chapter props are in the world');
+ const near=(a:number,b:number,what:string)=>assert.ok(Math.abs(a-b)<=.05,`${what}: built ${a.toFixed(3)} vs layout ${b.toFixed(3)}`);
+ const rect=(n:string)=>B4_OBSTACLES.find(r=>r.name===n)!;
+ const kb=partBounds(props!,'Keyboard_timber_wall').union(partBounds(props!,'Keyboard_wall')),kr=rect('opening-b4-keyboard-wall');
+ near(kb.min.x,kr.x0,'keyboard x0');near(kb.max.x,kr.x1,'keyboard x1');near(kb.max.z,kr.z1,'keyboard z1');near(kb.max.y,kr.top,'keyboard top');near(Math.max(kb.min.z,kr.z0),kr.z0,'keyboard z0 (clipped to the back wall)');
+ const fw=partBounds(props!,'HKU_flip_wall'),fp=B4_LAYOUT.flipPanel;
+ near(fw.min.x,fp.x0,'flip x0');near(fw.max.x,fp.x1,'flip x1');near(fw.min.z,fp.z0,'flip z0');near(fw.max.z,fp.z1,'flip z1');near(fw.max.y,fp.top,'flip top');
+ const cl=partBounds(props!,'Aux_power_closet'),cr=B4_OBSTACLES.filter(r=>r.name.startsWith('opening-b4-closet'));
+ near(cl.min.x,Math.min(...cr.map(r=>r.x0)),'closet x0');near(cl.max.x,Math.max(...cr.map(r=>r.x1)),'closet x1');near(cl.max.z,Math.max(...cr.map(r=>r.z1)),'closet z1');near(cl.max.y,Math.max(...cr.map(r=>r.top)),'closet top');
+ const lever=partBounds(props!,'Aux_breaker_lever').getCenter(new T.Vector3()),bp=B4_STATIONS.breaker.point;
+ near(lever.x,bp[0],'lever x');near(lever.y,bp[1],'lever y');near(lever.z,bp[2],'lever z');
+ for(const [name,id] of [['Aux_breaker_panel','breaker'],['Aux_power_rail','port']] as const){const b=partBounds(props!,name),s=B4_STATIONS[id].box;
+  near(b.min.x,s.x0,name+' x0');near(b.max.x,s.x1,name+' x1');near(b.min.y,s.y0,name+' y0');near(b.max.y,s.y1,name+' y1');near(b.max.z,s.z1,name+' z1');}
+ const panel=partBounds(props!,'Keyboard_wall').getCenter(new T.Vector3()),kp=B4_STATIONS.keyboard.point;near(panel.x,kp[0],'keyboard point x');
+ assert.throws(()=>partBounds(new T.Group(),'Keyboard_wall'),/missing/,'a missing builder part throws');
+ assert.equal(dbg.state().tiles,561);
+ console.log('PASS render vs nav: builder parts match the layout rects within 5 cm');
+}
+// Room lights stay inside the room, and only while the chapter runs.
+const lights=()=>{const out:T.PointLight[]=[];site.root.traverse(o=>{if(o instanceof T.PointLight&&hitPath(o).includes('B04_campaign_rooms'))out.push(o);});return out;};
+{
+ const ls=lights();assert.ok(ls.length>=3,'room lights while the chapter runs');
+ for(const l of ls){const p=l.getWorldPosition(new T.Vector3());assert.ok(l.distance>0&&p.z+l.distance<=O.b4.z1-.1,`light at ${p.toArray()} d=${l.distance} reaches past the entrance`);assert.ok(p.x-l.distance>=28.15&&p.x+l.distance<=87.85,'light stays inside B04');}
+ console.log('PASS room lights bounded inside B04:',ls.length);
+}
+// Reach to the nearest point of the interactable; gold highlight; held item hidden in B4.
+{
+ g2.body.position.set(47.6,O.b4.floor,9.0);step(1);
+ assert.equal(dbg.state().near,'keyboard','the west end of the Keyboard Wall is in reach');
+ const outline=(id:string)=>site.root.getObjectByName('B4_highlight_'+id)!;
+ assert.ok(outline('keyboard')?.visible,'the in-range Keyboard Wall is outlined');assert.equal(outline('flip').visible,false);
+ assert.equal(socket.visible,false,'the held MacBook is hidden inside B4');
+ const text=b4.objective('b4_keyboard')!.text;assert.match(text,/Press F/);assert.doesNotMatch(text,/\bE\b/);
+ g2.body.position.set(...O.handoff);step(1);assert.equal(socket.visible,true,'the held MacBook shows again outside B4');
+ g2.body.position.set(...B4_STATIONS.keyboard.stand);step(1);
+ dbg.focus('keyboard');assert.equal(socket.visible,false,'focus view hides the held MacBook');
+ dbg.type('ILOVECDS');dbg.enter();step(1);assert.equal(cs.stage,'b4_flip');
+ // Flipped tiles read clearly: the back faces glow.
+ const tile=site.root.getObjectByName('FlipTile_r0c0')!,face=(tile.children[0] as T.Mesh).material as T.MeshStandardMaterial[];
+ assert.ok(face[5].emissiveIntensity>0&&face[5].emissive.getHex()!==face[4].emissive.getHex(),'the flipped face is clearly different');
+ // Three full-screen drags from the flip stand finish the wall.
+ g2.body.position.set(...B4_STATIONS.flip.stand);step(1);dbg.focus('flip');step(1);
+ camera.position.copy(g2.body.position).add(new T.Vector3(0,1.6,0));camera.rotation.set(-g2.pitch,g2.yaw,0,'YXZ');camera.updateMatrixWorld();
+ const one=dbg.sweepNdc([[-.98,0],[.98,0]]);assert.ok(one>=Math.ceil(561/8),`one drag flips ${one} tiles; needs >= ${Math.ceil(561/8)}`);
+ const all=dbg.sweepNdc([[-.98,.55],[.98,.55]])&&dbg.sweepNdc([[-.98,-.55],[.98,-.55]]);
+ console.log('PASS sweep: one drag',one,'tiles, three drags',dbg.state().flipped);
+ assert.equal(dbg.state().flipped,561,'three drags finish the wall');
+ await new Promise(r=>setTimeout(r,1400));assert.equal(cs.stage,'b4_breaker','the solved wall opens the closet');void all;
+ g2.body.position.set(...B4_STATIONS.breaker.stand);step(1);
+ assert.ok(outline('breaker').visible,'the breaker is outlined in range');
+ const lever=site.root.getObjectByName('Aux_breaker_lever') as T.Mesh,lm=lever.material as T.MeshStandardMaterial;
+ assert.equal(lm.emissive.getHex(),0xffb648,'the in-range lever glows gold');assert.ok(lm.emissiveIntensity>0);
+ assert.equal(b4.interact(),true);step(1);assert.equal(cs.stage,'b4_connect');assert.equal(dbg.state().hum,true,'the hum plays from b4_connect on');
+ g2.body.position.set(...B4_STATIONS.port.stand);step(1);assert.equal(b4.interact(),true);step(1);assert.equal(cs.stage,'to_lawn');
+ assert.equal(lights().length,0,'room lights are removed once the chapter is done');
+ console.log('PASS focus, highlight, flip-face contrast, lights off after B4, F at every station');
+}
+// Reload at b4_connect keeps the supercomputer humming.
+{
+ b4.detach();assert.ok(w2.blocked(O.b4.door,O.b4.z1+.9,O.b4.floor+.06),'detach closes the door again');
+ assert.match(hitPath(doorRay()?.object??null),/B04_entrance_door/,'detach slides the leaves shut');
+ cs={...cs,stage:'b4_connect'};const again=createB4Chapter();again.attach(ctx);again.update(.1);
+ assert.equal((again.debug as Record<string,()=>{hum:boolean}>).state().hum,true,'after a reload at b4_connect the hum resumes');again.detach();
+ console.log('PASS detach restores the door; hum resumes after reload');
+}
+disposeAsset(site.root);w2.dispose();
+console.log('PASS campaign b4 checks');

@@ -24,9 +24,10 @@ export const OPENING={
  busExit:[63.4,0,27.8] as [number,number,number],
  b5:{id:'B05',x0:54,x1:82,z0:-80,door:58,doorWidth:2.4,floor:.02,z1:-54.7,clearHeight:4.55,doorHeight:3.2},
  /** B04 (CDS-1) ground floor behind the entrance: Keyboard Wall, flip wall, aux closet and racks (campaign B4). */
- b4:{id:'B04',x0:46,x1:70,z0:7,door:58,doorWidth:2.4,floor:.02,z1:20.5,clearHeight:4.3,doorHeight:3.2,
-  /** The doorway cut reaches past the revolving-door drum (radius 1.25 m, centre z≈20.73). */
-  doorDepth:1.6},
+ b4:{id:'B04',x0:46,x1:70,z0:7,door:58,doorWidth:2.6,floor:.02,z1:20.5,clearHeight:4.3,doorHeight:3.95,
+  /** The doorway cut contains the whole revolving-door drum (x 56.75–59.25, z 20.28–22.83, cap 3.94 m);
+   * the room shell's sliding door replaces it. */
+  doorDepth:2.45},
  b6:{id:'B06',x0:1,x1:10,z0:-62,door:4,doorWidth:2.4,floor:5.1,z1:-52.625,clearHeight:2.65,doorHeight:2.6},
  staff:[64,.02,-61] as [number,number,number],
  laptop:[7.3,5.9,-58.2] as [number,number,number],

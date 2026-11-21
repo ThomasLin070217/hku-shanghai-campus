@@ -1,8 +1,14 @@
 {
   "scope": "opening asset mode only",
   "baselineRevision": "b074ec5fd7a3",
-  "openingRevision": "0732d6ac1a2c",
+  "openingRevision": "a65064325096",
   "migrations": [
+    {
+      "oldId": "B04-G-5238d2dc03c3",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Revolving_door#1",
+      "newId": "B04",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
     {
       "oldId": "B04-G-62122fc3e3f9",
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Lobby_visual_recess_PROVISIONAL#1/CDS_entrance_night_photo_detail#1",
@@ -18,6 +24,12 @@
     {
       "oldId": "B04-P-03a021b89160",
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Lobby_visual_recess_PROVISIONAL#1/Scenic_depth_PROVISIONAL#1/Scenic_seat_back#1",
+      "newId": "B04",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B04-P-05145f0ac272",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Revolving_door#1/Door_cap#1",
       "newId": "B04",
       "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
     },
@@ -88,6 +100,18 @@
       "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
     },
     {
+      "oldId": "B04-P-421749e86362",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Door_jamb#1",
+      "newId": "B04",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B04-P-44174d0e6f39",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Door_jamb#3",
+      "newId": "B04",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
       "oldId": "B04-P-4c0879b06cff",
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Lobby_visual_recess_PROVISIONAL#1/Scenic_depth_PROVISIONAL#1/Scenic_table_support#2",
       "newId": "B04",
@@ -96,6 +120,24 @@
     {
       "oldId": "B04-P-4f087e69fec2",
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Lobby_visual_recess_PROVISIONAL#1/Scenic_depth_PROVISIONAL#1/Scenic_table_support#1",
+      "newId": "B04",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B04-P-5e7c3f2c4a0f",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Revolving_door#1/Closed_revolving_leaf_glass#1",
+      "newId": "B04",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B04-P-607c425255e6",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Revolving_door#1/Closed_revolving_leaf_glass#3",
+      "newId": "B04",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B04-P-617c43e5dbd2",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Revolving_door#1/Closed_revolving_leaf_glass#2",
       "newId": "B04",
       "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
     },
@@ -154,6 +196,24 @@
       "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
     },
     {
+      "oldId": "B04-P-880c142833dc",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Revolving_door#1/Door_post#1",
+      "newId": "B04",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B04-P-8a0c174e3fb4",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Revolving_door#1/Door_post#3",
+      "newId": "B04",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B04-P-8b0c18e1c5a0",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Revolving_door#1/Door_post#2",
+      "newId": "B04",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
       "oldId": "B04-P-a1c49dd8bda7",
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Lobby_visual_recess_PROVISIONAL#1/Scenic_depth_PROVISIONAL#1/Scenic_low_table#1",
       "newId": "B04",
@@ -168,6 +228,18 @@
     {
       "oldId": "B04-P-c615cccee5b8",
       "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Lobby_visual_recess_PROVISIONAL#1/CDS_entrance_night_photo_detail#1/Observed_blue_vertical_display#1/Display_blue_field#1",
+      "newId": "B04",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B04-P-cb866993c248",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Revolving_door#1/Door_axis#1",
+      "newId": "B04",
+      "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
+    },
+    {
+      "oldId": "B04-P-ed7972433334",
+      "authorKey": "/HKU_Shanghai_Zhangjiang_Campus/Buildings#1/B04/05_Entrance#1/Revolving_door#1/Door_base#1",
       "newId": "B04",
       "reason": "Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original."
     },

@@ -63,3 +63,20 @@ export function connectMacBook(step:B4Step|null,deviceId:string,writeRelay:(id:s
  writeRelay(deviceId);
  return{ok:true,event:'macbook_connected'};
 }
+
+export interface FlipCell{row:number;column:number}
+/** A sweep paints a band this many rows/columns either side of the pointer. A 9-row
+ * band lets three horizontal drags cover all 17 rows of the HKU wall with overlap,
+ * even where perspective bends a straight drag across rows near the wall's ends. */
+export const SWEEP_BRUSH={rows:4,columns:2};
+/** Tiles (row-major indices) a drag covers between two pointer cells, with the brush. */
+export function sweepTiles(grid:{rows:number;columns:number},from:FlipCell|null,to:FlipCell,brush=SWEEP_BRUSH):number[]{
+ const a=from??to,steps=Math.max(1,Math.abs(to.row-a.row),Math.abs(to.column-a.column)),out=new Set<number>();
+ for(let s=0;s<=steps;s++){
+  const r=Math.round(a.row+(to.row-a.row)*s/steps),c=Math.round(a.column+(to.column-a.column)*s/steps);
+  for(let dr=-brush.rows;dr<=brush.rows;dr++)for(let dc=-brush.columns;dc<=brush.columns;dc++){
+   const rr=r+dr,cc=c+dc;if(rr>=0&&rr<grid.rows&&cc>=0&&cc<grid.columns)out.add(rr*grid.columns+cc);
+  }
+ }
+ return[...out];
+}
