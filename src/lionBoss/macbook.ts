@@ -18,7 +18,8 @@ interface BossMacOptions {
   host:HTMLElement;
   storageKey:string;
   instanceId:string;
-  keys:Record<SkillKind,string>;
+  keys:Record<'stun'|'lure',string>;
+  canCompile:()=>boolean;
   onDeploy:()=>void;
   onClose:()=>void;
   opening:OpeningSave|null;
@@ -38,7 +39,7 @@ export function createBossMacBook(options:BossMacOptions) {
   overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');
   overlay.setAttribute('aria-label','MacBook Air');
   const {keys}=options;
-  const localVibe=createLawnVibeService(options.storageKey,keys,kind=>options.status().combat.cooldown[kind]);
+  const localVibe=createLawnVibeService(options.storageKey,keys,kind=>options.status().combat.cooldown[kind],options.canCompile);
   let lastHelperResult='';
   function devices():RobotDevice[]{
     const {combat,player,canAct}=options.status();
@@ -47,12 +48,12 @@ export function createBossMacBook(options:BossMacOptions) {
     const distance=Math.hypot(player[0]-combat.lion.x,player[2]-combat.lion.z);
     const check=rule?evaluateSkill(rule,{phase:combat.phase,distance,cooldown:combat.cooldown.lure,helperReady:!active}):{ok:false,message:'请先部署 Robot Hijack。'};
     return [{id:'lawn/ashu',name:'阿树 · 草坪助手',status:active?'执行牵制':'在线',permission:rule?'已装备侧翼牵制程序。':'可读遥测；牵制程序未部署。',
-      remainingSeconds:combat.phase==='lured'?combat.remaining:undefined,lastResult:lastHelperResult,
+      remainingSeconds:active?combat.remaining:undefined,lastResult:lastHelperResult,
       commands:[{id:'telemetry',label:'读取遥测',enabled:true},
-        {id:'distract',label:'Distract',enabled:canAct&&check.ok,reason:rule&&!canAct?'返回草坪后按 '+keys.lure+'，在挥爪收招时发送。':check.ok?'':check.message}]},
+        {id:'distract',label:'Distract',enabled:canAct&&check.ok,reason:rule&&!canAct?'进入草坪后按 '+(localVibe.slots().equipped.lure??'技能键')+' 接管阿树。':check.ok?'':check.message}]},
       {id:'L001',name:'草坪防御单元',status:combat.repaired===3?'已停机':'防御协议激活',permission:'仅开放观测遥测。',commands:[]}];
   }
-  const localSession:CampusComputeSession={vibe:localVibe,robotics:{devices,async execute(id,cmd){
+  const localSession:CampusComputeSession={vibe:localVibe,energy:()=>{const b=localVibe.slots().budget;return b?'B4 · '+b.available+' / '+b.total+' 算力':'B4 备用供电';},robotics:{devices,async execute(id,cmd){
     const device=devices().find(d=>d.id===id),command=device?.commands.find(c=>c.id===cmd);
     if(!command?.enabled)return {ok:false,message:command?.reason||'当前未获得设备指令权限。'};
     if(cmd==='telemetry'){
@@ -75,7 +76,7 @@ export function createBossMacBook(options:BossMacOptions) {
     if(!node)return 'L001 已安全关机。';
     if(Object.keys(session().vibe.slots().equipped).length<2)return '在 Vibe Console 编写项目、检查方案、测试并部署到两个槽位。';
     if(session().field)return '查看 HUD 上的已编译技能和合法目标。选择合适的施放时机，然后在节点光圈内长按 F。';
-    return (node.kind==='stun'?'等冲撞预警亮起，按 '+keys.stun+' 麻痹 L001。':'先退出挥爪扇区，再在收招时按 '+keys.lure+' 呼叫助手。')+'在节点光圈内长按 F，提交修复。';
+    return '走到'+node.name+'的光圈，施放任一已装备技能。狮子冻结或转移目标后，长按 F 操作装置。';
   }
   const agent=createLocalAgent({
     prompt:ctx=>'You are the campus MacBook recovery assistant in the L001 lawn encounter. Answer concisely in the player’s language. Current objective: '+objective()+'. '+instruction()+' Hearts: '+ctx.runtime.hearts+'/'+ctx.runtime.maxHearts+'.',
@@ -89,7 +90,7 @@ export function createBossMacBook(options:BossMacOptions) {
   });
   const mac=createMacBookExperience({
     agent,onClose:options.onClose,sessionKey:'hku.macbook.chat.'+options.instanceId,
-    computeAccess:()=>connected()?'connected':'exercise',
+    computeAccess:()=>'connected',
     energy:()=>session().energy?.()??'Local device power',
     robotics:{body:apps.roboticsBody,activate:apps.openRobotics},
     drawMap(canvas,large){

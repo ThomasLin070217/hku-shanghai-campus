@@ -90,6 +90,13 @@
         "submit"
       ]
     },
+    "boss": {
+      "description": "Standalone L001 operation. Compile at the safe terminal with an equipped MacBook, or cast an equipped slot in combat.",
+      "oneOf": [
+        {"type":"object","additionalProperties":false,"required":["type","project","prompt","source"],"properties":{"type":{"const":"compile"},"project":{"enum":["stun","lure","ghost"]},"prompt":{"type":"string","minLength":1,"maxLength":400},"source":{"enum":["model","preset"]}}},
+        {"type":"object","additionalProperties":false,"required":["type","slot"],"properties":{"type":{"const":"cast"},"slot":{"enum":[1,2]}}}
+      ]
+    },
     "directive": {
       "type": "object",
       "additionalProperties": false,
@@ -151,5 +158,9 @@
         }
       }
     }
-  }
+  },
+  "allOf": [
+    {"if":{"required":["boss"]},"then":{"maxProperties":4}},
+    {"if":{"required":["boss"],"properties":{"boss":{"properties":{"type":{"const":"cast"}}}}},"then":{"properties":{"durationMs":{"maximum":1000}}}}
+  ]
 }

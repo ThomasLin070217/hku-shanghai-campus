@@ -43,4 +43,12 @@
 .boss-skill kbd {font:700 12px ui-monospace,monospace}.boss-skill i {font:16px/1 system-ui;color:#b5d9c3}.boss-skill b {font-size:12px}.boss-skill small {grid-column:1/-1;font-size:11px;color:#c7d4c9}
 .boss-skill.can-cast {border-color:#c5f59d}.boss-skill.can-cast small {color:#d6ffc8}
 .boss-skill progress {grid-column:1/-1;width:100%;height:2px;border:0;margin-top:3px;accent-color:#9dbda5}
+#boss-alert {position:absolute;left:50%;top:20%;transform:translateX(-50%);padding:18px 24px;color:#fff1e5;background:#321812eb;border-left:3px solid #ff997b;display:grid;gap:4px;pointer-events:none;width:min(380px,80vw)}
+#boss-alert small,#boss-alert span,#boss-alert b {font:600 11px/1.5 ui-monospace,monospace;letter-spacing:.09em;color:#ffc4ae}
+#boss-alert strong{font-size:24px}
+#boss-aim{position:absolute;transform:translate(-50%,-50%);color:#7bfffc;background:#102928ce;border:1px dashed #91f5ed;border-radius:5px;padding:2px 6px;pointer-events:none;font:600 11px system-ui}
+#boss-black {display:grid;position:absolute;inset:0;place-items:center;background:#050c0a;color:#dcefe7;z-index:5}
+.boss-hit #boss-view::after{content:'';position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 65px 16px #d3432985}
+.boss-card .boss-next{display:inline-block;color:#102b24;background:#b8efa3;border:1px solid #a1c68e;border-radius:6px;padding:10px 16px;font:600 14px system-ui;text-decoration:none}
+@media(max-height:620px){.boss-card{max-height:75vh;overflow:auto}}
 @media(max-height:480px){.boss-header{padding:8px 16px}.boss-card{padding:12px}.boss-card h1,.boss-card p{margin:5px 0}.boss-card #boss-slots{margin-top:8px;padding-top:5px}#boss-brief{padding-bottom:8px}}

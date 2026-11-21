@@ -1,3 +1,4 @@
+import {campusModelConfig as config,requestCampusModel} from './modelTransport';
 import type {OpeningState} from './contracts';
 import type {OpeningRuntime} from './runtime';
 
@@ -40,26 +41,12 @@ export interface LocalAgent{
  dispose():void;
 }
 
-const DEFAULT_ENDPOINT='http://127.0.0.1:11434/api/chat';
-const DEFAULT_MODEL='deepseek-r1:8b';
 const TIMEOUT_MS=30000;
 const MAX_HISTORY=10;
 
 function storage():Storage|null{
  try{return typeof localStorage==='undefined'?null:localStorage;}catch{return null;}
 }
-function setting(key:string,fallback:string):string{
- const store=storage();
- try{const value=store?.getItem(key);return value===null||value===undefined?fallback:value;}catch{return fallback;}
-}
-function config(){
- if(import.meta.env?.MODE==='playtest')return{endpoint:'',model:'built-in',offline:true};
- const endpoint=setting('hku.opening.agent.endpoint',DEFAULT_ENDPOINT).trim();
- const model=setting('hku.opening.agent.model',DEFAULT_MODEL).trim();
- const offline=setting('hku.opening.agent.offline','0')==='1';
- return{endpoint,model,offline};
-}
-
 function systemPrompt(ctx:AgentContext):string{
  const {story,runtime}=ctx;
  return[
@@ -72,26 +59,6 @@ function systemPrompt(ctx:AgentContext):string{
   'Current objective: '+(ctx.objective??story.stage)+'. '+(ctx.detail??''),
   'Compute connection reported by game: '+(ctx.computeStatus??'unreported')+'.',
  ].join('\n');
-}
-
-function localEndpointReply(payload:unknown):string|null{
- if(!payload||typeof payload!=='object')return null;
- const p=payload as Record<string,unknown>;
- const message=p.message;
- if(message&&typeof message==='object'){
-  const content=(message as Record<string,unknown>).content;
-  if(typeof content==='string'&&content.trim())return content.trim();
- }
- const choices=p.choices;
- if(Array.isArray(choices)&&choices.length){
-  const first=choices[0] as Record<string,unknown>;
-  const m=first?.message as Record<string,unknown>|undefined;
-  if(typeof m?.content==='string'&&m.content.trim())return m.content.trim();
-  if(typeof first?.text==='string'&&first.text.trim())return first.text.trim();
- }
- const response=p.response;
- if(typeof response==='string'&&response.trim())return response.trim();
- return null;
 }
 
 const hasCJK=(text:string)=>/[\u3400-\u9fff]/.test(text);
@@ -210,15 +177,7 @@ export function createLocalAgent(guide?:RecoveryGuide):LocalAgent{
   status={mode:'checking',endpoint:c.endpoint,model:c.model,lastError:null};
   try{
    const turns:ChatTurn[]=[...previous.slice(-MAX_HISTORY),{role:'user',content:text}];
-   const tuning=/\/api\/chat(?:[?#]|$)/.test(c.endpoint)?{options:{temperature:.4}}:{temperature:.4};
-   const response=await fetch(c.endpoint,{
-    method:'POST',headers:{'content-type':'application/json'},signal:active.signal,
-    body:JSON.stringify({model:c.model,stream:false,...tuning,messages:[{role:'system',content:(guide?.prompt??systemPrompt)(ctx)},...turns]}),
-   });
-   if(!response.ok)throw Error('HTTP '+response.status);
-   const body=await response.json();
-   const reply=localEndpointReply(body);
-   if(!reply)throw Error('empty local model reply');
+   const reply=await requestCampusModel(c,[{role:'system',content:(guide?.prompt??systemPrompt)(ctx)},...turns],active.signal);
    if(serial===request)status={...status,mode:'local-model',lastError:null};
    return reply.slice(0,12000);
   }catch(error){

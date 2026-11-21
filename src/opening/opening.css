@@ -2151,3 +2151,7 @@ body:not(.exploring) .opening-danger-vignette {
   transition: transform 0.12s linear;
 }
 .opening-distance-text { color: #315544; }
+.opening-backup-relay{border-top:1px solid #86958066;margin-top:1rem;padding-top:.75rem}
+.opening-backup-relay h3,.opening-backup-relay p{margin:.35rem 0}
+.opening-backup-relay>div{display:flex;flex-wrap:wrap;gap:.45rem;margin:.6rem 0}
+.opening-backup-relay [role=status]{font-size:.85rem}

@@ -13,8 +13,8 @@ document.querySelector('#app')!.innerHTML = `
         <label class="levels-quality"><input type="checkbox" id="low-graphics"> 低画质模式（降低三维分辨率，关闭阴影）</label>
         <nav class="levels-list" aria-label="可试玩的关卡">
           <a href="?experience=opening"><b>校园开场 <small lang="en">High Table</small></b><span>从校园巴士出发，取回 MacBook，前往 4 号楼。</span></a>
-          <a href="?experience=sports-hall"><b>体育馆营救</b><span>解开东门的数独和密码锁，救出馆内学生。</span></a>
-          <a href="?experience=lion-boss"><b>草坪上的守卫 <small>L001</small></b><span>在 MacBook 上写技能，反制机械狮子并修复系统。</span></a>
+          <a href="?experience=lion-boss"><b>草坪上的守卫 <small>L001</small></b><span>在 MacBook 编译两项技能，牵制机械狮子，解除防御锁并切断核心电源。</span></a>
+          <a href="?experience=sports-hall"><b>体育馆营救</b><span>解开东门的数独和密码锁，救出馆内学生。也可单独试玩。</span></a>
           <a href="?experience=survey"><b>校园数字巡检</b><span>走访三个室外地标，在电脑上同步校园档案。</span></a>
         </nav>
       </section>

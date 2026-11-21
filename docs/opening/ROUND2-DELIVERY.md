@@ -67,14 +67,15 @@ snapshot and the save.
 
 ## 3. Local Agent setup
 
-The assistant first tries a local endpoint, then falls back to the built-in recovery
-core. No remote service and no API key are required in the repository.
+AI Assistant and the lawn's Vibe Console share the configured model endpoint.
+Local development can use the project's LiteLLM proxy described in
+[LLM endpoint setup](../LLM-ENDPOINT.md). An unconfigured session starts offline.
 
 ```js
-// optional, in the browser devtools of the game page
-localStorage['hku.opening.agent.endpoint'] = 'http://127.0.0.1:11434/api/chat'; // Ollama default
+// Example for a locally installed Ollama model, in the game page's browser devtools.
+localStorage['hku.opening.agent.endpoint'] = 'http://127.0.0.1:11434/api/chat';
 localStorage['hku.opening.agent.model']    = 'deepseek-r1:8b';
-localStorage['hku.opening.agent.offline']  = '1';  // force the built-in core
+localStorage.removeItem('hku.opening.agent.offline'); // set to '1' to force offline
 ```
 
 The transport accepts Ollama (`message.content` or `response`) and OpenAI-style

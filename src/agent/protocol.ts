@@ -4,15 +4,26 @@ export type ViewMode='first'|'third';
 export type DirectiveType='walkTo'|'approach'|'lookAt'|'followPath';
 export interface DirectiveSpec {type:DirectiveType;position?:number[];entityId?:string;toleranceM?:number;stopDistanceM?:number;toleranceDeg?:number;sprint?:boolean;path?:number[][]}
 export interface DirectiveSnapshot {commandId:string;type:DirectiveType;reached:boolean;distanceRemaining:number;lookErrorDeg:number;waypoints:number;progress:number;reason?:string}
+export type BossAction =
+ | {type:'compile';project:'stun'|'lure'|'ghost';prompt:string;source:'model'|'preset'}
+ | {type:'cast';slot:1|2};
+function validBossAction(value:unknown):value is BossAction {
+ if(!value||typeof value!=='object'||Array.isArray(value))return false;
+ const op=value as BossAction,keys=Object.keys(op);
+ if(op.type==='cast')return keys.length===2&&(op.slot===1||op.slot===2);
+ return op.type==='compile'&&keys.length===4&&['stun','lure','ghost'].includes(op.project)
+  &&['model','preset'].includes(op.source)&&typeof op.prompt==='string'&&!!op.prompt.trim()&&op.prompt.length<=400;
+}
 export interface Action {
  commandId:string;controlEpoch:number;durationMs:number;
  move?:{forward:number;right:number};lookDelta?:{yawDeg:number;pitchDeg:number};
  interact?:string;computer?:'map'|'tasks'|'clues'|'submit'; selectHotbar?:number; sprint?:boolean;jump?:boolean;switchView?:boolean;
  directive?:DirectiveSpec;
+ boss?:BossAction;
 }
 export type CommandStatus='accepted'|'running'|'completed'|'blocked'|'interrupted'|'expired';
 export interface CommandRecord {commandId:string;status:CommandStatus;acceptedAt:number;expiresAt:number;startedFrame?:number;finishedFrame?:number;reason?:string;jumpResult?:'jumped'|'airborne_ignored';collisionIds:string[];operation?:import('../gameplay/survey').Outcome;directive?:DirectiveSnapshot}
-export type GameEventKind='ai_enabled'|'ai_disabled'|'control_acquired'|'control_released'|'control_revoked'|'command_accepted'|'command_running'|'command_finished'|'jump'|'landed'|'collision'|'survey'|'discovery'|'panel'|'inventory'|'hotbar'|'spawn'|'pause'|'world';
+export type GameEventKind='ai_enabled'|'ai_disabled'|'control_acquired'|'control_released'|'control_revoked'|'command_accepted'|'command_running'|'command_finished'|'jump'|'landed'|'collision'|'survey'|'discovery'|'panel'|'inventory'|'hotbar'|'spawn'|'pause'|'world'|'boss'|'ai_core_power_cut';
 export interface GameEvent {seq:number;frame:number;timeMs:number;kind:GameEventKind;message:string;data?:Record<string,unknown>}
 export interface Observation {
  protocolVersion:string;frame:number;timeMs:number;wallTimeMs:number;
@@ -26,8 +37,9 @@ export interface Observation {
  eventSeq:number;events?:GameEvent[];
  perception:import('./perception').Perception;
  directive:DirectiveSnapshot|null;
+ boss?:unknown;
 }
-const actionKeys=['commandId','controlEpoch','durationMs','move','lookDelta','sprint','jump','switchView','selectHotbar','interact','computer','directive'];
+const actionKeys=['commandId','controlEpoch','durationMs','move','lookDelta','sprint','jump','switchView','selectHotbar','interact','computer','directive','boss'];
 const directiveKeys=['type','position','entityId','toleranceM','stopDistanceM','toleranceDeg','sprint','path'];
 export function validateDirectiveSpec(value:unknown):value is DirectiveSpec{
  if(!value||typeof value!=='object'||Array.isArray(value))return false;const d=value as DirectiveSpec;
@@ -60,6 +72,7 @@ export function validateAction(a:unknown):a is Action{
  if(c.move!==undefined&&(!c.move||!Number.isFinite(c.move.forward)||!Number.isFinite(c.move.right)||Math.abs(c.move.forward)>1||Math.abs(c.move.right)>1))return false;
  if(c.lookDelta!==undefined&&(!c.lookDelta||!Number.isFinite(c.lookDelta.yawDeg)||!Number.isFinite(c.lookDelta.pitchDeg)||Math.abs(c.lookDelta.yawDeg)>180||Math.abs(c.lookDelta.pitchDeg)>90))return false;
  if(!['sprint','jump','switchView'].every(k=>(c as unknown as Record<string,unknown>)[k]===undefined||typeof(c as unknown as Record<string,unknown>)[k]==='boolean'))return false;
+ if(c.boss!==undefined)return Object.keys(c).length===4&&validBossAction(c.boss)&&c.durationMs<=(c.boss.type==='compile'?30000:1000);
  if(c.directive!==undefined){
   // A directive owns movement for its whole lifetime, so raw input channels are rejected.
   if(!validateDirectiveSpec(c.directive))return false;

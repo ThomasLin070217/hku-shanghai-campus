@@ -2,7 +2,8 @@ import type {SkillRule, SkillKind as Kind} from './rules';
 
 type CompileResult = {ok:true;rule:SkillRule}|{ok:false;message:string};
 
-export function compileBossIntent(input:string, kind:Kind):CompileResult {
+/** Reads version-one loadouts whose deployed rules were persisted as source text. */
+export function compileBossIntent(input:string, kind:Exclude<Kind,'ghost'>):CompileResult {
   const normalized=input.normalize('NFKC').trim().toLowerCase();
   const intent=normalized.replace(/[零一二三四五六七八九](?=\s*(?:米|公尺))/g,ch=>String('零一二三四五六七八九'.indexOf(ch)));
   const fail = (message:string):CompileResult=>({ok:false,message});

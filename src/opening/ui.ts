@@ -6,6 +6,7 @@ import {setHidden, setText} from '../ui/dom';
 import {createLocalAgent} from './agent';
 import {createMacBookExperience} from './macbook';
 import {bindComputeApps} from './computeApps';
+import {bindBackupRelay} from './backupRelay';
 import {OPENING_CAPTURE_DAMAGE} from './runtime';
 import {createVitalsHud} from '../ui/vitals';
 
@@ -468,10 +469,9 @@ export function createOpeningUI(
     const lawn = makeButton('Play L001 lawn encounter', 'secondary', () => {
       location.assign('?experience=lion-boss');
     });
-    const rescue = makeButton('Rescue the sports hall students', 'secondary', () => {
-      location.assign('?experience=sports-hall');
-    });
-    shell.append(actionRow(close, rescue, lawn));
+    lawn.disabled=true;
+    body.append(bindBackupRelay(device.instanceId(),()=>{lawn.disabled=false;}));
+    shell.append(actionRow(close, lawn));
     return shell;
   }
 

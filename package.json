@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "llm": "node scripts/llm.mjs",
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
     "build:playtest": "tsc --noEmit && vite build --mode playtest",
@@ -49,7 +50,8 @@
     "check:video-followup": "tsx scripts/check-video-followup.ts",
     "scene:opening": "tsx scripts/scene-catalog.ts --opening",
     "check:opening": "tsx scripts/check-opening-state.ts && tsx scripts/check-opening-robot.ts && tsx scripts/check-opening-fleet.ts && tsx scripts/check-opening-runtime.ts && tsx scripts/check-opening-atmosphere.ts && tsx scripts/check-opening-world.ts && tsx scripts/check-opening-integration.ts && tsx scripts/check-opening-reference.ts && tsx scripts/check-opening-npcs.ts",
-    "check:lion-boss": "tsx scripts/check-lion-boss.ts",
+    "check:lion-boss": "tsx scripts/check-lion-boss.ts && tsx scripts/check-skill-compiler.ts && tsx scripts/check-lawn-agent.ts",
+    "check:lawn-browser": "node scripts/check-lawn-browser.mjs",
     "check:door": "tsx scripts/check-sports-door.ts"
   },
   "dependencies": {
@@ -64,6 +66,7 @@
     "@types/ws": "^8.18.2",
     "@worldlabsai/client": "0.7.0",
     "gltf-validator": "^2.0.0-dev.3.10",
+    "playwright-core": "1.65.1",
     "tsx": "^4.20.6",
     "typescript": "~5.9.3",
     "vite": "^7.2.2"

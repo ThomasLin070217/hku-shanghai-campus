@@ -38,6 +38,8 @@ export function createDeviceApps(resolveSession:()=>CampusComputeSession|null,on
         name:service.name,projects:service.projects,slots:()=>service.slots(),draft:id=>service.draft(id),
         edit:(id,source)=>{if(allowed())service.edit(id,source);},
         preview:(id,source)=>scoped(()=>service.preview(id,source)),
+        preset:service.preset?(id,source,side)=>scoped(()=>service.preset!(id,source,side)):undefined,
+        uninstall:service.uninstall?id=>scoped(()=>service.uninstall!(id)):undefined,
         test:plan=>scoped(()=>service.test(plan)),install:plan=>scoped(()=>service.install(plan)),
         installedPlan:id=>service.installedPlan?.(id)??null,blockedReason:plan=>service.blockedReason?.(plan)??null,
         getFieldRule:kind=>service.getFieldRule(kind),cooldown:id=>service.cooldown(id),reset:()=>{if(allowed())service.reset();},

@@ -1,5 +1,7 @@
 # MacBook Air 与 Vibe Console 交付说明
 
+本页记录桌面首次集成时的行为。草坪现已接入三个真实技能、备用超算预算和核心电源任务。最新试玩说明、模型配置及验收记录见 [L001 Vibe Coding Boss Battle](L001-VIBE-BATTLE.md)。
+
 ## 试玩
 
 关卡选择页保留原有入口。桌面浏览器建议使用键盘和鼠标。开发环境运行 `npm ci` 和 `npm run dev`，在终端给出的地址后加下表中的查询参数。
