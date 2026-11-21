@@ -6,15 +6,15 @@ export interface SceneEntity {id:string;name:string;kind:EntityKind;parentId:str
 export interface EntityQuery {q?:string;kind?:EntityKind;parentId?:string;offset?:number;limit?:number;near?:number[];radius?:number}
 // A012 alias is reserved for the retired B04/B05 corridor; never reuse its ID.
 const aliases:Record<string,[string,string,string]>={
- U08_Perimeter_and_lawn_lights:['A015','外围绿化与 HKU 草坪地灯','src/model/videoFollowup.ts'],
- Ground:['A001','校园地面','src/model/buildSite.ts'],Roads_and_Paving:['A002','道路与铺装','src/model/buildSite.ts'],Landscape:['A003','基础绿化','src/model/buildSite.ts'],
- Sunken_Plaza_and_Ramp:['A004','下沉庭院','src/model/buildSite.ts'],Auditorium_Grand_Stair:['A005','礼堂大阶梯','src/model/buildSite.ts'],Oculus_Pavilion:['A006','圆形天窗连廊','src/model/buildSite.ts'],
- CDS1_Entrance_Forecourt:['A007','CDS-1 入口广场','src/model/buildSite.ts'],CDS_Landscape_Monument:['S001','计算与数据科学学院石牌','src/model/videoDetails.ts'],CDS_Monument_Lettering:['S001-TEXT','学院石牌黑字与校徽','src/model/monumentFace.ts'],
- 'entrance-lion':['L001','入口狮子与底座','src/model/nov13Details.ts'],Reference_planting_layers:['L002','实景补充绿化','src/model/landscapeDetails.ts'],
- Video_Observed_Exterior_Details:['A008','视频确认的室外细节','src/model/videoDetails.ts'],Nov13_Observed_Corrections:['A009','11月13日实景细节','src/model/nov13Details.ts'],U06_Daylight_Details:['A010','11月14日实景细节','src/model/nov14Details.ts'],
- U06_Curved_courtyard:['A011','庭院双弧楼梯与玻璃围护','src/model/courtyard.ts'],B04_B05_Observed_Connection:['A012','4号楼—5号楼连接体','src/model/nov14Details.ts'],Exploration_boundary:['A013','探索边界','src/model/buildSite.ts'],Sports:['A014','北侧运动区','src/model/buildSite.ts'],Curved_East_Walk:['A016','东侧弧形步道','src/model/axisGarden.ts'],
+ U08_Perimeter_and_lawn_lights:['A015','Perimeter planting and HKU lawn lights','src/model/videoFollowup.ts'],
+ Ground:['A001','Campus ground','src/model/buildSite.ts'],Roads_and_Paving:['A002','Roads and paving','src/model/buildSite.ts'],Landscape:['A003','Base planting','src/model/buildSite.ts'],
+ Sunken_Plaza_and_Ramp:['A004','Sunken courtyard','src/model/buildSite.ts'],Auditorium_Grand_Stair:['A005','Auditorium grand stair','src/model/buildSite.ts'],Oculus_Pavilion:['A006','Oculus pavilion','src/model/buildSite.ts'],
+ CDS1_Entrance_Forecourt:['A007','CDS-1 entrance forecourt','src/model/buildSite.ts'],CDS_Landscape_Monument:['S001','School of Computing and Data Science monument','src/model/videoDetails.ts'],CDS_Monument_Lettering:['S001-TEXT','Monument lettering and crest','src/model/monumentFace.ts'],
+ 'entrance-lion':['L001','Entrance lion and plinth','src/model/nov13Details.ts'],Reference_planting_layers:['L002','Reference planting layers','src/model/landscapeDetails.ts'],
+ Video_Observed_Exterior_Details:['A008','Video-confirmed exterior details','src/model/videoDetails.ts'],Nov13_Observed_Corrections:['A009','Nov 13 observed details','src/model/nov13Details.ts'],U06_Daylight_Details:['A010','Nov 14 observed details','src/model/nov14Details.ts'],
+ U06_Curved_courtyard:['A011','Courtyard twin curved stairs and glass guard','src/model/courtyard.ts'],B04_B05_Observed_Connection:['A012','Building 4-Building 5 link','src/model/nov14Details.ts'],Exploration_boundary:['A013','Exploration boundary','src/model/buildSite.ts'],Sports:['A014','North sports area','src/model/buildSite.ts'],Curved_East_Walk:['A016','Curved east walk','src/model/axisGarden.ts'],
 };
-const buildingGroups:Record<string,[string,string]>={'01_MainBody':['BODY','主体'],'02_Glass':['GLASS','玻璃'],'03_Columns_and_Fins':['FRAME','立柱与竖框'],'03_Columns_and_Frames':['FRAME','立柱与框架'],'04_FloorBands':['BANDS','楼层分隔'],'05_Entrance':['ENTRY','入口'],'06_Canopy':['CANOPY','雨棚'],'07_Roof':['ROOF','屋顶'],'08_Signage':['SIGN','标识']};
+const buildingGroups:Record<string,[string,string]>={'01_MainBody':['BODY','Main body'],'02_Glass':['GLASS','Glass'],'03_Columns_and_Fins':['FRAME','Columns and fins'],'03_Columns_and_Frames':['FRAME','Columns and frames'],'04_FloorBands':['BANDS','Floor bands'],'05_Entrance':['ENTRY','Entrance'],'06_Canopy':['CANOPY','Canopy'],'07_Roof':['ROOF','Roof'],'08_Signage':['SIGN','Signage']};
 export function stableHash(value:string){let a=2166136261,b=0x9e3779b9;for(let i=0;i<value.length;i++){a=Math.imul(a^value.charCodeAt(i),16777619);b=Math.imul(b^value.charCodeAt(i),2246822519);}return(a>>>0).toString(16).padStart(8,'0')+(b>>>0).toString(16).padStart(8,'0').slice(0,4);}
 const round=(n:number)=>Math.round(n*10000)/10000;
 const caches=new WeakMap<T.Object3D,SceneRegistry>();

@@ -18,7 +18,7 @@
   "buildings": [
     {
       "id": "B01",
-      "label": "1号楼 · 西侧北塔",
+      "label": "Building 1 · West north tower",
       "kind": "frameTower",
       "x": -58,
       "z": -2,
@@ -34,7 +34,7 @@
     },
     {
       "id": "B02",
-      "label": "2号楼 · 西侧南塔",
+      "label": "Building 2 · West south tower",
       "kind": "frameTower",
       "x": -58,
       "z": 70,
@@ -50,7 +50,7 @@
     },
     {
       "id": "B03",
-      "label": "CDS-2 · 3号楼",
+      "label": "CDS-2 · Building 3",
       "kind": "bandTower",
       "x": 58,
       "z": 70,
@@ -66,7 +66,7 @@
     },
     {
       "id": "B04",
-      "label": "CDS-1 · 4号楼",
+      "label": "CDS-1 · Building 4",
       "kind": "bandTower",
       "x": 58,
       "z": -2,
@@ -82,7 +82,7 @@
     },
     {
       "id": "B05",
-      "label": "5号楼 · 学生活动",
+      "label": "Building 5 · Student activities",
       "kind": "amenities",
       "x": 58,
       "z": -70,
@@ -98,7 +98,7 @@
     },
     {
       "id": "B06",
-      "label": "6号楼 · 礼堂",
+      "label": "Building 6 · Auditorium",
       "kind": "auditorium",
       "x": 0,
       "z": -70,
@@ -114,7 +114,7 @@
     },
     {
       "id": "B07",
-      "label": "7号楼 · 西北配套楼",
+      "label": "Building 7 · Northwest support building",
       "kind": "amenities",
       "x": -58,
       "z": -70,
@@ -134,9 +134,9 @@
     "depth": 256,
     "centerZ": -14,
     "plazaX": 0,
-    "plazaZ": 25,
-    "plazaRadiusX": 16,
-    "plazaRadiusZ": 22,
+    "plazaZ": -9,
+    "plazaRadiusX": 15,
+    "plazaRadiusZ": 15,
     "plazaDepth": 4.2,
     "bridgeHeight": 5.3,
     "bridgeWidth": 4.4,
