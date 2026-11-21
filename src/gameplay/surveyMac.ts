@@ -12,16 +12,16 @@ export function createSurveyMac(game:CampusGame, onClose:()=>void, persist:()=>v
   files.className=logs.className='survey-records';
   const host=document.createElement('div');
   host.className='survey-device';host.hidden=true;host.tabIndex=-1;
-  host.setAttribute('role','dialog');host.setAttribute('aria-modal','true');host.setAttribute('aria-label','校园巡检 MacBook');
-  const objective=()=>game.survey.progress.completed?'校园数字档案已同步':'走访三个校园地标，同步校园数字档案';
+  host.setAttribute('role','dialog');host.setAttribute('aria-modal','true');host.setAttribute('aria-label','Campus survey MacBook');
+  const objective=()=>game.survey.progress.completed?'Campus digital archive synced':'Visit three campus landmarks and sync the campus digital archive';
   function guidance(){
     const survey=game.survey.snapshot();
     const next=survey.objectives.find(item=>!item.collected);
-    return next?'已收集 '+survey.count+' / '+survey.total+' 条记录。前往'+next.name+'，面对记录点按 F。':
-      survey.archive?'在 Files 阅读已解锁的校园档案。':'所有记录已收集。打开 Mission Logs，选择「同步校园数字档案」。';
+    return next?'Collected '+survey.count+' / '+survey.total+' records. Head to '+next.name+', then press F facing the record point.':
+      survey.archive?'Read the unlocked campus archive in Files.':'All records collected. Open Mission Logs and choose "Sync campus digital archive".';
   }
   const agent=createLocalAgent({
-    greeting:guidance,suggestions:['下一站去哪里？','怎样提交校园档案？'],
+    greeting:guidance,suggestions:['Where to next?','How do I submit the campus archive?'],
     prompt:()=>objective()+'。'+guidance(),reply:()=>guidance(),
   });
   const row=(tag:'h2'|'h3'|'p'|'li',text:string)=>{
@@ -29,26 +29,26 @@ export function createSurveyMac(game:CampusGame, onClose:()=>void, persist:()=>v
   };
   function renderFiles(){
     const survey=game.survey.snapshot();
-    files.replaceChildren(row('h2','校园档案'));
+    files.replaceChildren(row('h2','Campus archive'));
     for(const clue of survey.collectedClues) files.append(row('h3',clue.title),row('p',clue.text));
     if(survey.archive)files.append(row('h3',survey.archive.title),row('p',survey.archive.text));
-    if(!survey.collectedClues.length)files.append(row('p','收集到的记录会保存在这里。第一站是 CDS-1 入口。'));
+    if(!survey.collectedClues.length)files.append(row('p','Collected records are kept here. First stop: the CDS-1 entrance.'));
   }
   function renderLogs(){
     const survey=game.survey.snapshot();
     const list=document.createElement('ol');
-    for(const place of survey.objectives)list.append(row('li',(place.collected?'已收集 · ':'待走访 · ')+place.name));
+    for(const place of survey.objectives)list.append(row('li',(place.collected?'Collected · ':'To visit · ')+place.name));
     const submit=document.createElement('button');submit.type='button';submit.id='submit-survey';
-    submit.textContent=survey.archive?'档案已同步':'同步校园数字档案';submit.disabled=!!survey.archive;
+    submit.textContent=survey.archive?'Archive synced':'Sync campus digital archive';submit.disabled=!!survey.archive;
     const feedback=row('p',guidance());feedback.id='submit-feedback';feedback.setAttribute('role','status');
     submit.onclick=()=>{
       const result=game.survey.computer('submit');
       if(result.ok){persist();renderLogs();renderFiles();}
       else feedback.textContent=result.message;
     };
-    const archive=document.createElement('button');archive.type='button';archive.textContent='查看校园记录';
+    const archive=document.createElement('button');archive.type='button';archive.textContent='View campus records';
     archive.onclick=()=>mac.showApp('finder');
-    logs.replaceChildren(row('h2',objective()),row('p','校园记录 '+survey.count+' / '+survey.total),list,submit,feedback,archive);
+    logs.replaceChildren(row('h2',objective()),row('p','Campus records '+survey.count+' / '+survey.total),list,submit,feedback,archive);
   }
   const deviceId=()=>game.inventory.slots.find(item=>item?.itemId==='macbook-air-13-silver')?.instanceId;
   const mac=createMacBookExperience({

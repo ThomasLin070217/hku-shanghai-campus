@@ -52,7 +52,7 @@ export class CampusAudio {
     this.ambientGate=this.context.createGain();this.ambientGate.gain.value=0;this.ambientGate.connect(this.groups.ambient);this.apply(this.settings);
    }
    // Invoke resume synchronously within the click, before fetching/decoding.
-   const resume=document.hidden?Promise.resolve():this.context.resume().then(()=>{this.resumeError='';},()=>{this.resumeError='浏览器尚未启用声音，请点击重试';});
+   const resume=document.hidden?Promise.resolve():this.context.resume().then(()=>{this.resumeError='';},()=>{this.resumeError='The browser has not enabled sound yet. Click to retry.';});
    if(!this.loading){
     const names=Object.keys(this.urls).filter(n=>!this.buffers.has(n)&&(retryFailed||!this.failedFiles.includes(n)));
     this.loading=Promise.all(names.map(n=>this.load(n))).then(()=>{}).finally(()=>{this.loading=null;});
@@ -60,7 +60,7 @@ export class CampusAudio {
    await Promise.all([resume,this.loading]);
    this.setActive(this.active,true);
    if(this.openingAmbienceMode!=='off')this.openingAmbience(this.openingAmbienceMode);
-  }catch{this.resumeError='声音启动失败，请点击重试';}
+  }catch{this.resumeError='Sound failed to start. Click to retry.';}
  }
  private async load(name:string){
   const context=this.context!,abort=new AbortController();this.pending.set(name,abort);
@@ -94,7 +94,7 @@ export class CampusAudio {
  /** Lower music/ambient under a spoken NPC line without changing the user's saved settings. */
  setDialogueDuck(active:boolean){const next=active?.42:1;if(next===this.dialogueDuck)return;this.dialogueDuck=next;if(!this.context||!this.groups.music||!this.groups.ambient)return;const t=this.context.currentTime;
   for(const n of ['ambient','music']as const){const p=this.groups[n].gain,target=this.settings.muted?0:this.settings[n]*this.dialogueDuck;if(typeof p.cancelAndHoldAtTime==='function')p.cancelAndHoldAtTime(t);else{const current=p.value;p.cancelScheduledValues(t);p.setValueAtTime(current,t);}p.setTargetAtTime(target,t,.12);}}
- setActive(value:boolean,force=false){value=value&&!document.hidden&&!this.disposed;if(value===this.active&&!force)return;this.active=value;if(!this.context)return;if(value&&this.context.state==='suspended')void this.context.resume().then(()=>{this.resumeError='';},()=>{this.resumeError='浏览器尚未启用声音，请点击重试';});const t=this.context.currentTime;this.ambientGate?.gain.setTargetAtTime(value&&!this.story ? .48:0,t,.12);this.stepGate?.gain.setTargetAtTime(value?1:0,t,.006);if(!value){this.setDialogueDuck(false);this.stopShots('steps');this.stopShots('sfx',true);this.story?.pause();}}
+ setActive(value:boolean,force=false){value=value&&!document.hidden&&!this.disposed;if(value===this.active&&!force)return;this.active=value;if(!this.context)return;if(value&&this.context.state==='suspended')void this.context.resume().then(()=>{this.resumeError='';},()=>{this.resumeError='The browser has not enabled sound yet. Click to retry.';});const t=this.context.currentTime;this.ambientGate?.gain.setTargetAtTime(value&&!this.story ? .48:0,t,.12);this.stepGate?.gain.setTargetAtTime(value?1:0,t,.006);if(!value){this.setDialogueDuck(false);this.stopShots('steps');this.stopShots('sfx',true);this.story?.pause();}}
  private stopShots(group?:string,immediate=false){
   for(const [source,node]of this.shots)if(!group||node.group===group){
    if(immediate||this.context?.state!=='running'){this.releaseShot(source);continue;}

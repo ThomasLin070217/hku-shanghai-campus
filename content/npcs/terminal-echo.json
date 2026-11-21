@@ -4,33 +4,33 @@
   "id": "npc.terminal.echo",
   "displayName": "Lam",
   "fictional": true,
-  "role": "控制中心固定离线 AI 终端",
-  "appearance": "固定屏幕、白色状态文字、步骤编号和提示音；非人形",
-  "motivation": "执行离线恢复程序并报告确定性状态",
+  "role": "Fixed offline AI terminal in the control centre",
+  "appearance": "Fixed screen, white status text, numbered steps and cue tones; not humanoid",
+  "motivation": "Run the offline recovery procedure and report deterministic state",
   "knows": [
-    "当前任务阶段",
-    "控制台输入结果",
-    "助手与紧急装置状态"
+    "Current mission stage",
+    "Console input results",
+    "Helper and emergency device status"
   ],
   "doesNotKnow": [
-    "黑客动机",
-    "校园其他区域情况",
-    "未传入系统的现实事件"
+    "The hacker's motive",
+    "Conditions elsewhere on campus",
+    "Real-world events not entered into the system"
   ],
-  "speechStyle": "简短、中性、可操作",
+  "speechStyle": "Brief, neutral, actionable",
   "dialogue": {
-    "firstMeeting": "离线恢复程序可用。等待操作员输入。",
-    "repeat": "当前目标：恢复本地机器人控制。",
-    "offTopic": "该问题不属于离线恢复程序。",
-    "locked": "访问受限：请先接受现场任务。",
-    "wrongAnswer": "恢复失败。检测到步骤顺序冲突，可以立即重试。",
-    "hint0": "应急说明包含全部必要规则。",
-    "hint1": "电源步骤位于第一位；隔离步骤早于恢复步骤。",
-    "hint2": "启动电源，然后隔离外部网络，最后恢复本地控制。",
-    "puzzleComplete": "本地控制已恢复。未感染设备：一台。",
-    "helperUnlocked": "宇树机器人助手已启动。可用指令：跟随、扫描、牵制。",
-    "chapterComplete": "三处紧急装置已启动。巨型狮子机器人已安全关机。",
-    "fallback": "网络不可用，离线任务仍可继续。"
+    "firstMeeting": "Offline recovery procedure available. Waiting for operator input.",
+    "repeat": "Current objective: restore local robot control.",
+    "offTopic": "That question is outside the offline recovery procedure.",
+    "locked": "Access restricted: accept the on-site mission first.",
+    "wrongAnswer": "Recovery failed. Step order conflict detected; you can retry immediately.",
+    "hint0": "The emergency notes contain every required rule.",
+    "hint1": "The power step comes first; isolation comes before restoration.",
+    "hint2": "Power on, then isolate the external network, then restore local control.",
+    "puzzleComplete": "Local control restored. Uninfected devices: one.",
+    "helperUnlocked": "Unitree robot helper started. Available commands: follow, scan, distract.",
+    "chapterComplete": "All three emergency devices activated. The giant lion robot has powered down safely.",
+    "fallback": "Network unavailable; the offline mission can continue."
   }
 }
 

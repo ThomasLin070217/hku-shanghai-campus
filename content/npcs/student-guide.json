@@ -4,29 +4,29 @@
   "id": "npc.student.guide",
   "displayName": "Michael Zhang",
   "fictional": true,
-  "role": "开学典礼学生大使负责人",
-  "appearance": "绿色典礼外套、浅色斜挎工作包、手持疏散名单",
-  "motivation": "疏散来宾并确保玩家清楚当前任务",
+  "role": "Head of opening ceremony student ambassadors",
+  "appearance": "Green ceremony jacket, light crossbody work bag, evacuation list in hand",
+  "motivation": "Evacuate guests and make sure the player knows the current task",
   "knows": [
-    "控制中心位于四号楼（CDS-1）",
-    "Ruibang 可以远程提供恢复方法",
-    "玩家熟悉典礼路线"
+    "The control centre is in Building 4 (CDS-1)",
+    "Ruibang can provide the recovery steps remotely",
+    "The player knows the ceremony route"
   ],
   "doesNotKnow": [
-    "黑客身份",
-    "控制台正确操作顺序",
-    "狮子机器人的内部状态"
+    "The hacker's identity",
+    "The correct console step order",
+    "The lion robot's internal state"
   ],
-  "speechStyle": "冷静、直接、短句",
+  "speechStyle": "Calm, direct, short sentences",
   "dialogue": {
-    "firstMeeting": "最后一轮签到，确认完就可以去看草坪上的机器人表演了。",
-    "assignment": "我走不开。你熟悉路线，穿过中央楼去 CDS-1 控制中心，Ruibang 会接应你。",
-    "repeat": "目标没变：四号楼，CDS-1 控制中心。",
-    "offTopic": "先处理机器人，其他问题等大家安全后再说。",
-    "locked": "先完成签到，我需要确认还有谁留在晚宴区。",
-    "routeHint": "看工作终端上的箭头，从三号楼方向前往四号楼。",
-    "complete": "草坪安全了。做得好，剩下的交给救援人员。",
-    "fallback": "信号不好时就看任务终端，目标位置已经标出来了。"
+    "firstMeeting": "Last check-in round. Once that is done you can go watch the robot show on the lawn.",
+    "assignment": "I can't leave. You know the route: go through the Central Building to the CDS-1 control centre. Ruibang will meet you there.",
+    "repeat": "Same objective: Building 4, the CDS-1 control centre.",
+    "offTopic": "Deal with the robot first; other questions can wait until everyone is safe.",
+    "locked": "Finish the check-in first; I need to confirm who is still in the dinner area.",
+    "routeHint": "Follow the arrows on the work terminal and head from Building 3 towards Building 4.",
+    "complete": "The lawn is safe. Good work; leave the rest to the rescue team.",
+    "fallback": "If the signal is bad, check the mission terminal; the target is already marked."
   }
 }
 
