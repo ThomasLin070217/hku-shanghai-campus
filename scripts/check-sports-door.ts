@@ -13,6 +13,19 @@ import {STUDENT} from '../src/characters/config';
 
 const asset=buildSite(),registry=sceneRegistry(asset.root),nav=createNavigation(BUILDINGS,SITE),centre=sportsDoorWorld(SITE.sportsZ);
 
+// The hall is a basketball hall: a court slab with markings and two hoops inside.
+const court=asset.root.getObjectByName('Basketball_Court');assert.ok(court,'basketball court exists');
+const courtParts:string[]=[];court!.traverse(o=>{if(o instanceof T.Mesh)courtParts.push(o.name);});
+const floorMesh=court!.getObjectByName('Court_floor') as T.Mesh;assert.ok(floorMesh,'court floor');
+const floorBox=new T.Box3().setFromObject(floorMesh);
+assert.ok(Math.abs(floorBox.max.y-SPORTS_HALL.floorTop)<.01,'court floor sits on the hall floor');
+assert.ok(Math.abs(floorBox.getSize(new T.Vector3()).x-28.8)<.01&&Math.abs(floorBox.getSize(new T.Vector3()).z-15.8)<.01,'court is 28.8 × 15.8 m');
+const lineParts=(floorMesh.parent!.getObjectByName('Basketball_Court__Ivory signage') as T.Mesh)?.userData.authorParts as unknown[]|undefined;
+assert.ok(lineParts&&lineParts.length>80,`court markings are modelled (${lineParts?.length??0} line parts)`);
+assert.ok(courtParts.some(n=>n.includes('Mullion')),'two hoops with rims and poles');
+for(const end of [-1,1])assert.ok(nav.obstacles.some(o=>o.name==='basketball-hoop'&&Math.abs(o.x-(SPORTS_HALL.x+end*14.55))<.01),'hoop poles are solid');
+// The doorway itself must stay clear of the court furniture.
+assert.equal(nav.blocked(centre.x,centre.z,SPORTS_HALL.floorTop),true,'door still blocks when closed');
 // The door is modelled, indexed and animated, and the visual opening matches the collision gap.
 const door=asset.root.getObjectByName(SPORTS_DOOR.name);assert.ok(door,'east door group exists');
 const leaves=[door!.getObjectByName('Leaf_Left'),door!.getObjectByName('Leaf_Right')];assert.ok(leaves.every(Boolean),'two hinged leaves');
