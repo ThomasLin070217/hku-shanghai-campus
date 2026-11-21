@@ -79,7 +79,8 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters,opening=f
  const hs=V.hallSign;box('building-6-sign',hs.x,hs.z,hs.width,hs.depth,hs.height);
  for(const z of [-42,-19,48])circle('walk-lamp',CL.eastLampX,z,.10,4.8);
  for(const x of [-78,-40,0,40,78])circle('court-light',x,-102.5,.10,6.1);
- box(N.lion.id,N.lion.x,N.lion.z+lionBodySize().zOffset,N.lion.width,N.lion.depth,LION.groundY+N.lion.height,LION.groundY,LION.yaw);box('lion-support',LION.x,LION.z+.12,LION.support.width,LION.support.depth,LION.groundY+LION.support.height,LION.groundY,LION.yaw);
+ const lionBounds=lionBodySize();
+ box(N.lion.id,N.lion.x+lionBounds.xOffset,N.lion.z+lionBounds.zOffset,N.lion.width,N.lion.depth,LION.groundY+N.lion.height,LION.groundY,LION.yaw);box('lion-support',LION.x,LION.z+.12,LION.support.width,LION.support.depth,LION.groundY+LION.support.height,LION.groundY,LION.yaw);
  for(const b of N.benches)box(b.id,b.x,b.z,.55,2.5,.70);
  const ms=N.mapSign;box(ms.id,ms.x,ms.z,ms.width,ms.depth,ms.height);
  for(const x of CL.eastKerbX)for(const [z,d]of [[-16,22],[13,14],[61,16]])box('promenade-kerb',x,z,.22,d,.14);
