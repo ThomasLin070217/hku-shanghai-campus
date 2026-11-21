@@ -56,3 +56,5 @@ body.opening-mode .pause-card h2{font-family:Georgia,"Times New Roman",serif;fon
 body.opening-mode .pause-card p,body.opening-mode .pause-card .key-guide{color:#a4bcb1}
 body.opening-mode .pause-card button{border:1px solid rgba(116,230,180,.46);color:#e8f4ee}
 body.opening-mode .pause-card .primary{background:#74e6b4;color:#08120f;font-weight:700}
+/* The checkpoint action ships a survey-paper background; keep it dark in story mode. */
+body.opening-mode .pause-card .pause-checkpoint{background:#102019;color:#e8f4ee}

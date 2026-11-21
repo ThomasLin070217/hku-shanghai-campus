@@ -390,6 +390,17 @@ def pause_bag_checks(page):
     guide = style(page, '.pause-card .key-guide')
     check('pause: the key guide is the opening soft ink',
           bool(guide) and guide['color'] == INK_SOFT, guide and guide['color'])
+    # The checkpoint action carries its own survey-paper background; story mode
+    # must repaint every non-primary button dark, not leave a cream slab.
+    light_buttons = page.evaluate("""() => [...document.querySelectorAll('#pause-panel .pause-card button')]
+      .filter(b => b.getClientRects().length > 0 && getComputedStyle(b).display !== 'none'
+                && !b.classList.contains('primary'))
+      .map(b => ({label: b.textContent.trim(), bg: getComputedStyle(b).backgroundColor}))
+      .filter(b => { const m = b.bg.match(/[\\d.]+/g); if (!m || m.length < 3) return false;
+        const alpha = m.length > 3 ? +m[3] : 1;
+        return alpha > 0.05 && Math.max(+m[0], +m[1], +m[2]) > 60; });""")
+    check('pause: no non-primary card button keeps the survey paper background',
+          not light_buttons, light_buttons)
     assert_surfaces_fonts(page, 'pause', root='#pause-panel')
     shot(page, 'check-pause.png')
     page.evaluate("() => { try { window.__CAMPUS.explorer.enterCompat(); } catch (e) {} }")
