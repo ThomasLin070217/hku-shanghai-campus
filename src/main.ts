@@ -1,5 +1,5 @@
 import {createOpeningExperience} from './opening/experience';
-import {openingCheckpoint,checkpointCampaign,CHECKPOINT_LABELS} from './opening/checkpoint';
+import {openingCheckpoint,checkpointCampaign,CHECKPOINT_LABELS,applyCheckpointThreat} from './opening/checkpoint';
 import {createCampaignHost,type CampaignHost} from './campaign/host';
 import {showChapterCard} from './campaign/chapterCard';
 import {CAMPAIGN_CHAPTERS} from './campaign/chapters';
@@ -82,6 +82,8 @@ if(openingMode){
   // Campaign checkpoint: the results of the chapters before it, through their real writers.
   if(resume.relay)markRelayRestored(mac);
   if(resume.corePower)recordCorePowerCut(mac);
+  // Seal + lion + power must be on disk before the ending attaches (it purges).
+  if(checkpoint)applyCheckpointThreat(checkpoint);
   host.start(mac,resume.stage);
  }else if((experience as {story?:{stage:string}}).story?.stage!=='complete'||checkpoint)host.reset();
  else if(!host.active&&mac)host.start(mac,relayRestored(mac)?'to_lawn':'b4_enter'); // a Chapter 1 save from before the campaign existed

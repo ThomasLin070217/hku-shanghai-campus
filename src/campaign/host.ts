@@ -42,12 +42,14 @@ export function createCampaignHost(o:CampaignHostOptions){
  const storage:CampaignStorage|null=o.storage===undefined?safeLocalStorage():o.storage;
  const instances=new Map<ChapterId,Chapter>(),attached=new Map<ChapterId,Chapter>();
  let state:CampaignState|null=load();
+ let lastCard:Promise<void>=Promise.resolve();
 
  const ctx:ChapterContext={
   ...o.context,
   deviceId:()=>state?.deviceId??'',
   stage:()=>state?.stage??'b4_enter',
   emit,
+  cardSettled:()=>lastCard,
  };
 
  function load():CampaignState|null{
@@ -70,7 +72,7 @@ export function createCampaignHost(o:CampaignHostOptions){
   for(const id of needed(state.stage))if(!attached.has(id)){const c=instance(id);attached.set(id,c);c.attach(ctx);}
  }
  function detachAll(){for(const c of attached.values())c.detach();attached.clear();instances.clear();}
- function card(stage:CampaignStage){const c=STAGE_CARDS[stage];if(c)void o.context.card(c[0],c[1]).catch(()=>{});}
+ function card(stage:CampaignStage){const c=STAGE_CARDS[stage];if(c)lastCard=o.context.card(c[0],c[1]).catch(()=>{});}
  function emit(event:CampaignEvent):boolean{
   if(!state)return false;
   const r=reduceCampaign(state,event,now());if(!r.changed)return false;

@@ -3,7 +3,8 @@ import type {CampusGame} from '../exploration/game';
 import type {createExplorer} from '../exploration/controller';
 import {KEYS,keyLabel} from '../exploration/config';
 import {SPORTS_DOOR,sportsDoorWorld} from '../model/sportsDoor';
-import {SPORTS_HALL_PUZZLE,checkCode,checkPassword} from './sudokuPuzzle';
+import {SPORTS_HALL_PUZZLE} from './sudokuPuzzle';
+import {createSportsDoorCore,rescueBannerMarkup} from './sportsDoorCore';
 import {CampusAudio} from './audio';
 import {DEFAULT_SETTINGS} from './save';
 import {hasCorePowerCut} from '../lionBoss/mission';
@@ -62,8 +63,9 @@ export function createSportsRescueExperience(explorer:ReturnType<typeof createEx
 /** Runtime for the fictional sports-hall east door: prompt, two-stage lock (sudoku, then a
  * numeric password), swing animation, collision toggle and save-backed lock state. All
  * answers live in content/puzzles/sports-hall-lock.json; the model never holds them. */
-export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGame;notify:(text:string)=>void;openPanel:()=>void;closePanel:()=>void;resume:()=>void;persist?:()=>void;standalone?:boolean}){
+export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGame;notify:(text:string)=>void;openPanel:()=>void;closePanel:()=>void;resume:()=>void;persist?:()=>void;standalone?:boolean;campaign?:boolean}){
  const {game,notify}=options;
+ const core=createSportsDoorCore({game,notify,persist:options.persist});
  const prompt=document.createElement('div');prompt.id='door-prompt';prompt.hidden=true;prompt.setAttribute('role','status');
  document.querySelector('.stage')!.append(prompt);
  const puzzle=SPORTS_HALL_PUZZLE,pass=puzzle.password;
@@ -71,8 +73,9 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
  panel.innerHTML=`<section role="dialog" aria-modal="true" aria-labelledby="door-lock-title"><header><div><span class="eyebrow">SPORTS HALL · EAST DOOR</span><h2 id="door-lock-title">${puzzle.title}</h2></div><button id="door-lock-close" aria-label="Close the door lock">Close</button></header><div id="door-lock-sudoku-step"><p class="door-lock-lead">${puzzle.lead}</p><div id="door-lock-grid" role="group" aria-label="9 by 9 sudoku, 4 blanks"></div><div class="door-lock-actions"><button id="door-lock-hint">Hint</button><button id="door-lock-confirm">Confirm</button></div><p id="door-lock-status" role="status"></p></div><div id="door-lock-password-step" hidden><p class="door-lock-lead">${pass.lead}</p><p class="door-lock-hint">Hint: <b>${pass.hint}</b></p><div id="door-lock-code" role="group" aria-label="${pass.length}-digit password"></div><div id="door-lock-keypad" role="group" aria-label="Number keypad"></div><p id="door-lock-code-status" role="status"></p></div></section>`;
  document.body.append(panel);
  const banner=document.createElement('div');banner.id='rescue-banner';banner.hidden=true;
- banner.innerHTML=`<div role="status" aria-live="polite"><span class="eyebrow">SPORTS HALL · EAST DOOR</span><h2>You rescued the students.</h2><p>100 students are safe. The hall is clear.</p><p class="rescue-ending">The End. Thanks for playing BARRIER 2030.</p><p class="rescue-links"><a href="?experience=levels">Back to chapters</a></p><small>Click anywhere to dismiss</small></div>`;
+ banner.innerHTML=rescueBannerMarkup(!!options.campaign);
  document.body.append(banner);
+ if(options.campaign)for(const node of [prompt,panel,banner])node.classList.add('campaign-door');
  if(options.standalone){
   const actions=document.createElement('p');
   const next=document.createElement('a');next.href='?experience=levels';next.textContent='Back to chapters';next.style.textDecoration='underline';
@@ -101,8 +104,8 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
  for(let i=0;i<pass.length;i++){const slot=document.createElement('div');slot.className='code-slot';slot.textContent='·';slots.push(slot);codeBox.append(slot);}
  for(const key of ['1','2','3','4','5','6','7','8','9','back','0','ok']){const button=document.createElement('button');button.type='button';button.dataset.key=key;button.textContent=key==='back'?'←':key==='ok'?'Confirm':key;if(key==='ok')button.setAttribute('aria-label','Confirm password');if(key==='back')button.setAttribute('aria-label','Delete one digit');keypad.append(button);}
  let rootRef:T.Object3D|null=null,left:T.Object3D|null=null,right:T.Object3D|null=null,led:T.MeshStandardMaterial|null=null;
- let swing=0,flash=0,applied:boolean|null=null,appliedWorld:CampusGame['body']['world']|null=null,opened=false,stage:'sudoku'|'password'='sudoku',sudokuSolved=false,code:string[]=[];
- const isOpen=()=>game().doors[SPORTS_DOOR.id]===true;
+ let swing=0,flash=0,opened=false,stage:'sudoku'|'password'='sudoku',sudokuSolved=false,code:string[]=[];
+ const isOpen=()=>core.open;
  const setStatus=(el:HTMLElement,text:string,tone:'ok'|'warn'|'error'|''='')=>{el.textContent=text;el.dataset.tone=tone;};
  function renderCode(){slots.forEach((slot,i)=>{slot.textContent=code[i]??'·';slot.classList.toggle('filled',!!code[i]);});codeBox.setAttribute('aria-label',`${pass.length}-digit password, ${code.length} entered`);}
  function showStage(next:'sudoku'|'password'){
@@ -121,14 +124,14 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
   const digits=inputs.map(input=>input.value.trim());
   const missing=digits.filter(d=>!/^[1-9]$/.test(d)).length;
   if(missing){setStatus(statusLine,`${missing} blanks are still empty.`,'warn');inputs[digits.findIndex(d=>!/^[1-9]$/.test(d))]?.focus();return;}
-  if(!checkCode(puzzle,digits)){setStatus(statusLine,puzzle.failure,'error');card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');audio(false);return;}
+  if(!core.submitSudoku(digits)){setStatus(statusLine,puzzle.failure,'error');card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');audio(false);return;}
   sudokuSolved=true;showStage('password');
  }
  function submitPassword(){
   if(!opened||stage!=='password')return;
   if(code.length<pass.length){setStatus(codeStatus,`Enter ${pass.length} digits.`,'warn');return;}
-  if(!checkPassword(puzzle,code)){setStatus(codeStatus,pass.failure,'error');code=[];renderCode();card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');audio(false);return;}
-  unlock();closeLock(!options.standalone);
+  if(!core.submitPassword(code)){setStatus(codeStatus,pass.failure,'error');code=[];renderCode();card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');audio(false);return;}
+  audio(true);showRescue();closeLock(!options.standalone);
  }
  function pressKey(key:string){
   if(stage!=='password')return;
@@ -174,12 +177,9 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
   left=door?.getObjectByName('Leaf_Left')??null;right=door?.getObjectByName('Leaf_Right')??null;
   const mesh=door?.getObjectByName('Night_door_lock_led');
   led=mesh instanceof T.Mesh&&!Array.isArray(mesh.material)?mesh.material as T.MeshStandardMaterial:null;
-  swing=isOpen()?1:0;applied=null;
+  swing=isOpen()?1:0;
  }
- function syncCollision(g:CampusGame){
-  const open=isOpen(),world=g.body.world;
-  if(world!==appliedWorld||applied!==open){world.setDoorOpen(SPORTS_DOOR.id,open);appliedWorld=world;applied=open;}
- }
+ function syncCollision(_g:CampusGame){core.syncCollision();}
  /** Nearest point on the doorway, so the lock is reachable from the jambs too. */
  function near(g:CampusGame){
   const c=sportsDoorWorld(g.site.sportsZ),p=g.body.position,dx=c.x-p.x;
@@ -194,8 +194,8 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
   if(isOpen()){notify('The glass door is open. Walk through.');return true;}
   flash=1;openLock();return true;
  }
- function unlock(){if(isOpen())return;game().doors[SPORTS_DOOR.id]=true;options.persist?.();notify('Both checks passed. The glass door is opening.');audio(true);showRescue();}
- function lock(){game().doors[SPORTS_DOOR.id]=false;options.persist?.();notify('The door lock is engaged again.');}
+ function unlock(){const nowOpen=core.unlock();if(nowOpen){audio(true);showRescue();}return nowOpen;}
+ function lock(){core.lock();}
  function update(dt:number){
   ensure();const g=game(),open=isOpen();
   swing=T.MathUtils.damp(swing,open?1:0,7,Math.min(dt,.1));
@@ -210,5 +210,5 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
   if(opened&&!g.panel)closeLock();
  }
  function dispose(){clearTimeout(bannerTimer);banner.remove();panel.remove();prompt.remove();}
- return{update,interact,unlock,lock,dispose,get open(){return isOpen();},get swing(){return swing;},get state(){return{id:SPORTS_DOOR.id,open:isOpen(),swing:Number(swing.toFixed(3)),panel:opened,stage,sudokuSolved};}};
+ return{update,interact,unlock,lock,dispose,submitSudoku:core.submitSudoku,submitPassword:core.submitPassword,core,get open(){return isOpen();},get swing(){return swing;},get state(){return{id:SPORTS_DOOR.id,open:isOpen(),swing:Number(swing.toFixed(3)),panel:opened,stage,sudokuSolved};}};
 }
