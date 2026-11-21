@@ -8,6 +8,10 @@ const EXPECTED:Record<OpeningCheckpoint,{stage:OpeningStage;events:number;laptop
  b6:{stage:'to_b6',events:3,laptop:false},
  incident:{stage:'incident',events:5,laptop:true},
  b4:{stage:'to_b4',events:6,laptop:true},
+ 'b4-inside':{stage:'complete',events:7,laptop:true},
+ lawn:{stage:'complete',events:7,laptop:true},
+ sports:{stage:'complete',events:7,laptop:true},
+ ending:{stage:'complete',events:7,laptop:true},
 };
 
 let passed=0;
@@ -38,6 +42,10 @@ for(const id of OPENING_CHECKPOINTS){
 group('openingCheckpoint only accepts the menu ids',()=>{
  assert.equal(openingCheckpoint('b5'),'b5');
  assert.equal(openingCheckpoint('b4'),'b4');
+ assert.equal(openingCheckpoint('b4-inside'),'b4-inside');
+ assert.equal(openingCheckpoint('lawn'),'lawn');
+ assert.equal(openingCheckpoint('sports'),'sports');
+ assert.equal(openingCheckpoint('ending'),'ending');
  assert.equal(openingCheckpoint('bus'),null);
  assert.equal(openingCheckpoint(''),null);
  assert.equal(openingCheckpoint(null),null);

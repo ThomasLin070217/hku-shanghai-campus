@@ -1,0 +1,37 @@
+/* Shared chapter card. Colours come from the opening dark HUD tokens
+   (src/opening/opening.css, `.campaign-card` is in that token selector). */
+.campaign-card {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: grid;
+  place-items: center;
+  background: var(--opening-paper);
+  color: var(--opening-ink);
+  font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+.campaign-card[hidden] { display: none; }
+.campaign-card.is-visible { opacity: 1; }
+.campaign-card-inner {
+  padding: 28px 40px;
+  border-top: 1px solid var(--opening-line-strong);
+  border-bottom: 1px solid var(--opening-line-strong);
+}
+.campaign-card-kicker {
+  margin: 0 0 12px;
+  font: 600 12px/1.2 var(--opening-mono);
+  letter-spacing: 0.22em;
+  color: var(--opening-green);
+}
+.campaign-card-title {
+  margin: 0;
+  font: 400 clamp(30px, 4.6vw, 52px)/1.1 Georgia, "Times New Roman", serif;
+  color: var(--opening-ink);
+}
+@media (prefers-reduced-motion: reduce) {
+  .campaign-card { transition: none; }
+}
