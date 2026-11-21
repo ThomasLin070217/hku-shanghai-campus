@@ -6,7 +6,7 @@ import type {Chapter,ChapterContext} from './types';
 export const ENDING_ENTRY:Chapter['entry']={point:[0,0,0],radius:0,event:'door_opened'};
 
 export interface EndingBeat{
- /** Seconds after the ending attaches. */
+ /** Seconds after the Mac screen starts. */
  at:number;
  /** The Mac screen line, exactly as doc/12 §7 storyboards it. */
  line:string;
@@ -17,7 +17,7 @@ export interface EndingBeat{
 /**
  * doc/12 §7: the HKU supercomputer boots its four CPUs one by one, starts
  * synchronising, restores administrator access, and the barrier lifts.
- * `ENDING_SECONDS` is the whole sequence, credits included.
+ * `ENDING_SECONDS` is the Mac sequence, the dome lift included (see below).
  */
 export const ENDING_BEATS:readonly EndingBeat[]=[
  {at:0,line:'HKU SUPERCOMPUTER'},
@@ -31,7 +31,21 @@ export const ENDING_BEATS:readonly EndingBeat[]=[
  {at:8,line:'ADMINISTRATOR ACCESS RESTORED',release:true},
  {at:10,line:'BARRIER DOWN'},
 ];
-export const ENDING_SECONDS=12;
+/**
+ * The credits appear after the dome is fully back in the sky: the release beat
+ * is at 8 s and `OPENING_DOME.seconds` is 5.2 s, so the lift ends at 13.2 s.
+ */
+export const ENDING_SECONDS=14;
+/**
+ * The rescue banner (and the host's EPILOGUE card, about 3.0 s of fade + hold)
+ * must be readable before the Mac screen covers the frame. The ending holds its
+ * own clock for this long, then starts the story; `cardSettled()` can extend it.
+ */
+export const ENDING_HOLD_SECONDS=3.2;
+/** A card promise that never settles must not strand the epilogue. */
+const HOLD_CAP_SECONDS=1.5;
+/** The Mac screen has faded out by here, before the 8 s release beat. */
+export const ENDING_CLEAR_AT=7;
 
 /** The credits card body. Pure, so the headless check reads the exact copy. */
 export function creditsMarkup():string{
@@ -57,9 +71,13 @@ export function clearAllProgress(storage:ProgressStorage&WorldThreatStorage):str
 
 const STYLE_ID='ending-styles';
 const ENDING_CSS=`
-#ending-overlay{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 42%,rgba(9,24,19,.86),rgba(2,7,5,.97) 70%);font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;color:#e8f4ee;opacity:0;transition:opacity .6s ease}
+#ending-overlay{position:fixed;inset:0;z-index:60;display:grid;place-items:center;font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;color:#e8f4ee;opacity:0;transition:opacity .6s ease}
+#ending-overlay::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 42%,rgba(9,24,19,.86),rgba(2,7,5,.97) 70%);opacity:1;transition:opacity .9s ease}
 #ending-overlay.show{opacity:1}
-#ending-overlay .ending-mac{width:min(880px,92vw);filter:drop-shadow(0 40px 90px rgba(0,0,0,.7))}
+/* The dome lift happens on open sky: the dark layer and the Mac fade before the 8 s release. */
+#ending-overlay.is-clearing::before{opacity:0}
+#ending-overlay .ending-mac{width:min(880px,92vw);filter:drop-shadow(0 40px 90px rgba(0,0,0,.7));transition:opacity .9s ease,transform .9s ease}
+#ending-overlay.is-clearing .ending-mac{opacity:0;transform:translateY(-14px) scale(.985)}
 #ending-overlay .ending-screen{position:relative;background:#050b09;border:14px solid #1b2420;border-radius:16px 16px 6px 6px;box-shadow:inset 0 0 60px rgba(116,230,180,.05),inset 0 0 0 1px rgba(116,230,180,.18);min-height:min(52vh,430px);padding:34px 40px;overflow:hidden}
 #ending-overlay .ending-camera{position:absolute;top:-9px;left:50%;width:70px;height:5px;transform:translateX(-50%);border-radius:3px;background:#0a1210}
 #ending-overlay .ending-camera::after{content:"";position:absolute;left:50%;top:1px;width:3px;height:3px;transform:translateX(-50%);border-radius:50%;background:#2a4a3e}
@@ -73,6 +91,9 @@ const ENDING_CSS=`
 #ending-overlay .ending-cursor{display:inline-block;width:.62em;height:1.05em;margin-left:4px;vertical-align:-.16em;background:#74e6b4;animation:ending-blink 1s steps(2,start) infinite}
 #ending-overlay .ending-base{height:16px;margin:0 auto;width:calc(100% + 90px);max-width:calc(92vw + 90px);border-radius:0 0 20px 20px;background:linear-gradient(180deg,#2a3631,#141c18 62%,#0b110e);box-shadow:inset 0 1px 0 rgba(255,255,255,.09)}
 #ending-overlay .ending-notch{width:18%;height:5px;margin:0 auto;border-radius:0 0 6px 6px;background:#060a08}
+/* The last line stays on the cleared sky after the Mac fades. */
+#ending-overlay .ending-barrier{grid-area:1/1;align-self:center;justify-self:center;margin:0;font:400 clamp(26px,5vw,54px)/1 Georgia,"Times New Roman",serif;letter-spacing:.3em;color:#e8f4ee;text-shadow:0 0 30px rgba(116,230,180,.35);opacity:0;transition:opacity .9s ease}
+#ending-overlay .ending-barrier.show{opacity:1}
 #ending-credits{position:fixed;inset:0;z-index:61;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 40%,rgba(10,26,21,.92),rgba(2,7,5,.985) 72%);font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;color:#e8f4ee;opacity:0;transition:opacity .7s ease}
 #ending-credits.show{opacity:1}
 #ending-credits-card{text-align:center;padding:40px 46px;max-width:min(560px,90vw)}
@@ -91,41 +112,46 @@ const ENDING_CSS=`
 `;
 
 /**
- * The epilogue. Attaching clears the local model and purges the world threat
- * (lion down + core power cut are earlier chapters' facts), plays the doc/12 §7
- * Mac boot on its own clock while the dome lifts, then shows the credits.
+ * The epilogue. The door has opened and the rescue banner is on screen; this
+ * chapter holds for a readable beat (and for the host's EPILOGUE card to finish),
+ * plays the doc/12 §7 Mac boot on its own clock, fades the Mac away so the dome
+ * lift is visible on open sky, then shows the credits.
+ *
+ * `markLocalModelCleared()` runs at attach; `tryPurgeWorld()` runs on the
+ * ADMINISTRATOR beat, so the purged record and the visible lift happen together.
  * The sequence is `update(dt)`-driven so the headless check can fast-forward it.
  */
 export function createEndingChapter():Chapter{
- let ctx:ChapterContext|null=null,clock=0,next=0,finished=false,released=false;
- let overlay:HTMLElement|null=null,lines:HTMLElement|null=null,credits:HTMLElement|null=null;
- let restoreAtmosphere:(()=>void)|null=null;
-
- function takeDome(){
-  const atmo=ctx?.atmosphere();
-  if(!atmo||restoreAtmosphere)return;
-  const original=atmo.update;
-  // Chapter 1 keeps re-asserting its cached sealed curtain every frame through
-  // `atmosphere.update`. Once this ending purges the campus that flag is
-  // historical: the ending owns the dome from here and lets it lift. Nothing
-  // else about the chapter-1 update path is touched, and detach restores it.
-  atmo.update=((dt,state)=>original(dt,released?{incident:false,curtain:false,paused:false}:state)) as typeof atmo.update;
-  restoreAtmosphere=()=>{atmo.update=original;restoreAtmosphere=null;};
- }
+ let ctx:ChapterContext|null=null;
+ let hold=0,clock=0,next=0;
+ let started=false,cleared=false,finished=false,released=false;
+ let cardResolved=false,cardWatched=false;
+ let overlay:HTMLElement|null=null,lines:HTMLElement|null=null,barrier:HTMLElement|null=null,credits:HTMLElement|null=null;
 
  function dom(){
   if(typeof document==='undefined')return;
   document.getElementById(STYLE_ID)?.remove();
   const style=document.createElement('style');style.id=STYLE_ID;style.textContent=ENDING_CSS;document.head.append(style);
   overlay=document.createElement('div');overlay.id='ending-overlay';
-  overlay.innerHTML='<div class="ending-mac"><div class="ending-screen"><div class="ending-camera"></div><p class="ending-head"><span>HKU SUPERCOMPUTER</span><span>B04 · CDS-1</span></p><ul class="ending-lines"></ul></div><div class="ending-base"></div><div class="ending-notch"></div></div>';
+  overlay.innerHTML='<div class="ending-mac"><div class="ending-screen"><div class="ending-camera"></div><p class="ending-head"><span>HKU SUPERCOMPUTER</span><span>B04 · CDS-1</span></p><ul class="ending-lines"></ul></div><div class="ending-base"></div><div class="ending-notch"></div></div><p class="ending-barrier" aria-live="polite"></p>';
   lines=overlay.querySelector('.ending-lines');
+  barrier=overlay.querySelector('.ending-barrier');
   document.body.append(overlay);
   requestAnimationFrame(()=>overlay?.classList.add('show'));
  }
 
+ function clearScreen(){
+  cleared=true;
+  overlay?.classList.add('is-clearing');
+ }
+
  function fire(beat:EndingBeat){
-  if(beat.release&&!released){released=true;takeDome();ctx?.atmosphere()?.release();}
+  if(beat.release&&!released){
+   released=true;
+   const result=tryPurgeWorld();
+   if(!result.purged&&result.threat.phase!=='purged')console.error('ending: the campus did not purge, so the barrier stays sealed; every endgame fact must be written first',result.threat);
+   ctx?.atmosphere()?.release();
+  }
   if(!lines)return;
   const line=document.createElement('li');
   line.textContent=beat.line;
@@ -133,6 +159,7 @@ export function createEndingChapter():Chapter{
   else if(beat.line.includes('ONLINE'))line.className='is-online';
   else if(beat.release)line.className='is-final';
   lines.append(line);
+  if(beat.line==='BARRIER DOWN'&&barrier){barrier.textContent=beat.line;requestAnimationFrame(()=>barrier?.classList.add('show'));}
  }
 
  function showCredits(){
@@ -140,26 +167,50 @@ export function createEndingChapter():Chapter{
   credits=document.createElement('div');credits.id='ending-credits';credits.innerHTML=creditsMarkup();
   document.body.append(credits);
   requestAnimationFrame(()=>credits?.classList.add('show'));
-  credits.querySelector('#ending-play-again')?.addEventListener('click',()=>{try{clearAllProgress(localStorage);}catch{/* storage blocked: the reload still clears the session */}location.reload();});
+  credits.querySelector('#ending-play-again')?.addEventListener('click',()=>{
+   try{clearAllProgress(localStorage);}catch(error){console.error('ending: Play again could not clear the local progress; the reload may replay the epilogue',error);}
+   location.reload();
+  });
   // The story is over: pause and release pointer lock so the two buttons are clickable.
-  try{ctx?.explorer.pause('ending');}catch{/* an absent explorer must not hide the credits */}
+  try{ctx?.explorer.pause('ending');}catch(error){console.error('ending: could not pause the explorer for the credits',error);}
  }
 
  function attach(c:ChapterContext){
-  ctx=c;clock=0;next=0;finished=false;released=false;
-  // The last endgame fact, then the purge: lion down and power cut were the
-  // earlier chapters' writes, so this is the frame the barrier can fall.
+  ctx=c;hold=0;clock=0;next=0;
+  started=cleared=finished=released=false;
+  cardResolved=false;cardWatched=false;
+  // The last endgame fact. The purge itself waits for the ADMINISTRATOR beat so
+  // the world record and the visible dome lift agree (and so the sealed curtain
+  // is not re-asserted during the Mac sequence).
   markLocalModelCleared();
-  tryPurgeWorld();
-  dom();
-  // Deliberately not paused here: the host may skip chapter.update while the game
-  // is paused, and the sequence must keep its own clock. The overlay covers the
-  // frame; the game pauses only once the credits are on screen.
+ }
+
+ /**
+  * The host shows its EPILOGUE card right after `attach` returns, so the promise
+  * is only read on the first update (the next frame), never during attach.
+  */
+ function watchCard(){
+  if(cardWatched)return;
+  cardWatched=true;
+  let settled:Promise<void>|undefined;
+  try{settled=ctx?.cardSettled?.();}catch(error){console.error('ending: could not read the chapter-card promise',error);}
+  if(settled)void settled.then(()=>{cardResolved=true;},()=>{cardResolved=true;});
  }
 
  function update(dt:number){
   if(finished)return;
-  clock+=Math.max(0,dt);
+  const step=Math.max(0,dt);
+  watchCard();
+  if(!started){
+   hold+=step;
+   const need=cardResolved?ENDING_HOLD_SECONDS:ENDING_HOLD_SECONDS+HOLD_CAP_SECONDS;
+   if(hold<need)return;
+   started=true;
+   dom();
+   return;
+  }
+  clock+=step;
+  if(!cleared&&clock>=ENDING_CLEAR_AT)clearScreen();
   while(next<ENDING_BEATS.length&&ENDING_BEATS[next].at<=clock)fire(ENDING_BEATS[next++]);
   if(clock>=ENDING_SECONDS){
    finished=true;
@@ -169,8 +220,8 @@ export function createEndingChapter():Chapter{
  }
 
  function detach(){
-  overlay?.remove();credits?.remove();overlay=null;credits=null;lines=null;
-  restoreAtmosphere?.();
+  overlay?.remove();credits?.remove();
+  overlay=null;credits=null;lines=null;barrier=null;
   ctx=null;
  }
 
@@ -182,7 +233,7 @@ export function createEndingChapter():Chapter{
   detach,
   debug:{
    complete(){ctx?.emit('ending_finished');return ctx?.stage();},
-   state(){return{clock,next,finished,released,beats:ENDING_BEATS.length};},
+   state(){return{hold,clock,next,started,cleared,finished,released,beats:ENDING_BEATS.length};},
   },
  };
 }

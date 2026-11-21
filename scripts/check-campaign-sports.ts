@@ -19,11 +19,11 @@ import {createCampaignHost} from '../src/campaign/host';
 import {CAMPAIGN_CHAPTERS} from '../src/campaign/chapters';
 import {CAMPAIGN_SAVE_KEY} from '../src/campaign/state';
 import type {ChapterContext,Explorer} from '../src/campaign/types';
-import {WORLD_THREAT_KEY,loadWorldThreat,resetWorldThreat} from '../src/gameplay/worldThreat';
+import {WORLD_THREAT_KEY,loadWorldThreat,refreshedWorldThreat} from '../src/gameplay/worldThreat';
 import {OPENING_SAVE_KEY} from '../src/opening/persistence';
 import {clearProgress} from '../src/levels/resetProgress';
 import {SPORTS_ENTRY} from '../src/campaign/sportsChapter';
-import {ENDING_BEATS,ENDING_SECONDS,clearAllProgress,creditsMarkup} from '../src/campaign/endingChapter';
+import {ENDING_BEATS,ENDING_CLEAR_AT,ENDING_HOLD_SECONDS,ENDING_SECONDS,clearAllProgress,creditsMarkup} from '../src/campaign/endingChapter';
 import {rescueBannerMarkup} from '../src/gameplay/sportsDoorCore';
 
 let passed=0;
@@ -63,23 +63,29 @@ const nav=createNavigation(BUILDINGS,SITE,true);
 const game=new CampusGame(nav,BUILDINGS,SITE);
 const centre=sportsDoorWorld(SITE.sportsZ);
 
+type AtmosphereFrame={incident:boolean;curtain:boolean;paused:boolean};
 function makeHost(seed:Record<string,string>={}){
- // Each group starts from a closed door: the real game owns this flag per run.
- game.doors[SPORTS_DOOR.id]=false;nav.setDoorOpen(SPORTS_DOOR.id,false);game.body.velocity.set(0,0,0);
+ // No door reset between groups: `CampusGame.doors` is a real per-run fact and
+ // the chapter must cope with a door that is already open (I4).
+ game.body.velocity.set(0,0,0);
  const store=memoryStorage(seed),notices:string[]=[],cards:[string,string][]=[];
+ const updates:AtmosphereFrame[]=[];
  let released=0;
  useStorage(store.storage);
- const explorer={game,pause(){},enter(){},enterCompat(){},resume(){}} as unknown as Explorer;
- const atmosphere={release(){released++;},restoreSealed(){},update(){},reset(){},startIncident(){}};
+ const explorer={game,enabled:true,pause(){},enter(){},enterCompat(){},resume(){}} as unknown as Explorer;
+ const atmosphere={
+  release(){released++;},restoreSealed(){},reset(){},startIncident(){},
+  update(_dt:number,state:AtmosphereFrame){updates.push({...state});},
+ };
  const host=createCampaignHost({
   context:{
    scene:new T.Scene(),root:()=>asset.root,explorer,notify:text=>notices.push(text),
    atmosphere:()=>atmosphere as never,openPanel:()=>{},closePanel:()=>{},resume:()=>{},
    card:async(kicker,title)=>{cards.push([kicker,title]);},
   } as Omit<ChapterContext,'stage'|'emit'|'deviceId'>,
-  storage:store.storage,
+  storage:store.storage,chapters:CAMPAIGN_CHAPTERS,
  });
- return{host,store,notices,cards,get released(){return released;}};
+ return{host,store,notices,cards,updates,atmosphere,get released(){return released;}};
 }
 
 /** Drive the real physics toward a point, exactly like the opening integration check. */
@@ -143,28 +149,31 @@ group('(d) the lock validates with the puzzle answers and opening emits door_ope
  assert.equal(host.stage(),'ending','door_opened moves the campaign to the ending');
  const threat=loadWorldThreat({storage:store.storage});
  assert.deepEqual(threat.flags,{lionDefeated:true,powerCut:true,localModelCleared:true},'the ending clears the local model');
- assert.equal(threat.phase,'purged','lion down + power cut + model cleared purges the sealed campus');
+ assert.equal(threat.phase,'sealed','the purge waits for the ADMINISTRATOR beat so the dome lifts on screen');
 });
 
-group('(e) the ending runs the doc/12 §7 beats on its own clock and finishes',()=>{
+group('(e) an already-open door still advances the campaign and the ending finishes',()=>{
  const harness=makeHost({[WORLD_THREAT_KEY]:SEALED_WITH_POWER}),{host,store}=harness;
+ // Group (d) opened the door and left it open; a fresh host must not strand the run.
+ assert.equal(game.doors[SPORTS_DOOR.id],true,'the door is already open before this host starts');
  host.start('mac-device','to_sports');
  game.body.position.set(...SPORTS_ENTRY.point as [number,number,number]);
  host.update(1/120);
- (host.debug.sports as unknown as {open:()=>unknown}).open();
+ assert.equal(host.stage(),'sports','reach_sports still arrives with the door open');
  host.update(1/120);
- assert.equal(host.stage(),'ending');
+ assert.equal(host.stage(),'ending','an open door emits door_opened once the stage is sports (I4)');
+ assert.equal(loadWorldThreat({storage:store.storage}).phase,'sealed','nothing purges during the rescue hold');
  const lines=ENDING_BEATS.map(beat=>beat.line).join('\n');
  for(const line of ['HKU SUPERCOMPUTER','CPU 01–04 … OFFLINE','CPU 01 ONLINE','CPU 02 ONLINE','CPU 03 ONLINE','CPU 04 ONLINE','SYNCHRONIZATION STARTED…','ALL PROCESSING UNITS ONLINE','ADMINISTRATOR ACCESS RESTORED'])assert.ok(lines.includes(line),`ending shows ${line}`);
  assert.ok(ENDING_BEATS.every((beat,index)=>index===0||beat.at>ENDING_BEATS[index-1].at),'beats are strictly ordered');
- assert.ok(ENDING_SECONDS>=10&&ENDING_SECONDS<=14,`the sequence is about 12 s (${ENDING_SECONDS})`);
+ assert.ok(ENDING_SECONDS>=10&&ENDING_SECONDS<=14,`the sequence stays about 12 s (${ENDING_SECONDS})`);
  assert.ok(ENDING_BEATS.some(beat=>beat.release),'a beat releases the dome');
- // Fast clock: one long frame must land the whole sequence and emit ending_finished.
- game.body.velocity.set(0,0,0);
+ // The hold must outlast the rescue banner and the host card before the Mac screen.
+ host.update(ENDING_HOLD_SECONDS+2);
  host.update(ENDING_SECONDS+1);
  assert.ok(harness.released>=1,'the ending actually calls atmosphere.release()');
  assert.equal(host.stage(),'done','ending_finished closes the campaign');
- assert.equal(loadWorldThreat({storage:store.storage}).phase,'purged');
+ assert.equal(loadWorldThreat({storage:store.storage}).phase,'purged','the ending purges a sealed campus with lion+power');
 });
 
 group('(f) credits and the campaign rescue banner read correctly',()=>{
@@ -183,24 +192,38 @@ group('(f) credits and the campaign rescue banner read correctly',()=>{
 });
 
 group('(g) Play again clears the same keys as Reset progress plus the world threat',()=>{
- const store=memoryStorage({
+ const seed:Record<string,string>={
   [OPENING_SAVE_KEY]:'opening',
   [OPENING_SAVE_KEY+'.writer']:'writer',
   [OPENING_SAVE_KEY+'.backup']:'backup',
   'hku.digital-survey.v1':'survey',
   'hku.lion-boss.v1.instance':'lion',
   [CAMPAIGN_SAVE_KEY]:'campaign',
+  [WORLD_THREAT_KEY]:SEALED_WITH_POWER,
   unrelated:'keep',
- });
- const removed=clearProgress(store.storage);
- for(const key of [OPENING_SAVE_KEY,OPENING_SAVE_KEY+'.writer',OPENING_SAVE_KEY+'.backup','hku.digital-survey.v1','hku.lion-boss.v1.instance',CAMPAIGN_SAVE_KEY])
-  assert.equal(store.storage.getItem(key),null,`${key} is cleared`);
- assert.equal(store.storage.getItem('unrelated'),'keep','unrelated keys survive');
- assert.ok(removed.includes(CAMPAIGN_SAVE_KEY),'the removed list reports the campaign save');
- assert.ok(removed.includes(OPENING_SAVE_KEY),'the removed list reports the opening save');
+ };
+ const reset=memoryStorage(seed);
+ const removedByReset=clearProgress(reset.storage);
+ // `hku.world.v1` lives under the `hku.` namespace, so Reset progress removes it.
+ assert.equal(reset.storage.getItem(WORLD_THREAT_KEY),null,'Reset progress removes the world-threat record');
+ const store=memoryStorage(seed);
  const cleared=clearAllProgress(store.storage);
- assert.equal(loadWorldThreat({storage:store.storage}).phase,'clear','Play again also resets the world threat');
- assert.ok(Array.isArray(cleared),'clearAllProgress reports the keys it removed');
+ // Only resetWorldThreat writes a clear record back, so its presence proves the
+ // Play-again path called it (removal alone is not enough).
+ const written=store.storage.getItem(WORLD_THREAT_KEY);
+ assert.ok(written,'Play again writes the world threat back as a clear record');
+ assert.equal((JSON.parse(written!) as {phase:string}).phase,'clear','the written record is clear');
+ assert.deepEqual([...cleared].sort(),[...removedByReset].sort(),'Play again removes exactly the Reset-progress keys');
+ for(const key of removedByReset){
+  if(key===WORLD_THREAT_KEY)continue; // written back as a clear record, checked below
+  assert.equal(store.storage.getItem(key),null,`${key} is cleared`);
+ }
+ assert.equal(store.storage.getItem('unrelated'),'keep','unrelated keys survive');
+ assert.ok(cleared.includes(CAMPAIGN_SAVE_KEY),'the removed list reports the campaign save');
+ assert.ok(cleared.includes(OPENING_SAVE_KEY),'the removed list reports the opening save');
+ const threat=loadWorldThreat({storage:store.storage});
+ assert.equal(threat.phase,'clear','Play again resets the world threat');
+ assert.deepEqual(threat.flags,{lionDefeated:false,powerCut:false,localModelCleared:false},'Play again clears the endgame flags');
 });
 
 group('(h) the lock panel carries the opening dark tokens in campaign mode',()=>{
@@ -211,8 +234,44 @@ group('(h) the lock panel carries the opening dark tokens in campaign mode',()=>
  assert.match(css,/#rescue-banner\.campaign-door/,'the rescue banner has a campaign scope');
 });
 
-// resetWorldThreat is exported here only so the check proves the Play-again path has it.
-assert.equal(typeof resetWorldThreat,'function');
+group('(i) the epilogue holds the banner and leaves the atmosphere to the experience',()=>{
+ const harness=makeHost({[WORLD_THREAT_KEY]:SEALED_WITH_POWER}),{host}=harness;
+ host.start('mac-device','to_sports');
+ game.body.position.set(...SPORTS_ENTRY.point as [number,number,number]);
+ host.update(1/120);
+ host.update(1/120);
+ assert.equal(host.stage(),'ending');
+ const state=()=>(host.debug.ending as unknown as {state:()=>Record<string,unknown>}).state();
+ assert.ok(ENDING_HOLD_SECONDS>=3,`the rescue banner is readable for about 3 s (${ENDING_HOLD_SECONDS})`);
+ assert.equal(state().started,false,'the Mac screen does not mount over the rescue banner');
+ host.update(1);
+ assert.equal(state().started,false,'the hold is still running after 1 s');
+ host.update(ENDING_HOLD_SECONDS+2);
+ assert.equal(state().started,true,'the Mac screen starts after the banner hold');
+ host.update(ENDING_CLEAR_AT-0.2);
+ assert.equal(state().cleared,false,'the Mac screen is still up while the CPUs come online');
+ assert.ok(ENDING_CLEAR_AT<8,'the Mac screen clears before the dome release beat');
+ host.update(8.2-ENDING_CLEAR_AT+0.2);
+ assert.equal(state().released,true,'the release lands after the ADMINISTRATOR ACCESS RESTORED beat');
+ assert.equal(loadWorldThreat({storage:harness.store.storage}).phase,'purged','the release beat purges the campus');
+ // I3: the ending must not replace another module's atmosphere.update. If it did,
+ // this direct call would record a forced, unsealed frame instead of the caller's.
+ const fake=harness.atmosphere,original=fake.update;
+ fake.update(1/60,{incident:true,curtain:true,paused:false});
+ assert.equal(fake.update,original,'the ending leaves atmosphere.update alone (no monkey-patch)');
+ assert.deepEqual(harness.updates.at(-1),{incident:true,curtain:true,paused:false},'the atmosphere sees exactly the frame the experience passes');
+});
+
+group('(j) the experience adopts a purge written after its cached sealed frame',()=>{
+ const sealed=loadWorldThreat({storage:memoryStorage({[WORLD_THREAT_KEY]:SEALED_WITH_POWER}).storage});
+ assert.equal(sealed.phase,'sealed');
+ const purged={...sealed,phase:'purged' as const,purgedAt:2000};
+ assert.equal(refreshedWorldThreat(sealed,()=>purged).phase,'purged','a purged record wins over the cached sealed frame');
+ let reads=0;
+ const final=refreshedWorldThreat(purged,()=>{reads++;return sealed;});
+ assert.equal(final.phase,'purged','a purged cache is final');
+ assert.equal(reads,0,'a purged cache is not re-read');
+});
 
 if(failures.length){
  console.error(`\ncheck-campaign-sports: ${failures.length} failing group(s): ${failures.join(', ')}`);

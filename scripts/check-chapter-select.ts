@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {OPENING_CHECKPOINTS,CHECKPOINT_LABELS,checkpointCampaign,checkpointPose,checkpointState,openingCheckpoint,type OpeningCheckpoint} from '../src/opening/checkpoint';
+import {OPENING_CHECKPOINTS,CHECKPOINT_LABELS,applyCheckpointThreat,checkpointCampaign,checkpointPose,checkpointState,openingCheckpoint,type OpeningCheckpoint} from '../src/opening/checkpoint';
 import {B4_ENTRY} from '../src/campaign/b4Chapter';
 import {LAWN_ENTRY} from '../src/campaign/lawnChapter';
 import {SPORTS_ENTRY} from '../src/campaign/sportsChapter';
@@ -7,6 +7,7 @@ import {OPENING as O} from '../src/opening/spatialLayout';
 import type {CampaignStage} from '../src/campaign/state';
 import {validOpeningState} from '../src/opening/state';
 import type {OpeningStage} from '../src/opening/contracts';
+import {WORLD_THREAT_KEY,loadWorldThreat} from '../src/gameplay/worldThreat';
 
 const EXPECTED:Record<OpeningCheckpoint,{stage:OpeningStage;events:number;laptop:boolean}> = {
  b5:{stage:'to_b5',events:2,laptop:false},
@@ -72,6 +73,32 @@ group('campaign checkpoint poses: inside B04, B04 entrance, lawn entry, sports d
  assert.deepEqual([...checkpointPose('lawn').position],[...O.handoff]);
  assert.deepEqual([...checkpointPose('sports').position],LAWN_ENTRY.point);
  assert.deepEqual([...checkpointPose('ending').position],SPORTS_ENTRY.point);
+});
+
+/** localStorage-shaped memory store: the checkpoint writers take the real seam. */
+function memoryStorage(){
+ const data=new Map<string,string>();
+ return{
+  get length(){return data.size;},
+  key:(index:number)=>[...data.keys()][index]??null,
+  getItem:(key:string)=>data.get(key)??null,
+  setItem:(key:string,value:string)=>{data.set(key,value);},
+  removeItem:(key:string)=>{data.delete(key);},
+  clear:()=>data.clear(),
+ };
+}
+
+group('sports and ending checkpoints seal the campus with the earlier endgame facts',()=>{
+ const store=memoryStorage();
+ for(const id of ['sports','ending'] as const){
+  store.clear();
+  const threat=applyCheckpointThreat(id,store);
+  assert.equal(threat?.phase,'sealed',`${id} starts from a sealed campus`);
+  assert.deepEqual(threat?.flags,{lionDefeated:true,powerCut:true,localModelCleared:false},`${id} holds the lion and power results`);
+  assert.ok(store.getItem(WORLD_THREAT_KEY),`${id} writes the world threat through the real key`);
+  assert.equal(loadWorldThreat({storage:store,now:1}).phase,'sealed');
+ }
+ for(const id of ['b4-inside','lawn','b5'] as const)assert.equal(applyCheckpointThreat(id,store),null,`${id} invents no endgame facts`);
 });
 
 if(failures.length){console.error(`\ncheck-chapter-select: ${failures.length} failed, ${passed} passed`);process.exit(1);}

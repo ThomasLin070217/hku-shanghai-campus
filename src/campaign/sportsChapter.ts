@@ -61,7 +61,9 @@ export function createSportsChapter():Chapter{
  }
  function update(dt:number){
   doorRuntime?.update(dt);
-  if(!opened&&isOpen()){opened=true;ctx?.emit('door_opened');}
+  // Latch only when the event is accepted: on the walking leg a door that is
+  // already open must not consume its one emit before the stage reaches `sports`.
+  if(!opened&&isOpen()&&ctx?.emit('door_opened'))opened=true;
  }
  return{
   id:'sports',entry:SPORTS_ENTRY,approach:SPORTS_APPROACH,

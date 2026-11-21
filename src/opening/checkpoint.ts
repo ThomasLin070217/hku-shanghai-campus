@@ -5,6 +5,7 @@ import type{CampaignStage}from'../campaign/state';
 import{B4_ENTRY}from'../campaign/b4Chapter';
 import{LAWN_ENTRY}from'../campaign/lawnChapter';
 import{SPORTS_ENTRY}from'../campaign/sportsChapter';
+import{markLionDefeated,markPowerCut,sealWorld,type WorldThreat,type WorldThreatStorage}from'../gameplay/worldThreat';
 
 /**
  * Chapter-select checkpoints inside Chapter 1.
@@ -75,6 +76,40 @@ const CHECKPOINT_CAMPAIGN:Partial<Record<OpeningCheckpoint,{stage:CampaignStage;
 };
 export function checkpointCampaign(id:OpeningCheckpoint){
  const c=CHECKPOINT_CAMPAIGN[id];return c?{...c}:null;
+}
+
+export interface CheckpointThreat{
+ /** The campus was already sealed when this checkpoint begins. */
+ sealed:boolean;
+ /** The lawn guardian is down. */
+ lionDefeated:boolean;
+ /** The core power is cut. */
+ powerCut:boolean;
+}
+/**
+ * Endgame facts a campaign checkpoint already holds. Only the two checkpoints
+ * after the lawn carry them; Chapter 1 checkpoints return null.
+ */
+const CHECKPOINT_THREAT:Partial<Record<OpeningCheckpoint,CheckpointThreat>>={
+ sports:{sealed:true,lionDefeated:true,powerCut:true},
+ ending:{sealed:true,lionDefeated:true,powerCut:true},
+};
+export function checkpointThreat(id:OpeningCheckpoint):CheckpointThreat|null{
+ const t=CHECKPOINT_THREAT[id];return t?{...t}:null;
+}
+
+/**
+ * Write those facts with the real world-threat writers, so the ending can purge
+ * from a checkpoint instead of finding a clear record. Returns null when the
+ * checkpoint carries no endgame facts.
+ */
+export function applyCheckpointThreat(id:OpeningCheckpoint,storage?:WorldThreatStorage|null):WorldThreat|null{
+ const t=CHECKPOINT_THREAT[id];if(!t)return null;
+ const now=Date.now();
+ let threat=sealWorld(now,storage);
+ if(t.lionDefeated)threat=markLionDefeated(now,storage);
+ if(t.powerCut)threat=markPowerCut(now,storage);
+ return threat;
 }
 
 export function openingCheckpoint(raw:string|null|undefined):OpeningCheckpoint|null{

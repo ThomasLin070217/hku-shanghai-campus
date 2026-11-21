@@ -89,6 +89,18 @@ export function isSealed(threat:WorldThreat):boolean{
 }
 
 /**
+ * The threat for this frame. Another module (the ending) can purge the shared
+ * record mid-run while this one still holds a cached `sealed`; adopting that
+ * record is what stops the sealed curtain being re-asserted every frame. A
+ * purged cache is final and is never re-read.
+ */
+export function refreshedWorldThreat(cached:WorldThreat,load:()=>WorldThreat):WorldThreat{
+ if(cached.phase==='purged')return cached;
+ const live=load();
+ return live.phase===cached.phase?cached:live;
+}
+
+/**
  * Read the world state as-is. Returns null when the record is absent, corrupt or
  * from an unknown schema; callers should use loadWorldThreat() for migration.
  */
