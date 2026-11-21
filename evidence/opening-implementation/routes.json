@@ -45,6 +45,83 @@
     ]
   },
   {
+    "name": "findPath spawn -> busExit",
+    "length": 5.866,
+    "points": 3,
+    "visited": 6,
+    "end": [
+      63.4,
+      0.08,
+      27.8
+    ]
+  },
+  {
+    "name": "findPath busExit -> staff",
+    "length": 128.791,
+    "points": 8,
+    "visited": 2036,
+    "end": [
+      64,
+      0.02,
+      -61
+    ]
+  },
+  {
+    "name": "findPath staff -> B6 pickup",
+    "length": 71.419,
+    "points": 7,
+    "visited": 2565,
+    "end": [
+      7.3,
+      5.1,
+      -57
+    ]
+  },
+  {
+    "name": "findPath B6 pickup -> staff",
+    "length": 106.06,
+    "points": 8,
+    "visited": 1027,
+    "end": [
+      64,
+      0.02,
+      -61
+    ]
+  },
+  {
+    "name": "findPath staff -> handoff",
+    "length": 139.124,
+    "points": 9,
+    "visited": 2672,
+    "end": [
+      58,
+      0.08,
+      25
+    ]
+  },
+  {
+    "name": "findPath B5 door -> handoff",
+    "length": 120.986,
+    "points": 6,
+    "visited": 2630,
+    "end": [
+      58,
+      0.08,
+      25
+    ]
+  },
+  {
+    "name": "findPath b5safe -> handoff",
+    "length": 120.986,
+    "points": 6,
+    "visited": 2630,
+    "end": [
+      58,
+      0.08,
+      25
+    ]
+  },
+  {
     "name": "Building5 door through the planting-bed gap",
     "seconds": 10.491666666666667,
     "end": [
