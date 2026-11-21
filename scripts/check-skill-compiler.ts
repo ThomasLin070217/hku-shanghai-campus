@@ -23,7 +23,9 @@ async function prepare(id:ProjectId,text:string){
   const checks=ok(await svc.test(p));assert(checks.every(c=>c.actual===c.expected));return p;
 }
 svc.edit('ghost','Something enticing on its left');
+items.set('hku.opening.agent.offline','1');
 const unavailable=await svc.preview('ghost',svc.draft('ghost'));
+items.delete('hku.opening.agent.offline');
 assert(!unavailable.ok&&unavailable.unavailable);
 for(const pair of [['ghost','lure'],['stun','lure'],['ghost','stun']] as const){
   svc.reset();

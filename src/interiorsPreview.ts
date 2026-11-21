@@ -1,3 +1,4 @@
+import {CDS1_KEYS, readKeyboardProgress, saveKeyboardProgress} from './opening/keyboardProgress';
 import * as T from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
@@ -46,7 +47,8 @@ const renderer = new T.WebGLRenderer({antialias: true, preserveDrawingBuffer: tr
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.toneMapping = T.ACESFilmicToneMapping;
 host.append(renderer.domElement);
-scene.add(new T.HemisphereLight(0xfff6e4, 0x9ca48e, 2.2));
+const hemi = new T.HemisphereLight(0xfff6e4, 0x9ca48e, 2.2);
+scene.add(hemi);
 const sun = new T.DirectionalLight(0xfff5df, 2.4);
 sun.position.set(-10, 16, 12);
 scene.add(sun);
@@ -180,7 +182,7 @@ let puzzleState: 'idle' | 'collect' | 'ready' | 'flash' | 'online' = 'idle';
 let puzzleInserted = 0;
 let typed = '';
 let flashStart = 0;
-let flashTimer: number | null = null;
+let beepTimer: number | null = null;
 let chimeLight: T.PointLight | null = null;
 let keyboardLight: T.PointLight | null = null;
 let enterPressedAt = -Infinity;
@@ -194,7 +196,7 @@ function showPuzzleHud() {
 function updatePuzzleHud() {
   const hud = document.querySelector<HTMLElement>('#puzzle-hud')!;
   document.querySelector('#puzzle-input')!.textContent = typed || '—';
-  document.querySelector('#puzzle-status')!.textContent = puzzleState === 'online' ? 'CDS-1 ONLINE' : puzzleInserted === 8 ? 'All keys seated · Press Enter' : `${puzzleInserted} / 8 seated`;
+  document.querySelector('#puzzle-status')!.textContent = puzzleState === 'online' ? 'CDS-1 ONLINE' : puzzleInserted === CDS1_KEYS.length ? 'All keys seated · Press Enter' : `${puzzleInserted} / 8 seated`;
   document.querySelector('#cpu-status')!.textContent = puzzleState === 'online' ? 'CPU 01 · ONLINE' : 'CPU 01 · OFFLINE';
   hud.classList.toggle('online', puzzleState === 'online');
 }
@@ -205,7 +207,7 @@ function stopKeyboardPuzzle() {
   typed = '';
   flashStart = 0;
   enterPressedAt = -Infinity;
-  if (flashTimer !== null) { clearTimeout(flashTimer); flashTimer = null; }
+  if (beepTimer !== null) { clearTimeout(beepTimer); beepTimer = null; }
   if (chimeLight) { scene.remove(chimeLight); chimeLight = null; }
   if (keyboardLight) { scene.remove(keyboardLight); keyboardLight = null; }
   hidePuzzleHud();
@@ -225,16 +227,25 @@ function startPuzzle() {
   puzzleState = 'collect';
   puzzleInserted = 0;
   typed = '';
+  const progress = chapterMode ? readKeyboardProgress(deviceId) : null;
   const phrase = caps.filter(cap => cap.phrase);
   const xs = [-2.9, -2.0, -1.1, -.2, .7, 1.6, 2.5, 3.3];
   const zs = [1.55, 1.72, 1.48, 1.68, 1.52, 1.75, 1.50, 1.66];
   phrase.forEach((cap, index) => {
-    cap.puzzle = 'floor';
+    cap.puzzle = progress?.seated.includes(cap.group.userData.label) ? 'seated' : 'floor';
+    if (cap.puzzle === 'seated') {
+      cap.seatedAt = performance.now() - 450;
+      cap.group.position.copy(cap.rest);
+      cap.group.rotation.set(0, 0, 0);
+      puzzleInserted++;
+    }
     cap.lit = false;
     cap.yaw = (index % 2 ? 1 : -1) * (.35 + index * .04);
     cap.scatter.set(xs[index] ?? 0, -1.405, zs[index] ?? 3.1);
-    cap.group.position.copy(cap.scatter);
-    cap.group.rotation.set(-Math.PI / 2, cap.yaw, 0);
+    if (cap.puzzle === 'floor') {
+      cap.group.position.copy(cap.scatter);
+      cap.group.rotation.set(-Math.PI / 2, cap.yaw, 0);
+    }
     resetGlow(cap);
   });
   view('keys');
@@ -246,7 +257,11 @@ function startPuzzle() {
   document.querySelector('#note')!.textContent = 'Keyboard Wall: type I LOVE CDS following the Mac prompt, or click the gold keys on the floor; press Enter to boot once all are back.';
   for (const id of ['#detachPhrase', '#detachV', '#attachAll', '#puzzleStart']) document.querySelector<HTMLButtonElement>(id)!.hidden = true;
   document.querySelector<HTMLButtonElement>('#puzzleReset')!.hidden = false;
-  playSfx('tick');
+  if (progress?.online) {
+    puzzleState = 'online';
+    setCpuOnline();
+    updatePuzzleHud();
+  } else if (!chapterMode) playSfx('tick');
 }
 function resetPuzzle() {
   stopKeyboardPuzzle();
@@ -260,12 +275,13 @@ function insertCap(cap: Cap) {
   cap.flyStart = performance.now();
   cap.yaw = cap.group.rotation.y;
   playSfx('insert');
+  if (chapterMode) saveKeyboardProgress(deviceId, [String(cap.group.userData.label)], false);
 }
 function typeLetter(letter: string) {
   if (!puzzleActive || (puzzleState !== 'collect' && puzzleState !== 'ready')) return;
   const key = letter.toUpperCase();
   if (!/^[A-Z]$/.test(key)) return;
-  typed += key;
+  typed = (typed + key).slice(-CDS1_KEYS.length);
   const cap = caps.find(item => item.phrase && item.puzzle === 'floor' && item.group.userData.label === key);
   if (cap) insertCap(cap);
   updatePuzzleHud();
@@ -324,7 +340,7 @@ function updatePuzzleCaps(now: number) {
     }
   }
   const enter = caps.find(cap => cap.enter);
-  if (puzzleInserted === 8 && enter && puzzleState !== 'flash' && puzzleState !== 'online') {
+  if (puzzleInserted === CDS1_KEYS.length && enter && puzzleState !== 'flash' && puzzleState !== 'online') {
     if (enter.glow) {
       enter.glow.emissive.setHex(0x4aa3ff);
       enter.glow.emissiveIntensity = .8 + .2 * Math.sin(now * .006);
@@ -334,6 +350,15 @@ function updatePuzzleCaps(now: number) {
   }
   if (puzzleState === 'flash') {
     const elapsed = (now - flashStart) / 1000;
+    if (elapsed >= 3) {
+      if (beepTimer !== null) { clearTimeout(beepTimer); beepTimer = null; }
+      puzzleState = 'online';
+      if (chapterMode) saveKeyboardProgress(deviceId, [...CDS1_KEYS], true);
+      setCpuOnline();
+      updatePuzzleHud();
+      playSfx('chime');
+      return;
+    }
     const rate = 4 + elapsed * 7;
     const globalOn = Math.sin(elapsed * rate * Math.PI * 2) > 0;
     for (const cap of caps) {
@@ -364,7 +389,7 @@ function flashBeeps(index: number) {
   if (puzzleState !== 'flash') return;
   playSfx('tick');
   const interval = Math.max(45, 210 - index * 16);
-  flashTimer = window.setTimeout(() => flashBeeps(index + 1), interval);
+  beepTimer = window.setTimeout(() => flashBeeps(index + 1), interval);
 }
 function setCpuOnline() {
   document.querySelector('#puzzle-hud')!.classList.add('online');
@@ -384,20 +409,13 @@ function setCpuOnline() {
   window.setTimeout(() => flash?.classList.remove('show'), 420);
 }
 function startFinale() {
-  if (!puzzleActive || puzzleInserted !== 8 || puzzleState !== 'ready') return;
+  if (!puzzleActive || puzzleInserted !== CDS1_KEYS.length || puzzleState !== 'ready') return;
   puzzleState = 'flash';
   flashStart = performance.now();
   enterPressedAt = performance.now();
   updatePuzzleHud();
   playSfx('unlock');
   flashBeeps(0);
-  flashTimer = window.setTimeout(() => {
-    if (kind !== 'keyboard') return;
-    puzzleState = 'online';
-    setCpuOnline();
-    updatePuzzleHud();
-    playSfx('chime');
-  }, 3000);
 }
 
 type Tile = {group: T.Group; row: number; column: number; current: number; from: number; target: number; start: number; duration: number; outline: T.LineSegments | null};
@@ -652,6 +670,8 @@ function playSfx(kind: 'tick' | 'success' | 'unlock' | 'power' | 'insert' | 'chi
 
 function view(mode:View='overview') {
   activeView=mode;
+  // In chapter mode the camera belongs to the player, not the authoring rig.
+  if(chapterMode){fittedAspect=camera.aspect;return;}
   const room=rooms[kind];
   if(mode==='stool'){
     camera.position.set(.55, 2.25, 1.55);
@@ -764,7 +784,8 @@ renderer.domElement.addEventListener('pointerup', event => {
   const cap = caps.find(item => item.group === node);
   if (cap) {
     if (kind === 'keyboard' && puzzleActive) {
-      if (cap.phrase && cap.puzzle === 'floor') insertCap(cap);
+      if (cap.enter) startFinale();
+      else if (cap.phrase && cap.puzzle === 'floor') insertCap(cap);
       return;
     }
     setCap(cap, !cap.attached);
@@ -791,7 +812,7 @@ window.addEventListener('keydown', event => {
   if (event.key === 'Enter') { event.preventDefault(); revealWall(); }
 });
 window.addEventListener('keydown', event => {
-  if (kind !== 'keyboard' || !puzzleActive) return;
+  if (kind !== 'keyboard' || !puzzleActive || event.repeat || event.isComposing || event.metaKey || event.ctrlKey || event.altKey) return;
   const target = event.target as HTMLElement | null;
   if (target && target.closest('input,textarea,select')) return;
   if (event.key === 'Enter') { event.preventDefault(); startFinale(); return; }
@@ -826,14 +847,14 @@ const MACBOOK_ITEM = 'macbook-air-13-silver';
 const OPENING_SAVE_KEY = 'hku.opening.v1';
 const CHAPTER_ORDER: ChapterStep[] = ['keyboard', 'flip', 'breaker', 'connect'];
 const CHAPTER_OBJECTIVES: Record<ChapterStep, string> = {
-  keyboard: 'Spell the phrase with the keycaps, then press Enter.',
-  flip: 'Flip the wall to spell HKU, then open it.',
-  breaker: 'Pull the red breaker lever. Click it or press E.',
-  connect: 'Connect the MacBook to the supercomputer.',
+  keyboard: 'Spell I LOVE CDS on the wall — type it or click the eight gold caps — then press Enter.',
+  flip: 'Turn every one of the 561 tiles over so the wall shows its back face, then open it.',
+  breaker: 'Reach into the open closet and pull the red breaker lever. Click it or press E.',
+  connect: 'Plug the MacBook into the supercomputer cabinet — click the green port rail.',
   done: '',
 };
 const CHAPTER_ACTIONS: Partial<Record<ChapterStep, string>> = {
-  flip: 'Flip the wall and open it',
+  flip: 'Flip all tiles and open',
   breaker: 'Pull the breaker',
   connect: 'Connect MacBook',
 };
@@ -855,6 +876,124 @@ let breakerPulled = false;
 let breakerLever: T.Object3D | null = null;
 let rackMaterials: T.MeshStandardMaterial[] = [];
 let hum: HTMLAudioElement | null = null;
+
+/* Player camera. Chapter mode is walked in first person at eye height: a fixed
+ * stance per step, a short settle between stances, and a hand's width of
+ * mouse-look. Preview mode keeps OrbitControls untouched. */
+const EYE_HEIGHT = 1.6;
+type Stance = {pos: [number, number, number]; look: [number, number, number]};
+const CHAPTER_STANCES: Record<'keyboard' | 'flip' | 'breaker' | 'connect', Stance> = {
+  // Keyboard wall panel sits at (0.48, 2.64, -3.79); stand back on the lounge floor.
+  keyboard: {pos: [.48, EYE_HEIGHT, 2.95], look: [.48, 1.74, -3.79]},
+  // Flip wall panel fills (0.30, 0.13–3.86, -1.93).
+  flip: {pos: [.30, EYE_HEIGHT, 2.70], look: [.30, 1.98, -1.93]},
+  // Breaker lever at (0.30, 1.86, -2.26) inside the opened closet.
+  breaker: {pos: [.30, EYE_HEIGHT + .02, 1.40], look: [.30, 1.78, -2.26]},
+  // Aux power rail, the supercomputer port, at (0.30, 1.22, -2.27).
+  connect: {pos: [.30, EYE_HEIGHT + .02, 1.05], look: [.30, 1.60, -2.30]},
+};
+const camFromPos = new T.Vector3(), camFromLook = new T.Vector3();
+const camToPos = new T.Vector3(), camToLook = new T.Vector3();
+const chapterLook = new T.Vector3().fromArray(CHAPTER_STANCES.keyboard.look);
+let camStart = 0, camDuration = 0, camMoving = false;
+let lookYaw = 0, lookPitch = 0, lookYawTarget = 0, lookPitchTarget = 0;
+
+function setChapterView(step: 'keyboard' | 'flip' | 'breaker' | 'connect', immediate = false) {
+  if (!chapterMode) return;
+  const stance = CHAPTER_STANCES[step];
+  camFromPos.copy(camera.position);
+  camFromLook.copy(chapterLook);
+  camToPos.fromArray(stance.pos);
+  camToLook.fromArray(stance.look);
+  lookYawTarget = 0;
+  lookPitchTarget = 0;
+  if (immediate) {
+    camera.position.copy(camToPos);
+    chapterLook.copy(camToLook);
+    camMoving = false;
+    camera.lookAt(chapterLook);
+    return;
+  }
+  camStart = performance.now();
+  camDuration = 1250;
+  camMoving = true;
+}
+function updateChapterCamera(dt: number) {
+  if (camMoving) {
+    const progress = camDuration > 0 ? Math.min(1, (performance.now() - camStart) / camDuration) : 1;
+    const eased = progress < .5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+    camera.position.lerpVectors(camFromPos, camToPos, eased);
+    chapterLook.lerpVectors(camFromLook, camToLook, eased);
+    if (progress >= 1) {
+      camMoving = false;
+      camera.position.copy(camToPos);
+      chapterLook.copy(camToLook);
+    }
+  }
+  const settle = Math.min(1, dt * 9);
+  lookYaw += (lookYawTarget - lookYaw) * settle;
+  lookPitch += (lookPitchTarget - lookPitch) * settle;
+  camera.lookAt(chapterLook);
+  camera.rotateY(lookYaw);
+  camera.rotateX(lookPitch);
+}
+window.addEventListener('pointermove', event => {
+  if (!chapterMode) return;
+  const rect = renderer.domElement.getBoundingClientRect();
+  if (!rect.width || !rect.height) return;
+  const nx = (event.clientX - rect.left) / rect.width - .5;
+  const ny = (event.clientY - rect.top) / rect.height - .5;
+  lookYawTarget = T.MathUtils.clamp(-nx * .26, -.13, .13);
+  lookPitchTarget = T.MathUtils.clamp(-ny * .18, -.09, .09);
+});
+
+/* Story lighting: the room is under lockdown — dim, red emergency wash — until
+ * the breaker closes. Then the ceiling and the green racks come up. */
+const LOCKDOWN_SKY = new T.Color(0x4a1512);
+const LOCKDOWN_GROUND = new T.Color(0x100604);
+const NORMAL_SKY = new T.Color(0xfff6e4);
+const NORMAL_GROUND = new T.Color(0x9ca48e);
+const emergencyLights: T.PointLight[] = [];
+let chapterLightLevel = 0;
+function initChapterLighting() {
+  scene.background = new T.Color(0x050a08);
+  hemi.color.copy(LOCKDOWN_SKY);
+  hemi.groundColor.copy(LOCKDOWN_GROUND);
+  hemi.intensity = .55;
+  sun.intensity = .18;
+  for (const x of [-2.2, .30, 2.6]) {
+    const lamp = new T.PointLight(0xff2d1a, 2.6, 9.5, 2);
+    lamp.position.set(x, 3.15, -1.1);
+    scene.add(lamp);
+    emergencyLights.push(lamp);
+  }
+}
+function updateChapterLighting(dt: number) {
+  if (!chapterMode) return;
+  const now = performance.now();
+  chapterLightLevel += ((breakerPulled ? 1 : 0) - chapterLightLevel) * Math.min(1, dt * 2.2);
+  const level = chapterLightLevel;
+  hemi.color.copy(LOCKDOWN_SKY).lerp(NORMAL_SKY, level);
+  hemi.groundColor.copy(LOCKDOWN_GROUND).lerp(NORMAL_GROUND, level);
+  hemi.intensity = .55 + 1.65 * level;
+  sun.intensity = .18 + 1.42 * level;
+  for (const [index, lamp] of emergencyLights.entries()) {
+    lamp.intensity = 2.6 * (1 - level) * (.88 + .12 * Math.sin(now * .006 + index));
+  }
+  if (chapterLightLevel < .98) {
+    if (powerLight) powerLight.intensity = 0;
+    // One dim maintenance lamp keeps the open closet readable during lockdown.
+    if (workLight) workLight.intensity = .55;
+  }
+  for (const material of rackMaterials) material.emissiveIntensity = .12 + 1.85 * level;
+}
+function setChapterStatus(paired: boolean) {
+  const status = document.querySelector<HTMLElement>('#chapter-status');
+  if (!status) return;
+  status.hidden = false;
+  status.textContent = paired ? 'MacBook Air · paired' : 'MacBook Air · not paired';
+  status.classList.toggle('paired', paired);
+}
 
 function chapterHud() {
   return document.querySelector<HTMLElement>('#chapter-hud')!;
@@ -906,12 +1045,13 @@ function pullBreaker() {
   playSfx('power');
   playHum();
   if (powerLight) powerLight.intensity = 3.6;
-  window.setTimeout(() => { if (chapterStep === 'breaker') setChapterStep('connect'); }, 1400);
+  window.setTimeout(() => { if (chapterStep === 'breaker') { setChapterStep('connect'); setChapterView('connect'); } }, 1400);
 }
 function connectMacBook() {
   if (!chapterMode || chapterStep !== 'connect') return;
   markRelayRestored(deviceId);
   playSfx('success');
+  setChapterStatus(true);
   setChapterStep('done');
   chapterHud().hidden = true;
   document.querySelector<HTMLElement>('#chapter-success')!.hidden = false;
@@ -924,12 +1064,17 @@ function skipChapterPuzzle() {
   if (powerLight) powerLight.intensity = 3.2;
   if (workLight) workLight.intensity = 2.2;
   markRelayRestored(deviceId);
+  setChapterStatus(true);
   setChapterStep('done');
   chapterHud().hidden = true;
   document.querySelector<HTMLElement>('#chapter-success')!.hidden = false;
 }
 function initChapter() {
   document.body.classList.add('chapter-mode');
+  controls.enabled = false;
+  initChapterLighting();
+  const hudLabel = document.querySelector('#puzzle-hud header b');
+  if (hudLabel) hudLabel.textContent = 'RECOVERY LINK';
   chapterHud().hidden = false;
   document.querySelector<HTMLButtonElement>('#chapter-skip')!.onclick = () => skipChapterPuzzle();
   document.querySelector<HTMLButtonElement>('#chapter-action')!.onclick = () => {
@@ -939,22 +1084,29 @@ function initChapter() {
   };
   if (relayRestored(deviceId)) {
     setChapterStep('done');
+    setChapterStatus(true);
     chapterHud().hidden = true;
     document.querySelector<HTMLElement>('#chapter-success')!.hidden = false;
     return;
   }
   setChapterStep('keyboard');
   startPuzzle();
+  setChapterStatus(false);
+  setChapterView('keyboard', true);
 }
 function updateChapter(now: number) {
   if (!chapterMode || chapterStep === 'done') return;
   if (chapterStep === 'keyboard' && puzzleState === 'online') {
     setChapterStep('flip');
-    chapterFade(() => select('flipWall'));
+    chapterFade(() => {
+      select('flipWall');
+      setChapterView('flip', true);
+    });
     return;
   }
   if (chapterStep === 'flip' && revealState === 'open') {
     setChapterStep('breaker');
+    setChapterView('breaker');
     return;
   }
   if (breakerLever) {
@@ -1002,12 +1154,13 @@ const clock = new T.Clock();
 renderer.setAnimationLoop(() => {
   const dt = Math.min(clock.getDelta(), .05);
   const now = performance.now();
-  controls.update();
+  if (chapterMode) updateChapterCamera(dt); else controls.update();
   updateCaps(dt);
   updatePuzzleCaps(now);
   updateTiles(now);
   updateReveal(now);
   updateChapter(now);
+  updateChapterLighting(dt);
   composer.render();
 });
-Object.assign(window, {__INTERIORS: {scene, camera, renderer, controls, select, view:(front=false)=>view(front?'front':'overview'), keysView:()=>view('keys'), stoolView:()=>view('stool'), flipView:()=>view('flip'), revealView:()=>view('reveal'), flipAll, toggleTile, flipSelected, selectAllTiles, clearSelection, reveal:revealWall, resetWall, startPuzzle, resetPuzzle, typeLetter, startFinale, screenOf:(row: number, column: number) => { const tile = tiles.find(item => item.row === row && item.column === column); if (!tile) return null; const world = new T.Vector3(); tile.group.getWorldPosition(world); world.project(camera); const rect = renderer.domElement.getBoundingClientRect(); return {x: rect.left + (world.x * .5 + .5) * rect.width, y: rect.top + (-world.y * .5 + .5) * rect.height}; }, get puzzle() { return {active: puzzleActive, state: puzzleState, inserted: puzzleInserted, typed}; }, get revealState() { return revealState; }, get selection() { return [...selectedTiles].map(tile => `${tile.row}:${tile.column}`); }, get asset() { return asset; }, get caps() { return caps.map(cap => ({label: cap.group.userData.label, phrase: cap.phrase, enter: cap.enter, marked: cap.marked, attached: cap.attached, stool: cap.stool, puzzle: cap.puzzle, lit: cap.lit, position: cap.group.position.toArray(), rotation: cap.group.rotation.toArray().slice(0,3)})); }, get tiles() { return tiles.map(tile => ({row: tile.row, column: tile.column, angle: tile.current, front: tile.group.userData.front, back: tile.group.userData.back})); }, setCap, setAllCaps, togglePhrase, detachV, toggleKey:(label: string) => { const cap = caps.find(item => item.group.userData.label === label); if (cap) setCap(cap, !cap.attached); }, chapter: chapterMode ? { get step() { return chapterStep; }, get device() { return deviceId; }, get breaker() { return breakerPulled; }, get relay() { return relayRestored(deviceId); }, pullBreaker, connectMacBook, skip: skipChapterPuzzle } : null}});
+Object.assign(window, {__INTERIORS: {scene, camera, renderer, controls, select, view:(front=false)=>view(front?'front':'overview'), keysView:()=>view('keys'), stoolView:()=>view('stool'), flipView:()=>view('flip'), revealView:()=>view('reveal'), flipAll, toggleTile, flipSelected, selectAllTiles, clearSelection, reveal:revealWall, resetWall, startPuzzle, resetPuzzle, typeLetter, startFinale, screenOf:(row: number, column: number) => { const tile = tiles.find(item => item.row === row && item.column === column); if (!tile) return null; const world = new T.Vector3(); tile.group.getWorldPosition(world); world.project(camera); const rect = renderer.domElement.getBoundingClientRect(); return {x: rect.left + (world.x * .5 + .5) * rect.width, y: rect.top + (-world.y * .5 + .5) * rect.height}; }, get puzzle() { return {active: puzzleActive, state: puzzleState, inserted: puzzleInserted, typed}; }, get revealState() { return revealState; }, get selection() { return [...selectedTiles].map(tile => `${tile.row}:${tile.column}`); }, get asset() { return asset; }, get caps() { return caps.map(cap => ({label: cap.group.userData.label, phrase: cap.phrase, enter: cap.enter, marked: cap.marked, attached: cap.attached, stool: cap.stool, puzzle: cap.puzzle, lit: cap.lit, position: cap.group.position.toArray(), rotation: cap.group.rotation.toArray().slice(0,3)})); }, get tiles() { return tiles.map(tile => ({row: tile.row, column: tile.column, angle: tile.current, front: tile.group.userData.front, back: tile.group.userData.back})); }, setCap, setAllCaps, togglePhrase, detachV, toggleKey:(label: string) => { const cap = caps.find(item => item.group.userData.label === label); if (cap) setCap(cap, !cap.attached); }, chapter: chapterMode ? { get step() { return chapterStep; }, get device() { return deviceId; }, get breaker() { return breakerPulled; }, get relay() { return relayRestored(deviceId); }, get paired() { return document.querySelector('#chapter-status')?.classList.contains('paired') ?? false; }, pullBreaker, connectMacBook, skip: skipChapterPuzzle, setView: setChapterView } : null}});

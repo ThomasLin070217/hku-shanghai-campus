@@ -44,7 +44,7 @@ document.querySelector('#app')!.innerHTML = `
               <a class="levels-checkpoint" href="?experience=opening&checkpoint=b4"><b>B4 · Emergency control</b><span>Start on the last run of Chapter 1: cross the campus and reach Building 4.</span></a>
             </div>
           </div>
-          <a href="?experience=lion-boss"><b>Chapter 2 · The Lawn Guardian (L001)</b><span>Write skills on the MacBook to counter the mechanical lion and repair the system.</span></a>
+          <a href="?experience=lion-boss"><b>Chapter 2 · The Lawn Guardian (L001)</b><span>Press Q to interrupt the lion's charge, then hold F at the glowing shutdown ring.</span></a>
           <a id="sports-link" href="${sportsRescueLink(device)}"><b>Chapter 3 · Sports Hall Rescue</b><span>Solve the sudoku and combination lock at the east door, and rescue the students inside.</span></a>
           <a href="?experience=survey"><b>Side mission · Campus Survey</b><span>Visit three outdoor landmarks and sync the campus records on the computer.</span></a>
         </nav>
@@ -79,7 +79,7 @@ lowGraphics.addEventListener('change', () => {
 const sportsLink = document.querySelector<HTMLAnchorElement>('#sports-link')!;
 sportsLink.addEventListener('click', event => {
   event.preventDefault();
-  recordCorePowerCut(device, 3);
+  recordCorePowerCut(device);
   location.href = sportsLink.getAttribute('href') ?? sportsRescueLink(device);
 });
 

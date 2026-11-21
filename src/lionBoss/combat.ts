@@ -8,13 +8,9 @@ export const BOSS:Point={x:LION.x,z:LION.z};
 const offset=(x:number,z:number):Point=>({x:BOSS.x+x,z:BOSS.z+z});
 export const SAFE=offset(1,11);
 export const NODES=[
-  {...offset(-2,6),id:'defense_lock_a',name:'Defense lock A',hold:1.35},
-  {...offset(5,1),id:'defense_lock_b',name:'Defense lock B',hold:1.35},
-  {...offset(1,-6.5),id:'ai_core_power',name:'AI core power',hold:1.8},
+  {...offset(-2,6),id:'ai_core_power',name:'Emergency shutdown',hold:1},
 ] as const;
-export function checkpoint(repaired:number):Point {
-  return [offset(-1,7),offset(4.8,3),offset(1,-7)][repaired]??{...SAFE};
-}
+
 
 export const CHARGE_LENGTH=9;
 const bounds=lionBodySize();
@@ -25,7 +21,8 @@ const chargeTravel=CHARGE_LENGTH-frontReach;
 export const SWIPE_RADIUS=5.2;
 export const SWIPE_HALF_ANGLE=Math.PI*.31;
 export const SUBMIT_RADIUS=2;
-export const CHARGE_WARNING=1.35;
+export const CHARGE_WARNING=2.25;
+export const FREEZE_SECONDS=6;
 export const SWIPE_WARNING=1.05;
 export const AWAKEN_SECONDS=2.4;
 const CHARGE_TIME=.82;
@@ -56,7 +53,7 @@ export function inSwipe(origin:Point,yaw:number,player:Point) {
   return d<=SWIPE_RADIUS && dx*Math.sin(yaw)+dz*Math.cos(yaw)>=d*Math.cos(SWIPE_HALF_ANGLE);
 }
 export function canSubmit(s:CombatState) {
-  return s.repaired<NODES.length && (s.phase==='stunned'||s.phase==='lured'||s.phase==='ghosted');
+  return s.repaired<NODES.length && s.phase==='stunned' && s.remaining>0;
 }
 export function atMaintenance(p:Point){return distance(p,SAFE)<=2.5;}
 function detects(s:CombatState,p:Point){
@@ -67,7 +64,7 @@ function detects(s:CombatState,p:Point){
 }
 function initial(done:number):CombatState {
   const repaired=Number.isInteger(done)?Math.max(0,Math.min(NODES.length,done)):0;
-  return {phase:repaired===3?'complete':'safe',remaining:0,repaired,submit:0,elapsed:0,awakened:repaired>0,
+  return {phase:repaired===NODES.length?'complete':'safe',remaining:0,repaired,submit:0,elapsed:0,awakened:repaired>0,
     lion:{...BOSS},helper:offset(-3,8),helperTarget:offset(-3,8),signal:null,yaw:LION.yaw,helperYaw:Math.PI,
     origin:{...BOSS},cooldown:{stun:0,lure:0,ghost:0},target:null};
 }
@@ -89,6 +86,7 @@ export function createCombat(repaired=0) {
   }
   function check(rule:SkillRule,player:Point,signalPoint?:Point) {
     if(atMaintenance(player))return {ok:false,message:'Leave the maintenance area before sending skills to the lawn devices.'};
+    if(rule.kind==='stun'&&state.phase!=='chargeWarn')return {ok:false,message:'Press Q when L001 winds up its charge.'};
     const result=evaluateSkill(rule,{phase:state.phase,distance:distance(state.lion,player),cooldown:state.cooldown[rule.kind],
       helperReady:distance(state.helper,player)<=(rule.maxRange??DEFAULT_RANGE)&&state.target!=='helper'});
     if(result.ok&&rule.kind==='ghost'&&signalPoint&&
@@ -108,8 +106,8 @@ export function createCombat(repaired=0) {
     const result=check(rule,player,signalPoint);
     if(!result.ok)return result;
     const spec=SKILL_SPECS[rule.kind];
-    state.cooldown[rule.kind]=spec.cooldown;
-    if(rule.kind==='stun')transition('stunned',spec.duration);
+    state.cooldown[rule.kind]=rule.kind==='stun'?FREEZE_SECONDS:spec.cooldown;
+    if(rule.kind==='stun')transition('stunned',FREEZE_SECONDS);
     else if(rule.kind==='lure'){
       state.helperTarget=flank(rule,player);
       state.helperYaw=face(state.helper,state.helperTarget);
@@ -158,9 +156,8 @@ export function createCombat(repaired=0) {
         if(atMaintenance(player)||distance(player,BOSS)>LEASH){transition('return');break;}
         const d=distance(state.lion,player);
         if(d>7){pursue(player,2.8+state.repaired*.36,dt,6.8);break;}
-        const swipe=d<=4.45;
         state.origin={...state.lion};state.yaw=face(state.lion,player);
-        transition(swipe?'swipeWarn':'chargeWarn',(swipe?SWIPE_WARNING:CHARGE_WARNING)-state.repaired*.075,'player');
+        transition('chargeWarn',CHARGE_WARNING,'player');
         break;
       }
       case 'chargeWarn':
@@ -200,15 +197,16 @@ export function createCombat(repaired=0) {
         pursue(BOSS,3.1,dt);if(distance(state.lion,BOSS)<.06)transition('patrol');
         break;
     }
+    if(['stunned','lured','ghosted'].includes(state.phase)&&!state.remaining){
+      transition('return');return null;
+    }
     if(!canSubmit(state))return null;
-    if(!state.remaining){transition('return');return null;}
     const node=NODES[state.repaired];
     if(!holding||distance(node,player)>SUBMIT_RADIUS){state.submit=0;return null;}
     state.submit=Math.min(1,state.submit+dt/node.hold);
     if(state.submit<1-1e-6)return null;
     state.repaired++;
-    if(state.repaired===NODES.length)transition('complete');
-    else state.submit=0;
+    transition('complete');
     return 'repair';
   }
   return {state,awaken,start,reset,step,check,cast};
