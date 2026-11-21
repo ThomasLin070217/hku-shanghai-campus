@@ -196,7 +196,10 @@ const lights=()=>{const out:T.PointLight[]=[];site.root.traverse(o=>{if(o instan
  assert.equal(lm.emissive.getHex(),0xffb648,'the in-range lever glows gold');assert.ok(lm.emissiveIntensity>0);
  assert.equal(b4.interact(),true);step(1);assert.equal(cs.stage,'b4_connect');assert.equal(dbg.state().hum,true,'the hum plays from b4_connect on');
  g2.body.position.set(...B4_STATIONS.port.stand);step(1);assert.equal(b4.interact(),true);step(1);assert.equal(cs.stage,'to_lawn');
- assert.equal(lights().length,0,'room lights are removed once the chapter is done');
+ // Ruling 26 (Task 6): the room stays lit while the player is still inside, and goes dark once they are out of B04.
+ assert.ok(lights().length>0,'room lights stay on while the player is still at the port');
+ g2.body.position.set(...O.handoff);step(1);
+ assert.equal(lights().length,0,'room lights are removed once the player has left B04');
  console.log('PASS focus, highlight, flip-face contrast, lights off after B4, F at every station');
 }
 // Reload at b4_connect keeps the supercomputer humming.

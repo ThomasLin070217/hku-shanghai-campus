@@ -21,6 +21,7 @@ import type {CampaignHost} from '../campaign/host';
 import {fleetStandsDown} from '../campaign/state';
 import {relayRestored} from './backupRelay';
 import {createHeartsChannel} from './heartsChannel';
+import {routeInteract} from './interactRoute';
 import type {createOpeningWorld} from './world';
 import type {OpeningAtmosphere} from './atmosphere';
 import {STAFF_DIALOGUE} from '../../content/voice/staff-dialogue';
@@ -71,7 +72,7 @@ export function createOpeningExperience(
  let robotState='patrol',robotWarning=0;
  const atmo=()=>getAtmosphere?.();
  function showSubtitle(text:string,seconds:number){subtitleText=text;subtitleSeconds=seconds;}
- function showTitle(title:string,subtitle:string,seconds:number){titleText=title;titleSubtitle=subtitle;titleSeconds=seconds;}
+ function showTitle(title:string,subtitle:string,seconds:number){if(campaign())return;titleText=title;titleSubtitle=subtitle;titleSeconds=seconds;}
  function startWake(){wakeStarted=true;wakeDone=false;wakeClock=0;g.pitch=.52;g.yaw=2.24;audio.openingCue('wake');}
 
  function staffLineFor(clock:number){
@@ -384,7 +385,8 @@ export function createOpeningExperience(
  const requestedCheckpoint=openingCheckpoint(new URLSearchParams(location.search).get('checkpoint'));
  if(requestedCheckpoint)startAtCheckpoint(requestedCheckpoint);
  applySettings();setBusDoor(explorer.world,story.stage==='bus'&&!busReady);worldThreat=loadWorldThreat();if(requestedCheckpoint){if(runtime.curtain_deployed){atmo()?.startIncident();audio.openingAmbience('dark');}}else if(worldThreat.phase==='sealed'){runtime={...runtime,curtain_deployed:true};atmo()?.restoreSealed();audio.openingAmbience('dark');}else if(worldThreat.phase==='purged'){runtime={...runtime,curtain_deployed:false};audio.openingAmbience('day');}
- const humanInteract=()=>{if(campaign()&&!target())return;const r=g.interact();if(!r.ok)notify(r.message);},humanComputer=()=>{const r=g.computer('tasks');if(!r.ok)notify(r.message);};explorer.interactions.add(humanInteract);explorer.computers.add(humanComputer);
+ // F: the campaign chapter first, then Chapter 1's targets, otherwise the notice (one handler, one owner).
+ const humanInteract=()=>{routeInteract({campaign,reopenHandoff:()=>{if(story.stage!=='complete'||failed||modal||!getCampaign?.())return false;open('complete');return true;},opening:()=>g.interact(),notify});},humanComputer=()=>{const r=g.computer('tasks');if(!r.ok)notify(r.message);};explorer.interactions.add(humanInteract);explorer.computers.add(humanComputer);
  document.addEventListener('pointerdown',e=>{if(e.isTrusted)claimSave();},{capture:true,signal:events.signal});document.addEventListener('keydown',e=>{if(e.isTrusted)claimSave();},{capture:true,signal:events.signal});
  window.addEventListener('storage',e=>{if(e.key===writerKey&&e.newValue!==writerToken&&ownsSave){ownsSave=false;explorer.pause('save_owner_changed');saveMessage='Another window owns this save. Click to continue here.';}},{signal:events.signal});
  window.addEventListener('blur',()=>voice.stop(),{signal:events.signal});
@@ -396,6 +398,7 @@ export function createOpeningExperience(
   if(story.stage==='return_b5'&&runtime.curtain_deployed)return 'Get back to Building 5';
   if(story.stage==='incident')return 'Open the MacBook';
   const c=campaign()?.objective();if(c)return c.text;
+  if(story.stage==='complete'&&!campaign())return 'Continue to Chapter 2';
   return objectives[story.stage][0];
  }
  function detailFor(){
@@ -403,11 +406,16 @@ export function createOpeningExperience(
   if(story.stage==='return_b5'&&runtime.curtain_deployed)return 'The campus is sealed and robots are active. Reach Building 5, then open the MacBook with C.';
   if(story.stage==='incident')return 'The dining hall is empty. Press C to open the local agent.';
   if(campaign())return '';
+  if(story.stage==='complete')return 'Press F to continue the run from Building 4.';
   return objectives[story.stage][1];
  }
  function update(dt:number){
   if(disposed)return;
   if(completePending){completePending=false;if(story.stage==='complete'&&!campaign()&&!failed&&!modal)open('complete');}
+  // The chapter card is the campaign's only title: a wake or title still pending from
+  // Chapter 1 ends here, so it never letterboxes the HUD or holds the player still.
+  const inCampaign=!!campaign();
+  if(inCampaign){if(wakeStarted&&!wakeDone){wakeDone=true;wakeClock=WAKE_SECONDS;}titleSeconds=0;}
   if(!wakeStarted&&!wakeDone&&story.stage==='bus'&&!story.invitation_read&&!g.paused&&!modal&&!g.inventoryOpen&&explorer.enabled)startWake();
   if(wakeStarted&&!wakeDone&&!g.paused){
    wakeClock+=dt;
@@ -459,7 +467,9 @@ export function createOpeningExperience(
   const prompt=active&&!g.paused&&!(wakeStarted&&!wakeDone)?(item?'F · '+item.label:story.laptop_acquired&&story.stage!=='complete'?'C · Open the MacBook':''):'';
   const sound=audio.diagnostics;
   let cinema:OpeningCinema;
-  if(titleSeconds>0){
+  if(inCampaign){
+   cinema={mode:'off',title:'',subtitle:'',hint:'',opacity:0,letterbox:false};
+  }else if(titleSeconds>0){
    cinema={mode:'title',title:titleText,subtitle:titleSubtitle,hint:'',opacity:0,letterbox:true};
   }else if(wakeStarted&&!wakeDone){
    const early=wakeClock<2.1;

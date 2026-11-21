@@ -1,5 +1,5 @@
 import {
- CAMPAIGN_SAVE_KEY,CAMPAIGN_STAGES,CAMPAIGN_TRANSITIONS,campaignChapterOf,createCampaignState,parseCampaignState,reduceCampaign,
+ CAMPAIGN_SAVE_KEY,CAMPAIGN_STAGES,CAMPAIGN_TRANSITIONS,campaignChapterOf,createCampaignState,parseCampaignState,reduceCampaign,stageIndex,
  type CampaignEvent,type CampaignStage,type CampaignState,
 } from './state';
 import type {Chapter,ChapterContext,ChapterId,Objective} from './types';
@@ -62,8 +62,13 @@ export function createCampaignHost(o:CampaignHostOptions){
   for(const id of CHAPTER_ORDER){const c=instance(id);if(c.entry.radius>0&&CAMPAIGN_TRANSITIONS[c.entry.event].from===stage)return c;}
   return null;
  }
+ /** The last stage each chapter owns: a run beyond it has passed that chapter. */
+ const LAST_STAGE=new Map<ChapterId,CampaignStage>(CAMPAIGN_STAGES.flatMap(s=>{const id=campaignChapterOf(s);return id?[[id,s] as [ChapterId,CampaignStage]]:[];}));
  function needed(stage:CampaignStage):ChapterId[]{
-  const ids:ChapterId[]=[];const own=campaignChapterOf(stage),next=walkTarget(stage)?.id;
+  // Chapters already passed stay in the world with their aftermath (B04 opened, L001
+  // shut down), as in the live run where they never detach; a restored save attaches them too.
+  const at=stageIndex(stage),ids=CHAPTER_ORDER.filter(id=>stageIndex(LAST_STAGE.get(id)!)<at);
+  const own=campaignChapterOf(stage),next=walkTarget(stage)?.id;
   if(own)ids.push(own);if(next&&next!==own)ids.push(next);
   return ids;
  }
