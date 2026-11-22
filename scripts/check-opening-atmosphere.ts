@@ -115,5 +115,27 @@ assert.ok(Math.abs(renderer.toneMappingExposure-1)<.01,'reset restores tone mapp
  assert.deepEqual(inWay,[],'no beacon or stem stands in the B04 entrance walkway');
  console.log('PASS FU1: the B04 entrance walkway is clear of beacon stems');
 }
+{
+ // FU5: the B04 entrance beacon is mounted on the facade above the door: no stem, and
+ // no beacon part reaches the ground within 6 m of the door.
+ const root=scene.getObjectByName('Opening_AI_curtain_boundary')!;root.updateMatrixWorld(true);
+ const door=[O.b4.door,O.b4.z1],near=(x:number,z:number)=>Math.hypot(x-door[0],z-door[1])<=6;
+ const grounded:string[]=[];let housing:T.Box3|null=null;
+ root.traverse(o=>{if(!(o instanceof T.Mesh)||!o.name.startsWith('Opening_beacon'))return;const b=new T.Box3().setFromObject(o),c=b.getCenter(new T.Vector3());
+  if(!near(c.x,c.z))return;if(b.min.y<.5)grounded.push(o.name+' '+b.min.toArray().map(n=>n.toFixed(2)));if(o.name==='Opening_beacon_housing')housing=b;});
+ assert.deepEqual(grounded,[],'no beacon part reaches the ground within 6 m of the B04 door');
+ assert.ok(housing,'the B04 entrance still has a beacon');
+ const h=housing as unknown as T.Box3;
+ assert.ok(h.min.y>=O.b4.doorHeight&&h.max.y<=5.18,`the housing sits above the door and under the canopy (${h.min.y.toFixed(2)}..${h.max.y.toFixed(2)})`);
+ assert.ok(Math.abs(h.getCenter(new T.Vector3()).x-O.b4.door)<.3&&h.max.z<=O.b4.z1+.8,'the housing is centred on the door, on the facade');
+ const light=root.children.filter((o):o is T.PointLight=>o instanceof T.PointLight).sort((a,b)=>Math.hypot(a.position.x-door[0],a.position.z-door[1])-Math.hypot(b.position.x-door[0],b.position.z-door[1]))[0];
+ assert.ok(Math.hypot(light.position.x-door[0],light.position.z-door[1])<1.5,'the entrance beacon light moved with its housing');
+ assert.equal(light.intensity,0,'daytime: the entrance beacon is off');
+ atmosphere.restoreSealed();for(let i=0;i<30;i++)atmosphere.update(1/60,{incident:true,curtain:true,paused:false});
+ assert.ok(light.intensity>.1,`sealed: the entrance beacon pulses red (${light.intensity.toFixed(2)})`);
+ atmosphere.reset();
+ assert.equal(light.intensity,0,'after the purge reset the beacon is off again');
+ console.log('PASS FU5: the B04 beacon is on the facade above the door, no ground stem, light follows the sealed state');
+}
 assert.doesNotThrow(()=>atmosphere.dispose(),'dispose is safe');
 console.log('PASS atmosphere: hemispherical dome clears every roof, animated deployment, instant sealed restore, animated purge to daylight, red beacons and pause freeze');

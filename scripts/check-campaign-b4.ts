@@ -170,6 +170,18 @@ cs={...cs,stage:'b4_keyboard'};step();
 }
 // Room lights stay inside the room, and only while the chapter runs.
 const lights=()=>{const out:T.PointLight[]=[];site.root.traverse(o=>{if(o instanceof T.PointLight&&hitPath(o).includes('B04_campaign_rooms'))out.push(o);});return out;};
+/** Ruling 39: after the MacBook connects, B4 keeps 1–2 dim lights whose range stays inside the room, plus emissive ceiling and racks. */
+function poweredState(when:string){
+ const group=site.root.getObjectByName('B4_powered_lights');assert.ok(group,`${when}: the powered B4 state is present`);
+ const ls:T.PointLight[]=[];group!.traverse(o=>{if(o instanceof T.PointLight)ls.push(o);});
+ assert.ok(ls.length>=1&&ls.length<=2,`${when}: one or two powered lights (${ls.length})`);
+ for(const l of ls){const p=l.getWorldPosition(new T.Vector3());
+  assert.ok(l.distance>0&&l.intensity>0&&l.intensity<=24,`${when}: a low, bounded light (I ${l.intensity}, d ${l.distance})`);
+  assert.ok(p.x-l.distance>=O.b4.x0&&p.x+l.distance<=O.b4.x1&&p.z-l.distance>=O.b4.z0&&p.z+l.distance<=O.b4.z1-.1,`${when}: light at ${p.toArray().map(n=>n.toFixed(1))} d ${l.distance} reaches outside the B04 room`);}
+ const glow=(name:string)=>{let out=-1;site.root.traverse(o=>{if(o instanceof T.Mesh)for(const m of [o.material].flat())if(m instanceof T.MeshStandardMaterial&&m.name===name){const e=m.emissive;out=Math.max(out,m.emissiveIntensity*(e.r+e.g+e.b)/3);}});return out;};
+ assert.ok(glow('B4 room ceiling')>.03,`${when}: the ceiling panels glow (${glow('B4 room ceiling').toFixed(3)})`);
+ assert.ok(glow('B4 rack body')>.1,`${when}: the rack panels glow (${glow('B4 rack body').toFixed(3)})`);
+}
 {
  const ls=lights();assert.ok(ls.length>=3,'room lights while the chapter runs');
  for(const l of ls){const p=l.getWorldPosition(new T.Vector3());assert.ok(l.distance>0&&p.z+l.distance<=O.b4.z1-.1,`light at ${p.toArray()} d=${l.distance} reaches past the entrance`);assert.ok(p.x-l.distance>=28.15&&p.x+l.distance<=87.85,'light stays inside B04');}
@@ -210,10 +222,12 @@ const lights=()=>{const out:T.PointLight[]=[];site.root.traverse(o=>{if(o instan
  assert.equal(lm.emissive.getHex(),0xffb648,'the in-range lever glows gold');assert.ok(lm.emissiveIntensity>0);
  assert.equal(b4.interact(),true);step(1);assert.equal(cs.stage,'b4_connect');assert.equal(dbg.state().hum,true,'the hum plays from b4_connect on');
  g2.body.position.set(...B4_STATIONS.port.stand);step(1);assert.equal(b4.interact(),true);step(1);assert.equal(cs.stage,'to_lawn');
- // Ruling 26 (Task 6): the room stays lit while the player is still inside, and goes dark once they are out of B04.
+ // Ruling 26 (Task 6): the room stays fully lit while the player is still inside.
  assert.ok(lights().length>0,'room lights stay on while the player is still at the port');
  g2.body.position.set(...O.handoff);step(1);
- assert.equal(lights().length,0,'room lights are removed once the player has left B04');
+ // Ruling 39 (FU6): once out, the chapter lights give way to a dim, contained powered state.
+ assert.equal(site.root.getObjectByName('B4_room_lights'),undefined,'the chapter lights are removed once the player has left B04');
+ poweredState('to_lawn, player outside');
  // FU3: with no lights the restored room still reads as powered: the racks keep a green emissive.
  const rackGlow=(name:string)=>{let out=-1;site.root.traverse(o=>{if(o instanceof T.Mesh)for(const m of [o.material].flat())if(m instanceof T.MeshStandardMaterial&&m.name===name){const e=m.emissive;out=Math.max(out,m.emissiveIntensity*(e.r+e.g+e.b)/3);}});return out;};
  assert.ok(rackGlow(B4_RACK_LED)>.5,`rack LEDs glow at to_lawn with the player outside (${rackGlow(B4_RACK_LED).toFixed(3)})`);
@@ -224,8 +238,15 @@ const lights=()=>{const out:T.PointLight[]=[];site.root.traverse(o=>{if(o instan
 {
  viewHidden=true;b4.detach();assert.equal(viewHidden,false,'detach releases the hide flag');assert.ok(w2.blocked(O.b4.door,O.b4.z1+.9,O.b4.floor+.06),'detach closes the door again');
  assert.match(hitPath(doorRay()?.object??null),/B04_entrance_door/,'detach slides the leaves shut');
+ assert.equal(site.root.getObjectByName('B4_powered_lights'),undefined,'detach removes the powered state');
  cs={...cs,stage:'b4_connect'};const again=createB4Chapter();again.attach(ctx);again.update(.1);
  assert.equal((again.debug as Record<string,()=>{hum:boolean}>).state().hum,true,'after a reload at b4_connect the hum resumes');again.detach();
+ // Ruling 39: a reload at to_lawn or later (player outside) shows the powered room at once, without the chapter lights.
+ for(const stage of ['to_lawn','sports','done'] as const){
+  cs={...cs,stage};g2.body.position.set(...O.handoff);const later=createB4Chapter();later.attach(ctx);later.update(.016);
+  assert.equal(site.root.getObjectByName('B4_room_lights'),undefined,`reload at ${stage}: no chapter lights`);
+  poweredState('reload at '+stage);later.detach();
+ }
  console.log('PASS detach restores the door; hum resumes after reload');
 }
 disposeAsset(site.root);w2.dispose();

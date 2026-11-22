@@ -201,7 +201,9 @@ def main_run(browser):
     resume(page)
     page.evaluate('() => window.__t6.place(58, 25)')
     page.wait_for_timeout(1500)
-    check('B4: room lights go out once the player is outside B04', until(page, "() => !window.__CAMPUS.asset.root.getObjectByName('B4_room_lights')", 30))
+    check('B4: the chapter lights go out once the player is outside B04', until(page, "() => !window.__CAMPUS.asset.root.getObjectByName('B4_room_lights')", 30))
+    # Ruling 39 (FU6): the restored room keeps its dim, contained powered state.
+    check('B4: the powered room state stays after the player has left', until(page, "() => !!window.__CAMPUS.asset.root.getObjectByName('B4_powered_lights')", 15))
     # Ruling 36 / I1: B4 stays attached for the rest of the run, but it no longer turns
     # the held MacBook back on; the explorer keeps it stowed while walking.
     vm = page.evaluate(VIEW_MODEL)

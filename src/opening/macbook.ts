@@ -46,7 +46,8 @@ const eventLabels:Record<string,string>={
   'opening.building4_reached':'Reached the Building 4 entrance',
 };
 const campusClock=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Shanghai',hour:'2-digit',minute:'2-digit',hour12:false});
-const campusCalendar=new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',month:'numeric',day:'numeric',weekday:'short'});
+// English like the clock above: "Sun 22 Nov".
+const campusCalendar=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Shanghai',weekday:'short',day:'numeric',month:'short'});
 
 interface FinderEntry {
   id:string;

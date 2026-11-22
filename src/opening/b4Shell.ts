@@ -10,6 +10,7 @@ import {B4_DOOR_LEAVES,B4_LAYOUT,B4_OBSTACLES} from './b4Layout';
 export const B4_SHELL_NAME='B04_room_shell';
 export const B4_RACK_LED='B4 rack status';
 export const B4_RACK_BODY='B4 rack body';
+export const B4_CEILING='B4 room ceiling';
 const std=(name:string,color:number,emissive=0,intensity=0)=>{const m=new T.MeshStandardMaterial({name,color,roughness:.85,metalness:.05});if(emissive){m.emissive.setHex(emissive);m.emissiveIntensity=intensity;}return m;};
 const SOURCE={sourceFile:'src/opening/b4Shell.ts',source:'B04 campaign rooms (src/opening/b4Layout.ts)',confidence:'provisional 2030 scenery; not a surveyed interior'};
 function box(parent:T.Object3D,name:string,w:number,h:number,d:number,x:number,y:number,z:number,m:T.Material){
@@ -20,7 +21,7 @@ function group(parent:T.Object3D,name:string){const g=new T.Group();g.name=name;
 export function buildB4Shell(){
  const root=new T.Group();root.name=B4_SHELL_NAME;root.userData={...SOURCE,sceneLabel:'B04 ground floor (Keyboard Wall rooms)'};
  const R=B4_LAYOUT.room;
- const mats={wall:std('B4 room wall',0x2a3431),ceiling:std('B4 room ceiling',0x1c2321),plinth:std('B4 keyboard plinth',0x49392c),floor:std('B4 room floor',0x3a403c),rack:std(B4_RACK_BODY,0x161b1f),led:std(B4_RACK_LED,0x2f7d52,0x47e08a,.12),frame:std('B4 door frame',0x8fabae)};
+ const mats={wall:std('B4 room wall',0x2a3431),ceiling:std(B4_CEILING,0x1c2321),plinth:std('B4 keyboard plinth',0x49392c),floor:std('B4 room floor',0x3a403c),rack:std(B4_RACK_BODY,0x161b1f),led:std(B4_RACK_LED,0x2f7d52,0x47e08a,.12),frame:std('B4 door frame',0x8fabae)};
  const shell=group(root,'B04_room_structure');
  box(shell,'B4_floor',R.x1-R.x0,R.floor,R.z1-R.z0,(R.x0+R.x1)/2,R.floor/2,(R.z0+R.z1)/2,mats.floor).castShadow=false;
  const racks=group(root,'B04_supercomputer_racks');

@@ -26,6 +26,7 @@ CAMPUS_SHOTS).
 """
 import json
 import os
+import re
 import sys
 import time
 
@@ -472,15 +473,28 @@ def held_model_checks(page, checkpoint):
           and abs(opened['pos'][1] + 0.30) <= 0.03, opened)
     os.makedirs('/tmp/one-world/fu', exist_ok=True)
     page.screenshot(path='/tmp/one-world/fu/fu0-open-macbook.png')
-    page.keyboard.press('Escape')
+    # FU7: the MacBook menu bar date is English, like its clock ("Sun 22 Nov").
+    date = page.evaluate("() => document.querySelector('.mac-calendar')?.textContent ?? null")
+    check('lawn: the MacBook menu-bar date is English, no CJK characters (FU7)',
+          bool(date) and not re.search(r'[\u3000-\u9fff\uff00-\uffef]', date)
+          and bool(re.match(r'^[A-Z][a-z]{2} \d{1,2} [A-Z][a-z]{2}$', date)), date)
+    # C toggles the story MacBook closed (Escape may first close an app inside it).
+    page.keyboard.press('KeyC')
     try:
-        page.wait_for_function("() => !window.__CAMPUS.explorer.game.panel", timeout=5000)
+        page.wait_for_function("() => window.__CAMPUS.openingDebug.state().modal === null && !window.__CAMPUS.explorer.game.panel", timeout=8000)
     except Exception:
-        page.evaluate("() => { try { window.__CAMPUS.explorer.closePanel(); } catch (e) {} }")
+        pass
     page.evaluate("() => { try { window.__CAMPUS.explorer.enterCompat(); } catch (e) {} }")
     page.wait_for_timeout(400)
     closed = view_model(page)
-    check('lawn: closing the MacBook stows it again', bool(closed) and not closed['arms'], closed)
+    check('lawn: closing the MacBook stows it again', bool(closed) and not closed['arms'] and not closed['panel'], closed)
+    # FU6 (Ruling 39): from the door, the restored room reads as powered. Owner frame.
+    page.evaluate("() => { const g = window.__CAMPUS.explorer.game; g.yaw = 0; g.pitch = 0; }")
+    page.wait_for_timeout(1500)
+    powered = page.evaluate("() => !!window.__CAMPUS.asset.root.getObjectByName('B4_powered_lights')")
+    check('lawn: B4 keeps its powered lighting state after the player has left (FU6)', powered, powered)
+    os.makedirs('/tmp/one-world/p1', exist_ok=True)
+    page.screenshot(path='/tmp/one-world/p1/p1-door.png')
 
 
 def pause_bag_checks(page):
