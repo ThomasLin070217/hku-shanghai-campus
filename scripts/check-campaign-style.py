@@ -352,8 +352,10 @@ def toast_checks(page):
     page.evaluate("() => { const t = document.querySelector('.opening-save-toast');"
                   " if (t) t.style.transition = 'none'; }")
     page.wait_for_timeout(700)
-    check('toast: no save toast on load or checkpoint start',
-          not visible(page, '.opening-save-toast'), style(page, '.opening-save-toast'))
+    # M2 / Ruling 33: the checkpoint start is an announced save, so at most that one
+    # toast may have shown (at the first trusted input); a load never adds another.
+    shows = page.evaluate("() => window.__toastShows || 0")
+    check('toast: no save toast on load beyond the one checkpoint announcement', shows <= 1, shows)
     # The checkpoint toast is brief and can expire before this function runs, so
     # the init script on the page records every appearance from the first frame.
     log = page.evaluate("() => window.__toastLog || []")
@@ -361,10 +363,12 @@ def toast_checks(page):
     check('toast: no save toast before a real save', not spurious, log)
     # M2 / Ruling 33: the checkpoint start is an announced save. Before the first
     # trusted input this window does not own the save, so it lands (and shows) then.
-    page.keyboard.press('Shift')
-    shown = toast_appears(page, 10000)
-    check('toast: the checkpoint save is announced at the first input',
-          shown, style(page, '.opening-save-toast'))
+    # The first trusted input on this page may already have been assert_hotbar's
+    # number key; the observer counts every appearance since load.
+    before = page.evaluate("() => window.__toastShows || 0")
+    shown = before >= 1 or toast_after(page, lambda: page.keyboard.press('Shift'), 10000)
+    check('toast: the checkpoint save is announced once, at the first input',
+          shown and before <= 1, {'shows before Shift': before, 'shown': shown})
     # The fade is a fixed 2.4 s + 260 ms timer, not a per-frame animation, so the
     # rule's target is read with the transition disabled.
     page.wait_for_timeout(4000)
@@ -372,26 +376,23 @@ def toast_checks(page):
           not visible(page, '.opening-save-toast'), style(page, '.opening-save-toast'))
     # Quiet saves: a hotbar switch and a hearts write both save, neither announces.
     revision = page.evaluate("() => window.__CAMPUS.explorer.game.inventory.revision")
-    page.keyboard.press('Digit2')
-    switched = toast_appears(page, 2500)
-    page.keyboard.press('Digit1')
-    switched_back = toast_appears(page, 2500)
+    switched = toast_after(page, lambda: page.keyboard.press('Digit2'), 2500)
+    switched_back = toast_after(page, lambda: page.keyboard.press('Digit1'), 2500)
     moved = page.evaluate("() => window.__CAMPUS.explorer.game.inventory.revision") != revision
     check('toast: no save toast on a hotbar switch', moved and not switched and not switched_back,
           {'revision moved': moved, 'toast': switched or switched_back})
-    page.evaluate("() => window.__CAMPUS.experience.hearts.damage(1)")
-    hurt = toast_appears(page, 2500)
-    page.evaluate("() => window.__CAMPUS.experience.hearts.heal()")
-    healed = toast_appears(page, 2500)
+    hurt = toast_after(page, lambda: page.evaluate("() => window.__CAMPUS.experience.hearts.damage(1)"), 2500)
+    healed = toast_after(page, lambda: page.evaluate("() => window.__CAMPUS.experience.hearts.heal()"), 2500)
     check('toast: no save toast on a hearts write', not hurt and not healed, {'damage': hurt, 'heal': healed})
 
 
-def toast_appears(page, timeout):
+def toast_after(page, act, timeout):
+    """Run `act`, then report whether a save toast appeared. Appearances are counted by a
+    MutationObserver (init script), so a 2.4 s toast is never missed between slow frames."""
+    since = page.evaluate("() => window.__toastShows || 0")
+    act()
     try:
-        page.wait_for_function(
-            "() => { const t = document.querySelector('.opening-save-toast');"
-            " return !!t && !t.hidden && t.classList.contains('is-visible')"
-            " && (t.textContent || '').indexOf('Saved on this device') >= 0; }", timeout=timeout)
+        page.wait_for_function("(n) => (window.__toastShows || 0) > n", arg=since, timeout=timeout)
         return True
     except Exception:
         return False
@@ -400,12 +401,10 @@ def toast_appears(page, timeout):
 def boundary_toast_checks(page):
     """A campaign chapter boundary announces its save (M2); steps inside a chapter do not."""
     page.wait_for_timeout(4000)
-    page.evaluate("() => window.__CAMPUS.campaign.emit('reach_lawn')")
-    inside = toast_appears(page, 2500)
+    inside = toast_after(page, lambda: page.evaluate("() => window.__CAMPUS.campaign.emit('reach_lawn')"), 2500)
     check('toast: no save toast on a step inside a chapter (reach_lawn)', not inside,
           page.evaluate("() => window.__CAMPUS.campaign.state()?.stage"))
-    page.evaluate("() => window.__CAMPUS.campaign.emit('guardian_shutdown')")
-    boundary = toast_appears(page, 6000)
+    boundary = toast_after(page, lambda: page.evaluate("() => window.__CAMPUS.campaign.emit('guardian_shutdown')"), 6000)
     check('toast: the CHAPTER 3 boundary announces its save', boundary,
           page.evaluate("() => window.__CAMPUS.campaign.state()?.stage"))
 
@@ -896,6 +895,12 @@ def main():
             # toast is short-lived and would otherwise expire before it is read.
             page.add_init_script("""(() => {
               window.__toastLog = [];
+              window.__toastShows = 0;
+              // updateSaveToast removes then re-adds is-visible in one task: count one show per callback.
+              new MutationObserver(records => {
+                if (records.some(r => r.target.classList && r.target.classList.contains('opening-save-toast')
+                    && r.target.classList.contains('is-visible'))) window.__toastShows++;
+              }).observe(document, {subtree: true, attributes: true, attributeFilter: ['class'], attributeOldValue: true});
               const start = () => {
                 const tick = () => {
                   const t = document.querySelector('.opening-save-toast');
