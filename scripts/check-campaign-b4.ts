@@ -6,7 +6,7 @@ import {BUILDINGS,SITE} from '../src/model/campusParameters';
 import {OPENING as O} from '../src/opening/spatialLayout';
 import {B4_PHRASE,createKeyboardState,pressKeyboard,createFlipState,flipTiles,flipSolved,pullBreaker,connectMacBook,b4StepOf,sweepTiles,autoFinishTiles} from '../src/campaign/b4Puzzle';
 import {B4_LAYOUT,B4_OBSTACLES,B4_STATIONS,B4_DOOR_OBSTACLE,B4_FOCUS_FRAME,setB4FlipPanel,partBounds} from '../src/opening/b4Layout';
-import {buildB4Shell} from '../src/opening/b4Shell';
+import {buildB4Shell,B4_RACK_LED} from '../src/opening/b4Shell';
 import {createCampaignState,reduceCampaign,type CampaignState} from '../src/campaign/state';
 import type {ChapterContext,Explorer} from '../src/campaign/types';
 import {createB4Chapter} from '../src/campaign/b4Chapter';
@@ -214,6 +214,10 @@ const lights=()=>{const out:T.PointLight[]=[];site.root.traverse(o=>{if(o instan
  assert.ok(lights().length>0,'room lights stay on while the player is still at the port');
  g2.body.position.set(...O.handoff);step(1);
  assert.equal(lights().length,0,'room lights are removed once the player has left B04');
+ // FU3: with no lights the restored room still reads as powered: the racks keep a green emissive.
+ const rackGlow=(name:string)=>{let out=-1;site.root.traverse(o=>{if(o instanceof T.Mesh)for(const m of [o.material].flat())if(m instanceof T.MeshStandardMaterial&&m.name===name){const e=m.emissive;out=Math.max(out,m.emissiveIntensity*(e.r+e.g+e.b)/3);}});return out;};
+ assert.ok(rackGlow(B4_RACK_LED)>.5,`rack LEDs glow at to_lawn with the player outside (${rackGlow(B4_RACK_LED).toFixed(3)})`);
+ assert.ok(rackGlow('B4 rack body')>.02,`rack bodies keep a green emissive at to_lawn with the player outside (${rackGlow('B4 rack body').toFixed(3)})`);
  console.log('PASS focus, highlight, flip-face contrast, lights off after B4, F at every station');
 }
 // Reload at b4_connect keeps the supercomputer humming.
