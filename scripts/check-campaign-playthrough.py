@@ -186,8 +186,8 @@ def main_run(browser):
     page.keyboard.press('Enter')
     check('B4: typing I LOVE CDS + Enter boots CPU 01 (real input)', until(page, "() => window.__CAMPUS.campaign.state().stage === 'b4_flip'", 30), page.evaluate(f'() => {B4}.state()'))
     resume(page)
-    page.evaluate(f'() => {B4}.flipAll()')
-    check('B4: flip wall solved', until(page, "() => window.__CAMPUS.campaign.state().stage === 'b4_breaker'", 60), snap(page))
+    # b4_flip is the automatic service-wall beat: bounded wait, no input, no unbounded sleep.
+    check('B4: the service wall lifts by itself (b4_breaker)', until(page, "() => window.__CAMPUS.campaign.state().stage === 'b4_breaker'", 60), snap(page))
     resume(page)
     for station, want in (('breaker', 'b4_connect'), ('port', 'to_lawn')):
         page.evaluate(f"() => window.__t6.place({stand[station]['stand'][0]}, {stand[station]['stand'][2]}, .7)")

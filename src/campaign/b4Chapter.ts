@@ -1,52 +1,56 @@
 import * as T from 'three';
-import {buildObservedFeatureRoom,keyboardKeycaps,flipWallTiles} from '../model/observedFeatureRooms';
+import {buildObservedFeatureRoom,keyboardKeycaps} from '../model/observedFeatureRooms';
 import {markRelayRestored} from '../opening/backupRelay';
 import {CDS1_KEYS,saveKeyboardProgress} from '../opening/keyboardProgress';
 import {OPENING} from '../opening/spatialLayout';
 import {KEYS} from '../exploration/config';
 import {B4_FOCUS_FRAME,B4_LAYOUT,B4_STATIONS,B4_REACH,B4_DOOR_OBSTACLE,focusPose,requirePart,setB4FlipPanel,stationDistance,type B4StationId} from '../opening/b4Layout';
 import {B4_CEILING,B4_RACK_BODY,B4_RACK_LED,findB4DoorLeaves,setB4DoorLeaves} from '../opening/b4Shell';
-import {B4_PHRASE,b4StepOf,connectMacBook,createFlipState,createKeyboardState,flipCount,flipSolved,flipTiles,pressKeyboard,pullBreaker,sweepTiles,autoFinishTiles,type B4Step,type FlipCell,type FlipState,type KeyboardState} from './b4Puzzle';
+import {B4_PHRASE,b4StepOf,connectMacBook,createKeyboardState,pressKeyboard,pullBreaker,type B4Step,type KeyboardState} from './b4Puzzle';
 import {campaignChapterOf,stageIndex,type CampaignEvent,type CampaignStage} from './state';
 import type {Chapter,ChapterContext,Objective} from './types';
 
 /** Just inside the B04 entrance door, by the Chapter 1 handoff point. */
 export const B4_ENTRY:Chapter['entry']={point:[58,.02,18],radius:1.6,event:'enter_b4'};
 const EVENTS:CampaignEvent[]=['enter_b4','keyboard_solved','flip_solved','breaker_pulled','macbook_connected'];
-const STEP_STATION:Record<'keyboard'|'flip'|'breaker'|'connect',B4StationId>={keyboard:'keyboard',flip:'flip',breaker:'breaker',connect:'port'};
+/** `b4_flip` has no station: it is the short automatic beat while the service wall lifts. */
+const STEP_STATION:Record<'keyboard'|'breaker'|'connect',B4StationId>={keyboard:'keyboard',breaker:'breaker',connect:'port'};
 /** The game's interact key (F; E is the backpack). The host routes it to `interact()`. */
 const USE=KEYS.interact.replace(/^Key/,'');
 const GOLD=0xffb648;
-const FOCUS_HINT={keyboard:`Type I LOVE CDS or click the gold caps · Enter boots · Arrows look · ${USE} / Esc step back`,
- flip:`Drag across the wall to turn tiles · click flips one · Space flips a row · ${USE} / Esc step back`};
+/** How long the service wall takes to lift before `flip_solved` fires. */
+const SERVICE_BEAT=1.2;
+const FOCUS_HINT={keyboard:`Type I LOVE CDS or click the gold caps · Enter boots · Arrows look · ${USE} / Esc step back`};
 const tag=(o:T.Object3D,key:string)=>{o.name=key;o.userData={...o.userData,authorKey:key,sourceFile:'src/campaign/b4Chapter.ts',source:'B4 campaign rooms (src/opening/b4Layout.ts)',confidence:'provisional 2030 scenery; not a surveyed interior'};return o;};
 const inRoom=(x:number,z:number)=>{const r=OPENING.b4;return x>r.x0&&x<r.x1&&z>r.z0&&z<r.z1;};
 
-interface Tile{group:T.Group;index:number;row:number;column:number;target:number;delay:number}
-type Focus='keyboard'|'flip'|null;
+type Focus='keyboard'|null;
 type World={obstacles:Parameters<typeof setB4FlipPanel>[0]['obstacles'];meshes:T.Mesh[];setDoorOpen(name:string,open:boolean):void};
 
 /**
- * Chapter 1 · B4: the Keyboard Wall, the HKU flip wall, the aux power closet and
- * the supercomputer, on the campus model's B04 ground floor. The room shell and
- * entrance door are part of the opening world (`src/opening/b4Shell.ts`); this
- * chapter opens the door and adds the puzzle props, room lights and highlights.
- * Rules come from `b4Puzzle.ts`, placement and collision from `b4Layout.ts`.
- * The interact key (F) at a station enters a first-person focus view (movement
- * paused, mouse/keys go to the puzzle; Esc or F steps back). Importable headless:
- * DOM, audio and asset URLs are touched only at runtime and behind guards.
+ * Chapter 1 · B4: the Keyboard Wall on the east wall, the aux power closet with its
+ * service shutter on the north wall, and the supercomputer, on the campus model's
+ * B04 ground floor. The room shell and entrance door are part of the opening world
+ * (`src/opening/b4Shell.ts`); this chapter opens the door and adds the puzzle props,
+ * room lights and highlights. Rules come from `b4Puzzle.ts`, placement and collision
+ * from `b4Layout.ts`. Spelling I LOVE CDS boots CPU 01; the service wall then lifts by
+ * itself (`b4_flip` is a 1.2 s automatic beat, not a puzzle) and the breaker and the
+ * MacBook port become reachable. The interact key (F) at the Keyboard Wall enters a
+ * first-person focus view (movement paused, keys go to the caps; Esc or F steps back).
+ * Importable headless: DOM, audio and asset URLs are touched only at runtime and
+ * behind guards.
  */
 export function createB4Chapter():Chapter{
  let ctx:ChapterContext|null=null,group:T.Group|null=null,lights:T.Group|null=null,powered:T.Group|null=null;
- let keyboard:KeyboardState=createKeyboardState(),flip:FlipState=createFlipState(0);
- let tiles:Tile[]=[],caps:T.Group[]=[],phraseCaps:T.Group[]=[],enterCap:T.Group|null=null,grid={rows:0,columns:0};
- let flipWall:T.Object3D|null=null,lever:T.Mesh|null=null,pickPlane:T.Mesh|null=null,tile00=new T.Vector3(),pitch=.219;
+ let keyboard:KeyboardState=createKeyboardState();
+ let caps:T.Group[]=[],phraseCaps:T.Group[]=[],enterCap:T.Group|null=null;
+ let shutter:T.Mesh|null=null,lever:T.Mesh|null=null;
  const emergency:T.PointLight[]=[];let work:T.PointLight|null=null,rackLight:T.PointLight|null=null;
  const rackMaterials:T.MeshStandardMaterial[]=[],rackBodies:T.MeshStandardMaterial[]=[],ceilingPanels:T.MeshStandardMaterial[]=[],capGlow=new Map<T.Group,T.MeshStandardMaterial>(),owned:T.Material[]=[];
  const outlines=new Map<B4StationId,T.LineSegments>();
  let leaves:T.Object3D[]=[];
- let lightLevel=0,lift=0,leverPull=0,doorOpen=0,flash=0,seenStage:CampaignStage|null=null,hum:HTMLAudioElement|null=null,humWanted=false,humRetry:(()=>void)|null=null;
- let raf=0,focus:Focus=null,lookYaw=0,lookPitch=0,baseYaw=0,basePitch=0,sweeping=false,lastTile=-1,lastCell:FlipCell|null=null,flipDone=false;
+ let lightLevel=0,shutterLift=0,leverPull=0,doorOpen=0,flash=0,beat=0,beatArmed=false,seenStage:CampaignStage|null=null,hum:HTMLAudioElement|null=null,humWanted=false,humRetry:(()=>void)|null=null;
+ let raf=0,focus:Focus=null,lookYaw=0,lookPitch=0,baseYaw=0,basePitch=0;
  let savedHint:string|null=null,pulse=0;
  const focusEye=new T.Vector3(),focusTarget=new T.Vector3();
  const ray=new T.Raycaster(),ndc=new T.Vector2();
@@ -63,36 +67,28 @@ export function createB4Chapter():Chapter{
 
  function build(c:ChapterContext){
   const g=new T.Group();tag(g,'B04_campaign_rooms');g.userData.dynamicGameplay=true;
-  // Keyboard Wall: the observed panel and its timber backing, from the legacy room builder.
-  // add(), not attach(): the builder-local offsets place each part relative to the layout origin.
-  const kb=buildObservedFeatureRoom('keyboard'),kbRoot=new T.Group();tag(kbRoot,'B4_keyboard_wall');kbRoot.position.fromArray(B4_LAYOUT.keyboardOrigin);g.add(kbRoot);
+  // Keyboard Wall on the east wall: the observed panel and its timber backing, turned so the
+  // builder's +z face looks west into the room. add(), not attach(): the builder-local offsets
+  // place each part relative to the layout origin.
+  const kb=buildObservedFeatureRoom('keyboard'),kbRoot=new T.Group();tag(kbRoot,'B4_keyboard_wall');
+  kbRoot.position.fromArray(B4_LAYOUT.keyboardOrigin);kbRoot.rotation.y=B4_LAYOUT.keyboardYaw;g.add(kbRoot);
   for(const name of ['Keyboard_timber_wall','Keyboard_wall']){const o=requirePart(kb,name);o.removeFromParent();kbRoot.add(o);}
   caps=keyboardKeycaps(kbRoot);if(caps.length!==54)throw new Error(`Keyboard Wall has ${caps.length} caps, expected 54`);
   for(const cap of caps){
    if(cap.userData.phrase)phraseCaps.push(cap);if(cap.userData.enter)enterCap=cap;
    cap.traverse(o=>{if(o instanceof T.Mesh&&o.name.startsWith('Key_')&&!capGlow.has(cap)){const m=own((o.material as T.MeshStandardMaterial).clone());o.material=m;capGlow.set(cap,m);}});
   }
-  // HKU flip wall in front of the aux power closet.
-  const fw=buildObservedFeatureRoom('flipWall'),fwRoot=new T.Group();tag(fwRoot,'B4_flip_wall_and_closet');fwRoot.position.fromArray(B4_LAYOUT.flipOrigin);g.add(fwRoot);
-  for(const name of ['HKU_flip_wall','Aux_power_closet']){const o=requirePart(fw,name);o.removeFromParent();fwRoot.add(o);}
-  flipWall=requirePart(fwRoot,'HKU_flip_wall');
+  // Aux power closet against the north wall. The HKU flip wall is not built here: it stands in
+  // the Building 5 lobby (`b5FlipWall.ts`). Only the closet part is taken from the builder.
+  const fw=buildObservedFeatureRoom('flipWall'),fwRoot=new T.Group();tag(fwRoot,'B4_service_wall');
+  fwRoot.position.fromArray(B4_LAYOUT.closetOrigin);g.add(fwRoot);
+  const closet=requirePart(fw,'Aux_power_closet');closet.removeFromParent();fwRoot.add(closet);
   lever=requirePart(fwRoot,'Aux_breaker_lever') as T.Mesh;lever.material=own((lever.material as T.MeshStandardMaterial).clone());
-  tiles=flipWallTiles(fwRoot).map((group,index)=>({group,index,row:Number(group.userData.row),column:Number(group.userData.column),target:0,delay:0}));
-  if(tiles.length!==561)throw new Error(`HKU flip wall has ${tiles.length} tiles, expected 561`);
-  const dims=flipWall.userData.dimensions as {columns:number;rows:number;tilePitch:number;width:number;height:number};
-  grid={rows:dims.rows,columns:dims.columns};pitch=dims.tilePitch;tiles.sort((a,b)=>a.row*grid.columns+a.column-(b.row*grid.columns+b.column)).forEach((t,i)=>{t.index=i;});
-  // Tile positions are in the wall group's space; the pick plane maps a hit to a row and column.
-  const first=tiles[0].group;first.updateMatrix();tile00.copy(first.position).applyMatrix4(first.parent!.matrix);
-  // An invisible hit plane well past the wall's edges: a drag that overshoots still paints the
-  // edge tiles (cells clamp). It sits beside the wall group so the wall's bounds stay the wall's.
-  pickPlane=new T.Mesh(new T.PlaneGeometry(dims.width+4,dims.height+2),own(new T.MeshBasicMaterial({visible:false})));tag(pickPlane,'B4_flip_pick_plane');
-  pickPlane.position.copy(flipWall.position).add(new T.Vector3(tile00.x+dims.width/2-pitch/2,tile00.y-dims.height/2+pitch/2,tile00.z+.06));flipWall.parent!.add(pickPlane);
-  flip=createFlipState(tiles.length);
-  // Flipped tiles show the wall's back image lit from within, so progress reads under the red light.
-  const backs=new Map<T.Material,T.Material>();
-  for(const t of tiles)t.group.traverse(o=>{if(!(o instanceof T.Mesh)||!Array.isArray(o.material))return;const mats=[...o.material];const back=mats[5] as T.MeshStandardMaterial;
-   let lit=backs.get(back);if(!lit){const m=own(back.clone());const green=/green/i.test(back.name);m.emissive.setHex(green?0x74e6b4:GOLD);m.emissiveIntensity=green?.55:.4;m.name=back.name+' (flipped, lit)';backs.set(back,m);lit=m;}
-   mats[5]=lit;o.material=mats;});
+  // The service shutter: our own slab over the closet mouth, solid until CPU 01 lifts it.
+  const S=B4_LAYOUT.shutter,sw=S.x1-S.x0,sh=S.top-S.bottom,sd=S.z1-S.z0;
+  shutter=new T.Mesh(new T.BoxGeometry(sw,sh,sd),own(new T.MeshStandardMaterial({name:'B4 service shutter',color:0x8d979a,roughness:.55,metalness:.45})));
+  tag(shutter,'opening-b4-service-shutter');shutter.position.set((S.x0+S.x1)/2,(S.top+S.bottom)/2,(S.z0+S.z1)/2);g.add(shutter);
+  for(let k=0;k<9;k++){const rib=new T.Mesh(new T.BoxGeometry(.03,sh-.16,.04),shutter.material);rib.name='B4_service_shutter_rib';rib.position.set(-sw/2+.35+k*(sw-.7)/8,0,sd/2+.01);shutter.add(rib);}
   fwRoot.traverse(o=>{if(o instanceof T.Mesh)for(const m of [o.material].flat())if(m instanceof T.MeshStandardMaterial&&m.name==='Aux power green'&&!rackMaterials.includes(m))rackMaterials.push(m);});
   c.root().traverse(o=>{if(o instanceof T.Mesh)for(const m of [o.material].flat())if(m instanceof T.MeshStandardMaterial&&m.name===B4_RACK_LED&&!rackMaterials.includes(m))rackMaterials.push(m);});
   // The rack bodies glow faint green once the supercomputer is up, so the room reads as
@@ -135,8 +131,13 @@ export function createB4Chapter():Chapter{
  function applyStage(stage:CampaignStage){
   if(stage===seenStage)return;const first=seenStage===null;seenStage=stage;
   if(reached('b4_flip')){keyboard={typed:B4_PHRASE,solved:true};paintCaps();}
-  if(reached('b4_breaker')){flip=createFlipState(tiles.length,true);for(const t of tiles)t.target=Math.PI;flipDone=true;}
   const w=world();if(w)setB4FlipPanel(w,!reached('b4_breaker'));
+  // `b4_flip` is the automatic beat: CPU 01 has unlocked the service wall, it lifts, and the
+  // stage advances on its own. Arming here covers both the live solve and a reload mid-beat;
+  // a run restored at b4_breaker never re-arms (reached('b4_flip') is true but the stage is
+  // not b4_flip), so a stale beat cannot emit flip_solved twice.
+  if(stage==='b4_flip'&&!beatArmed){beatArmed=true;beat=SERVICE_BEAT;}
+  if(!reached('b4_flip')){beatArmed=false;beat=0;}
   // After the MacBook connects the room stays lit until the player has walked out of B04.
   if(campaignChapterOf(stage)==='b4')addLights();else if(!playerInRoom())removeLights();
   // A run restored past the connect (reload, checkpoint) starts powered, without the fade-in.
@@ -168,21 +169,15 @@ export function createB4Chapter():Chapter{
   else if(r.result!=='ignored')paintCaps();
   if(r.result==='solved'&&ctx){
    const id=ctx.deviceId();if(id)saveKeyboardProgress(id,[...CDS1_KEYS],true);
-   ctx.notify('CPU 01 online. Something clicks behind the HKU flip wall.');leaveFocus();ctx.emit('keyboard_solved');
+   ctx.notify('CPU 01 online. The service wall unlocks.');leaveFocus();ctx.emit('keyboard_solved');
   }
   return r.result;
  }
- function setTiles(indices:number[],value?:boolean){
-  if(step()!=='flip'||flipDone)return;
-  flip=flipTiles(flip,indices,value);
-  for(const i of indices){const t=tiles[i];if(t)t.target=flip.flipped[i]?Math.PI:0;}
-  // At 95% the last few tiles, which are hard to find, turn over by themselves in a 0.6 s sweep.
-  const rest=autoFinishTiles(flip);
-  if(rest.length){flip=flipTiles(flip,rest,true);rest.forEach((i,k)=>{const t=tiles[i];t.target=Math.PI;t.delay=.6*k/Math.max(1,rest.length-1);});}
-  if(flipSolved(flip)){flipDone=true;
-   const finish=()=>{if(!ctx)return;leaveFocus();ctx.notify('All 561 tiles turned. The wall lifts and the aux power closet opens.');
-    globalThis.setTimeout(()=>{if(ctx&&step()==='flip'){const w=world();if(w)setB4FlipPanel(w,false);ctx.emit('flip_solved');}},1200);};
-   if(rest.length){ctx?.notify('The last tiles turn over on their own.');globalThis.setTimeout(finish,700);}else finish();}
+ /** The service wall beat's single emit: only while the stage is still b4_flip. */
+ function finishServiceWall(){
+  if(!ctx||step()!=='flip')return false;
+  const w=world();if(w)setB4FlipPanel(w,false);
+  return ctx.emit('flip_solved');
  }
  function pull(){
   const r=pullBreaker(step());if(!r.ok||!ctx){if(r.reason)ctx?.notify(r.reason);return false;}
@@ -207,7 +202,7 @@ export function createB4Chapter():Chapter{
 
  /* ---------------- first-person focus ---------------- */
  function nearest(stage=ctx?.stage()):B4StationId|null{
-  const s=step(stage),p=body();if(!ctx||!p||!s||s==='done')return null;
+  const s=step(stage),p=body();if(!ctx||!p||!s||s==='done'||s==='flip')return null;
   const id=STEP_STATION[s];return stationDistance(B4_STATIONS[id],p.x,p.z)<=B4_REACH?id:null;
  }
  function aim(point:readonly number[]){
@@ -220,10 +215,10 @@ export function createB4Chapter():Chapter{
   const inv=document.getElementById('inventory-hud');if(inv)inv.style.visibility=text===null?'':'hidden';const el=document.querySelector<HTMLElement>('.stage-bottom > span');if(!el)return;
   if(text!==null){savedHint??=el.textContent;el.textContent=text;}else if(savedHint!==null){el.textContent=savedHint;savedHint=null;}
  }
- function enterFocus(id:'keyboard'|'flip'){
-  if(!ctx||focus)return;focus=id;aim(B4_STATIONS[id].point);lastCell=null;
+ function enterFocus(id:'keyboard'){
+  if(!ctx||focus)return;focus=id;aim(B4_STATIONS[id].point);
   // Square-on to the panel's centre, far enough back that the whole panel fits the view.
-  const cam=ctx.explorer.camera,pose=focusPose(B4_FOCUS_FRAME[id],cam.fov,cam.aspect);
+  const cam=ctx.explorer.camera,frame=B4_FOCUS_FRAME[id],pose=focusPose(frame.box,cam.fov,cam.aspect,.25,frame.facing);
   focusEye.fromArray(pose.eye);focusTarget.fromArray(pose.target);
   // The wall owns the frame: the HUD collapses to one line, the minimap hides
   // and the vitals become one row (see opening.css `body[data-campaign-focus]`).
@@ -238,12 +233,12 @@ export function createB4Chapter():Chapter{
   hideViewModel(true);
  }
  function leaveFocus(){
-  if(!ctx||!focus)return;focus=null;sweeping=false;lastCell=null;stopLoop();hint(null);
+  if(!ctx||!focus)return;focus=null;stopLoop();hint(null);
   if(typeof document!=='undefined')delete document.body.dataset.campaignFocus;
   ctx.closePanel();ctx.resume();
  }
  /** The focus view pauses the game and the host passes dt=0 while paused, so the focus view
-  * animates tiles, caps, lights and the camera from its own frame loop. */
+  * animates caps, lights and the camera from its own frame loop. */
  function startLoop(){if(raf||typeof requestAnimationFrame==='undefined')return;let last=performance.now();
   const tick=()=>{if(!focus||!ctx){raf=0;return;}const now=performance.now();animate(Math.min(.1,(now-last)/1000));last=now;raf=requestAnimationFrame(tick);};raf=requestAnimationFrame(tick);}
  function stopLoop(){if(raf&&typeof cancelAnimationFrame!=='undefined')cancelAnimationFrame(raf);raf=0;}
@@ -254,15 +249,6 @@ export function createB4Chapter():Chapter{
   const canvas=(e.target as Element|null)?.closest?.('canvas')??document.elementsFromPoint(e.clientX,e.clientY).find((el):el is HTMLCanvasElement=>el instanceof HTMLCanvasElement&&el.getBoundingClientRect().width>=innerWidth*.5);if(!canvas)return null;
   const r=canvas.getBoundingClientRect();return ndc.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);
  }
- function cellAt(v:T.Vector2):FlipCell|null{
-  if(!ctx||!pickPlane||!flipWall)return null;ray.setFromCamera(v,ctx.explorer.camera);
-  const hit=ray.intersectObject(pickPlane,false)[0];if(!hit)return null;
-  const local=flipWall.worldToLocal(hit.point.clone());
-  const column=Math.round((local.x-tile00.x)/pitch),row=Math.round((tile00.y-local.y)/pitch);
-  return{row:Math.max(0,Math.min(grid.rows-1,row)),column:Math.max(0,Math.min(grid.columns-1,column))};
- }
- const indexOf=(c:FlipCell)=>c.row*grid.columns+c.column;
- function sweepTo(cell:FlipCell){setTiles(sweepTiles(grid,lastCell,cell),true);lastCell=cell;lastTile=indexOf(cell);}
  function capAt(v:T.Vector2){
   if(!ctx)return null;ray.setFromCamera(v,ctx.explorer.camera);let o:T.Object3D|null=ray.intersectObjects(caps,true)[0]?.object??null;
   while(o&&!(o instanceof T.Group&&o.name.startsWith('Keycap_')))o=o.parent;return caps.find(c=>c===o)??null;
@@ -273,35 +259,26 @@ export function createB4Chapter():Chapter{
   if(e.code==='Escape'||e.code===KEYS.interact){used();leaveFocus();return;}
   if(e.code==='ArrowLeft'||e.code==='ArrowRight'){used();lookYaw=T.MathUtils.clamp(lookYaw+(e.code==='ArrowLeft'?.12:-.12),-.9,.9);return;}
   if(e.code==='ArrowUp'||e.code==='ArrowDown'){used();lookPitch=T.MathUtils.clamp(lookPitch+(e.code==='ArrowUp'?-.08:.08),-.5,.5);return;}
-  if(focus==='keyboard'){
-   // Inside the keyboard focus every other letter is a keycap (F is not in the phrase).
-   if(e.repeat)return;if(e.key==='Enter'||e.key.length===1&&e.key!==' '){used();press(e.key);}
-   else if(e.code==='Space')used();
-   return;
-  }
-  if(focus==='flip'&&e.code==='Space'&&lastTile>=0){used();const row=tiles[lastTile].row;setTiles(tiles.filter(t=>t.row===row).map(t=>t.index));}
+  // Inside the keyboard focus every other letter is a keycap (F is not in the phrase).
+  if(e.repeat)return;if(e.key==='Enter'||e.key.length===1&&e.key!==' '){used();press(e.key);}
+  else if(e.code==='Space')used();
  };
  let downAt:{x:number;y:number}|null=null;
- const onDown=(e:PointerEvent)=>{if(!focus||e.button!==0||!ndcOf(e))return;downAt={x:e.clientX,y:e.clientY};lastCell=null;if(focus==='flip')sweeping=true;};
- const onMove=(e:PointerEvent)=>{if(focus!=='flip')return;const v=ndcOf(e),cell=v&&cellAt(v);if(!cell){lastCell=null;return;}lastTile=indexOf(cell);
-  if(sweeping&&downAt&&Math.hypot(e.clientX-downAt.x,e.clientY-downAt.y)>6)sweepTo(cell);};
- const onUp=(e:PointerEvent)=>{if(!focus)return;const click=downAt&&Math.hypot(e.clientX-downAt.x,e.clientY-downAt.y)<=6;downAt=null;sweeping=false;lastCell=null;if(!click)return;
-  const v=ndcOf(e);if(!v)return;
-  if(focus==='flip'){const cell=cellAt(v);if(cell){lastTile=indexOf(cell);setTiles([indexOf(cell)]);}}
-  else{const cap=capAt(v);if(cap)press(cap.userData.enter?'Enter':String(cap.userData.label));}
+ const onDown=(e:PointerEvent)=>{if(!focus||e.button!==0||!ndcOf(e))return;downAt={x:e.clientX,y:e.clientY};};
+ const onMove=()=>{};
+ const onUp=(e:PointerEvent)=>{if(!focus)return;const click=downAt&&Math.hypot(e.clientX-downAt.x,e.clientY-downAt.y)<=6;downAt=null;if(!click)return;
+  const v=ndcOf(e);if(!v)return;const cap=capAt(v);if(cap)press(cap.userData.enter?'Enter':String(cap.userData.label));
  };
 
  function objective(stage:CampaignStage):Objective|null{
   const s=b4StepOf(stage);if(!s||s==='done')return null;
+  if(s==='flip')return{text:'Wait for the service wall to open',target:[...B4_STATIONS.breaker.point] as Objective['target']};
   const st=B4_STATIONS[STEP_STATION[s]],target=[...st.point] as Objective['target'];
   const go=(what:string)=>nearest(stage)!==null?'Press '+USE+' at the '+what:'Walk to the '+what;
   switch(s){
    case 'keyboard':{const n=keyboard.typed.length;
     if(focus==='keyboard')return{text:n===B4_PHRASE.length?'Press Enter to boot CPU 01':`Type I LOVE CDS on the Keyboard Wall (${n}/${B4_PHRASE.length})`,target};
     return{text:go('Keyboard Wall')+' and spell I LOVE CDS',target};}
-   case 'flip':{const n=flipCount(flip),all=flip.flipped.length;
-    if(flipDone)return{text:'The flip wall is opening',target};
-    return{text:(focus==='flip'?'Drag across the HKU flip wall to turn every tile':go('HKU flip wall')+' and turn every tile')+` (${n}/${all})`,target};}
    case 'breaker':return{text:go('open closet')+' to pull the red breaker lever',target};
    case 'connect':return{text:go('supercomputer port')+' to plug in the MacBook',target};
   }
@@ -310,8 +287,10 @@ export function createB4Chapter():Chapter{
  function animate(dt:number){
   if(!ctx||!group)return;
   const k=Math.min(1,dt*6),now=typeof performance!=='undefined'?performance.now():0;pulse=.5+.5*Math.sin(now*.006);
-  for(const t of tiles){if(t.delay>0){t.delay-=dt;continue;}const d=t.target-t.group.rotation.y;if(Math.abs(d)>.001)t.group.rotation.y+=d*Math.min(1,dt*10);}
-  if(flipWall){const want=flipDone?B4_LAYOUT.flipLift:0;lift+=(want-lift)*Math.min(1,dt*1.6);flipWall.position.y=lift;}
+  // The service wall lifts once CPU 01 is online; the beat emits flip_solved when it lands.
+  const wantShutter=reached('b4_flip')?B4_LAYOUT.shutterLift:0;
+  shutterLift+=(wantShutter-shutterLift)*Math.min(1,dt*1.6);if(shutter)shutter.position.y=(B4_LAYOUT.shutter.top+B4_LAYOUT.shutter.bottom)/2+shutterLift;
+  if(beat>0){beat-=dt;if(beat<=0){beat=0;finishServiceWall();}}
   if(doorOpen<.999){doorOpen+=(1-doorOpen)*Math.min(1,dt*3);if(doorOpen>.999)doorOpen=1;setB4DoorLeaves(leaves,doorOpen);}
   const pulled=reached('b4_connect');leverPull+=((pulled?1:0)-leverPull)*k;if(lever)lever.rotation.x=-.45+.9*leverPull;
   lightLevel+=((pulled?1:0)-lightLevel)*Math.min(1,dt*2.2);
@@ -340,30 +319,24 @@ export function createB4Chapter():Chapter{
   removeLights();powered?.removeFromParent();powered=null;group?.removeFromParent();group?.traverse(o=>{if(o instanceof T.Mesh||o instanceof T.LineSegments)o.geometry.dispose();});
   for(const m of owned)m.dispose();owned.length=0;
   try{hum?.pause();}catch{/* optional */}
-  group=null;ctx=null;tiles=[];caps=[];phraseCaps=[];enterCap=null;capGlow.clear();rackMaterials.length=0;for(const m of [...rackBodies,...ceilingPanels]){m.emissive.setHex(0);m.emissiveIntensity=0;}rackBodies.length=0;ceilingPanels.length=0;lightLevel=0;outlines.clear();seenStage=null;flipDone=false;doorOpen=0;humWanted=false;keyboard=createKeyboardState();
+  group=null;ctx=null;caps=[];phraseCaps=[];enterCap=null;capGlow.clear();rackMaterials.length=0;
+  // The shell's materials are shared with the opening world: only drop the glow, never the colour,
+  // so a second chapter instance detaching cannot blank a room the first one still owns.
+  for(const m of [...rackBodies,...ceilingPanels])m.emissiveIntensity=0;rackBodies.length=0;ceilingPanels.length=0;lightLevel=0;outlines.clear();seenStage=null;beat=0;beatArmed=false;shutter=null;lever=null;doorOpen=0;shutterLift=0;humWanted=false;keyboard=createKeyboardState();
  }
  // Exposed only through window.__CAMPUS.campaign, which main.ts creates in DEV/review builds.
  const debug={
   complete(){for(const e of EVENTS)ctx?.emit(e);return ctx?.stage();},
-  state(){return{stage:ctx?.stage(),typed:keyboard.typed,solved:keyboard.solved,flipped:flipCount(flip),tiles:tiles.length,focus,near:nearest(),light:+lightLevel.toFixed(2),door:+doorOpen.toFixed(2),hum:humWanted};},
+  state(){return{stage:ctx?.stage(),typed:keyboard.typed,solved:keyboard.solved,focus,near:nearest(),light:+lightLevel.toFixed(2),door:+doorOpen.toFixed(2),shutter:+shutterLift.toFixed(2),hum:humWanted};},
   /** Read-only view of the keyboard wall glow, for the style check. */
   caps(){return [...capGlow].map(([cap,m])=>({label:cap.userData.label as string,phrase:!!cap.userData.phrase,enter:!!cap.userData.enter,emissive:m.emissive.getHex(),intensity:m.emissiveIntensity}));},
-  /** Same paths as the focus view: type keys, sweep tiles, pull, connect. */
+  /** Same paths as the focus view: type keys, pull, connect. */
   type(text:string){for(const ch of text)press(ch);return keyboard.typed;},
   enter(){return press('Enter');},
-  flipAll(){setTiles(tiles.map(t=>t.index),true);return flipCount(flip);},
-  /** Flip every tile except the last `n` (row-major), through the same path as a sweep. */
-  flipAllBut(n:number){setTiles(tiles.slice(0,Math.max(0,tiles.length-n)).map(t=>t.index),true);return flipCount(flip);},
-  /** A drag through screen points (normalised device coordinates) with the explorer camera. */
-  sweepNdc(points:[number,number][]){
-   // Pointer events along the drag, every 2% of the screen, through the same path as onMove.
-   lastCell=null;
-   for(let k=0;k<points.length;k++){const [x0,y0]=points[Math.max(0,k-1)],[x1,y1]=points[k],n=k?50:1;
-    for(let i=1;i<=n;i++){const cell=cellAt(new T.Vector2(x0+(x1-x0)*i/n,y0+(y1-y0)*i/n));if(cell)sweepTo(cell);else lastCell=null;}}
-   lastCell=null;return flipCount(flip);
-  },
+  /** Force the automatic service-wall beat's emit (the stage must still be b4_flip). */
+  flipAll(){finishServiceWall();return ctx?.stage();},
   pull,connect,
-  focus(id:'keyboard'|'flip'){enterFocus(id);return focus;},
+  focus(id:'keyboard'){enterFocus(id);return focus;},
   leave(){leaveFocus();return focus;},
   stations(){return B4_STATIONS;},
  };
@@ -386,9 +359,10 @@ export function createB4Chapter():Chapter{
   },
   interact(){
    if(!ctx||focus)return false;
+   if(step()==='flip'){ctx.notify('The service wall is lifting.');return true;}
    const id=nearest();
-   if(!id){const s=step();if(s&&s!=='done'){ctx.notify('Walk up to the '+B4_STATIONS[STEP_STATION[s]].label+' and press '+USE+'.');return true;}return false;}
-   if(id==='keyboard'||id==='flip'){enterFocus(id);return true;}
+   if(!id){const s=step();if(s&&s!=='done'&&s!=='flip'){ctx.notify('Walk up to the '+B4_STATIONS[STEP_STATION[s]].label+' and press '+USE+'.');return true;}return false;}
+   if(id==='keyboard'){enterFocus(id);return true;}
    return id==='breaker'?pull():connect();
   },
   objective,

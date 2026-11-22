@@ -44,7 +44,7 @@ import {firstPersonVisible} from '../src/exploration/viewmodel';
 }
 {
  assert.equal(b4StepOf('b4_keyboard'),'keyboard');assert.equal(b4StepOf('b4_flip'),'flip');assert.equal(b4StepOf('b4_breaker'),'breaker');assert.equal(b4StepOf('b4_connect'),'connect');
- assert.equal(pullBreaker('flip').ok,false,'the breaker is behind the flip wall');assert.equal(pullBreaker('breaker').event,'breaker_pulled');
+ assert.equal(pullBreaker('flip').ok,false,'the breaker is behind the closed service wall');assert.equal(pullBreaker('breaker').event,'breaker_pulled');
  const written:string[]=[];const write=(id:string)=>{written.push(id);};
  assert.equal(connectMacBook('breaker','mac-1',write).ok,false,'breaker before connect');assert.deepEqual(written,[]);
  assert.equal(connectMacBook('connect','',write).ok,false,'no MacBook, no pairing');assert.deepEqual(written,[]);
@@ -75,11 +75,15 @@ g.body.position.fromArray([...O.handoff]);g.body.velocity.set(0,0,0);
 const chapter=createB4Chapter();
 route('handoff -> B04 entry',[[O.handoff[0],O.handoff[2]],[chapter.entry.point[0],chapter.entry.point[2]]]);
 assert.ok(Math.abs(g.body.position.y-O.b4.floor)<.05,`entry stands on the B04 floor, y=${g.body.position.y}`);
-const order=['keyboard','flip','breaker','port'] as const;
+const order=['keyboard','breaker','port'] as const;
 let from='entry';for(const id of order){const s=B4_STATIONS[id];route(from+' -> '+id,[[s.stand[0],s.stand[2]]]);from=id;}
-// The closed flip panel is solid; with it gone the closet mouth is open.
-assert.ok(w.blocked(B4_STATIONS.flip.point[0],B4_LAYOUT.flipPanel.z0+.05,O.b4.floor+.003),'closed flip panel blocks');
-setB4FlipPanel(w,false);assert.ok(!w.obstacles.some(o=>o.name==='opening-b4-flip-panel'),'opened flip panel leaves no obstacle');
+// The keyboard stand is on the floor, in front of the lowest tier (no climb, no 0.1 m shift needed).
+assert.ok(Math.abs(g.body.position.y-O.b4.floor)<.05,`the keyboard stand is on the B04 floor, y=${g.body.position.y}`);
+// The closed service shutter is solid; with it gone the closet mouth is open.
+const SH=B4_LAYOUT.shutter;
+assert.ok(w.blocked((SH.x0+SH.x1)/2,SH.z0-.05,O.b4.floor+.003),'the closed service shutter blocks');
+assert.ok(w.blocked((SH.x0+SH.x1)/2,SH.z0+.05,O.b4.floor+.003),'the closed service shutter is solid from the room side too');
+setB4FlipPanel(w,false);assert.ok(!w.obstacles.some(o=>o.name===SH.name),'the lifted service shutter leaves no obstacle');
 
 // (c) Each stand point is within reach and has a clear sightline at eye height.
 for(const id of order){const s=B4_STATIONS[id];const eye=new T.Vector3(s.stand[0],O.b4.floor+1.6,s.stand[2]),to=new T.Vector3(...s.point).sub(eye);
@@ -132,11 +136,18 @@ const ctx:ChapterContext={scene:new T.Scene(),root:()=>site.root,explorer,device
  openPanel:()=>{g2.openPanel('door');},closePanel:()=>{g2.closePanel();},resume:()=>{g2.paused=false;},card:async()=>{}};
 const b4=createB4Chapter(),dbg=b4.debug as Record<string,(...a:unknown[])=>any>;
 /** The focus camera looks square-on at the station and the whole panel is inside the view. */
-function framed(id:'keyboard'|'flip'){
- camera.updateMatrixWorld();const forward=camera.getWorldDirection(new T.Vector3()),angle=forward.angleTo(new T.Vector3(0,0,-1))*180/Math.PI;
+function framed(id:'keyboard'){
+ camera.updateMatrixWorld();
+ const f=B4_FOCUS_FRAME[id],acrossX=f.facing[0]!==0;
+ // `facing` points from the wall into the room, so the camera looks along its negation.
+ const normal=acrossX?new T.Vector3(-f.facing[0],0,0):new T.Vector3(0,0,-f.facing[1]);
+ const forward=camera.getWorldDirection(new T.Vector3()),angle=forward.angleTo(normal)*180/Math.PI;
  assert.ok(angle<=10,`${id} focus camera is ${angle.toFixed(1)}° off the wall normal`);
- const f=B4_FOCUS_FRAME[id];
- for(const [x,y] of [[f.x0,f.y0],[f.x1,f.y0],[f.x0,f.y1],[f.x1,f.y1]]){const v=new T.Vector3(x,y,f.z1).project(camera);assert.ok(Math.abs(v.x)<=1&&Math.abs(v.y)<=1&&v.z<1,`${id} corner ${x.toFixed(2)},${y.toFixed(2)} projects outside the view: ${v.toArray().map(n=>n.toFixed(2))}`);}
+ // The panel is a vertical rectangle; project its four corners on the panel surface.
+ const surface=acrossX?(f.facing[0]<0?f.box.x0:f.box.x1):(f.facing[1]<0?f.box.z0:f.box.z1);
+ const corners=acrossX?[[surface,f.box.y0,f.box.z0],[surface,f.box.y0,f.box.z1],[surface,f.box.y1,f.box.z0],[surface,f.box.y1,f.box.z1]]
+  :[[f.box.x0,f.box.y0,surface],[f.box.x1,f.box.y0,surface],[f.box.x0,f.box.y1,surface],[f.box.x1,f.box.y1,surface]];
+ for(const [x,y,z] of corners){const v=new T.Vector3(x,y,z).project(camera);assert.ok(Math.abs(v.x)<=1&&Math.abs(v.y)<=1&&v.z<1,`${id} corner ${x.toFixed(2)},${y.toFixed(2)},${z.toFixed(2)} projects outside the view: ${v.toArray().map(n=>n.toFixed(2))}`);}
  console.log('PASS',id,'focus framing: square-on',angle.toFixed(1)+'°, all four corners in view');
 }
 const step=(n=6)=>{for(let i=0;i<n;i++)b4.update(.5);};
@@ -152,20 +163,30 @@ cs={...cs,stage:'b4_keyboard'};step();
 {
  const props=site.root.getObjectByName('B04_campaign_rooms');assert.ok(props,'chapter props are in the world');
  const near=(a:number,b:number,what:string)=>assert.ok(Math.abs(a-b)<=.05,`${what}: built ${a.toFixed(3)} vs layout ${b.toFixed(3)}`);
- const rect=(n:string)=>B4_OBSTACLES.find(r=>r.name===n)!;
- const kb=partBounds(props!,'Keyboard_timber_wall').union(partBounds(props!,'Keyboard_wall')),kr=rect('opening-b4-keyboard-wall');
- near(kb.min.x,kr.x0,'keyboard x0');near(kb.max.x,kr.x1,'keyboard x1');near(kb.max.z,kr.z1,'keyboard z1');near(kb.max.y,kr.top,'keyboard top');near(Math.max(kb.min.z,kr.z0),kr.z0,'keyboard z0 (clipped to the back wall)');
- const fw=partBounds(props!,'HKU_flip_wall'),fp=B4_LAYOUT.flipPanel;
- near(fw.min.x,fp.x0,'flip x0');near(fw.max.x,fp.x1,'flip x1');near(fw.min.z,fp.z0,'flip z0');near(fw.max.z,fp.z1,'flip z1');near(fw.max.y,fp.top,'flip top');
+ // The Keyboard Wall is built from the observed panel, turned to face west: compare in world space.
+ // The union (timber backing + panel) matches `keyboardBox`; the panel alone is what the player sees.
+ const kb=partBounds(props!,'Keyboard_timber_wall').union(partBounds(props!,'Keyboard_wall')),kbox=B4_LAYOUT.keyboardBox,kp=B4_LAYOUT.keyboardPanel;
+ near(kb.min.x,kbox.x0,'keyboard x0');near(kb.max.y,kbox.y1,'keyboard top');near(kb.min.z,kbox.z0,'keyboard z0');near(kb.max.z,kbox.z1,'keyboard z1');
+ const panel=partBounds(props!,'Keyboard_wall');
+ near(panel.min.x,kp.x0,'panel x0');near(panel.max.y,kp.y1,'panel top');near(panel.min.z,kp.z0,'panel z0');near(panel.max.z,kp.z1,'panel z1');
+ // The panel's back runs into the east wall (hidden); its front face is what the player sees.
+ assert.ok(kb.max.x>=B4_LAYOUT.room.x1-.01-B4_LAYOUT.wall,`keyboard backing reaches into the east wall: built ${kb.max.x.toFixed(3)}`);
+ // The service shutter: the chapter's own slab covers the closet mouth.
+ const sh=partBounds(props!,'opening-b4-service-shutter'),S=B4_LAYOUT.shutter;
+ near(sh.min.x,S.x0,'shutter x0');near(sh.max.x,S.x1,'shutter x1');near(sh.min.z,S.z0,'shutter z0');near(sh.max.z,S.z1,'shutter z1');near(sh.max.y,S.top,'shutter top');
+ // The HKU flip wall is not in B4 any more.
+ assert.equal(site.root.getObjectByName('HKU_flip_wall'),undefined,'the HKU flip wall no longer stands in B4');
+ // The tiers: three timber steps from the layout rects, drawn by the shell.
+ for(const t of B4_LAYOUT.tiers){const b=partBounds(site.root,t.name),r=B4_OBSTACLES.find(o=>o.name===t.name)!;
+  near(b.min.x,r.x0,t.name+' x0');near(b.max.x,r.x1,t.name+' x1');near(b.min.z,r.z0,t.name+' z0');near(b.max.z,r.z1,t.name+' z1');near(b.max.y,r.top,t.name+' top');}
  const cl=partBounds(props!,'Aux_power_closet'),cr=B4_OBSTACLES.filter(r=>r.name.startsWith('opening-b4-closet'));
  near(cl.min.x,Math.min(...cr.map(r=>r.x0)),'closet x0');near(cl.max.x,Math.max(...cr.map(r=>r.x1)),'closet x1');near(cl.max.z,Math.max(...cr.map(r=>r.z1)),'closet z1');near(cl.max.y,Math.max(...cr.map(r=>r.top)),'closet top');
  const lever=partBounds(props!,'Aux_breaker_lever').getCenter(new T.Vector3()),bp=B4_STATIONS.breaker.point;
  near(lever.x,bp[0],'lever x');near(lever.y,bp[1],'lever y');near(lever.z,bp[2],'lever z');
  for(const [name,id] of [['Aux_breaker_panel','breaker'],['Aux_power_rail','port']] as const){const b=partBounds(props!,name),s=B4_STATIONS[id].box;
   near(b.min.x,s.x0,name+' x0');near(b.max.x,s.x1,name+' x1');near(b.min.y,s.y0,name+' y0');near(b.max.y,s.y1,name+' y1');near(b.max.z,s.z1,name+' z1');}
- const panel=partBounds(props!,'Keyboard_wall').getCenter(new T.Vector3()),kp=B4_STATIONS.keyboard.point;near(panel.x,kp[0],'keyboard point x');
+ const panelCentre=partBounds(props!,'Keyboard_wall').getCenter(new T.Vector3()),kpt=B4_STATIONS.keyboard.point;near(panelCentre.z,kpt[2],'keyboard point z');
  assert.throws(()=>partBounds(new T.Group(),'Keyboard_wall'),/missing/,'a missing builder part throws');
- assert.equal(dbg.state().tiles,561);
  console.log('PASS render vs nav: builder parts match the layout rects within 5 cm');
 }
 // Room lights stay inside the room, and only while the chapter runs.
@@ -189,10 +210,10 @@ function poweredState(when:string){
 }
 // Reach to the nearest point of the interactable; gold highlight; held item hidden in B4.
 {
- g2.body.position.set(47.6,O.b4.floor,9.0);step(1);
- assert.equal(dbg.state().near,'keyboard','the west end of the Keyboard Wall is in reach');
+ g2.body.position.set(...B4_STATIONS.keyboard.stand);step(1);
+ assert.equal(dbg.state().near,'keyboard','the Keyboard Wall is in reach from its stand');
  const outline=(id:string)=>site.root.getObjectByName('B4_highlight_'+id)!;
- assert.ok(outline('keyboard')?.visible,'the in-range Keyboard Wall is outlined');assert.equal(outline('flip').visible,false);
+ assert.ok(outline('keyboard')?.visible,'the in-range Keyboard Wall is outlined');assert.equal(outline('breaker').visible,false);
  assert.equal(viewHidden,true,'B4 asks the explorer to hide the view model inside B04');assert.equal(socket.visible,true,'B4 never writes the socket itself (one owner)');
  const text=b4.objective('b4_keyboard')!.text;assert.match(text,/Press F/);assert.doesNotMatch(text,/\bE\b/);
  g2.body.position.set(...O.handoff);step(1);assert.equal(viewHidden,false,'outside B04 B4 releases its hide flag');assert.equal(socket.visible,true);
@@ -200,23 +221,27 @@ function poweredState(when:string){
  dbg.focus('keyboard');assert.equal(viewHidden,true,'entering focus hides the view model at once');step(1);assert.equal(viewHidden,true,'focus view keeps the view model hidden');assert.equal(arms.visible,true,'B4 never writes the arms itself (one owner)');
  framed('keyboard');
  dbg.type('ILOVECDS');dbg.enter();step(1);assert.equal(cs.stage,'b4_flip');
- // Flipped tiles read clearly: the back faces glow.
- const tile=site.root.getObjectByName('FlipTile_r0c0')!,face=(tile.children[0] as T.Mesh).material as T.MeshStandardMaterial[];
- assert.ok(face[5].emissiveIntensity>0&&face[5].emissive.getHex()!==face[4].emissive.getHex(),'the flipped face is clearly different');
- // Three full-screen drags from the flip stand finish the wall.
- g2.body.position.set(...B4_STATIONS.flip.stand);step(1);dbg.focus('flip');step(1);framed('flip');assert.equal(viewHidden,true);assert.equal(arms.visible,true);
- const one=dbg.sweepNdc([[-.98,0],[.98,0]]);assert.ok(one>=Math.ceil(561/8),`one drag flips ${one} tiles; needs >= ${Math.ceil(561/8)}`);
- const two=dbg.sweepNdc([[-.98,.55],[.98,.55]]);
- console.log('PASS sweep: one drag',one,'tiles, two drags',two);
- // 95%: the last tiles turn over by themselves in a short sweep and the step completes.
- const left=dbg.flipAllBut(28);assert.equal(left,561,'at 95% the wall completes itself');
- const last=site.root.getObjectByName('FlipTile_r16c32')!;step(0);b4.update(.05);
- assert.ok(last.rotation.y<Math.PI/2,'the last tile has not turned instantly');
- for(let i=0;i<14;i++)b4.update(.05);assert.ok(last.rotation.y>Math.PI/2,`after 0.75 s the last tile has turned (${last.rotation.y.toFixed(2)})`);
- assert.equal(cs.stage,'b4_flip','the step waits for the last tiles to turn');
- await new Promise(r=>setTimeout(r,2100));assert.equal(cs.stage,'b4_breaker','the solved wall opens the closet');
- console.log('PASS auto-finish: 28 last tiles turn over by themselves within 0.75 s');
+ // Spelling the phrase lights every cap: the solved wall reads clearly at a glance.
+ assert.ok((dbg.caps() as {intensity:number}[]).every(c=>c.intensity>0),'every cap glows once CPU 01 is online');
+ // b4_flip is the automatic beat: the service wall lifts by itself and no station is in reach.
+ assert.equal(dbg.state().near,null,'no station is in reach while the service wall lifts');
+ assert.match(b4.objective('b4_flip')!.text,/Wait for the service wall to open/);
  g2.body.position.set(...B4_STATIONS.breaker.stand);step(1);
+ assert.equal(b4.interact(),true,'F while the wall lifts only says so');assert.match(notes[notes.length-1]??'',/service wall is lifting/);
+ assert.equal(cs.stage,'b4_flip','the beat cannot be skipped by pressing F');
+ assert.ok(w2.obstacles.some(o=>o.name===SH.name),'the service shutter is solid during the beat');
+ assert.ok(dbg.state().shutter>0,'the service wall is visibly lifting');
+ for(let i=0;i<3;i++)b4.update(.5);
+ assert.equal(cs.stage,'b4_breaker','the beat ends by itself in about 1.2 s');
+ assert.ok(!w2.obstacles.some(o=>o.name===SH.name),'the lifted service shutter leaves no obstacle');
+ // A restored run at b4_breaker never re-arms the beat (check-campaign-reload seeds b4_flip, so this matters).
+ {
+  const restored=createB4Chapter(),keep=cs;cs={...cs,stage:'b4_breaker'};restored.attach(ctx);
+  for(let i=0;i<6;i++)restored.update(.5);
+  assert.equal(cs.stage,'b4_breaker','a restored run at b4_breaker does not emit flip_solved again');
+  restored.detach();cs=keep;
+ }
+ step(1);
  assert.ok(outline('breaker').visible,'the breaker is outlined in range');
  const lever=site.root.getObjectByName('Aux_breaker_lever') as T.Mesh,lm=lever.material as T.MeshStandardMaterial;
  assert.equal(lm.emissive.getHex(),0xffb648,'the in-range lever glows gold');assert.ok(lm.emissiveIntensity>0);
@@ -232,7 +257,7 @@ function poweredState(when:string){
  const rackGlow=(name:string)=>{let out=-1;site.root.traverse(o=>{if(o instanceof T.Mesh)for(const m of [o.material].flat())if(m instanceof T.MeshStandardMaterial&&m.name===name){const e=m.emissive;out=Math.max(out,m.emissiveIntensity*(e.r+e.g+e.b)/3);}});return out;};
  assert.ok(rackGlow(B4_RACK_LED)>.5,`rack LEDs glow at to_lawn with the player outside (${rackGlow(B4_RACK_LED).toFixed(3)})`);
  assert.ok(rackGlow('B4 rack body')>.02,`rack bodies keep a green emissive at to_lawn with the player outside (${rackGlow('B4 rack body').toFixed(3)})`);
- console.log('PASS focus, highlight, flip-face contrast, lights off after B4, F at every station');
+ console.log('PASS focus, highlight, automatic service-wall beat, lights off after B4, F at every station');
 }
 // Reload at b4_connect keeps the supercomputer humming.
 {

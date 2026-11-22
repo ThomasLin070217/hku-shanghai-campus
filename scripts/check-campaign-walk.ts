@@ -77,7 +77,7 @@ const stage=()=>host?.stage()??null;
 const expectStage=(want:CampaignStage)=>assert.equal(stage(),want,`stage ${stage()} (want ${want})`);
 const idle=(frames:number)=>{for(let i=0;i<frames;i++){game.step(dt);host?.update(dt);}};
 const roomLights=()=>asset.root.getObjectByName('B4_room_lights')??null;
-const b4=()=>host!.debug.b4 as unknown as {type(t:string):string;enter():string;flipAll():number;state():{near:string|null}};
+const b4=()=>host!.debug.b4 as unknown as {type(t:string):string;enter():string;state():{near:string|null}};
 
 /* ---------------- Chapter 1 on foot: the authored opening routes ---------------- */
 game.body.position.fromArray([...O.spawn]);game.body.velocity.set(0,0,0);game.body.grounded=true;
@@ -92,9 +92,13 @@ host=makeHost();host.start(device,'b4_enter');host.update(dt);
 await leg('handoff -> B04 door (enter_b4)',()=>{const c=CAMPAIGN_CHAPTERS.b4();const n=walk(c.approach);expectStage('b4_keyboard');return n;});
 await leg('B04 entry -> Keyboard Wall',()=>{const n=walk([[B4_STATIONS.keyboard.stand[0],B4_STATIONS.keyboard.stand[2]]]);
  assert.equal(b4().state().near,'keyboard','the Keyboard Wall is in reach');b4().type('I LOVE CDS');b4().enter();expectStage('b4_flip');return n;});
-await leg('Keyboard Wall -> HKU flip wall',async()=>{const n=walk([[B4_STATIONS.flip.stand[0],B4_STATIONS.flip.stand[2]]]);
- assert.equal(b4().state().near,'flip');b4().flipAll();await new Promise(r=>setTimeout(r,2100));idle(2);expectStage('b4_breaker');return n;});
-await leg('flip wall -> breaker (F)',()=>{const n=walk([[B4_STATIONS.breaker.stand[0],B4_STATIONS.breaker.stand[2]]]);
+await leg('Keyboard Wall -> service wall lifts (automatic)',()=>{
+ // b4_flip is a short automatic beat: no station, no input, bounded wait for b4_breaker.
+ let n=0;while(stage()!=='b4_breaker'&&n<240){game.step(dt);host!.update(dt);n++;}
+ assert.equal(stage(),'b4_breaker','the service wall lifts by itself in under 2 s');
+ assert.equal(b4().state().near,null,'no station is in reach while the wall lifts');
+ return n;});
+await leg('service wall -> breaker (F)',()=>{const n=walk([[B4_STATIONS.breaker.stand[0],B4_STATIONS.breaker.stand[2]]]);
  assert.equal(host!.interact(),true,'F at the breaker is the campaign\'s');expectStage('b4_connect');return n;});
 await leg('breaker -> supercomputer port (F)',()=>{const n=walk([[B4_STATIONS.port.stand[0],B4_STATIONS.port.stand[2]]]);
  assert.equal(host!.interact(),true,'F at the port is the campaign\'s');expectStage('to_lawn');return n;});
@@ -109,7 +113,7 @@ await leg('supercomputer port -> outside the B04 door',()=>{
  // Walk back to the entry and out; the lights must stay on every frame the player is inside.
  const watch=()=>{if(inside()&&!roomLights())litOnWayOut=false;};
  host!.update=(d:number)=>{before(d);watch();};
- try{n=walk([...(['breaker','flip','keyboard'] as const).map(id=>[B4_STATIONS[id].stand[0],B4_STATIONS[id].stand[2]]),[58,18],[58,25]]);}finally{host!.update=before;}
+ try{n=walk([...(['breaker','keyboard'] as const).map(id=>[B4_STATIONS[id].stand[0],B4_STATIONS[id].stand[2]]),[58,18],[58,25]]);}finally{host!.update=before;}
  assert.ok(!inside(),'the player is outside B04');return n;});
 await group('B4 room lights go out once the player has left B04',()=>{
  assert.ok(litOnWayOut,'the room was lit on every frame of the walk out');

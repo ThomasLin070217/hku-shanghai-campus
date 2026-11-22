@@ -53,7 +53,7 @@ export function flipSolved(s:FlipState){return s.flipped.length>0&&s.flipped.eve
 
 export interface StationResult{ok:boolean;event?:CampaignEvent;reason?:string}
 export function pullBreaker(step:B4Step|null):StationResult{
- if(step!=='breaker')return{ok:false,reason:step==='keyboard'||step==='flip'?'The breaker is behind the flip wall.':'The breaker is already closed.'};
+ if(step!=='breaker')return{ok:false,reason:step==='keyboard'||step==='flip'?'The service wall is still closed.':'The breaker is already closed.'};
  return{ok:true,event:'breaker_pulled'};
 }
 /** The relay key has exactly one writer (`markRelayRestored`); it is injected here. */
