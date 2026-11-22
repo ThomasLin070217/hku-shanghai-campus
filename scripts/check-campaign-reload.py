@@ -61,14 +61,19 @@ SNAPSHOT = """() => ({
 })"""
 
 
-def seed_campaign(page, events):
-    """Play to Chapter 1 complete from the b4 checkpoint, then advance the campaign."""
+def seed_campaign(page, events, freeze=False):
+    """Play to Chapter 1 complete from the b4 checkpoint, then advance the campaign.
+
+    `freeze` pauses the game in the same evaluate as the last event, so a chapter's automatic
+    beat cannot advance the stage between the seed and the reload under test.
+    """
     page.goto(ORIGIN + '?experience=opening&checkpoint=b4', wait_until='load')
     ready(page)
     page.keyboard.press('Shift')  # trusted input: this window owns the save
     page.evaluate('() => __CAMPUS.openingDebug.arriveB4()')
-    for e in events:
-        page.evaluate(f"() => __CAMPUS.campaign.emit('{e}')")
+    for i, e in enumerate(events):
+        tail = '; __CAMPUS.explorer.game.paused = true;' if freeze and i == len(events) - 1 else ''
+        page.evaluate(f"() => {{ __CAMPUS.campaign.emit('{e}'){tail} }}")
     frames(page, 3)
     return page.evaluate(SNAPSHOT)
 
@@ -169,6 +174,35 @@ with sync_playwright() as p:
               and 'door lock' not in page.evaluate("() => document.getElementById('toast')?.textContent ?? ''").lower(),
               page.evaluate("() => __CAMPUS.campaign.debug.sports?.door?.() ?? null"))
         check('no page errors (reload at done)', errors == [], errors)
+        page.close()
+
+        # 5. A save at `b4_flip` re-arms the automatic service-wall beat: after the reload the
+        #    1.2 s beat emits `flip_solved` once and settles at b4_breaker, never past it.
+        page = browser.new_page(viewport={'width': 1280, 'height': 800})
+        errors = []
+        page.on('pageerror', lambda e: errors.append(str(e)))
+        page.add_init_script(COUNT_CARDS)
+        seeded = seed_campaign(page, ['enter_b4', 'keyboard_solved'], freeze=True)
+        check('seed: campaign at b4_flip', seeded['stage'] == 'b4_flip', seeded)
+        page.goto(ORIGIN + '?experience=opening', wait_until='load')
+        ready(page)
+        frames(page)
+        s = page.evaluate(SNAPSHOT)
+        check('reload at b4_flip restores the beat stage, not b4_breaker', s['stage'] == 'b4_flip', s)
+        page.keyboard.press('Shift')  # trusted input: this window owns the save
+        page.evaluate('() => window.__CAMPUS.explorer.enterCompat()')  # start the game: chapters get real time
+        # Wait on the game clock, not the wall clock: 1.6 s of game time is past the 1.2 s beat.
+        page.evaluate('() => { window.__b4T0 = __CAMPUS.explorer.game.timeMs; }')
+        page.wait_for_function('() => __CAMPUS.explorer.game.timeMs - window.__b4T0 >= 1600', timeout=30000)
+        s = page.evaluate(SNAPSHOT)
+        check('reload at b4_flip: the re-armed beat lands at b4_breaker', s['stage'] == 'b4_breaker', s)
+        # A second beat would be a second flip_solved. The stage can only stay at b4_breaker;
+        # another 1.6 s of game time shows nothing re-arms the beat or skips the stage.
+        page.evaluate('() => { window.__b4T0 = __CAMPUS.explorer.game.timeMs; }')
+        page.wait_for_function('() => __CAMPUS.explorer.game.timeMs - window.__b4T0 >= 1600', timeout=30000)
+        s = page.evaluate(SNAPSHOT)
+        check('reload at b4_flip: no second beat (stage stays b4_breaker)', s['stage'] == 'b4_breaker' and s['modal'] is None and not s['dialog'], s)
+        check('no page errors (reload at b4_flip)', errors == [], errors)
         page.close()
     finally:
         browser.close()

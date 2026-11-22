@@ -1,5 +1,5 @@
 import * as T from 'three';
-import {buildObservedFeatureRoom,keyboardKeycaps} from '../model/observedFeatureRooms';
+import {buildObservedFeatureRoom,flipWallTiles,keyboardKeycaps} from '../model/observedFeatureRooms';
 import {markRelayRestored} from '../opening/backupRelay';
 import {CDS1_KEYS,saveKeyboardProgress} from '../opening/keyboardProgress';
 import {OPENING} from '../opening/spatialLayout';
@@ -52,6 +52,8 @@ export function createB4Chapter():Chapter{
  let lightLevel=0,shutterLift=0,leverPull=0,doorOpen=0,flash=0,beat=0,beatArmed=false,seenStage:CampaignStage|null=null,hum:HTMLAudioElement|null=null,humWanted=false,humRetry:(()=>void)|null=null;
  let raf=0,focus:Focus=null,lookYaw=0,lookPitch=0,baseYaw=0,basePitch=0;
  let savedHint:string|null=null,pulse=0;
+ /** Flip tiles the chapter's own builder call allocated (D5: expected 0 — the closet part only). */
+ let flipTilesBuilt=0;
  const focusEye=new T.Vector3(),focusTarget=new T.Vector3();
  const ray=new T.Raycaster(),ndc=new T.Vector2();
 
@@ -82,6 +84,9 @@ export function createB4Chapter():Chapter{
   // (`b5FlipWall.ts`), so B4 asks the observed-room builder for the closet part only: building
   // the full room would allocate its 561 flip tiles and corridor shell for nothing.
   const fw=buildObservedFeatureRoom('flipWall',{parts:['closet']}),fwRoot=new T.Group();tag(fwRoot,'B4_service_wall');
+  // What this builder call actually allocated, before the closet is lifted out of it. A discarded
+  // full build leaves no trace in the scene graph, so the count is taken here, at the call.
+  flipTilesBuilt=flipWallTiles(fw).length;
   fwRoot.position.fromArray(B4_LAYOUT.closetOrigin);g.add(fwRoot);
   const closet=requirePart(fw,'Aux_power_closet');closet.removeFromParent();fwRoot.add(closet);
   lever=requirePart(fwRoot,'Aux_breaker_lever') as T.Mesh;lever.material=own((lever.material as T.MeshStandardMaterial).clone());
@@ -322,7 +327,7 @@ export function createB4Chapter():Chapter{
   group=null;ctx=null;caps=[];phraseCaps=[];enterCap=null;capGlow.clear();rackMaterials.length=0;
   // The shell's materials are shared with the opening world: only drop the glow, never the colour,
   // so a second chapter instance detaching cannot blank a room the first one still owns.
-  for(const m of [...rackBodies,...ceilingPanels])m.emissiveIntensity=0;rackBodies.length=0;ceilingPanels.length=0;lightLevel=0;outlines.clear();seenStage=null;beat=0;beatArmed=false;shutter=null;lever=null;doorOpen=0;shutterLift=0;humWanted=false;keyboard=createKeyboardState();
+  for(const m of [...rackBodies,...ceilingPanels])m.emissiveIntensity=0;rackBodies.length=0;ceilingPanels.length=0;lightLevel=0;outlines.clear();seenStage=null;beat=0;beatArmed=false;shutter=null;lever=null;doorOpen=0;shutterLift=0;humWanted=false;flipTilesBuilt=0;keyboard=createKeyboardState();
  }
  // Exposed only through window.__CAMPUS.campaign, which main.ts creates in DEV/review builds.
  const debug={
@@ -330,6 +335,8 @@ export function createB4Chapter():Chapter{
   state(){return{stage:ctx?.stage(),typed:keyboard.typed,solved:keyboard.solved,focus,near:nearest(),light:+lightLevel.toFixed(2),door:+doorOpen.toFixed(2),shutter:+shutterLift.toFixed(2),hum:humWanted};},
   /** Read-only view of the keyboard wall glow, for the style check. */
   caps(){return [...capGlow].map(([cap,m])=>({label:cap.userData.label as string,phrase:!!cap.userData.phrase,enter:!!cap.userData.enter,emissive:m.emissive.getHex(),intensity:m.emissiveIntensity}));},
+  /** D5: flip tiles the chapter's own build constructed. 0 = it asked for the closet part only. */
+  flipTilesBuilt(){return flipTilesBuilt;},
   /** Same paths as the focus view: type keys, pull, connect. */
   type(text:string){for(const ch of text)press(ch);return keyboard.typed;},
   enter(){return press('Enter');},

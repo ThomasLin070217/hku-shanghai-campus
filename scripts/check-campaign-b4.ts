@@ -85,7 +85,8 @@ const order=['keyboard','breaker','port'] as const;
  const s=B4_STATIONS.keyboard;route('entry -> keyboard',[[s.stand[0],s.stand[2]]]);
  assert.ok(Math.abs(g.body.position.y-O.b4.floor)<.05,`the keyboard stand is on the B04 floor, y=${g.body.position.y}`);
 }
-for(const id of ['breaker','port'] as const){const s=B4_STATIONS[id];route('keyboard -> '+id,[[s.stand[0],s.stand[2]]]);}
+let from='keyboard';
+for(const id of ['breaker','port'] as const){const s=B4_STATIONS[id];route(from+' -> '+id,[[s.stand[0],s.stand[2]]]);from=id;}
 // The closed service shutter is solid; with it gone the closet mouth is open. Sample 0.10 m off
 // the shutter's room-side face at x 60: within the 0.28 m body radius of the shutter, but well
 // outside the radius of the closet rect (its mouth ends at z 7.93). The old samples at z 8.09/
@@ -169,6 +170,10 @@ b4.attach(ctx);step();
  assert.equal(w2.blocked(O.b4.door,O.b4.z1+.9,O.b4.floor+.06),false,'campaign: the B04 door no longer blocks');
  console.log('PASS campaign start opens the B04 door (visual + collision)');
 }
+// D5: the chapter's own build must skip the 561 flip tiles. The builder test further down
+// passes even if the chapter asks for the full room and throws the tiles away, so read the
+// chapter's own count after it attaches (0 = it built the closet part only).
+assert.equal(dbg.flipTilesBuilt(),0,'the chapter builds no flip tiles (a full build would allocate 561)');
 cs={...cs,stage:'b4_keyboard'};step();
 // Render vs nav: builder parts placed by the chapter equal the layout rects within 5 cm.
 {
@@ -219,10 +224,33 @@ cs={...cs,stage:'b4_keyboard'};step();
  assert.ok(Math.abs(strip.min.z-(rackRect.z1+.001))<.0015&&strip.max.z<=rackRect.z1+.022,
   `rack status strips sit on the room-facing south face (z ${strip.min.z.toFixed(3)}…${strip.max.z.toFixed(3)}, rack face ${rackRect.z1})`);
  assert.ok(Math.abs((strip.min.x+strip.max.x)/2-(rackRect.x0+rackRect.x1)/2)<.01,'rack status strips are centred across their cabinet');
+ // The plinth is inset 1 cm on the faces the room can see (its south face and its two outer x
+ // faces). A shared plane with a rack body flickers: the 12 cm band at the base of the racks.
+ // The plinth's north face stays against the north wall with the racks' back faces, inside it.
+ const plinth=partBounds(site.root,'B4_rack_plinth');
+ for(const rack of B4_OBSTACLES.filter(o=>o.render==='rack')){
+  const body=partBounds(site.root,rack.name);
+  for(const [p,f,face] of [[plinth.max.z,body.max.z,'south'],[plinth.min.x,body.min.x,'west'],[plinth.max.x,body.max.x,'east']] as const)
+   assert.ok(Math.abs(p-f)>=.005,`the plinth ${face} face ${p.toFixed(3)} is coplanar with ${rack.name} (${f.toFixed(3)})`);
+ }
  const seat=partBounds(site.root,'B4_lobby_armchair_seat'),back=partBounds(site.root,'B4_lobby_armchair_back');
  assert.ok(back.min.y<=seat.max.y+.001,`the armchair back is seated, not floating (back bottom ${back.min.y.toFixed(3)}, seat top ${seat.max.y.toFixed(3)})`);
  assert.ok(back.min.y>=seat.max.y-.03,`the armchair back is not buried in the seat (back bottom ${back.min.y.toFixed(3)}, seat top ${seat.max.y.toFixed(3)})`);
- console.log('PASS lobby scenery: rug ring, room-facing rack LEDs, seated armchair backs');
+ // The AABB minimum is the buried rear-bottom corner and cannot see the wedge gap at the front.
+ // Read the back's front-bottom edge from its own world matrix: the compacted scene merges the
+ // seat and back into one mesh and loses the tilt, so build a fresh, uncompacted shell.
+ const shell=buildB4Shell();shell.updateMatrixWorld(true);
+ const armchairs:T.Group[]=[];shell.traverse(o=>{if(o instanceof T.Group&&/^B4_lobby_armchair_\d$/.test(o.name))armchairs.push(o);});
+ assert.equal(armchairs.length,2,'the shell draws both armchairs');
+ for(const arm of armchairs){
+  const backMesh=arm.getObjectByName('B4_lobby_armchair_back') as T.Mesh,seatMesh=arm.getObjectByName('B4_lobby_armchair_seat') as T.Mesh;
+  const size=(backMesh.geometry as T.BoxGeometry).parameters;
+  const front=Math.max(...[-1,1].map(sx=>new T.Vector3(sx*size.width/2,-size.height/2,size.depth/2).applyMatrix4(backMesh.matrixWorld).y));
+  const seatTop=new T.Box3().setFromObject(seatMesh).max.y;
+  assert.ok(front<=seatTop+.002,`${arm.name}: the back's front-bottom edge floats ${((front-seatTop)*1000).toFixed(1)} mm above the seat (front ${front.toFixed(4)}, seat top ${seatTop.toFixed(4)})`);
+ }
+ disposeAsset(shell);
+ console.log('PASS lobby scenery: rug ring, room-facing rack LEDs, seated armchair backs, inset plinth');
 }
 // D5: B4 asks the observed-room builder for the closet part only, so the 561 flip tiles and the
 // corridor shell are never allocated; the same builder still yields the wall B5 mounts.

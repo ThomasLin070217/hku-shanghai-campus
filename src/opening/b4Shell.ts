@@ -35,9 +35,13 @@ export function buildB4Shell(){
  };
  const shell=group(root,'B04_room_structure');
  box(shell,'B4_floor',R.x1-R.x0,R.floor,R.z1-R.z0,(R.x0+R.x1)/2,R.floor/2,(R.z0+R.z1)/2,mats.floor).castShadow=false;
- // Racks on a low plinth along the north wall.
- const racks=group(root,'B04_supercomputer_racks'),rx=B4_LAYOUT.rackX,rz=B4_LAYOUT.rackZ;
- box(racks,'B4_rack_plinth',Math.max(...rx.map(r=>r[1]))-Math.min(...rx.map(r=>r[0])),.12,rz[1]-rz[0],(Math.min(...rx.map(r=>r[0]))+Math.max(...rx.map(r=>r[1])))/2,F+.06,(rz[0]+rz[1])/2,mats.plinth);
+ // Racks on a low plinth along the north wall. The plinth is inset 1 cm on the faces the room
+ // can see (its south face and its two outer x faces): the rack bodies share those planes
+ // otherwise, and the coplanar faces flicker in a 12 cm band at the base of the racks. The
+ // collision rects are unchanged: the plinth is scenery, the racks are the obstacles.
+ const racks=group(root,'B04_supercomputer_racks'),rx=B4_LAYOUT.rackX,rz=B4_LAYOUT.rackZ,plinthInset=.01;
+ const plinthX0=Math.min(...rx.map(r=>r[0]))+plinthInset,plinthX1=Math.max(...rx.map(r=>r[1]))-plinthInset,plinthZ1=rz[1]-plinthInset;
+ box(racks,'B4_rack_plinth',plinthX1-plinthX0,.12,plinthZ1-rz[0],(plinthX0+plinthX1)/2,F+.06,(rz[0]+plinthZ1)/2,mats.plinth);
  for(const r of B4_OBSTACLES){
   if(!r.render)continue;
   const x=(r.x0+r.x1)/2,z=(r.z0+r.z1)/2,w=r.x1-r.x0,d=r.z1-r.z0;
@@ -80,8 +84,10 @@ export function buildB4Shell(){
   const a=group(lobby,'B4_lobby_armchair_'+(i+1));a.position.set(c.x,F,c.z);a.rotation.y=i?Math.PI*.62:-Math.PI*.18;
   const seatH=L.armchairSize*.26,backH=L.armchairSize*.42;
   box(a,'B4_lobby_armchair_seat',L.armchairSize,seatH,L.armchairSize*.82,0,seatH/2,0,mats.sofa);
-  // The back starts at the seat's top face: the old +0.3 m offset floated it 9.7 cm above the seat.
-  const back=box(a,'B4_lobby_armchair_back',L.armchairSize,backH,.16,0,seatH+backH/2,-L.armchairSize*.33,mats.sofa);back.rotation.x=-.12;
+  // The back starts at the seat's top face: the old +0.3 m offset floated it 9.7 cm above the
+  // seat. It then tilts -0.12 rad about its own centre, which lifts the front-bottom edge by
+  // 10.8 mm; the centre sits 11 mm low so that edge meets the seat instead of leaving a wedge gap.
+  const back=box(a,'B4_lobby_armchair_back',L.armchairSize,backH,.16,0,seatH+backH/2-.011,-L.armchairSize*.33,mats.sofa);back.rotation.x=-.12;
  }
  const table=new T.Mesh(new T.CylinderGeometry(L.table.r,L.table.r,.055,20),mats.stone);
  table.name='B4_lobby_table';table.position.set(L.table.x,F+L.table.h-.0275,L.table.z);table.castShadow=table.receiveShadow=true;table.userData={...SOURCE,authorKey:'B4_lobby_table'};lobby.add(table);
