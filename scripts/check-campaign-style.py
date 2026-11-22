@@ -422,7 +422,11 @@ def boundary_toast_checks(page):
     inside = toast_after(page, lambda: page.evaluate("() => window.__CAMPUS.campaign.emit('reach_lawn')"), 2500)
     check('toast: no save toast on a step inside a chapter (reach_lawn)', not inside,
           page.evaluate("() => window.__CAMPUS.campaign.state()?.stage"))
-    boundary = toast_after(page, lambda: page.evaluate("() => window.__CAMPUS.campaign.emit('guardian_shutdown')"), 6000)
+    # The CHAPTER 3 boundary attaches the sports chapter, which now builds the 100-student
+    # crowd; its first frame uploads the atlas and compiles the crowd shaders under the
+    # chapter card. Headless SwiftShader runs that frame at ~0.6 fps, and the toast lands
+    # ~9 s after the emit (task-1-fix-report.md). This asserts the announcement, not latency.
+    boundary = toast_after(page, lambda: page.evaluate("() => window.__CAMPUS.campaign.emit('guardian_shutdown')"), 15000)
     check('toast: the CHAPTER 3 boundary announces its save', boundary,
           page.evaluate("() => window.__CAMPUS.campaign.state()?.stage"))
 
