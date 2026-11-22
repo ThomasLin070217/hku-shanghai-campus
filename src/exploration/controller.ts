@@ -62,8 +62,9 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  listenCanvas('pointerup',()=>dragging=false);listenCanvas('pointercancel',()=>dragging=false);
  listenCanvas('wheel',e=>{if(enabled&&!game.inventoryOpen&&!game.panel){e.preventDefault();game.takeover('human_hotbar_wheel');game.selectHotbar((game.inventory.selectedHotbar+(e.deltaY>0?1:8))%9);if(!controlled())game.paused=true;}},{passive:false});canvas.tabIndex=0;
  function enter(){if(!enabled||game.inventoryOpen||game.panel)return;compat=false;canvas.focus();void canvas.requestPointerLock()?.catch(()=>pause('pointer_lock_failed'));}
- /** The one writer of the first-person arms and held item (Ruling 36). */
- const showViewModel=()=>{arms.visible=firstPersonVisible({enabled,first:game.view==='first',story:opening,deviceOpen,hidden:firstPersonHidden});};
+ /** The one writer of the first-person arms and held item (Ruling 36): visibility and the
+  * story carry pose are set together, so the open MacBook never shows one frame in the walking pose. */
+ const showViewModel=()=>{if(opening)firstPerson.setCarry(deviceOpen);arms.visible=firstPersonVisible({enabled,first:game.view==='first',story:opening,deviceOpen,hidden:firstPersonHidden});};
  function updateCamera(dt:number){const p=game.body.position;
   student.root.visible=enabled&&game.view==='third';showViewModel();
   if(game.view==='first'){
@@ -78,7 +79,7 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
    student.root.visible=actualDistance>.65;
   }camera.updateMatrixWorld();
  }
- function update(dt:number){inventoryUI.refresh();if(viewLock)game.view=viewLock;if(!enabled)return;const held=game.inventory.equipped?.itemId??null;student.equip(held);firstPerson.equip(held);if(opening)firstPerson.setCarry(deviceOpen);dt=Math.min(dt,.1);const before=game.body.position.clone();
+ function update(dt:number){inventoryUI.refresh();if(viewLock)game.view=viewLock;if(!enabled)return;const held=game.inventory.equipped?.itemId??null;student.equip(held);firstPerson.equip(held);dt=Math.min(dt,.1);const before=game.body.position.clone();
   game.human={forward:Number(keys.has(KEYS.forward))-Number(keys.has(KEYS.back)),right:Number(keys.has(KEYS.right))-Number(keys.has(KEYS.left)),sprint:keys.has(KEYS.sprint)};
   if(!game.paused){
    // A jump pressed a moment before landing is re-armed on the first grounded step.
