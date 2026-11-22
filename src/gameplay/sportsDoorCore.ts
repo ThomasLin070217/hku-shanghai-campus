@@ -26,13 +26,14 @@ export function createSportsDoorCore(options:{game:()=>CampusGame;notify?:(text:
   const open=isOpen(),world=options.game().body.world;
   if(world!==appliedWorld||applied!==open){world.setDoorOpen(SPORTS_DOOR.id,open);appliedWorld=world;applied=open;}
  }
- function unlock(){
+ /** `silent` restores a known state (a reload past the rescue, a restart) without a notice. */
+ function unlock(silent=false){
   if(isOpen())return false;
   options.game().doors[SPORTS_DOOR.id]=true;options.persist?.();
-  options.notify?.('Both checks passed. The glass door is opening.');
+  if(!silent)options.notify?.('Both checks passed. The glass door is opening.');
   return true;
  }
- function lock(){options.game().doors[SPORTS_DOOR.id]=false;options.persist?.();options.notify?.('The door lock is engaged again.');}
+ function lock(silent=false){options.game().doors[SPORTS_DOOR.id]=false;options.persist?.();if(!silent)options.notify?.('The door lock is engaged again.');}
  function submitSudoku(digits:string[]){
   if(sudokuSolved)return true;
   if(!checkCode(puzzle,digits))return false;

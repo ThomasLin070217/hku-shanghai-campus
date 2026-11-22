@@ -2,7 +2,7 @@ import {SPORTS_HALL_PUZZLE} from '../gameplay/sudokuPuzzle';
 import {createSportsDoorCore} from '../gameplay/sportsDoorCore';
 import {SPORTS_DOOR,sportsDoorWorld} from '../model/sportsDoor';
 import {SITE} from '../model/campusParameters';
-import type {CampaignEvent} from './state';
+import {stageIndex,type CampaignEvent} from './state';
 import type {Chapter,ChapterContext} from './types';
 
 /** Outside the sports hall east door, 2.6 m east like `createSportsRescueExperience.relocate`. */
@@ -21,7 +21,7 @@ export const SPORTS_APPROACH:Chapter['approach']=[
 
 /** Both door runtimes (panel + headless core) expose the same campaign surface. */
 type SportsDoorRuntime={
- update(dt:number):void;interact():boolean;unlock():boolean;lock():void;
+ update(dt:number):void;interact():boolean;unlock(silent?:boolean):boolean;lock(silent?:boolean):void;
  submitSudoku(digits:string[]):boolean;submitPassword(entries:string[]|string):boolean;
  dispose():void;readonly open:boolean;readonly state?:Record<string,unknown>|(()=>Record<string,unknown>);
 };
@@ -42,10 +42,16 @@ export function createSportsChapter():Chapter{
   doorRuntime.update(0);
   return{sudoku,password,open:doorRuntime.open};
  }
+ /** A run restored past the rescue (reload or checkpoint at `ending`/`done`) finds the door open, silently. */
+ function restore(c:ChapterContext){
+  if(!doorRuntime||stageIndex(c.stage())<=stageIndex('sports'))return;
+  doorRuntime.unlock(true);opened=true;
+ }
  function attach(c:ChapterContext){
   ctx=c;
   if(typeof document==='undefined'){
    doorRuntime=createSportsDoorCore({game:()=>c.explorer.game,notify:c.notify});
+   restore(c);
    return;
   }
   // The panel lives in `sportsDoor.ts`, which imports its stylesheet; loading it
@@ -57,6 +63,7 @@ export function createSportsChapter():Chapter{
     openPanel:()=>c.openPanel('door'),closePanel:()=>c.closePanel(),resume:()=>c.resume(),
     standalone:false,campaign:true,
    });
+   restore(c);
   }).catch(error=>{c.notify('The door lock could not load.');console.error(error);});
  }
  function update(dt:number){
@@ -77,7 +84,8 @@ export function createSportsChapter():Chapter{
     target:open?null:[SPORTS_ENTRY.point[0],SPORTS_ENTRY.point[1],SPORTS_ENTRY.point[2]],
    };
   },
-  detach(){doorRuntime?.dispose();doorRuntime=null;ctx=null;opened=false;},
+  // Restart in the same tab: the next run's Chapter 3 starts at a locked door (the state is not saved).
+  detach(){doorRuntime?.lock(true);doorRuntime?.update(0);doorRuntime?.dispose();doorRuntime=null;ctx=null;opened=false;},
   debug:{
    open:openDoor,
    door(){const state=doorRuntime?.state;return{...(typeof state==='function'?state():state??{}),entry:SPORTS_ENTRY};},

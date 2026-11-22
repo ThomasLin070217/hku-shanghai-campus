@@ -71,6 +71,14 @@ export function clearAllProgress(storage:ProgressStorage&WorldThreatStorage):str
  return removed;
 }
 
+/** The story's first page: no `checkpoint` parameter, so a chapter-menu entry does not loop back to itself. */
+export const PLAY_AGAIN_URL='?experience=opening';
+/** Play again: clear every local save, then start the game from the beginning (an explicit player click). */
+export function playAgain(storage:ProgressStorage&WorldThreatStorage,nav:{assign(url:string):void}){
+ try{clearAllProgress(storage);}catch(error){console.error('ending: Play again could not clear the local progress; the new run may resume it',error);}
+ nav.assign(PLAY_AGAIN_URL);
+}
+
 const STYLE_ID='ending-styles';
 const ENDING_CSS=`
 #ending-overlay{position:fixed;inset:0;z-index:60;display:grid;grid-template:1fr/1fr;place-items:center;font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;color:#e8f4ee;opacity:0;transition:opacity .6s ease}
@@ -174,10 +182,7 @@ export function createEndingChapter():Chapter{
   credits=document.createElement('div');credits.id='ending-credits';credits.innerHTML=creditsMarkup();
   document.body.append(credits);
   requestAnimationFrame(()=>credits?.classList.add('show'));
-  credits.querySelector('#ending-play-again')?.addEventListener('click',()=>{
-   try{clearAllProgress(localStorage);}catch(error){console.error('ending: Play again could not clear the local progress; the reload may replay the epilogue',error);}
-   location.reload();
-  });
+  credits.querySelector('#ending-play-again')?.addEventListener('click',()=>playAgain(localStorage,location));
   // The story is over: pause and release pointer lock so the two buttons are clickable.
   try{ctx?.explorer.pause('ending');}catch(error){console.error('ending: could not pause the explorer for the credits',error);}
  }
@@ -190,6 +195,8 @@ export function createEndingChapter():Chapter{
   // the world record and the visible dome lift agree (and so the sealed curtain
   // is not re-asserted during the Mac sequence).
   markLocalModelCleared();
+  // A reload after the credits: the epilogue already played, so go straight back to them.
+  if(c.stage()==='done'){started=cleared=released=finished=true;showCredits();}
  }
 
  /**
