@@ -62,17 +62,18 @@ function spyChapters(){
  return{spies,factories};
 }
 
-function makeHost(seed:Record<string,string>={},extra:Partial<ChapterContext>={}){
- const store=memoryStorage(seed),cards:[string,string][]=[];
+function makeHost(seed:Record<string,string>={},extra:Partial<ChapterContext>={},factoriesOverride?:Record<ChapterId,()=>Chapter>){
+ const store=memoryStorage(seed),cards:[string,string][]=[],boundaries:string[]=[];
  const {spies,factories}=spyChapters();
  const host=createCampaignHost({
   context:{
    scene:new T.Scene(),root:()=>new T.Group(),explorer,notify:()=>{},atmosphere:()=>undefined,
    openPanel:()=>{},closePanel:()=>{},resume:()=>{},card:async(kicker,title)=>{cards.push([kicker,title]);},...extra,
   },
-  storage:store.storage,chapters:factories,now:()=>1000,
+  storage:store.storage,chapters:factoriesOverride??factories,now:()=>1000,
+  onChapterBoundary:stage=>{boundaries.push(stage);},
  });
- return{host,store,cards,spies};
+ return{host,store,cards,spies,boundaries};
 }
 const saved=(store:ReturnType<typeof memoryStorage>)=>JSON.parse(store.data.get(CAMPAIGN_SAVE_KEY)??'null');
 
@@ -172,6 +173,47 @@ group('chapter cards at every chapter boundary',()=>{
  assert.deepEqual(cards,[['CHAPTER 1 · BUILDING 4','The Keyboard Wall']]);
  for(const e of ['enter_b4','keyboard_solved','flip_solved','breaker_pulled','macbook_connected','reach_lawn','guardian_shutdown','reach_sports','door_opened','ending_finished'] as const)host.emit(e);
  assert.deepEqual(cards.slice(1),[['CHAPTER 2','The Lawn Guardian'],['CHAPTER 3','Sports Hall Rescue'],['EPILOGUE','Barrier Down']]);
+});
+
+group('a checkpoint start inside a chapter shows that chapter\'s card (b4-inside, M10)',()=>{
+ const {host,cards}=makeHost();
+ host.start('mac-1','b4_keyboard');
+ assert.deepEqual(cards,[['CHAPTER 1 · BUILDING 4','The Keyboard Wall']],'b4_keyboard starts under the Building 4 card');
+ const lawn=makeHost();lawn.host.start('mac-1','lawn');
+ assert.deepEqual(lawn.cards,[['CHAPTER 2','The Lawn Guardian']]);
+});
+
+group('the host announces chapter boundaries only (save toast, M2)',()=>{
+ const {host,boundaries}=makeHost();
+ host.start('mac-1');
+ assert.deepEqual(boundaries,['b4_enter'],'the campaign start is a boundary');
+ for(const e of ['enter_b4','keyboard_solved','flip_solved','breaker_pulled'] as const)host.emit(e);
+ assert.deepEqual(boundaries,['b4_enter'],'steps inside a chapter are not boundaries');
+ for(const e of ['macbook_connected','reach_lawn','guardian_shutdown','reach_sports','door_opened','ending_finished'] as const)host.emit(e);
+ assert.deepEqual(boundaries,['b4_enter','to_lawn','to_sports','ending']);
+ host.update(1/60);host.update(1/60);
+ assert.equal(boundaries.length,4,'frames never announce');
+});
+
+group('the objective is computed once per frame and walking legs reuse theirs (M5)',()=>{
+ let calls=0;
+ const {factories}=spyChapters();
+ const counted={...factories,b4:()=>{const c=factories.b4();return{...c,objective:(stage:Parameters<Chapter['objective']>[0])=>{calls++;return{text:'b4 at '+stage,target:[1,2,3] as [number,number,number]};}};}};
+ const {host}=makeHost({},{},counted);
+ host.start('mac-1');place(0,0);
+ host.update(1/60);
+ const a=host.objective(),b=host.objective();
+ assert.ok(a&&a===b,'one walking-leg objective object per stage');
+ host.update(1/60);
+ assert.equal(host.objective(),a,'the leg objective is not rebuilt every frame');
+ host.emit('enter_b4');
+ host.update(1/60);
+ for(let i=0;i<3;i++)host.objective();
+ assert.equal(calls,1,'three reads in one frame ask the chapter once');
+ host.update(1/60);host.objective();host.objective();
+ assert.equal(calls,2,'the next frame asks again (the objective can change within a stage)');
+ host.emit('keyboard_solved');
+ assert.equal(host.objective()?.text,'b4 at b4_flip','a stage change is seen without waiting for a frame');
 });
 
 group('debug exposes each attached chapter\'s hooks and they can run the campaign to done',()=>{
