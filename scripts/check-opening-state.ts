@@ -286,9 +286,11 @@ group('坏故事、坏设置与输入不被改写',()=>{
 });
 
 group('worldRevision 不匹配：保留故事与物品，由调用方安全落点恢复',()=>{
- const stale=parseOpeningSave(postSave({worldRevision:'opening-2029-v0'}));
+ // The revision this round supersedes: the B4 east keyboard/shutter layout changed, so a save
+ // from that world must not be trusted for its pose even though it still parses.
+ const stale=parseOpeningSave(postSave({worldRevision:'opening-2030-v5-b5-full-hall'}));
  assert.ok(stale,'a revision mismatch must not be rejected by the parser');
- assert.equal(stale!.worldRevision,'opening-2029-v0','the original revision must be preserved');
+ assert.equal(stale!.worldRevision,'opening-2030-v5-b5-full-hall','the original revision must be preserved');
  assert.notEqual(stale!.worldRevision,OPENING_WORLD_REVISION,'a stale save must not be relabelled as current');
  assert.equal(isCurrentOpeningRevision(stale!),false,'the caller must see the revision mismatch');
  assert.deepEqual(stale!.story,fullStory(),'the story must survive a revision mismatch');

@@ -73,6 +73,7 @@ export function createSportsChapter():Chapter{
   // The crowd is the same in both runtimes: it waits in the hall before the
   // player reaches the door and runs out when the lock opens below.
   crowd=createStudentCrowd();
+  crowd.root.userData.dynamicGameplay=true;
   c.root().add(crowd.root);
   runout=createStudentRunout(crowd,c.explorer.world??HEADLESS_WORLD);
   if(typeof document==='undefined'){

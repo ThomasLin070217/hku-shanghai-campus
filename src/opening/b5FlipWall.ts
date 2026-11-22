@@ -31,7 +31,7 @@ const SOURCE={
  confidence:'building choice is an inference (Building 5 stands between the campus core and the tennis courts); floor and corridor placement unverified',
 };
 
-type Tile={group:T.Group;delay:number};
+type Tile={x:number;y:number;z:number;tilt:number;delay:number;mesh:T.InstancedMesh;index:number;angle:number};
 const ease=(t:number)=>t*t*(3-2*t);
 
 export function createB5FlipWall(){
@@ -51,6 +51,9 @@ export function createB5FlipWall(){
  mount.position.fromArray(B5_FLIP_WALL_ORIGIN);
  mount.rotation.y=B5_FLIP_WALL_YAW;
  mount.add(wall);
+ // The wall's own compacted timber and backing never cast; only the plaque does (the shadow
+ // budget is asserted in check-campaign-b4.ts). The tiles below are instanced and also skip it.
+ wall.traverse(o=>{if(o instanceof T.Mesh)o.castShadow=false;});
  root.add(mount);
 
  // A plaque on the lobby wall beside the panel, so the wall reads as a place, not a prop.
@@ -79,17 +82,77 @@ export function createB5FlipWall(){
  wash.position.set(56.2,3.35,-60.7);
  root.add(wash);
 
- // The ripple: tiles sorted by row + column so the turn travels diagonally across the wall.
+ // The observed wall ships 561 separate tile groups, each with its own geometry and a
+ // shadow-casting 6-material face. In the lobby the wall is only ever seen at rest or
+ // mid-ripple, so the tiles become two InstancedMeshes (dark and light). The builder keeps
+ // producing its per-tile groups for the preview and the GLB exports; only this mount swaps them.
  const groups=flipWallTiles(mount);
+ // Sorted by row + column so the turn travels diagonally across the wall.
  const ranks=groups.map(g=>Number(g.userData.row??0)+Number(g.userData.column??0));
  const lo=Math.min(...ranks),hi=Math.max(...ranks),span=Math.max(1,hi-lo);
- const tiles:Tile[]=groups.map((group,i)=>({group,delay:B5_FLIP_STAGGER*(ranks[i]!-lo)/span}));
+ const faceOf=(group:T.Group)=>group.children.find((c):c is T.Mesh=>c instanceof T.Mesh&&c.name==='Flip_tile_face');
+ const firstFace=faceOf(groups[0]!);
+ if(!firstFace)throw new Error(`the observed flip wall tile ${groups[0]!.name} has no Flip_tile_face`);
+ // One tile box for every instance; material arrays are the builder's own, shared by all faces
+ // (edge, edge, edge, edge, front, back), so no material is cloned or disposed here.
+ const faceSize=(firstFace.geometry as T.BoxGeometry).parameters;
+ const faceMaterials=new Map<'dark'|'light',T.Material[]>();
+ for(const group of groups){
+  const face=faceOf(group);
+  if(!face)throw new Error(`the observed flip wall tile ${group.name} has no Flip_tile_face`);
+  const key=group.userData.front==='green'?'dark':'light';
+  if(!faceMaterials.has(key))faceMaterials.set(key,[face.material].flat() as T.Material[]);
+ }
+ const tileGeometry=new T.BoxGeometry(faceSize.width,faceSize.height,faceSize.depth);
+ const darkCount=groups.filter(g=>g.userData.front==='green').length;
+ const darkTiles=new T.InstancedMesh(tileGeometry,faceMaterials.get('dark')!,darkCount);
+ darkTiles.name='B5_flip_tiles_dark';
+ darkTiles.userData={...SOURCE,authorKey:'B5_flip_tiles_dark'};
+ darkTiles.castShadow=false;darkTiles.receiveShadow=true;
+ const lightTiles=new T.InstancedMesh(tileGeometry,faceMaterials.get('light')!,groups.length-darkCount);
+ lightTiles.name='B5_flip_tiles_light';
+ lightTiles.userData={...SOURCE,authorKey:'B5_flip_tiles_light'};
+ lightTiles.castShadow=false;lightTiles.receiveShadow=true;
+ const tilesParent=groups[0]!.parent!;
+
+ // Capture the rest pose (position + the row's small x tilt) and the diagonal delay, then
+ // remove the per-tile groups and their geometries. The instance matrices reproduce the
+ // groups' local matrices exactly, under the same parent, so the mounted wall is unchanged.
+ const scratch=new T.Object3D();
+ const tiles:Tile[]=[];
+ let darkIndex=0,lightIndex=0;
+ for(let i=0;i<groups.length;i++){
+  const group=groups[i]!,dark=group.userData.front==='green';
+  const mesh=dark?darkTiles:lightTiles,index=dark?darkIndex++:lightIndex++;
+  scratch.position.copy(group.position);
+  scratch.rotation.set(group.rotation.x,0,0);
+  scratch.updateMatrix();
+  mesh.setMatrixAt(index,scratch.matrix);
+  tiles.push({x:group.position.x,y:group.position.y,z:group.position.z,tilt:group.rotation.x,delay:B5_FLIP_STAGGER*(ranks[i]!-lo)/span,mesh,index,angle:0});
+  group.removeFromParent();
+  faceOf(group)?.geometry.dispose();
+ }
+ darkTiles.instanceMatrix.needsUpdate=true;lightTiles.instanceMatrix.needsUpdate=true;
+ tilesParent.add(darkTiles);
+ tilesParent.add(lightTiles);
+ // A half turn about each tile's own y axis can swing its corners outside the rest box, so pad
+ // the spheres by one tile diagonal: the wall is never culled mid-ripple.
+ const pad=Math.hypot(faceSize.width,faceSize.depth);
+ for(const mesh of [darkTiles,lightTiles]){mesh.computeBoundingSphere();if(mesh.boundingSphere)mesh.boundingSphere.radius+=pad;}
 
  let phase:'idle'|'open'|'close'='idle',clock=0,cooldown=0;
 
  /** Turn every tile to `amount` of a half turn, staggered by its diagonal delay. */
  function paint(amount:(delay:number)=>number){
-  for(const tile of tiles)tile.group.rotation.y=Math.PI*ease(T.MathUtils.clamp(amount(tile.delay),0,1));
+  for(const tile of tiles){
+   tile.angle=Math.PI*ease(T.MathUtils.clamp(amount(tile.delay),0,1));
+   scratch.position.set(tile.x,tile.y,tile.z);
+   scratch.rotation.set(tile.tilt,tile.angle,0);
+   scratch.updateMatrix();
+   tile.mesh.setMatrixAt(tile.index,scratch.matrix);
+  }
+  darkTiles.instanceMatrix.needsUpdate=true;
+  lightTiles.instanceMatrix.needsUpdate=true;
  }
 
  function update(dt:number,player:Readonly<T.Vector3>){
@@ -113,12 +176,14 @@ export function createB5FlipWall(){
 
  function dispose(){
   root.removeFromParent();
-  const materials=new Set<T.Material>();
+  // The two InstancedMeshes share one geometry, so dispose each resource exactly once.
+  const geometries=new Set<T.BufferGeometry>(),materials=new Set<T.Material>();
   root.traverse(o=>{
    if(!(o instanceof T.Mesh))return;
-   o.geometry.dispose();
+   geometries.add(o.geometry);
    for(const m of [o.material].flat())materials.add(m);
   });
+  for(const g of geometries)g.dispose();
   for(const m of materials)m.dispose();
  }
 
@@ -129,7 +194,7 @@ export function createB5FlipWall(){
   dispose,
   /** Read-only view for checks: the phase, the cooldown and how far the ripple has turned. */
   debug:{
-   state(){return{phase,cooldown:+cooldown.toFixed(2),turned:tiles.filter(t=>t.group.rotation.y>.01).length,total:tiles.length};},
+   state(){return{phase,cooldown:+cooldown.toFixed(2),turned:tiles.filter(t=>t.angle>.01).length,total:tiles.length};},
   },
  };
 }

@@ -110,7 +110,7 @@ const ENDING_CSS=`
    now-stale HUD all step aside until the credits go. */
 body:has(#ending-credits) #pause-panel{display:none}
 body:has(#ending-credits) #ending-overlay{display:none}
-body:has(#ending-credits) :is(.opening-hud,.opening-hearts,.opening-mapcard,#inventory-hud,.stage-bottom,.shell-hint,.shell-chapters){display:none}
+body:has(#ending-credits) :is(.opening-hud,.opening-hearts,.opening-mapcard,#inventory-hud,.stage-bottom,.shell-hint,.shell-chapters,.stage-top){display:none}
 #ending-credits-card{text-align:center;padding:40px 46px;max-width:min(560px,90vw)}
 #ending-credits-card .ending-kicker{margin:0 0 18px;font:600 11px/1.2 ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;letter-spacing:.26em;color:#74e6b4}
 #ending-credits-card h2{margin:0;font:400 clamp(40px,7vw,64px)/1.02 Georgia,"Times New Roman",serif;letter-spacing:.01em}

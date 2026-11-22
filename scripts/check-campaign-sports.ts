@@ -24,6 +24,7 @@ import {OPENING_SAVE_KEY} from '../src/opening/persistence';
 import {clearProgress} from '../src/levels/resetProgress';
 import {SPORTS_ENTRY,RUNOUT_EMIT_CAP} from '../src/campaign/sportsChapter';
 import {createThreatRefresh} from '../src/opening/threatRefresh';
+import {CROWD} from '../src/gameplay/studentCrowd';
 import {ENDING_BEATS,ENDING_CLEAR_AT,ENDING_HOLD_SECONDS,ENDING_SECONDS,clearAllProgress,creditsMarkup,playAgain} from '../src/campaign/endingChapter';
 import {rescueBannerMarkup} from '../src/gameplay/sportsDoorCore';
 
@@ -137,6 +138,11 @@ group('(b) the sports chapter attaches the door in opening mode with collision',
  host.start('mac-device','to_sports');
  host.update(1/120);
  assert.ok(host.attached().includes('sports'),'the walking leg attaches the sports chapter');
+ // The crowd is animated gameplay, not static geometry: a scene-registry re-index of the asset
+ // must skip its instanced meshes instead of throwing "Unindexed scene mesh".
+ const crowd=asset.root.getObjectByName(CROWD.name);
+ assert.ok(crowd,'the sports chapter attaches the crowd in opening mode');
+ assert.equal(crowd!.userData.dynamicGameplay,true,'the attached crowd root is flagged dynamic gameplay');
  // A run past B4 and the lawn keeps those chapters' aftermath in the world (Task 6, reload past the lawn).
  assert.deepEqual(host.attached(),['b4','lawn','sports'],'passed chapters stay attached, in story order');
  assert.equal(host.chapter(),null,'to_sports is a walking leg');
@@ -211,6 +217,12 @@ group('(f) credits and the campaign rescue banner read correctly',()=>{
  assert.ok(credits.includes('>Play again<'),'credits offer Play again');
  assert.ok(credits.includes('>Chapters<'),'credits offer Chapters');
  assert.doesNotMatch(credits,/The End/i,'the credits do not pretend the story ends at the sports hall');
+ // F6: the review and ?tools=1 shells never add body.game-shell (src/entry.ts:8), so the
+ // credits rule itself must hide the .stage-top "Return to checkpoint" button.
+ const endingSource=fs.readFileSync(new URL('../src/campaign/endingChapter.ts',import.meta.url),'utf8');
+ const creditsRule=endingSource.match(/body:has\(#ending-credits\) :is\(([^)]*)\)\{display:none\}/);
+ assert.ok(creditsRule,'the credits hide the stale HUD through one selector list');
+ assert.ok(creditsRule![1]!.split(',').includes('.stage-top'),'the credits rule hides .stage-top without body.game-shell');
  const campaignBanner=rescueBannerMarkup(true);
  assert.match(campaignBanner,/students are free/i,'the campaign banner says the students are free');
  assert.match(campaignBanner,/100 students/);

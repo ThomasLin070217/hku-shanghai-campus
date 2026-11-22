@@ -83,7 +83,7 @@ export function createB4Chapter():Chapter{
   // Aux power closet against the north wall. The HKU flip wall stands in the Building 5 lobby
   // (`b5FlipWall.ts`), so B4 asks the observed-room builder for the closet part only: building
   // the full room would allocate its 561 flip tiles and corridor shell for nothing.
-  const fw=buildObservedFeatureRoom('flipWall',{parts:['closet']}),fwRoot=new T.Group();tag(fwRoot,'B4_service_wall');
+  const fw=buildObservedFeatureRoom('flipWall',{parts:['closet']}),fwRoot=new T.Group();tag(fwRoot,'B4_service_wall');fwRoot.userData.authorKey='B4_flip_wall_and_closet';
   // What this builder call actually allocated, before the closet is lifted out of it. A discarded
   // full build leaves no trace in the scene graph, so the count is taken here, at the call.
   flipTilesBuilt=flipWallTiles(fw).length;
