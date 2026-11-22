@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-21T07:50:52.039Z",
+  "date": "2026-11-22T10:47:39.377Z",
   "results": [
     {
       "name": "walk/run/diagonal; fixed simulation at 30,60,144 render FPS",
@@ -60,7 +60,7 @@
         "stairs": [
           4,
           0.09,
-          -22.399999999999807
+          -23.808333333333245
         ],
         "high": [
           11,
