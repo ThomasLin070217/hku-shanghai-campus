@@ -14,7 +14,7 @@ import {BUILDINGS,SITE} from '../src/model/campusParameters';
 import {EXPLORATION as C} from '../src/exploration/config';
 import {OPENING as O} from '../src/opening/spatialLayout';
 import {createOpeningFleet} from '../src/opening/robots';
-import {ROBOT} from '../src/opening/robot';
+import {ROBOT,type OpeningRobot} from '../src/opening/robot';
 
 const world=createNavigation(BUILDINGS,SITE,true);
 const fleet=createOpeningFleet(world);
@@ -71,9 +71,10 @@ const fleetMeshes:T.Mesh[]=[];
 fleet.root.traverse(object=>{const mesh=object as T.Mesh;if(mesh.isMesh)fleetMeshes.push(mesh);});
 const fleetGeometries=new Set(fleetMeshes.map(mesh=>mesh.geometry));
 const fleetMaterials=new Set(fleetMeshes.flatMap(mesh=>Array.isArray(mesh.material)?mesh.material:[mesh.material]));
-assert.equal(fleetMeshes.length,48,`eight units x six merged meshes = ${fleetMeshes.length}`);
-assert.equal(fleetGeometries.size,13,`five shared shell buffers plus one scan sector per unit (${fleetGeometries.size})`);
-assert.equal(fleetMaterials.size,26,`two shared materials plus three emissive ones per unit (${fleetMaterials.size})`);
+// Per unit: body, band, head, eye, beacon, scan sector, and four legs of three meshes each.
+assert.equal(fleetMeshes.length,8*18,`eight units x eighteen meshes = ${fleetMeshes.length}`);
+assert.equal(fleetGeometries.size,16,`eight shared shell and leg buffers plus one scan sector per unit (${fleetGeometries.size})`);
+assert.equal(fleetMaterials.size,27,`three shared materials plus three emissive ones per unit (${fleetMaterials.size})`);
 const shadowed=fleet.units.filter(unit=>(unit.root.getObjectByName('robot-body') as T.Mesh).castShadow);
 assert.equal(shadowed.length,ROBOT.shadowUnits,`only the nearest ${ROBOT.shadowUnits} units cast shadows (${shadowed.length})`);
 let visibleLights=0;
@@ -95,6 +96,22 @@ for(let i=0;i<120;i++)assert.equal(fleet.update(0,player,true,true),cached,'rend
 const frozen=fleet.units.map(u=>u.position.toArray().join(','));
 for(let i=0;i<60;i++)fleet.update(dt,player,false,false);
 assert.deepEqual(fleet.units.map(u=>u.position.toArray().join(',')),frozen,'inactive units are frozen');
+// Standing down (campaign `to_lawn` onwards) puts every unit back in the standing pose,
+// wherever its trot was when the patrol stopped.
+const legJoints=(unit:OpeningRobot)=>['fl','fr','rl','rr'].map(key=>{
+ const leg=unit.root.getObjectByName('robot-leg-'+key)!;
+ const knee=leg.getObjectByName('robot-leg-lower')!.parent!;
+ return [leg.rotation.x,leg.rotation.z,knee.rotation.x];
+});
+const midStride=fleet.units.filter(unit=>{const j=legJoints(unit);return j.some(v=>Math.abs(v[0]-j[0][0])>1e-3);}).length;
+fleet.standby(true);
+const standPose=legJoints(fleet.units[0])[0];
+for(const [i,unit] of fleet.units.entries()){
+ for(const joint of legJoints(unit))assert.ok(joint.every((v,k)=>Math.abs(v-standPose[k])<1e-9),`unit ${i} stands down into the standing pose`);
+ assert.equal(unit.root.getObjectByName('opening-security-robot-rig')!.position.y,0,`unit ${i} stops bobbing on standby`);
+}
+assert.deepEqual(fleet.units.map(u=>u.position.toArray().join(',')),frozen,'standing down never moves a unit');
+console.log(`  standby: ${midStride}/8 units were mid-stride before standing down; all 8 now hold the standing pose`);
 fleet.reset();
 for(const [i,unit] of fleet.units.entries()){
  assert.equal(unit.state,'patrol',`unit ${i} resets to patrol`);

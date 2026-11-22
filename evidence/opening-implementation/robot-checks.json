@@ -144,7 +144,8 @@
           -48
         ],
         "searchSeconds": 3.02,
-        "distanceToHiddenLiveTarget": 14.1
+        "distanceToHiddenLiveTarget": 14.1,
+        "searchHeadPitch": -0.12
       }
     },
     {
@@ -314,18 +315,57 @@
       }
     },
     {
-      "name": "blocky red-eye model with a polygon scan wedge; dispose releases geometry and material",
+      "name": "quadruped red-eye model with four articulated legs and a polygon scan wedge; dispose releases geometry and material",
       "passed": true,
       "detail": {
-        "meshes": 6,
-        "heightMeters": 1.05,
+        "meshes": 18,
+        "drawCalls": 18,
+        "triangles": 1058,
+        "shadowCasters": 10,
+        "heightMeters": 0.87,
         "footprint": [
-          0.52,
-          0.76
+          0.98,
+          0.62
         ],
+        "standingFeetLift": 0,
+        "legs": {
+          "fl": {
+            "hip": [
+              -0.26,
+              0.5,
+              -0.26
+            ],
+            "knee": "robot-knee-fl"
+          },
+          "fr": {
+            "hip": [
+              0.26,
+              0.5,
+              -0.26
+            ],
+            "knee": "robot-knee-fr"
+          },
+          "rl": {
+            "hip": [
+              -0.26,
+              0.5,
+              0.26
+            ],
+            "knee": "robot-knee-rl"
+          },
+          "rr": {
+            "hip": [
+              0.26,
+              0.5,
+              0.26
+            ],
+            "knee": "robot-knee-rr"
+          }
+        },
+        "headRigZ": -0.22,
         "wedgeVertices": 12,
-        "disposedGeometries": 6,
-        "disposedMaterials": 5
+        "disposedGeometries": 9,
+        "disposedMaterials": 6
       }
     },
     {
@@ -410,10 +450,10 @@
       "name": "the shell pool is shared across units while eye, lamp, beam and scan sector stay per unit",
       "passed": true,
       "detail": {
-        "meshesPerUnit": 6,
-        "sharedGeometries": 5,
-        "sharedMaterials": 2,
-        "materialsPerUnit": 5
+        "geometriesPerUnit": 9,
+        "sharedGeometries": 8,
+        "sharedMaterials": 3,
+        "materialsPerUnit": 6
       }
     },
     {
@@ -494,6 +534,47 @@
         "guardedSeconds": 5.63,
         "maxHeadOffset": 1.32,
         "alertAtEnd": 0.28
+      }
+    },
+    {
+      "name": "a trot driven by real displacement: diagonal pairs in antiphase, bounded joints, bob on the rig only, frozen on reads",
+      "passed": true,
+      "detail": {
+        "travelled": 3.75,
+        "thighSwing": [
+          0.42,
+          0.42,
+          0.42,
+          0.42
+        ],
+        "phaseSpread": 0.84,
+        "maxKneeLift": 0.55,
+        "maxHipRoll": 0.07,
+        "maxBob": 0.02
+      }
+    },
+    {
+      "name": "a chase opens with a double-pulse notice without pausing, then a solid beacon; still legs settle into the standing pose",
+      "passed": true,
+      "detail": {
+        "chaseAt": 0.7,
+        "caughtAt": 3.3,
+        "noticePulses": 2,
+        "noticeTravel": 0.65,
+        "solidIntensity": 2.2,
+        "chaseSwing": 0.42,
+        "settleDelta": 0.00075,
+        "standDelta": 0
+      }
+    },
+    {
+      "name": "a neighbour within reach ahead adds a gentle steering bias; behind it, or with no neighbours, the path is unchanged",
+      "passed": true,
+      "detail": {
+        "maxLateral": 0.24,
+        "closestToParked": 0.24,
+        "maxStep": 0.020829999999999998,
+        "controlLateral": 0
       }
     }
   ],

@@ -15,6 +15,11 @@
  * units farther than `ROBOT.farDistance` simulate at `ROBOT.farHz` while movement still
  * goes through the same physics step, so nothing teleports or clips.
  *
+ * Look (fidelity round, task 3): a low-poly quadruped in the Unitree Go2 manner with four
+ * articulated legs on shared thigh/shank/foot buffers. The trot is visual only: it advances
+ * from real displacement and yaw change on simulated ticks, so render reads (dt=0), pauses
+ * and standby never move a leg, and no detection, movement or timing value depends on it.
+ *
  * Caller contract (already written by the integrator, see src/opening/experience.ts):
  *   const robot = createOpeningRobot(explorer.world);
  *   scene.add(robot.root);
@@ -233,15 +238,85 @@ export interface OpeningRobotAssets{
  readonly bandGeometry:T.BufferGeometry;
  readonly eyeGeometry:T.BufferGeometry;
  readonly beaconGeometry:T.BufferGeometry;
+ /** Thigh with its hip and knee hubs, hanging 0.26 m down from the hip pivot. */
+ readonly legUpperGeometry:T.BufferGeometry;
+ /** Shank, hanging 0.26 m down from the knee pivot. */
+ readonly legLowerGeometry:T.BufferGeometry;
+ /** Round 0.07 m foot at the end of the shank. */
+ readonly footGeometry:T.BufferGeometry;
  readonly bodyMaterial:T.MeshStandardMaterial;
  readonly bandMaterial:T.MeshStandardMaterial;
+ /** Dark graphite shared by every leg part of every unit. */
+ readonly legMaterial:T.MeshStandardMaterial;
  dispose():void;
 }
 
-/** Box with the part colour baked into a vertex-colour attribute. */
-const coloredBox=(w:number,h:number,d:number,color:number,x:number,y:number,z:number)=>{
- const geometry=new T.BoxGeometry(w,h,d);
- if(x||y||z)geometry.translate(x,y,z);
+/** Quadruped rig dimensions in metres, rig space: +y up, the robot faces -z, left is -x.
+ *  Go2-style proportions from .superpowers/sdd/2026-11-22-fidelity-round/task-3-brief.md (3A). */
+const RIG={
+ /** Hip pivots sit at x ±legX, z ±legZ, just outside the 0.46 m chassis. */
+ legX:.26,legZ:.26,hipY:.5,
+ /** Thigh and shank length. */
+ segment:.26,
+ footRadius:.035,
+ /** Sensor-head turret pivot on the front of the deck. */
+ turret:[0,.75,-.2] as const,
+};
+/** Standing pose: thigh slants back and down, shank forward and down, so each foot rests
+ *  under its hip with the bottom of the foot exactly on the ground (rig origin, y 0). */
+const STAND_ANGLE=Math.acos((RIG.hipY-RIG.footRadius)/(2*RIG.segment));
+const STAND_THIGH=-STAND_ANGLE,STAND_KNEE=2*STAND_ANGLE;
+
+const SHELL=0xe6eaed,SHELL_LIGHT=0xc9d0d5,GRAPHITE=0x2a2f34,SENSOR=0x14181b,HUB=0x4a535a;
+
+/**
+ * Gait and posture, visual only: nothing here feeds detection, movement or any timer.
+ * Amplitudes come from .superpowers/sdd/2026-11-22-fidelity-round/task-3-brief.md (3B/3C).
+ */
+const GAIT={
+ /** Thigh pitch either side of the standing pose, radians. */
+ thighSwing:.42,
+ /** Extra knee bend while a foot swings forward, radians (0 in stance). */
+ kneeLift:.55,
+ /** Hip roll either side of the standing pose, radians. */
+ hipRoll:.07,
+ /** Rig bob amplitude, metres: 0.02·sin(2·phase), twice per gait cycle. */
+ bob:.02,
+ /** Stride credited per radian of body yaw, metres, so turning in place still steps. */
+ turnStride:.32,
+ /** Ground covered by one full gait cycle, metres. Matches the stance sweep of the
+  *  legs above (two 0.26 m segments, ±0.42 rad), so planted feet barely skate. */
+ cycle:.76,
+ /** Pace at which the trot reaches full amplitude, m/s. */
+ fullPace:.45,
+ /** Blend rate towards the walking or standing pose, 1/s; idle legs settle inside a second. */
+ blendRate:6,
+ /** A displacement larger than this in one tick (reset, relocation) is never walked, metres. */
+ maxStep:.5,
+ /** Phase of the FL/RR pair against the bob, so the body rides highest at mid-stance. */
+ phaseOffset:Math.PI*.75,
+ /** Speed smoothing for the acceleration lean, 1/s. */
+ speedRate:8,
+ /** Lean per m/s² of acceleration, radians, nose down when speeding up. */
+ pitchPerAccel:.03,
+ maxPitch:.05,
+ /** Head dip while searching near the last-seen point, radians, and the radius that counts as near. */
+ searchPitch:-.12,
+ searchRadius:2.5,
+ /** "Notice" brace at the start of a chase: beacon double-pulse and a short head lift. */
+ notice:.5,
+ noticePitch:.1,
+ headRate:8,
+ /** Fleet spacing: a neighbour inside this radius and inside the forward cone biases the heading. */
+ neighbourRadius:1.2,
+ /** Cosine of the forward cone half angle: 0 counts anything in front of the unit (±90°). */
+ neighbourCone:0,
+ /** Largest heading bias, radians. Steering only: speed and physics are unchanged. */
+ neighbourBias:.5,
+};
+
+/** Bakes one part colour into a vertex-colour attribute. */
+const paint=(geometry:T.BufferGeometry,color:number)=>{
  const count=geometry.getAttribute('position').count;
  const colors=new Float32Array(count*3);
  const rgb=new T.Color(color);
@@ -249,8 +324,22 @@ const coloredBox=(w:number,h:number,d:number,color:number,x:number,y:number,z:nu
  geometry.setAttribute('color',new T.BufferAttribute(colors,3));
  return geometry;
 };
-/** Replaces twelve per-part meshes with one indexed buffer. Parts are all BoxGeometry,
- *  so position/normal/colour arrays share the same layout and no exporter is needed. */
+/** Box with the part colour baked into a vertex-colour attribute. */
+const coloredBox=(w:number,h:number,d:number,color:number,x:number,y:number,z:number)=>{
+ const geometry=new T.BoxGeometry(w,h,d);
+ if(x||y||z)geometry.translate(x,y,z);
+ return paint(geometry,color);
+};
+/** Low-poly cylinder, upright or lying along x (hip and knee hubs). */
+const coloredCylinder=(radius:number,height:number,segments:number,color:number,x:number,y:number,z:number,axis:'x'|'y'='y')=>{
+ const geometry=new T.CylinderGeometry(radius,radius,height,segments);
+ if(axis==='x')geometry.rotateZ(Math.PI/2);
+ if(x||y||z)geometry.translate(x,y,z);
+ return paint(geometry,color);
+};
+/** Replaces per-part meshes with one indexed buffer. Every part is an indexed three.js
+ *  primitive (box, cylinder, sphere), so position/normal/colour share one layout and no
+ *  exporter is needed; uv is dropped because the shell materials carry no textures. */
 const mergeColored=(parts:T.BufferGeometry[]):T.BufferGeometry=>{
  const merged=new T.BufferGeometry();
  let vertices=0,indices=0;
@@ -282,33 +371,69 @@ const mergeColored=(parts:T.BufferGeometry[]):T.BufferGeometry=>{
  * change at runtime and must not leak between units.
  */
 export function createOpeningRobotAssets():OpeningRobotAssets{
- // Colours match the previous per-part materials; roughness/metalness collapse into one.
+ // Low-poly quadruped in the Unitree Go2 manner: white upper shell over a graphite belly,
+ // dark sensor face, hip fenders and a top LiDAR puck. Generic shapes only: no logo, no text.
+ const sx=RIG.legX,sz=RIG.legZ;
  const bodyGeometry=mergeColored([
-  coloredBox(.58,.26,.52,0x1d2328,0,.13,0),     // treads
-  coloredBox(.54,.62,.42,0x56636c,0,.57,0),     // torso
-  coloredBox(.62,.09,.46,0xd3dde1,0,.93,0),     // shoulder
-  coloredBox(.1,.3,.3,0xd3dde1,-.33,.6,0),      // pod left
-  coloredBox(.1,.3,.3,0xd3dde1,.33,.6,0),       // pod right
-  coloredBox(.16,.1,.16,0xd3dde1,0,1,.0),       // neck
+  // Chassis 0.46 (x) x 0.30 (y) x 0.72 (z) centred at y 0.62: belly, shell, narrower deck.
+  coloredBox(.42,.12,.66,GRAPHITE,0,.53,0),          // belly
+  coloredBox(.46,.15,.72,SHELL,0,.665,0),            // upper shell
+  coloredBox(.38,.03,.62,SHELL,0,.755,0),            // deck, steps in to round the top edge
+  coloredBox(.465,.035,.4,GRAPHITE,0,.62,.02),       // side seam between the two tones
+  // Front: short snout carrying the dark sensor face, chin sensor below it.
+  coloredBox(.4,.12,.05,SHELL,0,.66,-.385),
+  coloredBox(.3,.07,.012,SENSOR,0,.655,-.416),
+  coloredBox(.12,.05,.06,GRAPHITE,0,.565,-.37),
+  // Rear battery cap, which carries the status bar (robot-band).
+  coloredBox(.4,.1,.03,GRAPHITE,0,.63,.374),
+  // Shoulder plates over the four hips, and the hip housings the legs turn on.
+  ...[[-1,-1],[1,-1],[-1,1],[1,1]].flatMap(([x,z])=>[
+   coloredBox(.09,.05,.2,SHELL_LIGHT,x*.25,.585,z*sz),
+   coloredCylinder(.05,.05,8,GRAPHITE,x*(sx-.045),RIG.hipY,z*sz,'x'),
+  ]),
+  // Top LiDAR puck (r 0.12) with a dark window ring.
+  coloredCylinder(.12,.05,12,GRAPHITE,0,.795,.12),
+  coloredCylinder(.123,.02,12,SENSOR,0,.79,.12),
  ]);
+ // Sensor head, built around the turret pivot so it can yaw in place on the deck.
  const headGeometry=mergeColored([
-  coloredBox(.4,.26,.34,0x56636c,0,.13,0),      // skull
-  coloredBox(.42,.04,.06,0xd3dde1,0,.27,-.09),  // brow
-  coloredBox(.04,.16,.04,0xd3dde1,.13,.36,.02), // mast
+  coloredCylinder(.06,.04,10,GRAPHITE,0,.01,0),      // neck ring
+  coloredBox(.22,.07,.2,SHELL,0,.065,-.01),          // pod
+  coloredBox(.18,.015,.16,SHELL_LIGHT,0,.1075,0),    // pod cap
+  coloredBox(.2,.045,.012,SENSOR,0,.065,-.116),      // visor behind the eye bar
  ]);
- const bandGeometry=coloredBox(.56,.09,.44,0x1c8f65,0,.68,0);
+ // Rear status bar plus a thin running strip down each flank, all in the band material.
+ const bandGeometry=mergeColored([
+  coloredBox(.22,.025,.012,0xffffff,0,.66,.395),
+  coloredBox(.006,.02,.3,0xffffff,-.2335,.7,-.05),
+  coloredBox(.006,.02,.3,0xffffff,.2335,.7,-.05),
+ ]);
  bandGeometry.deleteAttribute('color');
- const eyeGeometry=coloredBox(.26,.09,.06,0xffffff,0,.14,-.17);
+ const eyeGeometry=coloredBox(.16,.022,.01,0xffffff,0,.068,-.124);
  eyeGeometry.deleteAttribute('color');
- const beaconGeometry=coloredBox(.07,.07,.07,0xffffff,.13,.46,.02);
+ const beaconGeometry=coloredBox(.04,.022,.04,0xffffff,0,.126,.03);
  beaconGeometry.deleteAttribute('color');
- const bodyMaterial=new T.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:.62,metalness:.26});
+ // Legs: one thigh, one shank and one foot buffer drawn by all four legs of every unit.
+ const legUpperGeometry=mergeColored([
+  coloredCylinder(.05,.07,8,HUB,0,0,0,'x'),           // hip hub
+  coloredBox(.065,.14,.1,GRAPHITE,0,-.07,0),
+  coloredBox(.055,.13,.07,GRAPHITE,0,-.195,0),
+  coloredCylinder(.035,.06,8,HUB,0,-RIG.segment,0,'x'), // knee hub
+ ]);
+ const legLowerGeometry=mergeColored([
+  coloredBox(.042,.24,.046,GRAPHITE,0,-.12,0),
+ ]);
+ const footGeometry=mergeColored([paint(new T.SphereGeometry(RIG.footRadius,6,4),SENSOR)]);
+ const bodyMaterial=new T.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:.5,metalness:.18});
  const bandMaterial=new T.MeshStandardMaterial({color:0x1c8f65,roughness:.5,metalness:.18,emissive:0x0c4f38,emissiveIntensity:.55});
+ const legMaterial=new T.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:.58,metalness:.32});
  return{
-  bodyGeometry,headGeometry,bandGeometry,eyeGeometry,beaconGeometry,bodyMaterial,bandMaterial,
+  bodyGeometry,headGeometry,bandGeometry,eyeGeometry,beaconGeometry,legUpperGeometry,legLowerGeometry,footGeometry,
+  bodyMaterial,bandMaterial,legMaterial,
   dispose(){
    bodyGeometry.dispose();headGeometry.dispose();bandGeometry.dispose();eyeGeometry.dispose();beaconGeometry.dispose();
-   bodyMaterial.dispose();bandMaterial.dispose();
+   legUpperGeometry.dispose();legLowerGeometry.dispose();footGeometry.dispose();
+   bodyMaterial.dispose();bandMaterial.dispose();legMaterial.dispose();
   },
  };
 }
@@ -479,7 +604,8 @@ export interface OpeningRobotOptions{
 
 export interface OpeningRobot{
  root:T.Group;
- update(dt:number,player:T.Vector3,active:boolean,paused:boolean,shadowBudget?:boolean):OpeningRobotUpdate;
+ /** `others`: optional live feet positions of the other fleet units, for spacing only. */
+ update(dt:number,player:T.Vector3,active:boolean,paused:boolean,shadowBudget?:boolean,others?:readonly T.Vector3[]):OpeningRobotUpdate;
  reset():void;
  dispose():void;
  /** Feet position of the robot body, same convention as the player body position. */
@@ -551,12 +677,38 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
  const mount=(geometry:T.BufferGeometry,material:T.Material,name:string,parent:T.Object3D,shadow:boolean)=>{
   const mesh=new T.Mesh(geometry,material);mesh.name=name;mesh.castShadow=shadow;mesh.receiveShadow=shadow;parent.add(mesh);return mesh;
  };
+ // Yaw first, then pitch in the body (or head) frame, so a lean never tips the heading.
+ rig.rotation.order='YXZ';turret.rotation.order='YXZ';
+ turret.position.set(...RIG.turret);
  const bodyMesh=mount(assets.bodyGeometry,assets.bodyMaterial,'robot-body',rig,true);
  mount(assets.bandGeometry,assets.bandMaterial,'robot-band',rig,false);
  const headMesh=mount(assets.headGeometry,assets.bodyMaterial,'robot-head',turret,true);
  mount(assets.eyeGeometry,eyeMat,'opening-robot-eye',turret,false);
  mount(assets.beaconGeometry,lampMat,'robot-beacon',turret,false);
  const shadowMeshes=[bodyMesh,headMesh];
+ /** Four articulated legs: hip group (pitch + roll) -> thigh, knee pivot group -> shank and foot. */
+ const LEG_SOURCE={sourceFile:'src/opening/robot.ts'};
+ const legs=([['fl',-1,-1],['fr',1,-1],['rl',-1,1],['rr',1,1]] as const).map(([key,side,end])=>{
+  const hip=new T.Group();hip.name='robot-leg-'+key;hip.userData={...LEG_SOURCE,authorKey:'robot-leg-'+key};
+  // Roll about the body axis first, then pitch: the hip abducts, then the thigh swings.
+  hip.rotation.order='ZYX';
+  hip.position.set(side*RIG.legX,RIG.hipY,end*RIG.legZ);
+  rig.add(hip);
+  const knee=new T.Group();knee.name='robot-knee-'+key;knee.userData={...LEG_SOURCE,authorKey:'robot-knee-'+key};
+  knee.position.set(0,-RIG.segment,0);
+  hip.add(knee);
+  const upper=mount(assets.legUpperGeometry,assets.legMaterial,'robot-leg-upper',hip,true);
+  const lower=mount(assets.legLowerGeometry,assets.legMaterial,'robot-leg-lower',knee,true);
+  const foot=mount(assets.footGeometry,assets.legMaterial,'robot-foot',knee,false);
+  foot.position.set(0,-RIG.segment,0);
+  for(const [mesh,part] of [[upper,'upper'],[lower,'lower'],[foot,'foot']] as const){
+   mesh.receiveShadow=false;mesh.userData={...LEG_SOURCE,authorKey:`robot-leg-${part}-${key}`};
+  }
+  shadowMeshes.push(upper,lower);
+  // Trot: FL with RR, FR with RL, the two diagonal pairs half a cycle apart.
+  const offset=(key==='fl'||key==='rr'?0:Math.PI)+GAIT.phaseOffset;
+  return{hip,knee,side,offset};
+ });
  const sectorCount=Math.max(5,ROBOT.scanSamples);
  const sectorGeometry=new T.BufferGeometry();
  const sectorPositions=new Float32Array((sectorCount+1)*3);
@@ -565,7 +717,7 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
  for(let i=0;i<sectorCount-1;i++)sectorIndices.push(0,i+1,i+2);
  sectorGeometry.setIndex(sectorIndices);
  const sector=new T.Mesh(sectorGeometry,beamMat);sector.name='opening-robot-scan-sector';sector.frustumCulled=false;sector.renderOrder=2;root.add(sector);
- const beaconLight=new T.PointLight(0xff2a1c,1.1,5.5,2);beaconLight.position.set(0,1.12,0);root.add(beaconLight);
+ const beaconLight=new T.PointLight(0xff2a1c,1.1,5.5,2);beaconLight.position.set(0,.95,0);root.add(beaconLight);
 
  // ---------- authoritative state ----------
  let standby=options.standby?.()??false;
@@ -587,6 +739,74 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
  let farTier=false,budgetClock=0;
  let searchStep=0,searchLook=0,searchElapsed=0;
  let searchSteps:{x:number;z:number;look:number}[]=[];
+ /** Other units' live feet positions for this simulation tick only (fleet spacing, 3C). */
+ let neighbours:readonly T.Vector3[]|null=null;
+ /** Visual gait state. Advanced only from real displacement and yaw change on a simulated tick. */
+ const gaitAnchor=new T.Vector3();
+ let gaitYaw=0,gaitPhase=0,gaitWeight=0,gaitSpeed=0,bodyPitch=0,headPitch=0;
+
+ /**
+  * Gentle spacing: a unit within `neighbourRadius` and in front of this one turns the
+  * heading away from it, more the closer it is. It only offsets the steering target, so the
+  * body still moves through the same physics step at the same speed.
+  */
+ const neighbourBias=()=>{
+  if(!neighbours||!neighbours.length)return 0;
+  const fx=-Math.sin(moveYaw),fz=-Math.cos(moveYaw),rx=Math.cos(moveYaw),rz=-Math.sin(moveYaw);
+  let bias=0;
+  for(const other of neighbours){
+   const ox=other.x-body.position.x,oz=other.z-body.position.z,distance=Math.hypot(ox,oz);
+   if(distance<1e-3||distance>=GAIT.neighbourRadius||Math.abs(other.y-body.position.y)>C.maxStep*4)continue;
+   const ahead=(ox*fx+oz*fz)/distance;
+   if(ahead<GAIT.neighbourCone)continue;
+   // Neighbour on the right (or dead ahead) -> bear left (+yaw); on the left -> bear right.
+   bias+=(ox*rx+oz*rz>=0?1:-1)*GAIT.neighbourBias*(1-distance/GAIT.neighbourRadius);
+  }
+  return Math.max(-GAIT.neighbourBias,Math.min(GAIT.neighbourBias,bias));
+ };
+
+ /** Writes the current gait state onto the leg groups, the rig and the head. */
+ const poseGait=()=>{
+  const w=gaitWeight;
+  for(const leg of legs){
+   const phase=gaitPhase+leg.offset,swing=Math.cos(phase);
+   leg.hip.rotation.x=STAND_THIGH+w*GAIT.thighSwing*Math.sin(phase);
+   // Outward roll while the foot swings forward, a touch inward in stance.
+   leg.hip.rotation.z=w>0?leg.side*GAIT.hipRoll*w*swing:0;
+   leg.knee.rotation.x=STAND_KNEE+w*GAIT.kneeLift*Math.max(0,swing);
+  }
+  // The bob lives on the rig only; the scan sector hangs from the root and never moves with it.
+  rig.position.y=w>0?w*GAIT.bob*Math.sin(2*gaitPhase):0;
+  rig.rotation.x=bodyPitch;
+  turret.rotation.x=headPitch;
+ };
+ /** Standing pose, used at spawn, on reset and whenever the fleet stands down. */
+ const standGait=()=>{
+  gaitAnchor.copy(body.position);gaitYaw=moveYaw;
+  gaitPhase=0;gaitWeight=0;gaitSpeed=0;bodyPitch=0;headPitch=0;
+  poseGait();
+ };
+ /** One simulated tick of gait: stride from real travel plus |Δyaw|·turnStride, then pose. */
+ const advanceGait=(dt:number)=>{
+  const moved=Math.hypot(body.position.x-gaitAnchor.x,body.position.z-gaitAnchor.z);
+  const turned=Math.abs(wrap(moveYaw-gaitYaw));
+  gaitAnchor.copy(body.position);gaitYaw=moveYaw;
+  const travel=moved<=GAIT.maxStep?moved:0;
+  const stride=travel+turned*GAIT.turnStride;
+  gaitPhase=(gaitPhase+stride/GAIT.cycle*Math.PI*2)%(Math.PI*2);
+  const blend=1-Math.exp(-GAIT.blendRate*dt);
+  gaitWeight+=(Math.min(1,stride/dt/GAIT.fullPace)-gaitWeight)*blend;
+  // Lean into acceleration from a smoothed ground speed; physics speed itself is instant.
+  const previous=gaitSpeed;
+  gaitSpeed+=(travel/dt-gaitSpeed)*(1-Math.exp(-GAIT.speedRate*dt));
+  const lean=Math.max(-GAIT.maxPitch,Math.min(GAIT.maxPitch,-(gaitSpeed-previous)/dt*GAIT.pitchPerAccel));
+  bodyPitch+=(lean-bodyPitch)*blend;
+  const noticing=state==='chase'&&chaseClock<GAIT.notice;
+  const nearLastSeen=state==='search'&&hasLastSeen&&Math.hypot(lastSeen.x-body.position.x,lastSeen.z-body.position.z)<GAIT.searchRadius;
+  const headTarget=noticing?GAIT.noticePitch:nearLastSeen?GAIT.searchPitch:0;
+  headPitch+=(headTarget-headPitch)*(1-Math.exp(-GAIT.headRate*dt));
+  poseGait();
+ };
 
  const nodeNearest=(x:number,z:number)=>{
   let best=-1,bestD=Number.POSITIVE_INFINITY;
@@ -650,7 +870,7 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
  const steer=(goal:{x:number;z:number},reach:number,speed:number,dt:number)=>{
   const dx=goal.x-body.position.x,dz=goal.z-body.position.z,distance=Math.hypot(dx,dz);
   if(distance<=reach)return true;
-  moveYaw=turnToward(moveYaw,headingTo(dx,dz),ROBOT.turnRate*dt);
+  moveYaw=turnToward(moveYaw,headingTo(dx,dz)+neighbourBias(),ROBOT.turnRate*dt);
   body.step(dt,{forward:speed/C.speed,right:0,sprint:false},moveYaw,false);
   return false;
  };
@@ -776,6 +996,7 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
  progressBest=Number.POSITIVE_INFINITY;progressClock=0;legStalls=0;routeUsedGraph=false;
  };
  poseInitial();
+ standGait();
 
  function updateSector(){
   const count=sectorCount;
@@ -810,11 +1031,16 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
   root.position.copy(body.position);
   rig.rotation.y=moveYaw;
   turret.rotation.y=wrap(scanYaw-moveYaw);
+  // Standing down always shows the standing pose; otherwise only a simulated tick moves a leg.
+  if(standby)standGait();else if(dt>0)advanceGait(dt);
   beamMat.opacity=state==='patrol'?.12:state==='scanning'?.18:state==='search'?.16:.26;
   const pulse=dt>0?Math.sin(scanClock*(state==='chase'||state==='caught'?9:2.2)):0;
   eyeMat.emissiveIntensity=(state==='chase'||state==='caught'?2.2:state==='search'?1.7:1.1)+pulse*0.3;
-  beaconLight.intensity=(state==='patrol'?.75:.95)+.35*(0.5+0.5*Math.sin(scanClock*3.1));
-  lampMat.emissiveIntensity=(state==='caught'?2.4:.9)+pulse*0.4;
+  // Chase: a double-pulse "notice" over the first half second (movement carries on), then a solid beacon.
+  const chasing=state==='chase',noticing=chasing&&chaseClock<GAIT.notice;
+  const flash=noticing?Math.max(0,Math.sin(chaseClock*Math.PI*4/GAIT.notice)):0;
+  beaconLight.intensity=noticing?.6+1.6*flash:chasing?1.5:(state==='patrol'?.75:.95)+.35*(0.5+0.5*Math.sin(scanClock*3.1));
+  lampMat.emissiveIntensity=noticing?.5+2.6*flash:chasing?2.2:(state==='caught'?2.4:.9)+pulse*0.4;
   sector.visible=!standby;
   eyeMat.emissive.setHex(standby?0x35bf98:0xff2b2b);eyeMat.color.setHex(standby?0x163e32:0x2a0b0b);
   lampMat.emissive.setHex(standby?0x35bf98:0xff4a30);lampMat.color.setHex(standby?0x163e32:0x3a1010);
@@ -961,6 +1187,7 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
   searchStep=0;searchLook=0;searchElapsed=0;searchSteps=[];
   playerVelocity.set(0,0,0);hasPreviousPlayer=false;
   poseInitial();
+  standGait();
   publish(0);
  }
 
@@ -972,8 +1199,9 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
    * active=false -> hide the model and freeze everything.
    * paused=true or dt<=0 -> read only: same state, warning and timers, no movement, no lastSeen change.
    * shadowBudget=false -> emissive-only unit: no shadow casting, no point light (T26).
+   * others -> other units' feet positions; one inside 1.2 m ahead biases the heading (3C).
    */
-  update(dt:number,player:T.Vector3,active:boolean,paused:boolean,shadowBudget=true):OpeningRobotUpdate{
+  update(dt:number,player:T.Vector3,active:boolean,paused:boolean,shadowBudget=true,others?:readonly T.Vector3[]):OpeningRobotUpdate{
    const quiet=options.standby?.()??false;if(quiet!==standby){standby=quiet;publish(0);}
    root.visible=active;
    applyShadowBudget(active&&shadowBudget);
@@ -990,7 +1218,9 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
     simDt=1/ROBOT.farHz;
     budgetClock=Math.min(budgetClock-simDt,simDt);
    }else budgetClock=0;
+   neighbours=others??null;
    advance(simDt,player);
+   neighbours=null;
    publish(simDt);
    return snapshot();
   },

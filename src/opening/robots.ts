@@ -14,7 +14,9 @@ import type {Navigation} from '../exploration/navigation';
  *  - one shared shell pool (T25): eight units draw the same merged body/head buffers;
  *  - one blackboard (T28): a real sighting becomes a stale point plus an alert level;
  *  - shadow ranking (T26): only the nearest `ROBOT.shadowUnits` keep shadows and lights;
- *  - per-unit far update tiering (T27) is handled inside `robot.ts`.
+ *  - per-unit far update tiering (T27) is handled inside `robot.ts`;
+ *  - spacing (task 3C): every simulated tick hands each unit the others' live positions,
+ *    and `robot.ts` bears away from one that is close ahead. No new physics, no teleport.
  */
 
 export interface OpeningFleetUpdate{
@@ -54,6 +56,8 @@ export function createOpeningFleet(world:Navigation):OpeningFleet{
   return unit;
  });
  let last:OpeningFleetUpdate={caught:false,warning:0,state:'patrol',states:{},chasing:false};
+ /** Each unit's view of the others: live feet positions, used for gentle spacing only. */
+ const others=units.map((_,index)=>units.filter((_,j)=>j!==index).map(unit=>unit.position));
 
  /** Player position the shadow budget was last ranked against; standby reuses it. */
  const lastPlayer=new T.Vector3();
@@ -98,7 +102,7 @@ export function createOpeningFleet(world:Navigation):OpeningFleet{
   let caught=false,warning=0,best:OpeningRobotState='patrol';
   const states:Record<string,OpeningRobotState>={};
   for(const [index,unit] of units.entries()){
-   const result=unit.update(dt,player,active,paused,shadows[index]);
+   const result=unit.update(dt,player,active,paused,shadows[index],others[index]);
    const id=String(unit.root.userData.fleetId??unit.root.name);
    states[id]=result.state;
    caught=caught||result.caught;

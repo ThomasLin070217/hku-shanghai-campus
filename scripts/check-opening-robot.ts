@@ -112,6 +112,19 @@ function inSectorAndRange(robot:OpeningRobot,player:T.Vector3){
  return Math.abs(wrapAngle(headingOf(dx,dz)-scan))<=ROBOT.halfAngle;
 }
 
+/** Gait values from .superpowers/sdd/2026-11-22-fidelity-round/task-3-brief.md (3B), restated here on purpose. */
+const BRIEF_GAIT={thighSwing:0.42,kneeLift:0.55,hipRoll:0.07,bob:0.02,searchPitch:-0.12};
+const LEGS=['fl','fr','rl','rr'] as const;
+interface LegPose{thigh:number;roll:number;knee:number}
+/** Joint angles as rendered: the hip group pitches and rolls, the knee pivot holding the shank bends. */
+function legPose(robot:OpeningRobot):LegPose[]{
+ return LEGS.map(key=>{
+  const leg=robot.root.getObjectByName('robot-leg-'+key)!;
+  const knee=leg.getObjectByName('robot-leg-lower')!.parent!;
+  return{thigh:leg.rotation.x,roll:leg.rotation.z,knee:knee.rotation.x};
+ });
+}
+
 // ---------------------------------------------------------------- 1. eye ray matches the wall geometry
 {
  const throughDoor=openingRobotLineClear(world,new T.Vector3(O.b5.door,1.05,O.b5.z1+2.5),new T.Vector3(O.b5.door,1.15,O.b5.z1-2.5));
@@ -198,15 +211,26 @@ function inSectorAndRange(robot:OpeningRobot,player:T.Vector3){
  assert.deepEqual(robot.diagnostics.lastSeen,lastSeen,'lastSeen must not follow the hidden live position');
  assert.equal(robot.state,'search','losing sight turns the chase into a search of the remembered position');
  assert.equal(robot.diagnostics.caught,false,'an escaped player is not caught');
- const recovered=drive(robot,{seconds:45,player:hidden,stop:(_t,r)=>r.state==='patrol'});
+ // The head dips to look at the ground around the remembered spot while searching near it.
+ const turret=robot.root.getObjectByName('opening-security-robot-turret')!;
+ let searchPitch=0;
+ const recovered=drive(robot,{seconds:45,player:hidden,stop:(_t,r)=>{
+  const d=r.diagnostics;
+  if(d.state==='search'&&d.lastSeen&&Math.hypot(d.lastSeen[0]-d.position[0],d.lastSeen[2]-d.position[2])<1)searchPitch=Math.min(searchPitch,turret.rotation.x);
+  assert.ok(turret.rotation.x>=BRIEF_GAIT.searchPitch-1e-6,`the head never dips below ${BRIEF_GAIT.searchPitch} rad (${turret.rotation.x.toFixed(3)})`);
+  return r.state==='patrol';
+ }});
+ assert.ok(searchPitch<=BRIEF_GAIT.searchPitch+0.01,`searching near the remembered spot dips the head to ${BRIEF_GAIT.searchPitch} rad (${searchPitch.toFixed(3)})`);
  assert.equal(robot.state,'patrol','after searching the remembered spot the robot returns to patrol');
  assert.equal(recovered.caughtAtSecond,null,'no capture while the player stayed behind cover');
  assert.ok(robot.diagnostics.searchClock>=ROBOT.searchSeconds-.6,`the search lasted about ${ROBOT.searchSeconds}s (${robot.diagnostics.searchClock.toFixed(2)}s)`);
  assert.ok(Math.hypot(lastSeen![0]-robot.position.x,lastSeen![2]-robot.position.z)<2.5,'the search ended at the remembered position');
  const gapToHidden=Math.hypot(hidden.x-robot.position.x,hidden.z-robot.position.z);
  assert.ok(gapToHidden>3,'the robot never walked to the hidden live position');
+ drive(robot,{seconds:1.5,player:hidden});
+ assert.ok(Math.abs(turret.rotation.x)<0.01,`back on patrol the head levels out again (${turret.rotation.x.toFixed(3)})`);
  pass('hidden player freezes lastSeen; the robot searches that point then resumes patrol',
-  {transitions:[...lost.transitions,...recovered.transitions],lastSeen:lastSeen?.map(round),searchSeconds:round(robot.diagnostics.searchClock),distanceToHiddenLiveTarget:round(gapToHidden)});
+  {transitions:[...lost.transitions,...recovered.transitions],lastSeen:lastSeen?.map(round),searchSeconds:round(robot.diagnostics.searchClock),distanceToHiddenLiveTarget:round(gapToHidden),searchHeadPitch:round(searchPitch)});
  robot.dispose();
 }
 
@@ -300,30 +324,67 @@ function inSectorAndRange(robot:OpeningRobot,player:T.Vector3){
  robot.dispose();
 }
 
-// ---------------------------------------------------------------- 8. blocky model, polygon wedge, clean disposal
+// ---------------------------------------------------------------- 8. quadruped model, polygon wedge, clean disposal
 {
  const meshesBefore=world.meshes.length;
  const scene=new T.Scene();
  const robot=createOpeningRobot(world);
  scene.add(robot.root);
+ // Standing pose straight after creation: the rig origin is the ground, so the feet touch y 0.
+ const rig=robot.root.getObjectByName('opening-security-robot-rig') as T.Group;
+ assert.ok(rig&&!(rig as unknown as T.Mesh).isMesh,'the body rig is a group');
+ robot.root.updateMatrixWorld(true);
+ // Vertex-precise bounds: a rotated part's loose bounding box would dip below its real lowest point.
+ const standing=new T.Box3().setFromObject(rig,true);
+ const feetLift=standing.min.y-robot.position.y;
+ assert.ok(Math.abs(feetLift)<0.01,`the standing feet rest on the ground (lowest point ${feetLift.toFixed(3)}m above the body origin)`);
  drive(robot,{seconds:2,player:ground(O.patrol[1][0],O.patrol[1][2])});
+ robot.root.updateMatrixWorld(true);
  assert.equal(world.meshes.length,meshesBefore,'the robot never joins the shared collision mesh list');
  const meshes:T.Mesh[]=[];
  robot.root.traverse(object=>{if((object as T.Mesh).isMesh)meshes.push(object as T.Mesh);});
- // T25 merged the twelve shell boxes into two vertex-coloured meshes (body and head),
- // plus the always-separate band, eye, beacon and the animated scan sector. The old
- // per-part threshold (>=8) encoded the pre-merge model, not a behavioural requirement.
- assert.ok(meshes.length>=5,`a blocky model built from merged parts, got ${meshes.length} meshes`);
- assert.equal(meshes.filter(m=>m.name==='robot-body'||m.name==='robot-head').length,2,'the static shell is batched into body and head');
+ const shadowCasters=meshes.filter(m=>m.castShadow).length;   // in the shadow budget, before the inactive call below
+ // T25 merged the shell boxes into two vertex-coloured meshes (body and head), plus the
+ // always-separate band, eye, beacon and the animated scan sector. The quadruped adds four
+ // articulated legs, each three small meshes on shared buffers, so the gait can bend them.
+ assert.ok(meshes.length>=5,`a quadruped model built from merged parts, got ${meshes.length} meshes`);
+ assert.equal(meshes.filter(m=>m.name==='robot-body').length,1,'the static chassis is batched into one robot-body mesh');
+ assert.equal(meshes.filter(m=>m.name==='robot-head').length,1,'the sensor head is batched into one robot-head mesh');
  assert.ok(meshes.some(m=>m.name==='opening-robot-eye'),'red eye present');
  assert.ok(meshes.some(m=>m.name==='opening-robot-scan-sector'),'visible scan sector present');
  assert.equal(meshes.filter(m=>/health|hp|bar|weapon|drop|ammo|icon|glow_billboard/i.test(m.name)).length,0,'no health bar, weapon, drop or icon-like part');
+ // Four legs: FL/FR at the front (-z), RL/RR at the rear; left is -x while the rig faces -z.
+ const legLayout:Record<string,[number,number]>={fl:[-1,-1],fr:[1,-1],rl:[-1,1],rr:[1,1]};
+ const legDetail:Record<string,unknown>={};
+ for(const [key,[sx,sz]] of Object.entries(legLayout)){
+  const leg=rig.getObjectByName('robot-leg-'+key);
+  assert.ok(leg,`leg robot-leg-${key} present`);
+  assert.ok(!(leg as T.Mesh).isMesh,`robot-leg-${key} is an articulated group, not a merged mesh`);
+  assert.ok(Math.sign(leg!.position.x)===sx&&Math.abs(Math.abs(leg!.position.x)-0.26)<0.02,`robot-leg-${key} hip sits at x ${sx>0?'+':'-'}0.26 (${leg!.position.x})`);
+  assert.ok(Math.sign(leg!.position.z)===sz&&Math.abs(Math.abs(leg!.position.z)-0.26)<0.02,`robot-leg-${key} hip sits at z ${sz>0?'+':'-'}0.26 (${leg!.position.z})`);
+  const parts:Record<string,T.Mesh[]>={'robot-leg-upper':[],'robot-leg-lower':[],'robot-foot':[]};
+  leg!.traverse(object=>{const mesh=object as T.Mesh;if(mesh.isMesh&&parts[mesh.name])parts[mesh.name].push(mesh);});
+  for(const [name,list] of Object.entries(parts))assert.equal(list.length,1,`robot-leg-${key} holds exactly one ${name} mesh`);
+  const upper=parts['robot-leg-upper'][0],lower=parts['robot-leg-lower'][0],foot=parts['robot-foot'][0];
+  assert.equal(upper.parent,leg,`robot-leg-${key}: the thigh hangs straight from the hip group`);
+  const knee=lower.parent!;
+  assert.ok(knee!==leg&&knee.parent===leg&&!(knee as T.Mesh).isMesh,`robot-leg-${key}: the shank hangs from a knee pivot group inside the leg`);
+  assert.ok(foot.parent===knee||foot.parent?.parent===knee,`robot-leg-${key}: the foot moves with the shank`);
+  legDetail[key]={hip:[leg!.position.x,leg!.position.y,leg!.position.z].map(round),knee:knee.name};
+ }
+ assert.equal(meshes.filter(m=>m.name.startsWith('robot-leg-')||m.name==='robot-foot').length,12,'four legs, three meshes each');
  // The drawn scan wedge is a child of the root and reaches metres ahead, so the body
  // footprint is measured on the rig itself rather than on the whole group.
- const body=(robot.root.getObjectByName('opening-security-robot-rig')??robot.root) as T.Group;
+ const body=rig;
  const size=new T.Box3().setFromObject(body).getSize(new T.Vector3());
- assert.ok(size.y>0.9&&size.y<2.2,`plausible robot height, got ${size.y.toFixed(2)}m`);
- assert.ok(size.x>0.3&&size.x<1.6&&size.z>0.3&&size.z<1.6,`blocky footprint, got ${size.x.toFixed(2)}x${size.z.toFixed(2)}m`);
+ assert.ok(size.y>0.6&&size.y<2.2,`plausible quadruped height, got ${size.y.toFixed(2)}m`);
+ assert.ok(size.x>0.3&&size.x<1.6&&size.z>0.3&&size.z<1.6,`quadruped footprint, got ${size.x.toFixed(2)}x${size.z.toFixed(2)}m`);
+ // The sensor head sits at the front of the chassis (-z in rig space) and carries the eye.
+ const head=meshes.find(m=>m.name==='robot-head')!;
+ const headCentre=rig.worldToLocal(new T.Box3().setFromObject(head).getCenter(new T.Vector3()));
+ assert.ok(headCentre.z<-0.08,`the sensor head sits at the front of the chassis (rig z ${headCentre.z.toFixed(2)})`);
+ const turret=robot.root.getObjectByName('opening-security-robot-turret')!;
+ assert.ok(head.parent===turret&&meshes.find(m=>m.name==='opening-robot-eye')!.parent===turret&&meshes.find(m=>m.name==='robot-beacon')!.parent===turret,'head, eye and beacon turn together on the turret');
  const wedge=meshes.find(m=>m.name==='opening-robot-scan-sector')!;
  const positions=wedge.geometry.getAttribute('position');
  assert.ok(positions.count>=6,`the wedge is a real polygon (${positions.count} vertices)`);
@@ -387,8 +448,9 @@ function inSectorAndRange(robot:OpeningRobot,player:T.Vector3){
  assert.ok(materialDispose.size>0&&[...materialDispose.values()].every(n=>n>0),`every material disposed (${materialDispose.size})`);
  assert.doesNotThrow(()=>robot.dispose(),'dispose is safe to repeat');
  assert.equal(world.meshes.length,meshesBefore,'shared navigation meshes untouched by create/update/dispose');
- pass('blocky red-eye model with a polygon scan wedge; dispose releases geometry and material',
-  {meshes:meshes.length,heightMeters:round(size.y),footprint:[round(size.x),round(size.z)],wedgeVertices:positions.count,disposedGeometries:geometryDispose.size,disposedMaterials:materialDispose.size});
+ const triangles=meshes.reduce((sum,m)=>sum+(m.geometry.index?m.geometry.index.count:m.geometry.getAttribute('position').count)/3,0);
+ pass('quadruped red-eye model with four articulated legs and a polygon scan wedge; dispose releases geometry and material',
+  {meshes:meshes.length,drawCalls:meshes.length,triangles,shadowCasters,heightMeters:round(size.y),footprint:[round(size.x),round(size.z)],standingFeetLift:round(feetLift),legs:legDetail,headRigZ:round(headCentre.z),wedgeVertices:positions.count,disposedGeometries:geometryDispose.size,disposedMaterials:materialDispose.size});
 }
 
 // ---------------------------------------------------------------- 9. published tuning stays inside the task book
@@ -421,11 +483,19 @@ function inSectorAndRange(robot:OpeningRobot,player:T.Vector3){
   return set;
  };
  const gA=geometriesOf(a),gB=geometriesOf(b);
- assert.equal([...gA].filter(g=>gB.has(g)).length,5,'body, head, band, eye and beacon buffers are shared by both units');
- assert.equal(gA.size,6,'a unit adds only its own animated scan-sector polygon');
+ assert.equal([...gA].filter(g=>gB.has(g)).length,8,'body, head, band, eye, beacon and the three leg buffers are shared by both units');
+ assert.equal(gA.size,9,'a unit adds only its own animated scan-sector polygon');
+ // All four legs of a unit draw the same thigh, shank and foot buffers.
+ for(const name of ['robot-leg-upper','robot-leg-lower','robot-foot']){
+  const used=new Set<T.BufferGeometry>();
+  a.root.traverse(object=>{const mesh=object as T.Mesh;if(mesh.isMesh&&mesh.name===name)used.add(mesh.geometry);});
+  assert.equal(used.size,1,`every ${name} mesh shares one buffer`);
+  assert.ok(used.has(assets.legUpperGeometry)||used.has(assets.legLowerGeometry)||used.has(assets.footGeometry),`${name} draws a pooled leg buffer`);
+ }
  const mA=materialsOf(a),mB=materialsOf(b);
- assert.equal([...mA].filter(m=>mB.has(m)).length,2,'the painted shell and band materials are shared');
- assert.equal(mA.size,5,'five materials per unit: two shared plus eye, lamp and beam');
+ assert.equal([...mA].filter(m=>mB.has(m)).length,3,'the painted shell, band and leg materials are shared');
+ assert.ok(mA.has(assets.legMaterial),'the legs draw the pooled graphite leg material');
+ assert.equal(mA.size,6,'six materials per unit: three shared plus eye, lamp and beam');
  const eyeMaterialOf=(robot:OpeningRobot)=>{
   const mesh=robot.root.getObjectByName('opening-robot-eye') as T.Mesh;
   return (Array.isArray(mesh.material)?mesh.material[0]:mesh.material) as T.MeshStandardMaterial;
@@ -435,7 +505,7 @@ function inSectorAndRange(robot:OpeningRobot,player:T.Vector3){
  a.dispose();b.dispose();
  assert.doesNotThrow(()=>assets.dispose(),'the fleet owner releases the shared pool after the units');
  pass('the shell pool is shared across units while eye, lamp, beam and scan sector stay per unit',
-  {meshesPerUnit:6,sharedGeometries:5,sharedMaterials:2,materialsPerUnit:mA.size});
+  {geometriesPerUnit:gA.size,sharedGeometries:8,sharedMaterials:3,materialsPerUnit:mA.size});
 }
 
 // ---------------------------------------------------------------- 11. shared awareness shares a stale point, never a live track
@@ -594,6 +664,141 @@ function inSectorAndRange(robot:OpeningRobot,player:T.Vector3){
  pass('an alerted unit holds the guard waypoint and faces it, then resumes the normal sweep',
   {guardedSeconds:round(guarded),maxHeadOffset:round(maxHeadOffset),alertAtEnd:round(guard.diagnostics.alert)});
  guard.dispose();
+}
+
+// ---------------------------------------------------------------- 17. a trot that follows real displacement; reads never move a leg
+{
+ const robot=fresh();
+ const rig=robot.root.getObjectByName('opening-security-robot-rig')!;
+ const turret=robot.root.getObjectByName('opening-security-robot-turret')!;
+ const sector=robot.root.getObjectByName('opening-robot-scan-sector')!;
+ const stand=legPose(robot);
+ for(const p of stand)assert.ok(Math.abs(p.thigh-stand[0].thigh)+Math.abs(p.roll-stand[0].roll)+Math.abs(p.knee-stand[0].knee)<1e-9,'all four legs share one standing pose');
+ const start=robot.position.clone(),startHeading=robot.diagnostics.heading;
+ const astern=ground(66,-48);   // behind the first patrol leg, so the unit just walks
+ const swing=LEGS.map(()=>0);
+ let spread=0,pairSame=0,pairOpposite=0,maxBob=0,maxRoll=0,maxKneeLift=0,minKneeLift=Number.POSITIVE_INFINITY,maxThigh=0,turretPitch=0,maxTurn=0;
+ const stats=drive(robot,{seconds:3,player:astern,stop:(_t,r)=>{
+  const pose=legPose(r);
+  const offsets=pose.map((p,i)=>p.thigh-stand[i].thigh);
+  offsets.forEach((d,i)=>{swing[i]=Math.max(swing[i],Math.abs(d));maxThigh=Math.max(maxThigh,Math.abs(d));});
+  pose.forEach((p,i)=>{
+   maxRoll=Math.max(maxRoll,Math.abs(p.roll-stand[i].roll));
+   const lift=p.knee-stand[i].knee;maxKneeLift=Math.max(maxKneeLift,lift);minKneeLift=Math.min(minKneeLift,lift);
+  });
+  spread=Math.max(spread,Math.max(...pose.map(p=>p.thigh))-Math.min(...pose.map(p=>p.thigh)));
+  pairSame+=offsets[0]*offsets[3]+offsets[1]*offsets[2];        // FL with RR, FR with RL
+  pairOpposite+=offsets[0]*offsets[1]+offsets[2]*offsets[3];    // FL against FR, RL against RR
+  maxBob=Math.max(maxBob,Math.abs(rig.position.y));
+  turretPitch=Math.max(turretPitch,Math.abs(turret.rotation.x));
+  maxTurn=Math.max(maxTurn,Math.abs(wrapAngle(r.diagnostics.heading-startHeading)));
+  assert.equal(sector.parent,r.root,'the scan sector hangs from the root, never from the bobbing rig');
+  assert.equal(sector.position.y,0,'the scan sector never bobs');
+  return false;
+ }});
+ const travelled=Math.hypot(robot.position.x-start.x,robot.position.z-start.z);
+ assert.deepEqual(Object.keys(stats.states),['patrol'],'scenario: the unit only patrols, nothing is detected');
+ assert.ok(travelled>3&&maxTurn<0.05&&Math.abs(robot.position.z-start.z)<0.05,`scenario: a straight 3 s walk (${travelled.toFixed(2)}m, turned ${maxTurn.toFixed(3)} rad)`);
+ swing.forEach((s,i)=>assert.ok(s>0.05,`robot-leg-${LEGS[i]} swings while walking (${s.toFixed(3)} rad)`));
+ assert.ok(spread>0.1,`the four legs are not in the same phase (spread ${spread.toFixed(3)} rad)`);
+ assert.ok(pairSame>0&&pairOpposite<0,`trot: FL moves with RR and FR with RL, the pairs in antiphase (${pairSame.toFixed(2)} / ${pairOpposite.toFixed(2)})`);
+ assert.ok(maxThigh<=BRIEF_GAIT.thighSwing+1e-6,`thigh pitch stays inside +/-${BRIEF_GAIT.thighSwing} rad (${maxThigh.toFixed(3)})`);
+ assert.ok(minKneeLift>=-1e-6&&maxKneeLift<=BRIEF_GAIT.kneeLift+1e-6&&maxKneeLift>0.2,`knee lift stays inside 0..${BRIEF_GAIT.kneeLift} rad and is used (${minKneeLift.toFixed(3)}..${maxKneeLift.toFixed(3)})`);
+ assert.ok(maxRoll>0.01&&maxRoll<=BRIEF_GAIT.hipRoll+1e-6,`hip roll stays inside +/-${BRIEF_GAIT.hipRoll} rad (${maxRoll.toFixed(3)})`);
+ assert.ok(maxBob>0.005&&maxBob<=BRIEF_GAIT.bob+1e-6,`the rig bobs by at most ${BRIEF_GAIT.bob} m (${maxBob.toFixed(4)})`);
+ assert.ok(turretPitch<1e-6,`the head stays level on patrol (${turretPitch})`);
+ // Render reads, paused ticks and inactive ticks must leave the pose exactly where it is.
+ const snapshot=()=>JSON.stringify({legs:legPose(robot),bob:rig.position.y,pitch:rig.rotation.x,head:turret.rotation.x});
+ const frozen=snapshot();
+ for(let i=0;i<120;i++){robot.update(0,astern,true,false);robot.update(DT,astern,true,true);robot.update(1,astern,true,true);}
+ assert.equal(snapshot(),frozen,'dt=0 reads and paused ticks never move a leg, the bob or the head');
+ for(let i=0;i<60;i++)robot.update(DT,astern,false,false);
+ assert.equal(snapshot(),frozen,'inactive ticks never move a leg either');
+ pass('a trot driven by real displacement: diagonal pairs in antiphase, bounded joints, bob on the rig only, frozen on reads',
+  {travelled:round(travelled),thighSwing:swing.map(round),phaseSpread:round(spread),maxKneeLift:round(maxKneeLift),maxHipRoll:round(maxRoll),maxBob:round(maxBob*1000)/1000});
+ robot.dispose();
+}
+
+// ---------------------------------------------------------------- 18. chase notice, solid beacon, and the legs settle once still
+{
+ const robot=fresh();
+ const player=ground(O.patrol[1][0],O.patrol[1][2]);
+ const lamp=(robot.root.getObjectByName('robot-beacon') as T.Mesh).material as T.MeshStandardMaterial;
+ const stand=legPose(robot);
+ let chaseAt:number|null=null,caughtAt:number|null=null,noticePulses=0,wasBright=false,noticeTravel=0,chaseSwing=0;
+ let noticeStart:T.Vector3|null=null,stillAt:T.Vector3|null=null;
+ const solid=new Set<number>();
+ const lastSecond:LegPose[][]=[];
+ for(let i=0;i<60*12;i++){
+  const t=(i+1)*DT;
+  robot.update(DT,player,true,false);
+  const state=robot.state;
+  if(state==='chase'&&chaseAt===null){chaseAt=t;noticeStart=robot.position.clone();}
+  if(chaseAt!==null&&state==='chase'){
+   const since=t-chaseAt;
+   const bright=lamp.emissiveIntensity>1.5;
+   if(since<0.5){if(bright&&!wasBright)noticePulses++;wasBright=bright;noticeTravel=robot.position.distanceTo(noticeStart!);}
+   else if(since>0.55)solid.add(Math.round(lamp.emissiveIntensity*1e6));
+   chaseSwing=Math.max(chaseSwing,...legPose(robot).map((p,k)=>Math.abs(p.thigh-stand[k].thigh)));
+  }
+  if(state==='caught'&&caughtAt===null){caughtAt=t;stillAt=robot.position.clone();}
+  if(caughtAt!==null&&t>caughtAt+1)lastSecond.push(legPose(robot));
+  if(caughtAt!==null&&t>=caughtAt+2)break;
+ }
+ assert.notEqual(chaseAt,null,'scenario: the unit confirms the target and chases');
+ assert.notEqual(caughtAt,null,'scenario: the chase ends in a capture, after which the unit stands still');
+ assert.ok(caughtAt!-chaseAt!>1,'scenario: the chase lasts past the notice window');
+ assert.equal(noticePulses,2,`the beacon double-pulses in the first 0.5 s of a chase (${noticePulses} pulses)`);
+ assert.ok(noticeTravel>0.3,`the notice does not pause the chase (${noticeTravel.toFixed(2)}m covered in 0.5 s)`);
+ assert.equal(solid.size,1,`after the notice the beacon burns solid while chasing (${[...solid].map(v=>v/1e6)})`);
+ assert.ok(chaseSwing>0.05,`the legs trot during the chase (${chaseSwing.toFixed(3)} rad)`);
+ assert.ok(robot.position.distanceTo(stillAt!)<1e-9,'scenario: the caught unit holds still for 2 s');
+ assert.ok(lastSecond.length>=55,'scenario: a full second of still poses was sampled');
+ let settleDelta=0,standDelta=0;
+ for(let leg=0;leg<LEGS.length;leg++)for(const joint of ['thigh','roll','knee'] as const){
+  const values=lastSecond.map(pose=>pose[leg][joint]);
+  settleDelta=Math.max(settleDelta,Math.max(...values)-Math.min(...values));
+  standDelta=Math.max(standDelta,Math.abs(values[values.length-1]-stand[leg][joint]));
+ }
+ assert.ok(settleDelta<0.02,`still legs settle: max joint change over the last second ${settleDelta.toFixed(4)} rad`);
+ assert.ok(standDelta<0.02,`and settle into the standing pose (${standDelta.toFixed(4)} rad off)`);
+ pass('a chase opens with a double-pulse notice without pausing, then a solid beacon; still legs settle into the standing pose',
+  {chaseAt:round(chaseAt!),caughtAt:round(caughtAt!),noticePulses,noticeTravel:round(noticeTravel),solidIntensity:[...solid][0]/1e6,chaseSwing:round(chaseSwing),settleDelta:round(settleDelta*1000)/1000,standDelta:round(standDelta*1000)/1000});
+ robot.dispose();
+}
+
+// ---------------------------------------------------------------- 19. a neighbour ahead adds a gentle lateral bias, nothing else
+{
+ const control=createOpeningRobot(world,{id:'bias-control'});
+ const ahead=createOpeningRobot(world,{id:'bias-ahead'});
+ const behind=createOpeningRobot(world,{id:'bias-behind'});
+ const astern=ground(66,-48);
+ // A parked unit 2.5 m down the first leg, and one just behind the start of that leg.
+ const parkedAhead=[new T.Vector3(60.5,0,-48)];
+ const parkedBehind=[new T.Vector3(63.8,0,-48)];
+ let maxLateral=0,controlLateral=0,maxStep=0,closest=Number.POSITIVE_INFINITY,identical=true;
+ for(let i=0;i<60*6;i++){
+  const before=ahead.position.clone();
+  control.update(DT,astern,true,false);
+  ahead.update(DT,astern,true,false,true,parkedAhead);
+  behind.update(DT,astern,true,false,true,parkedBehind);
+  const p=ahead.position;
+  assert.equal(world.blocked(p.x,p.z,p.y),false,'the biased unit never enters a solid');
+  maxStep=Math.max(maxStep,Math.hypot(p.x-before.x,p.z-before.z));
+  if(ahead.diagnostics.patrolIndex===1){maxLateral=Math.max(maxLateral,Math.abs(p.z-O.patrol[0][2]));closest=Math.min(closest,Math.hypot(p.x-parkedAhead[0].x,p.z-parkedAhead[0].z));}
+  if(control.diagnostics.patrolIndex===1)controlLateral=Math.max(controlLateral,Math.abs(control.position.z-O.patrol[0][2]));
+  if(behind.position.distanceTo(control.position)>1e-9)identical=false;
+ }
+ assert.ok(controlLateral<0.02,`scenario: the control walks the leg straight (${controlLateral.toFixed(3)}m)`);
+ assert.ok(maxLateral>0.1&&maxLateral<1,`a unit parked ahead pushes the walker sideways, gently (${maxLateral.toFixed(2)}m)`);
+ // Gentle by design (brief 3C): a spacing hint that opens a gap, not collision avoidance.
+ assert.ok(closest>0.15,`and it passes beside the parked unit instead of through its spot (${closest.toFixed(2)}m)`);
+ assert.ok(maxStep<=ROBOT.patrolSpeed*DT*1.02,`steering only: no extra speed and no jump (${maxStep.toFixed(4)}m per tick)`);
+ assert.ok(identical,'a neighbour behind the unit changes nothing: same path as the call without neighbours');
+ assert.ok(ahead.diagnostics.patrolIndex>=2&&control.diagnostics.patrolIndex>=2,'both units still reach the waypoint');
+ pass('a neighbour within reach ahead adds a gentle steering bias; behind it, or with no neighbours, the path is unchanged',
+  {maxLateral:round(maxLateral),closestToParked:round(closest),maxStep:round(maxStep*1000)/1000,controlLateral:round(controlLateral)});
+ control.dispose();ahead.dispose();behind.dispose();
 }
 
 function graphConnected(robot:OpeningRobot){
