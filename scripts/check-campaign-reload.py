@@ -82,8 +82,9 @@ with sync_playwright() as p:
     browser = p.chromium.launch(executable_path=CHROME, args=ARGS, headless=True) if CHROME else p.chromium.launch(args=ARGS, headless=True)
     try:
         # 1. Opening save at `complete` + campaign save at `b4_breaker`: a plain load continues there.
-        #    b4_flip is the automatic 1.2 s service-wall beat now: a save seeded at b4_flip advances
-        #    to b4_breaker by itself while the page loads, so the reload test seeds the settled stage.
+        #    b4_flip is the automatic 1.2 s service-wall beat now: a b4_flip seed advances on the
+        #    seeding page unless it is frozen first (case 5 does that), so this case seeds the
+        #    settled stage.
         page = browser.new_page(viewport={'width': 1280, 'height': 800})
         errors = []
         page.on('pageerror', lambda e: errors.append(str(e)))
@@ -196,12 +197,13 @@ with sync_playwright() as p:
         page.wait_for_function('() => __CAMPUS.explorer.game.timeMs - window.__b4T0 >= 1600', timeout=30000)
         s = page.evaluate(SNAPSHOT)
         check('reload at b4_flip: the re-armed beat lands at b4_breaker', s['stage'] == 'b4_breaker', s)
-        # A second beat would be a second flip_solved. The stage can only stay at b4_breaker;
-        # another 1.6 s of game time shows nothing re-arms the beat or skips the stage.
+        # A duplicate flip_solved is a no-op in the reducer (wrong stage), so it cannot be seen
+        # here. What this guards: another 1.6 s of game time and nothing advances the stage past
+        # b4_breaker on its own, and no modal or dialog opens.
         page.evaluate('() => { window.__b4T0 = __CAMPUS.explorer.game.timeMs; }')
         page.wait_for_function('() => __CAMPUS.explorer.game.timeMs - window.__b4T0 >= 1600', timeout=30000)
         s = page.evaluate(SNAPSHOT)
-        check('reload at b4_flip: no second beat (stage stays b4_breaker)', s['stage'] == 'b4_breaker' and s['modal'] is None and not s['dialog'], s)
+        check('reload at b4_flip: the stage holds at b4_breaker (nothing advances it)', s['stage'] == 'b4_breaker' and s['modal'] is None and not s['dialog'], s)
         check('no page errors (reload at b4_flip)', errors == [], errors)
         page.close()
     finally:
