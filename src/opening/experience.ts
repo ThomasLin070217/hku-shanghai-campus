@@ -7,7 +7,8 @@ import type {Outcome} from '../gameplay/survey';
 import type {OpeningModal,OpeningSave,OpeningState,OpeningEvent,OpeningView,OpeningCinema} from './contracts';
 import {createOpeningState,reduceOpening} from './state';
 import {OPENING_SAVE_KEY,captureOpeningSave,parseOpeningSave} from './persistence';
-import {checkpointState,checkpointPose,checkpointCampaign,openingCheckpoint,CHECKPOINT_LABELS,type OpeningCheckpoint} from './checkpoint';
+import {checkpointState,checkpointPose,checkpointCampaign,openingCheckpoint,routeYaw,CHECKPOINT_LABELS,type OpeningCheckpoint} from './checkpoint';
+import {LAWN_APPROACH} from '../campaign/lawnChapter';
 import {createOpeningRuntime,damageOpeningHearts,healOpeningHearts,syncRuntimeWithStory,OPENING_RESPAWN_GRACE_SECONDS,OPENING_MAX_HEARTS,type OpeningRuntime} from './runtime';
 import {loadWorldThreat,sealWorld,resetWorldThreat,tryPurgeWorld,markLionDefeated,markPowerCut,markLocalModelCleared,cloneWorldThreat,type WorldThreat} from '../gameplay/worldThreat';
 import {createThreatRefresh} from './threatRefresh';
@@ -161,7 +162,12 @@ export function createOpeningExperience(
   */
  function startCampaign(deviceId:string,options:{stage?:'b4_enter'|'to_lawn';gesture?:boolean}={}){
   const c=getCampaign?.();if(!c||!deviceId||story.stage!=='complete'||modal!=='complete')return false;
-  if(!c.active&&!c.start(deviceId,options.stage??'b4_enter'))return false;
+  if(!c.active){
+   if(!c.start(deviceId,options.stage??'b4_enter'))return false;
+   // Chapter 2 starts at the B04 door, where the player arrived facing the building:
+   // turn them toward the lawn route so the objective is ahead (FU2). A camera cut at a dialog close.
+   if(options.stage==='to_lawn'){const p=g.body.position;g.yaw=routeYaw([p.x,p.y,p.z],LAWN_APPROACH);g.pitch=0;}
+  }
   voice.stop();modal=null;explorer.closePanel();persist(true);
   if(options.gesture){if(compatBeforePanel)explorer.enterCompat();else explorer.enter();}
   compatBeforePanel=false;

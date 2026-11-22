@@ -11,6 +11,8 @@ import type {Chapter,ChapterContext} from './types';
 
 /** The lawn guardian trigger: the shelter point `src/lionBoss/play.ts` starts the fight from. */
 export const LAWN_ENTRY:Chapter['entry']={point:[SAFE.x,LION.groundY,SAFE.z],radius:3,event:'reach_lawn'};
+/** The walking leg from the B04 entrance to the lawn shelter (x/z pairs). */
+export const LAWN_APPROACH:Chapter['approach']=[[58,25],[58,33.5],[24,33.5],[24,SAFE.z],[SAFE.x,SAFE.z]];
 const EVENTS:CampaignEvent[]=['reach_lawn','guardian_shutdown'];
 
 /** Same rule as the explorer's key handler: keys typed into a HUD field or dialog are not game keys. */
@@ -104,7 +106,7 @@ export function createLawnChapter():Chapter{
  function keyup(event:KeyboardEvent){if(event.code===KEYS.interact)holding=false;}
 
  return{
-  id:'lawn',entry:LAWN_ENTRY,approach:[[58,25],[58,33.5],[24,33.5],[24,SAFE.z],[SAFE.x,SAFE.z]],
+  id:'lawn',entry:LAWN_ENTRY,approach:LAWN_APPROACH,
   attach(c){
    ctx=c;
    // A run already past the lawn (resume or checkpoint) keeps the guardian shut down.
