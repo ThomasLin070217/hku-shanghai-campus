@@ -5,8 +5,10 @@ import {createNavigation} from '../src/exploration/navigation';
 import {BUILDINGS,SITE} from '../src/model/campusParameters';
 import {OPENING as O} from '../src/opening/spatialLayout';
 import {B4_PHRASE,createKeyboardState,pressKeyboard,createFlipState,flipTiles,flipSolved,pullBreaker,connectMacBook,b4StepOf,sweepTiles,autoFinishTiles} from '../src/campaign/b4Puzzle';
-import {B4_LAYOUT,B4_OBSTACLES,B4_STATIONS,B4_DOOR_OBSTACLE,B4_FOCUS_FRAME,setB4FlipPanel,partBounds} from '../src/opening/b4Layout';
+import {B4_LAYOUT,B4_LOBBY,B4_OBSTACLES,B4_STATIONS,B4_DOOR_OBSTACLE,B4_FOCUS_FRAME,setB4FlipPanel,partBounds} from '../src/opening/b4Layout';
 import {buildB4Shell,B4_RACK_LED} from '../src/opening/b4Shell';
+import {buildObservedFeatureRoom,flipWallTiles} from '../src/model/observedFeatureRooms';
+import {createB5FlipWall} from '../src/opening/b5FlipWall';
 import {createCampaignState,reduceCampaign,type CampaignState} from '../src/campaign/state';
 import type {ChapterContext,Explorer} from '../src/campaign/types';
 import {createB4Chapter} from '../src/campaign/b4Chapter';
@@ -76,14 +78,23 @@ const chapter=createB4Chapter();
 route('handoff -> B04 entry',[[O.handoff[0],O.handoff[2]],[chapter.entry.point[0],chapter.entry.point[2]]]);
 assert.ok(Math.abs(g.body.position.y-O.b4.floor)<.05,`entry stands on the B04 floor, y=${g.body.position.y}`);
 const order=['keyboard','breaker','port'] as const;
-let from='entry';for(const id of order){const s=B4_STATIONS[id];route(from+' -> '+id,[[s.stand[0],s.stand[2]]]);from=id;}
-// The keyboard stand is on the floor, in front of the lowest tier (no climb, no 0.1 m shift needed).
-assert.ok(Math.abs(g.body.position.y-O.b4.floor)<.05,`the keyboard stand is on the B04 floor, y=${g.body.position.y}`);
-// The closed service shutter is solid; with it gone the closet mouth is open.
-const SH=B4_LAYOUT.shutter;
-assert.ok(w.blocked((SH.x0+SH.x1)/2,SH.z0-.05,O.b4.floor+.003),'the closed service shutter blocks');
-assert.ok(w.blocked((SH.x0+SH.x1)/2,SH.z0+.05,O.b4.floor+.003),'the closed service shutter is solid from the room side too');
+// The keyboard stand is on the floor, in front of the lowest tier (no climb, no 0.1 m shift
+// needed). Assert it right after the entry→keyboard leg: at the end of the full loop the body
+// stands at the port, so the old placement silently tested the port stand instead.
+{
+ const s=B4_STATIONS.keyboard;route('entry -> keyboard',[[s.stand[0],s.stand[2]]]);
+ assert.ok(Math.abs(g.body.position.y-O.b4.floor)<.05,`the keyboard stand is on the B04 floor, y=${g.body.position.y}`);
+}
+for(const id of ['breaker','port'] as const){const s=B4_STATIONS[id];route('keyboard -> '+id,[[s.stand[0],s.stand[2]]]);}
+// The closed service shutter is solid; with it gone the closet mouth is open. Sample 0.10 m off
+// the shutter's room-side face at x 60: within the 0.28 m body radius of the shutter, but well
+// outside the radius of the closet rect (its mouth ends at z 7.93). The old samples at z 8.09/
+// 8.19 sat inside that radius and passed even with no shutter at all.
+const SH=B4_LAYOUT.shutter,probeZ=SH.z1+.10,probeY=O.b4.floor+.003;
+assert.ok(w.obstacles.some(o=>o.name===SH.name),'the closed service shutter exists as a collision obstacle');
+assert.ok(w.blocked(60,probeZ,probeY),'the closed service shutter blocks a body 0.10 m off its room-side face');
 setB4FlipPanel(w,false);assert.ok(!w.obstacles.some(o=>o.name===SH.name),'the lifted service shutter leaves no obstacle');
+assert.equal(w.blocked(60,probeZ,probeY),false,'with the shutter lifted the closet mouth is open');
 
 // (c) Each stand point is within reach and has a clear sightline at eye height.
 for(const id of order){const s=B4_STATIONS[id];const eye=new T.Vector3(s.stand[0],O.b4.floor+1.6,s.stand[2]),to=new T.Vector3(...s.point).sub(eye);
@@ -176,9 +187,14 @@ cs={...cs,stage:'b4_keyboard'};step();
  near(sh.min.x,S.x0,'shutter x0');near(sh.max.x,S.x1,'shutter x1');near(sh.min.z,S.z0,'shutter z0');near(sh.max.z,S.z1,'shutter z1');near(sh.max.y,S.top,'shutter top');
  // The HKU flip wall is not in B4 any more.
  assert.equal(site.root.getObjectByName('HKU_flip_wall'),undefined,'the HKU flip wall no longer stands in B4');
- // The tiers: three timber steps from the layout rects, drawn by the shell.
- for(const t of B4_LAYOUT.tiers){const b=partBounds(site.root,t.name),r=B4_OBSTACLES.find(o=>o.name===t.name)!;
-  near(b.min.x,r.x0,t.name+' x0');near(b.max.x,r.x1,t.name+' x1');near(b.min.z,r.z0,t.name+' z0');near(b.max.z,r.z1,t.name+' z1');near(b.max.y,r.top,t.name+' top');}
+ // The tiers: three timber steps from the layout rects, drawn by the shell. Each tier is a
+ // riser plus a tread; the tread overlaps the riser by 2 mm and tops out 2 mm proud of the
+ // collision top, so the two materials never share a plane (coplanar faces flicker).
+ for(const t of B4_LAYOUT.tiers){const riser=partBounds(site.root,t.name),tread=partBounds(site.root,t.name+'_tread'),b=riser.clone().union(tread),r=B4_OBSTACLES.find(o=>o.name===t.name)!;
+  near(b.min.x,r.x0,t.name+' x0');near(b.max.x,r.x1,t.name+' x1');near(b.min.z,r.z0,t.name+' z0');near(b.max.z,r.z1,t.name+' z1');near(b.max.y,r.top,t.name+' top');
+  const proud=tread.max.y-r.top;
+  assert.ok(proud>=.001&&proud<=.005,`${t.name}: the tread top is 1–5 mm proud of the collision top (${(proud*1000).toFixed(1)} mm)`);
+  assert.ok(tread.max.y-riser.max.y>=.04,`${t.name}: the tread stacks clear of the riser (${(tread.max.y-riser.max.y).toFixed(3)} m)`);}
  const cl=partBounds(props!,'Aux_power_closet'),cr=B4_OBSTACLES.filter(r=>r.name.startsWith('opening-b4-closet'));
  near(cl.min.x,Math.min(...cr.map(r=>r.x0)),'closet x0');near(cl.max.x,Math.max(...cr.map(r=>r.x1)),'closet x1');near(cl.max.z,Math.max(...cr.map(r=>r.z1)),'closet z1');near(cl.max.y,Math.max(...cr.map(r=>r.top)),'closet top');
  const lever=partBounds(props!,'Aux_breaker_lever').getCenter(new T.Vector3()),bp=B4_STATIONS.breaker.point;
@@ -188,6 +204,55 @@ cs={...cs,stage:'b4_keyboard'};step();
  const panelCentre=partBounds(props!,'Keyboard_wall').getCenter(new T.Vector3()),kpt=B4_STATIONS.keyboard.point;near(panelCentre.z,kpt[2],'keyboard point z');
  assert.throws(()=>partBounds(new T.Group(),'Keyboard_wall'),/missing/,'a missing builder part throws');
  console.log('PASS render vs nav: builder parts match the layout rects within 5 cm');
+}
+// The lobby scenery reads as specified, not just as boxes: the cream border is a ring over the
+// teal rug, the rack LEDs face the room, and the armchair backs sit on their seats.
+{
+ const ringMesh=site.root.getObjectByName('B4_lobby_rug_border') as T.Mesh|undefined;
+ assert.ok(ringMesh,'the lobby rug border is in the shell');
+ const ringGeom=ringMesh!.geometry as unknown as {type:string;parameters:{innerRadius:number;outerRadius:number}};
+ assert.equal(ringGeom.type,'RingGeometry','the rug border is a ring, not a solid disc on top of the rug');
+ assert.ok(Math.abs(ringGeom.parameters.innerRadius-(B4_LOBBY.rug.r-.22))<.001&&Math.abs(ringGeom.parameters.outerRadius-B4_LOBBY.rug.r)<.001,
+  `the rug border spans r-0.22…r (${ringGeom.parameters.innerRadius}…${ringGeom.parameters.outerRadius})`);
+ const rackRect=B4_OBSTACLES.find(o=>o.render==='rack')!;
+ const strip=partBounds(site.root,'B4_rack_status_strip');
+ assert.ok(Math.abs(strip.min.z-(rackRect.z1+.001))<.0015&&strip.max.z<=rackRect.z1+.022,
+  `rack status strips sit on the room-facing south face (z ${strip.min.z.toFixed(3)}…${strip.max.z.toFixed(3)}, rack face ${rackRect.z1})`);
+ assert.ok(Math.abs((strip.min.x+strip.max.x)/2-(rackRect.x0+rackRect.x1)/2)<.01,'rack status strips are centred across their cabinet');
+ const seat=partBounds(site.root,'B4_lobby_armchair_seat'),back=partBounds(site.root,'B4_lobby_armchair_back');
+ assert.ok(back.min.y<=seat.max.y+.001,`the armchair back is seated, not floating (back bottom ${back.min.y.toFixed(3)}, seat top ${seat.max.y.toFixed(3)})`);
+ assert.ok(back.min.y>=seat.max.y-.03,`the armchair back is not buried in the seat (back bottom ${back.min.y.toFixed(3)}, seat top ${seat.max.y.toFixed(3)})`);
+ console.log('PASS lobby scenery: rug ring, room-facing rack LEDs, seated armchair backs');
+}
+// D5: B4 asks the observed-room builder for the closet part only, so the 561 flip tiles and the
+// corridor shell are never allocated; the same builder still yields the wall B5 mounts.
+{
+ const closetOnly=buildObservedFeatureRoom('flipWall',{parts:['closet']});
+ assert.ok(closetOnly.getObjectByName('Aux_power_closet'),'the closet-only build has the aux power closet');
+ assert.equal(closetOnly.getObjectByName('HKU_flip_wall'),undefined,'the closet-only build has no flip wall');
+ assert.equal(closetOnly.getObjectByName('Corridor_structure'),undefined,'the closet-only build has no corridor shell');
+ assert.equal(flipWallTiles(closetOnly).length,0,'the closet-only build allocates no flip tiles');
+ const fullRoom=buildObservedFeatureRoom('flipWall');
+ assert.ok(fullRoom.getObjectByName('HKU_flip_wall'),'the full build still has the HKU flip wall for B5');
+ assert.equal(flipWallTiles(fullRoom).length,561,'the full build still has all 561 flip tiles');
+ disposeAsset(closetOnly);disposeAsset(fullRoom);
+ console.log('PASS flip-wall parts selector: closet only for B4, the full wall still available for B5');
+}
+// The moved B5 wall: the plaque ink stands proud of the lobby-facing face so it can be read.
+{
+ const b5=createB5FlipWall();b5.root.updateMatrixWorld(true);
+ const plaque=b5.root.getObjectByName('B5_flip_wall_plaque') as T.Mesh;
+ assert.ok(plaque,'the B5 plaque is built');
+ const ink=plaque.children.filter((c):c is T.Mesh=>c instanceof T.Mesh&&c.name==='B5_flip_wall_plaque_line');
+ assert.equal(ink.length,3,'the plaque carries three ink lines');
+ const east=plaque.position.x+.01;
+ for(const line of ink){
+  const b=new T.Box3().setFromObject(line);
+  assert.ok(b.min.x>=east+.0005&&b.max.x<=east+.0055,`plaque ink is 0.5–5.5 mm proud of the plaque's east face (${((b.min.x-east)*1000).toFixed(1)}…${((b.max.x-east)*1000).toFixed(1)} mm)`);
+ }
+ assert.equal(b5.debug.state().total,561,'the B5 wall carries its 561 tiles');
+ b5.dispose();
+ console.log('PASS B5 flip wall: plaque ink proud of the east face, 561 tiles mounted');
 }
 // Room lights stay inside the room, and only while the chapter runs.
 const lights=()=>{const out:T.PointLight[]=[];site.root.traverse(o=>{if(o instanceof T.PointLight&&hitPath(o).includes('B04_campaign_rooms'))out.push(o);});return out;};
@@ -234,7 +299,7 @@ function poweredState(when:string){
  for(let i=0;i<3;i++)b4.update(.5);
  assert.equal(cs.stage,'b4_breaker','the beat ends by itself in about 1.2 s');
  assert.ok(!w2.obstacles.some(o=>o.name===SH.name),'the lifted service shutter leaves no obstacle');
- // A restored run at b4_breaker never re-arms the beat (check-campaign-reload seeds b4_flip, so this matters).
+ // A restored run at b4_breaker never re-arms the beat (check-campaign-reload reloads at b4_breaker, so this matters).
  {
   const restored=createB4Chapter(),keep=cs;cs={...cs,stage:'b4_breaker'};restored.attach(ctx);
   for(let i=0;i<6;i++)restored.update(.5);

@@ -78,9 +78,10 @@ export function createB4Chapter():Chapter{
    if(cap.userData.phrase)phraseCaps.push(cap);if(cap.userData.enter)enterCap=cap;
    cap.traverse(o=>{if(o instanceof T.Mesh&&o.name.startsWith('Key_')&&!capGlow.has(cap)){const m=own((o.material as T.MeshStandardMaterial).clone());o.material=m;capGlow.set(cap,m);}});
   }
-  // Aux power closet against the north wall. The HKU flip wall is not built here: it stands in
-  // the Building 5 lobby (`b5FlipWall.ts`). Only the closet part is taken from the builder.
-  const fw=buildObservedFeatureRoom('flipWall'),fwRoot=new T.Group();tag(fwRoot,'B4_service_wall');
+  // Aux power closet against the north wall. The HKU flip wall stands in the Building 5 lobby
+  // (`b5FlipWall.ts`), so B4 asks the observed-room builder for the closet part only: building
+  // the full room would allocate its 561 flip tiles and corridor shell for nothing.
+  const fw=buildObservedFeatureRoom('flipWall',{parts:['closet']}),fwRoot=new T.Group();tag(fwRoot,'B4_service_wall');
   fwRoot.position.fromArray(B4_LAYOUT.closetOrigin);g.add(fwRoot);
   const closet=requirePart(fw,'Aux_power_closet');closet.removeFromParent();fwRoot.add(closet);
   lever=requirePart(fwRoot,'Aux_breaker_lever') as T.Mesh;lever.material=own((lever.material as T.MeshStandardMaterial).clone());
@@ -265,7 +266,6 @@ export function createB4Chapter():Chapter{
  };
  let downAt:{x:number;y:number}|null=null;
  const onDown=(e:PointerEvent)=>{if(!focus||e.button!==0||!ndcOf(e))return;downAt={x:e.clientX,y:e.clientY};};
- const onMove=()=>{};
  const onUp=(e:PointerEvent)=>{if(!focus)return;const click=downAt&&Math.hypot(e.clientX-downAt.x,e.clientY-downAt.y)<=6;downAt=null;if(!click)return;
   const v=ndcOf(e);if(!v)return;const cap=capAt(v);if(cap)press(cap.userData.enter?'Enter':String(cap.userData.label));
  };
@@ -313,7 +313,7 @@ export function createB4Chapter():Chapter{
  }
  function detach(){
   leaveFocus();clearRetry();
-  if(typeof window!=='undefined'){window.removeEventListener('keydown',onKey,true);window.removeEventListener('pointerdown',onDown);window.removeEventListener('pointermove',onMove);window.removeEventListener('pointerup',onUp);}
+  if(typeof window!=='undefined'){window.removeEventListener('keydown',onKey,true);window.removeEventListener('pointerdown',onDown);window.removeEventListener('pointerup',onUp);}
   const w=world();if(w){w.setDoorOpen(B4_DOOR_OBSTACLE,false);setB4FlipPanel(w,false);}
   setB4DoorLeaves(leaves,0);leaves=[];hideViewModel(false);
   removeLights();powered?.removeFromParent();powered=null;group?.removeFromParent();group?.traverse(o=>{if(o instanceof T.Mesh||o instanceof T.LineSegments)o.geometry.dispose();});
@@ -347,7 +347,7 @@ export function createB4Chapter():Chapter{
    ctx=c;group=build(c);leaves=findB4DoorLeaves(c.root());
    // The entrance doors unlock when the campaign reaches B4 (the leaves slide in animate()).
    world()?.setDoorOpen(B4_DOOR_OBSTACLE,true);
-   if(typeof window!=='undefined'){window.addEventListener('keydown',onKey,true);window.addEventListener('pointerdown',onDown);window.addEventListener('pointermove',onMove);window.addEventListener('pointerup',onUp);}
+   if(typeof window!=='undefined'){window.addEventListener('keydown',onKey,true);window.addEventListener('pointerdown',onDown);window.addEventListener('pointerup',onUp);}
    applyStage(c.stage());
    paintCaps();
   },

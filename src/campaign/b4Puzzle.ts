@@ -2,9 +2,17 @@ import type {CampaignEvent,CampaignStage} from './state';
 
 /**
  * B4 Keyboard Wall puzzle rules. Pure: no DOM, no three.js, no storage. The
- * chapter feeds key presses, tile flips and station actions in and turns the
- * returned events into campaign events. Same four steps as the legacy
- * `interiors.html?chapter=b4` page: keyboard → flip → breaker → connect.
+ * chapter feeds key presses and station actions in and turns the returned
+ * events into campaign events. The steps are keyboard → flip → breaker →
+ * connect, where `flip` is the 1.2 s automatic service-wall beat (not a tile
+ * puzzle).
+ *
+ * The flip-state helpers below (`createFlipState`/`flipTiles`/`flipCount`/
+ * `flipSolved`, plus `sweepTiles`/`autoFinishTiles`) are retained for save
+ * compatibility and their tests: a save can still resume at `b4_flip`. They are
+ * not kept because B5 reuses them — B5's lobby flip wall is ambient scenery
+ * driven by `flipWallTiles` in `src/model/observedFeatureRooms.ts`, with no
+ * campaign state.
  */
 export const B4_PHRASE='ILOVECDS';
 export type B4Step='keyboard'|'flip'|'breaker'|'connect'|'done';
@@ -40,6 +48,8 @@ export function pressKeyboard(s:KeyboardState,key:string):{state:KeyboardState;r
  return{state:{typed:'',solved:false},result:'reset'};
 }
 
+/** 561-tile state from the old B4 flip puzzle. Retained for save compatibility and its
+ * unit tests; B5's ambient flip wall does not use it. */
 export interface FlipState{readonly flipped:readonly boolean[]}
 export function createFlipState(count:number,flipped=false):FlipState{return{flipped:Array.from({length:count},()=>flipped)};}
 /** Sweep passes `value=true` (a tile you sweep over shows its back); a click toggles. */

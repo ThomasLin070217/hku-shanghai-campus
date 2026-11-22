@@ -94,9 +94,11 @@ await leg('B04 entry -> Keyboard Wall',()=>{const n=walk([[B4_STATIONS.keyboard.
  assert.equal(b4().state().near,'keyboard','the Keyboard Wall is in reach');b4().type('I LOVE CDS');b4().enter();expectStage('b4_flip');return n;});
 await leg('Keyboard Wall -> service wall lifts (automatic)',()=>{
  // b4_flip is a short automatic beat: no station, no input, bounded wait for b4_breaker.
- let n=0;while(stage()!=='b4_breaker'&&n<240){game.step(dt);host!.update(dt);n++;}
+ // The no-station assert belongs inside the wait: after it exits the stage is b4_breaker and
+ // the keyboard stand is legitimately in reach again.
+ let n=0;while(stage()!=='b4_breaker'&&n<240){game.step(dt);host!.update(dt);n++;
+  if(stage()==='b4_flip')assert.equal(b4().state().near,null,'no station is in reach while the wall lifts');}
  assert.equal(stage(),'b4_breaker','the service wall lifts by itself in under 2 s');
- assert.equal(b4().state().near,null,'no station is in reach while the wall lifts');
  return n;});
 await leg('service wall -> breaker (F)',()=>{const n=walk([[B4_STATIONS.breaker.stand[0],B4_STATIONS.breaker.stand[2]]]);
  assert.equal(host!.interact(),true,'F at the breaker is the campaign\'s');expectStage('b4_connect');return n;});

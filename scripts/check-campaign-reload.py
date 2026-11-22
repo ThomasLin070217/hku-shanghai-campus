@@ -76,25 +76,27 @@ def seed_campaign(page, events):
 with sync_playwright() as p:
     browser = p.chromium.launch(executable_path=CHROME, args=ARGS, headless=True) if CHROME else p.chromium.launch(args=ARGS, headless=True)
     try:
-        # 1. Opening save at `complete` + campaign save at `b4_flip`: a plain load continues at b4_flip.
+        # 1. Opening save at `complete` + campaign save at `b4_breaker`: a plain load continues there.
+        #    b4_flip is the automatic 1.2 s service-wall beat now: a save seeded at b4_flip advances
+        #    to b4_breaker by itself while the page loads, so the reload test seeds the settled stage.
         page = browser.new_page(viewport={'width': 1280, 'height': 800})
         errors = []
         page.on('pageerror', lambda e: errors.append(str(e)))
         page.add_init_script(COUNT_CARDS)
-        seeded = seed_campaign(page, ['enter_b4', 'keyboard_solved'])
-        check('seed: opening complete, campaign at b4_flip', seeded['story'] == 'complete' and seeded['stage'] == 'b4_flip', seeded)
+        seeded = seed_campaign(page, ['enter_b4', 'keyboard_solved', 'flip_solved'])
+        check('seed: opening complete, campaign at b4_breaker', seeded['story'] == 'complete' and seeded['stage'] == 'b4_breaker', seeded)
         page.goto(ORIGIN + '?experience=opening', wait_until='load')
         ready(page)
         frames(page)
         s = page.evaluate(SNAPSHOT)
-        check('reload keeps the campaign stage', s['stage'] == 'b4_flip', s)
+        check('reload keeps the campaign stage', s['stage'] == 'b4_breaker', s)
         check('reload opens no completion modal', s['modal'] is None and not s['dialog'], s)
         check('reload shows at most one chapter card', len(s['cards']) <= 1, s['cards'])
         check('reload asks for no gesture-less pointer lock', 'Pointer lock unavailable' not in s['toast'], s['toast'])
         page.keyboard.press('Shift')
         frames(page)
         s = page.evaluate(SNAPSHOT)
-        check('still b4_flip after input', s['stage'] == 'b4_flip' and s['modal'] is None, s)
+        check('still b4_breaker after input', s['stage'] == 'b4_breaker' and s['modal'] is None, s)
         # The campaign's hearts channel is the opening runtime: HUD and save follow it.
         h = page.evaluate("() => { const n = __CAMPUS.experience.hearts.damage(2); return {returned: n, runtime: __CAMPUS.openingDebug.state().runtime.hearts}; }")
         frames(page)
@@ -104,7 +106,7 @@ with sync_playwright() as p:
         ready(page)
         frames(page)
         kept = page.evaluate("() => ({hearts: __CAMPUS.openingDebug.state().runtime.hearts, stage: __CAMPUS.campaign.state()?.stage})")
-        check('hearts damage is saved with the opening save', kept == {'hearts': 8, 'stage': 'b4_flip'}, kept)
+        check('hearts damage is saved with the opening save', kept == {'hearts': 8, 'stage': 'b4_breaker'}, kept)
         check('no page errors (saved campaign)', errors == [], errors)
         page.close()
 

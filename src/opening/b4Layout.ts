@@ -33,10 +33,11 @@ export const B4_BUILDER={
   /** `Keyboard_wall` (backing frame + caps): what the focus view frames. */
   panelBox:{x0:-3.425,x1:4.385,y0:1.565,y1:3.715,z0:-4.239,z1:-3.664},
  },
+ /** The observed flip-wall room's aux power cabinet, in builder-local coordinates. B4
+  * builds only this part; the `HKU_flip_wall` part of the same builder stands in the B5
+  * lobby (`b5FlipWall.ts`), so its extents are not repeated here.
+  * `contentsFront` is the front of the PSU modules inside the cavity. */
  flip:{
-  /** `HKU_flip_wall` (frame + 561 tiles), closed. Built in Building 5 only. */
-  wall:{x0:-3.387,x1:3.987,y0:.06,y1:3.923,z0:-1.989,z1:-1.759},
-  /** `Aux_power_closet`; `contentsFront` is the front of the PSU modules inside the cavity. */
   closet:{x0:-3.42,x1:4.02,y0:.03,y1:3.951,z0:-2.985,z1:-1.91,contentsFront:-2.18,side:.1},
   lever:[.30,1.86,-2.26] as V3,
   breakerPanel:{x0:-.55,x1:1.15,y0:1.36,y1:2.36,z0:-2.39,z1:-2.29},

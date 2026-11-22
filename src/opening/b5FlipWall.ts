@@ -39,13 +39,15 @@ export function createB5FlipWall(){
  root.name=B5_FLIP_WALL_NAME;
  root.userData={...SOURCE,authorKey:B5_FLIP_WALL_NAME,sceneLabel:'HKU flip wall · Building 5 lobby (ambient)'};
 
- // Take only the wall from the observed corridor room: its shell belongs to B5 already.
- const room=buildObservedFeatureRoom('flipWall');
+ // Take only the wall from the observed flip-wall room: B5 supplies its own lobby shell,
+ // so the builder is asked for the wall part alone.
+ const room=buildObservedFeatureRoom('flipWall',{parts:['wall']});
  const wall=room.getObjectByName('HKU_flip_wall');
  if(!wall)throw new Error('the observed flip-wall builder has no HKU_flip_wall part');
  wall.removeFromParent();
  const mount=new T.Group();
  mount.name='B5_flip_wall_mount';
+ mount.userData={...SOURCE,authorKey:'B5_flip_wall_mount'};
  mount.position.fromArray(B5_FLIP_WALL_ORIGIN);
  mount.rotation.y=B5_FLIP_WALL_YAW;
  mount.add(wall);
@@ -64,7 +66,9 @@ export function createB5FlipWall(){
  for(let i=0;i<3;i++){
   const line=new T.Mesh(new T.BoxGeometry(.004,.022,.4-i*.09),ink);
   line.name='B5_flip_wall_plaque_line';
-  line.position.set(-.013,.07-i*.075,0);
+  // +x is the plaque's east (lobby-facing) side: the ink stands 1–5 mm proud of that face
+  // instead of sitting inside the plaque body, where it would be invisible.
+  line.position.set(.013,.07-i*.075,0);
   line.userData={...SOURCE,authorKey:'B5_flip_wall_plaque_line'};
   plaque.add(line);
  }

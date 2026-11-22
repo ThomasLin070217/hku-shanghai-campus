@@ -424,7 +424,7 @@ function buildAuxPowerCloset() {
   return root;
 }
 
-function buildFlipWallRoom() {
+function buildFlipWallRoom(parts?: readonly FeatureRoomPart[]) {
   const root = new T.Group();
   root.name = 'Observed_HKU_Flip_Wall_Corridor';
   root.userData = {
@@ -432,19 +432,26 @@ function buildFlipWallRoom() {
     dimensions: 'estimated grid and corridor dimensions; HKU lettering traced approximately',
     placement: 'building, floor and corridor endpoints unverified',
   };
-  const shell = section(root, 'Corridor_structure');
-  const wall = section(root, 'HKU_flip_wall');
-  const tiles = section(wall, 'Flip_tile_faces');
-  wall.position.set(.30, 0, -1.93);
-  wall.userData = {
-    id: 'CDS1-hku-flip-wall',
-    units: 'metres',
-    origin: 'panel centre',
-    forward: '+Z',
-    dimensions: {columns: flipColumns, rows: flipRows, tilePitch, width: flipColumns * tilePitch, height: flipRows * tilePitch},
-    capabilities: ['tile.flip.vertical-axis', 'tile.front-back-inverse'],
-    source: 'November 15 flip-wall photo; c2f30ae164433b4a517b2ed5d80b7460.mp4, 00:00-00:17.6',
-  };
+  // Parts selector: B4 needs only `closet` (the aux power cabinet), B5 needs only `wall`, and
+  // the preview/export builds take everything. Skipping a part must skip its geometry too,
+  // not build it and discard it (561 flip tiles plus the corridor shell are not cheap).
+  const only = parts ? new Set(parts) : null;
+  const want = (part: FeatureRoomPart) => !only || only.has(part);
+  const shell = want('shell') ? section(root, 'Corridor_structure') : null;
+  const wall = want('wall') ? section(root, 'HKU_flip_wall') : null;
+  const tiles = wall ? section(wall, 'Flip_tile_faces') : null;
+  if (wall) {
+    wall.position.set(.30, 0, -1.93);
+    wall.userData = {
+      id: 'CDS1-hku-flip-wall',
+      units: 'metres',
+      origin: 'panel centre',
+      forward: '+Z',
+      dimensions: {columns: flipColumns, rows: flipRows, tilePitch, width: flipColumns * tilePitch, height: flipRows * tilePitch},
+      capabilities: ['tile.flip.vertical-axis', 'tile.front-back-inverse'],
+      source: 'November 15 flip-wall photo; c2f30ae164433b4a517b2ed5d80b7460.mp4, 00:00-00:17.6',
+    };
+  }
   const limestone = material('Corridor ivory stone', 0xcfc9b6);
   const plaster = material('Corridor plaster', 0xe2dacf);
   const wood = material('Flip tile warm timber', 0xb78d62);
@@ -457,53 +464,57 @@ function buildFlipWallRoom() {
   const height = flipRows * tilePitch;
   const bottom = .13;
 
-  box(shell, 'Corridor_floor', limestone, 11.4, .16, 5.2, 0, -.08, .5);
-  // Rear wall is a frame around the service opening; the flip panel covers the cavity.
-  box(shell, 'Flip_wall_rear_wall_left', plaster, 1.963, 4.12, .22, -4.3685, 2.06, -2.05);
-  box(shell, 'Flip_wall_rear_wall_right', plaster, 1.363, 4.12, .22, 4.6685, 2.06, -2.05);
-  box(shell, 'Flip_wall_rear_wall_top', plaster, 7.374, .197, .22, .30, 4.0215, -2.05);
-  box(shell, 'Flip_wall_rear_wall_bottom', plaster, 7.374, .06, .22, .30, .03, -2.05);
-  box(shell, 'Stone_column', limestone, .63, 4.1, .68, -4.77, 2.05, .97);
-  box(shell, 'Dark_door_reveal', black, .23, 3.19, .14, -3.59, 1.595, -1.89);
-  box(shell, 'Service_door', material('Corridor timber door', 0x7d6852), .79, 2.36, .13, -4.28, 1.18, -1.9);
-  box(shell, 'Right_dark_jamb', black, .12, 4.06, .18, 4.22, 2.03, -1.89);
-  box(shell, 'Short_ceiling_return', plaster, 10.7, .15, 2.4, 0, 4.10, -.875);
-  for (let index = 0; index < 17; index++) {
-    const x = -5.05 + index * .59;
-    const z = -.85 + .028 * Math.min(index - 6, 0) ** 2;
-    const channel = box(shell, 'Recessed_ceiling_channel', black, .635, .022, .090, x, 4.017, z);
-    channel.rotation.y = -.095 * Math.min(index - 6, 0);
-    if (index % 4 === 0) box(shell, 'Recessed_spot', lamp, .15, .012, .044, x, 4, z);
-  }
-
-  box(wall, 'Panel_shadow_gap', darkBacking, width + .10, height + .10, .08, 0, bottom + height / 2, 0);
-  for (const side of [-1, 1]) {
-    box(wall, 'Timber_side_frame', wood, .077, height + .14, .23, side * (width / 2 + .035), bottom + height / 2, .056);
-    box(wall, 'Timber_horizontal_frame', wood, width + .146, .07, .23, 0, bottom + height / 2 + side * (height / 2 + .035), .056);
-  }
-
-  for (let row = 0; row < flipRows; row++) {
-    for (let column = 0; column < flipColumns; column++) {
-      const x = (column + .5) * tilePitch - width / 2;
-      const y = bottom + height - (row + .5) * tilePitch;
-      const dark = isDarkTile(column, row);
-      const tile = new T.Group();
-      tile.name = `FlipTile_r${row}c${column}`;
-      tile.position.set(x, y, .11);
-      tile.rotation.x = (row % 3 - 1) * .018;
-      tile.userData = {row, column, front: dark ? 'green' : 'wood', back: dark ? 'wood' : 'green'};
-      tiles.add(tile);
-      const face = new T.Mesh(
-        new T.BoxGeometry(tilePitch - .012, tilePitch - .019, .044),
-        [tileEdge, tileEdge, tileEdge, tileEdge, dark ? green : wood, dark ? wood : green],
-      );
-      face.name = 'Flip_tile_face';
-      face.castShadow = face.receiveShadow = true;
-      tile.add(face);
+  if (shell) {
+    box(shell, 'Corridor_floor', limestone, 11.4, .16, 5.2, 0, -.08, .5);
+    // Rear wall is a frame around the service opening; the flip panel covers the cavity.
+    box(shell, 'Flip_wall_rear_wall_left', plaster, 1.963, 4.12, .22, -4.3685, 2.06, -2.05);
+    box(shell, 'Flip_wall_rear_wall_right', plaster, 1.363, 4.12, .22, 4.6685, 2.06, -2.05);
+    box(shell, 'Flip_wall_rear_wall_top', plaster, 7.374, .197, .22, .30, 4.0215, -2.05);
+    box(shell, 'Flip_wall_rear_wall_bottom', plaster, 7.374, .06, .22, .30, .03, -2.05);
+    box(shell, 'Stone_column', limestone, .63, 4.1, .68, -4.77, 2.05, .97);
+    box(shell, 'Dark_door_reveal', black, .23, 3.19, .14, -3.59, 1.595, -1.89);
+    box(shell, 'Service_door', material('Corridor timber door', 0x7d6852), .79, 2.36, .13, -4.28, 1.18, -1.9);
+    box(shell, 'Right_dark_jamb', black, .12, 4.06, .18, 4.22, 2.03, -1.89);
+    box(shell, 'Short_ceiling_return', plaster, 10.7, .15, 2.4, 0, 4.10, -.875);
+    for (let index = 0; index < 17; index++) {
+      const x = -5.05 + index * .59;
+      const z = -.85 + .028 * Math.min(index - 6, 0) ** 2;
+      const channel = box(shell, 'Recessed_ceiling_channel', black, .635, .022, .090, x, 4.017, z);
+      channel.rotation.y = -.095 * Math.min(index - 6, 0);
+      if (index % 4 === 0) box(shell, 'Recessed_spot', lamp, .15, .012, .044, x, 4, z);
     }
   }
 
-  root.add(buildAuxPowerCloset());
+  if (wall && tiles) {
+    box(wall, 'Panel_shadow_gap', darkBacking, width + .10, height + .10, .08, 0, bottom + height / 2, 0);
+    for (const side of [-1, 1]) {
+      box(wall, 'Timber_side_frame', wood, .077, height + .14, .23, side * (width / 2 + .035), bottom + height / 2, .056);
+      box(wall, 'Timber_horizontal_frame', wood, width + .146, .07, .23, 0, bottom + height / 2 + side * (height / 2 + .035), .056);
+    }
+
+    for (let row = 0; row < flipRows; row++) {
+      for (let column = 0; column < flipColumns; column++) {
+        const x = (column + .5) * tilePitch - width / 2;
+        const y = bottom + height - (row + .5) * tilePitch;
+        const dark = isDarkTile(column, row);
+        const tile = new T.Group();
+        tile.name = `FlipTile_r${row}c${column}`;
+        tile.position.set(x, y, .11);
+        tile.rotation.x = (row % 3 - 1) * .018;
+        tile.userData = {row, column, front: dark ? 'green' : 'wood', back: dark ? 'wood' : 'green'};
+        tiles.add(tile);
+        const face = new T.Mesh(
+          new T.BoxGeometry(tilePitch - .012, tilePitch - .019, .044),
+          [tileEdge, tileEdge, tileEdge, tileEdge, dark ? green : wood, dark ? wood : green],
+        );
+        face.name = 'Flip_tile_face';
+        face.castShadow = face.receiveShadow = true;
+        tile.add(face);
+      }
+    }
+  }
+
+  if (want('closet')) root.add(buildAuxPowerCloset());
   return root;
 }
 
@@ -518,9 +529,17 @@ export function flipWallTiles(root: T.Object3D) {
 }
 
 export type FeatureRoom = 'keyboard' | 'flipWall' | 'ringDisplay';
+/** Which sections of the observed flip-wall room to build. Omitted = the whole room, the
+ * default for the preview and GLB exports. B4 takes `['closet']` (its aux power cabinet only);
+ * B5 takes `['wall']` (the HKU flip wall it mounts in the lobby). */
+export type FeatureRoomPart = 'shell' | 'wall' | 'closet';
 
-export function buildObservedFeatureRoom(kind: FeatureRoom) {
-  const builders = {keyboard:buildKeyboardRoom, flipWall:buildFlipWallRoom, ringDisplay:buildRingDisplayRoom};
+export function buildObservedFeatureRoom(kind: FeatureRoom, options: {parts?: readonly FeatureRoomPart[]} = {}) {
+  const builders = {
+    keyboard: () => buildKeyboardRoom(),
+    flipWall: () => buildFlipWallRoom(options.parts),
+    ringDisplay: () => buildRingDisplayRoom(),
+  };
   const root = builders[kind]();
   compact(root);
   voxelizeMaterials(root);

@@ -43,13 +43,18 @@ export function buildB4Shell(){
   const x=(r.x0+r.x1)/2,z=(r.z0+r.z1)/2,w=r.x1-r.x0,d=r.z1-r.z0;
   if(r.render==='rack'){
    box(racks,r.name,w,r.top-r.bottom,d,x,(r.top+r.bottom)/2,z,mats.rack);
-   for(let k=0;k<7;k++)box(racks,'B4_rack_status_strip',.02,.04,d-.2,r.x0-.01,r.bottom+.4+k*.27,z,mats.led);
+   // Status strips on the room-facing south face, 1 mm proud: on the west faces they read
+   // edge-on through the 0.20 m gaps between the cabinets.
+   for(let k=0;k<7;k++)box(racks,'B4_rack_status_strip',w-.2,.04,.02,x,r.bottom+.4+k*.27,r.z1+.011,mats.led);
    continue;
   }
-  // A tier is a solid step: the whole block is the riser, a thin slab on top is the tread.
+  // A tier is a solid step built from two stacked materials. The riser stops 5 cm below
+  // the step top; the tread overlaps it by 2 mm, tops out 2 mm proud of the collision top
+  // and is 2 mm wider/deeper, so no riser and tread face is coplanar (coplanar faces flicker).
   if(r.render==='tier'){
-   box(shell,r.name,w,r.top-r.bottom,d,x,(r.top+r.bottom)/2,z,mats.tierRiser);
-   box(shell,r.name+'_tread',w,.05,d,x,r.top-.025,z,mats.tierTop);
+   const tread=.05,proud=.002;
+   box(shell,r.name,w,r.top-tread-r.bottom,d,x,(r.bottom+r.top-tread)/2,z,mats.tierRiser);
+   box(shell,r.name+'_tread',w+2*proud,tread+2*proud,d+2*proud,x,r.top-tread/2,z,mats.tierTop);
    continue;
   }
   box(shell,r.name,w,r.top-r.bottom,d,x,(r.top+r.bottom)/2,z,mats[r.render]);
@@ -58,10 +63,13 @@ export function buildB4Shell(){
  const lobby=group(root,'B04_lobby_furniture'),L=B4_LOBBY;
  const rug=new T.Mesh(new T.CylinderGeometry(L.rug.r,L.rug.r,.012,44),mats.rug);
  rug.name='B4_lobby_rug';rug.position.set(L.rug.x,F+.006,L.rug.z);rug.receiveShadow=true;rug.userData={...SOURCE,authorKey:'B4_lobby_rug'};lobby.add(rug);
- const ring=new T.Mesh(new T.CylinderGeometry(L.rug.r-.22,L.rug.r-.22,.014,44),mats.rugRing);
- ring.name='B4_lobby_rug_border';ring.position.set(L.rug.x,F+.008,L.rug.z);ring.userData={...SOURCE,authorKey:'B4_lobby_rug_border'};lobby.add(ring);
+ // A ring, not a disc: a solid border disc would cover the teal rug it is meant to outline.
+ // One millimetre above the rug's top face so the two surfaces do not share a plane.
+ const ring=new T.Mesh(new T.RingGeometry(L.rug.r-.22,L.rug.r,48),mats.rugRing);
+ ring.name='B4_lobby_rug_border';ring.rotation.x=-Math.PI/2;ring.position.set(L.rug.x,F+.013,L.rug.z);ring.receiveShadow=true;ring.userData={...SOURCE,authorKey:'B4_lobby_rug_border'};lobby.add(ring);
  // The curved sofa: modules on a circle, backs outward, the gap facing the room's north-west.
- const S=L.sofa,modules=8,span=S.to-S.from;
+ // The module count comes from the layout object, the same one the collision rects use.
+ const S=L.sofa,modules=S.modules,span=S.to-S.from;
  for(let i=0;i<modules;i++){
   const t=S.from+span*(i+.5)/modules,width=2*S.radius*Math.sin(span/(2*modules))+.03;
   const x=S.cx+S.radius*Math.cos(t),z=S.cz+S.radius*Math.sin(t);
@@ -70,8 +78,10 @@ export function buildB4Shell(){
  }
  for(const [i,c] of L.armchairs.entries()){
   const a=group(lobby,'B4_lobby_armchair_'+(i+1));a.position.set(c.x,F,c.z);a.rotation.y=i?Math.PI*.62:-Math.PI*.18;
-  box(a,'B4_lobby_armchair_seat',L.armchairSize,L.armchairSize*.26,L.armchairSize*.82,0,L.armchairSize*.26/2,0,mats.sofa);
-  const back=box(a,'B4_lobby_armchair_back',L.armchairSize,L.armchairSize*.42,.16,0,L.armchairSize*.42/2+.3,-L.armchairSize*.33,mats.sofa);back.rotation.x=-.12;
+  const seatH=L.armchairSize*.26,backH=L.armchairSize*.42;
+  box(a,'B4_lobby_armchair_seat',L.armchairSize,seatH,L.armchairSize*.82,0,seatH/2,0,mats.sofa);
+  // The back starts at the seat's top face: the old +0.3 m offset floated it 9.7 cm above the seat.
+  const back=box(a,'B4_lobby_armchair_back',L.armchairSize,backH,.16,0,seatH+backH/2,-L.armchairSize*.33,mats.sofa);back.rotation.x=-.12;
  }
  const table=new T.Mesh(new T.CylinderGeometry(L.table.r,L.table.r,.055,20),mats.stone);
  table.name='B4_lobby_table';table.position.set(L.table.x,F+L.table.h-.0275,L.table.z);table.castShadow=table.receiveShadow=true;table.userData={...SOURCE,authorKey:'B4_lobby_table'};lobby.add(table);
