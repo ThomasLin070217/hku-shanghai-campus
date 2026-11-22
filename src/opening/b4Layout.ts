@@ -60,6 +60,12 @@ export const B4_LAYOUT={
   emergency:[{p:[51.5,3.6,10.5],d:9},{p:[63.5,3.6,10.8],d:9},{p:[58,3.6,13.5],d:6.5}] as {p:V3;d:number}[],
   work:{p:[58,3.9,12] as V3,d:8},
   rack:{p:[68.2,2.4,13.25] as V3,d:7},
+  /** Ruling 39: the dim powered state after the MacBook connects. Each range stays inside the
+   * room (x 46–70, z 7–20.5), so nothing lights the plaza through the facade. */
+  powered:[
+   {p:[58,3.9,13.75] as V3,d:6.5,color:0xdcefe6,intensity:16},
+   {p:[66.4,2.4,13.25] as V3,d:3.4,color:0x4dff9a,intensity:9},
+  ],
  },
  /** Supercomputer cabinets on the east wall. */
  racks:[[10.4,11.6],[11.9,13.1],[13.4,14.6],[14.9,16.1]] as [number,number][],

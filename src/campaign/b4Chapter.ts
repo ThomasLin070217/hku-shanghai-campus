@@ -5,7 +5,7 @@ import {CDS1_KEYS,saveKeyboardProgress} from '../opening/keyboardProgress';
 import {OPENING} from '../opening/spatialLayout';
 import {KEYS} from '../exploration/config';
 import {B4_FOCUS_FRAME,B4_LAYOUT,B4_STATIONS,B4_REACH,B4_DOOR_OBSTACLE,focusPose,requirePart,setB4FlipPanel,stationDistance,type B4StationId} from '../opening/b4Layout';
-import {B4_RACK_BODY,B4_RACK_LED,findB4DoorLeaves,setB4DoorLeaves} from '../opening/b4Shell';
+import {B4_CEILING,B4_RACK_BODY,B4_RACK_LED,findB4DoorLeaves,setB4DoorLeaves} from '../opening/b4Shell';
 import {B4_PHRASE,b4StepOf,connectMacBook,createFlipState,createKeyboardState,flipCount,flipSolved,flipTiles,pressKeyboard,pullBreaker,sweepTiles,autoFinishTiles,type B4Step,type FlipCell,type FlipState,type KeyboardState} from './b4Puzzle';
 import {campaignChapterOf,stageIndex,type CampaignEvent,type CampaignStage} from './state';
 import type {Chapter,ChapterContext,Objective} from './types';
@@ -37,12 +37,12 @@ type World={obstacles:Parameters<typeof setB4FlipPanel>[0]['obstacles'];meshes:T
  * DOM, audio and asset URLs are touched only at runtime and behind guards.
  */
 export function createB4Chapter():Chapter{
- let ctx:ChapterContext|null=null,group:T.Group|null=null,lights:T.Group|null=null;
+ let ctx:ChapterContext|null=null,group:T.Group|null=null,lights:T.Group|null=null,powered:T.Group|null=null;
  let keyboard:KeyboardState=createKeyboardState(),flip:FlipState=createFlipState(0);
  let tiles:Tile[]=[],caps:T.Group[]=[],phraseCaps:T.Group[]=[],enterCap:T.Group|null=null,grid={rows:0,columns:0};
  let flipWall:T.Object3D|null=null,lever:T.Mesh|null=null,pickPlane:T.Mesh|null=null,tile00=new T.Vector3(),pitch=.219;
  const emergency:T.PointLight[]=[];let work:T.PointLight|null=null,rackLight:T.PointLight|null=null;
- const rackMaterials:T.MeshStandardMaterial[]=[],rackBodies:T.MeshStandardMaterial[]=[],capGlow=new Map<T.Group,T.MeshStandardMaterial>(),owned:T.Material[]=[];
+ const rackMaterials:T.MeshStandardMaterial[]=[],rackBodies:T.MeshStandardMaterial[]=[],ceilingPanels:T.MeshStandardMaterial[]=[],capGlow=new Map<T.Group,T.MeshStandardMaterial>(),owned:T.Material[]=[];
  const outlines=new Map<B4StationId,T.LineSegments>();
  let leaves:T.Object3D[]=[];
  let lightLevel=0,lift=0,leverPull=0,doorOpen=0,flash=0,seenStage:CampaignStage|null=null,hum:HTMLAudioElement|null=null,humWanted=false,humRetry:(()=>void)|null=null;
@@ -98,6 +98,8 @@ export function createB4Chapter():Chapter{
   // The rack bodies glow faint green once the supercomputer is up, so the room reads as
   // powered from the door after its lights are removed (FU3, no real lights).
   c.root().traverse(o=>{if(o instanceof T.Mesh)for(const m of [o.material].flat())if(m instanceof T.MeshStandardMaterial&&m.name===B4_RACK_BODY&&!rackBodies.includes(m)){m.emissive.setHex(0x1f8a55);m.emissiveIntensity=0;rackBodies.push(m);}});
+  // Ruling 39: the ceiling panels glow faintly once the supercomputer is powered.
+  c.root().traverse(o=>{if(o instanceof T.Mesh)for(const m of [o.material].flat())if(m instanceof T.MeshStandardMaterial&&m.name===B4_CEILING&&!ceilingPanels.includes(m)){m.emissive.setHex(0xbfd8cc);m.emissiveIntensity=0;ceilingPanels.push(m);}});
   // Gold outlines around each station's interactable, shown when it is in reach.
   const goldLine=own(new T.LineBasicMaterial({color:GOLD,transparent:true,opacity:.9,depthTest:true}));
   for(const s of Object.values(B4_STATIONS)){const b=s.box,pad=.04;
@@ -115,15 +117,31 @@ export function createB4Chapter():Chapter{
   group.add(lights);lights.updateMatrixWorld(true);
  }
  function removeLights(){lights?.removeFromParent();lights=null;emergency.length=0;work=null;rackLight=null;}
+ /**
+  * Ruling 39: once the MacBook is connected and the chapter lights are gone, the room keeps a
+  * dim powered state: two low lights whose range stays inside the room (no light leaks onto
+  * the plaza), plus the emissive ceiling and racks driven by lightLevel.
+  */
+ function syncPowered(){
+  const want=!!group&&!lights&&reached('b4_connect');
+  if(want&&!powered){
+   powered=new T.Group();tag(powered,'B4_powered_lights');
+   for(const {p,d,color,intensity} of B4_LAYOUT.lights.powered){const l=new T.PointLight(color,intensity,d,2);l.position.fromArray(p);powered.add(l);}
+   group!.add(powered);powered.updateMatrixWorld(true);
+  }else if(!want&&powered){powered.removeFromParent();powered=null;}
+ }
 
  /* ---------------- stage-driven scenery ---------------- */
  function applyStage(stage:CampaignStage){
-  if(stage===seenStage)return;seenStage=stage;
+  if(stage===seenStage)return;const first=seenStage===null;seenStage=stage;
   if(reached('b4_flip')){keyboard={typed:B4_PHRASE,solved:true};paintCaps();}
   if(reached('b4_breaker')){flip=createFlipState(tiles.length,true);for(const t of tiles)t.target=Math.PI;flipDone=true;}
   const w=world();if(w)setB4FlipPanel(w,!reached('b4_breaker'));
   // After the MacBook connects the room stays lit until the player has walked out of B04.
   if(campaignChapterOf(stage)==='b4')addLights();else if(!playerInRoom())removeLights();
+  // A run restored past the connect (reload, checkpoint) starts powered, without the fade-in.
+  if(first&&reached('b4_connect'))lightLevel=1;
+  syncPowered();
   // The supercomputer runs from the breaker on, also after a reload.
   humWanted=reached('b4_connect');if(humWanted)playHum();
  }
@@ -300,7 +318,8 @@ export function createB4Chapter():Chapter{
   for(const [i,l] of emergency.entries())l.intensity=28*(1-lightLevel)*(.85+.15*Math.sin(now*.006+i));
   if(work)work.intensity=2+58*lightLevel;if(rackLight)rackLight.intensity=24*lightLevel;
   for(const m of rackMaterials)m.emissiveIntensity=.12+1.85*lightLevel;
-  for(const m of rackBodies)m.emissiveIntensity=.55*lightLevel;
+  for(const m of rackBodies)m.emissiveIntensity=.9*lightLevel;
+  for(const m of ceilingPanels)m.emissiveIntensity=.14*lightLevel;
   if(flash>0){flash-=dt;if(flash<=0)paintCaps();}
   if(focus){const g=ctx.explorer.game;g.yaw+=(baseYaw-g.yaw)*k;g.pitch+=(basePitch-g.pitch)*k;applyFocus();}
   updatePresence();
@@ -318,10 +337,10 @@ export function createB4Chapter():Chapter{
   if(typeof window!=='undefined'){window.removeEventListener('keydown',onKey,true);window.removeEventListener('pointerdown',onDown);window.removeEventListener('pointermove',onMove);window.removeEventListener('pointerup',onUp);}
   const w=world();if(w){w.setDoorOpen(B4_DOOR_OBSTACLE,false);setB4FlipPanel(w,false);}
   setB4DoorLeaves(leaves,0);leaves=[];hideViewModel(false);
-  removeLights();group?.removeFromParent();group?.traverse(o=>{if(o instanceof T.Mesh||o instanceof T.LineSegments)o.geometry.dispose();});
+  removeLights();powered?.removeFromParent();powered=null;group?.removeFromParent();group?.traverse(o=>{if(o instanceof T.Mesh||o instanceof T.LineSegments)o.geometry.dispose();});
   for(const m of owned)m.dispose();owned.length=0;
   try{hum?.pause();}catch{/* optional */}
-  group=null;ctx=null;tiles=[];caps=[];phraseCaps=[];enterCap=null;capGlow.clear();rackMaterials.length=0;for(const m of rackBodies){m.emissive.setHex(0);m.emissiveIntensity=0;}rackBodies.length=0;outlines.clear();seenStage=null;flipDone=false;doorOpen=0;humWanted=false;keyboard=createKeyboardState();
+  group=null;ctx=null;tiles=[];caps=[];phraseCaps=[];enterCap=null;capGlow.clear();rackMaterials.length=0;for(const m of [...rackBodies,...ceilingPanels]){m.emissive.setHex(0);m.emissiveIntensity=0;}rackBodies.length=0;ceilingPanels.length=0;lightLevel=0;outlines.clear();seenStage=null;flipDone=false;doorOpen=0;humWanted=false;keyboard=createKeyboardState();
  }
  // Exposed only through window.__CAMPUS.campaign, which main.ts creates in DEV/review builds.
  const debug={
@@ -361,7 +380,7 @@ export function createB4Chapter():Chapter{
   },
   update(dt){
    if(!ctx||!group)return;applyStage(ctx.stage());
-   if(lights&&campaignChapterOf(ctx.stage())!=='b4'&&!playerInRoom())removeLights();
+   if(lights&&campaignChapterOf(ctx.stage())!=='b4'&&!playerInRoom()){removeLights();syncPowered();}
    if(!raf)animate(dt);
    applyFocus();
   },
