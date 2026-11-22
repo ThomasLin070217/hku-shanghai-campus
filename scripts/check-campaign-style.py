@@ -208,6 +208,15 @@ def assert_hud(page, checkpoint):
     minimap = style(page, '.opening-mapcard')
     check(checkpoint + ': minimap is visible while walking', visible(page, '.opening-mapcard'), minimap)
     assert_paper(checkpoint, 'minimap', minimap)
+    # FW2: the map inside the dark card is drawn on the dark tokens too.
+    pixels = page.evaluate(MAP_PIXELS)
+    check(checkpoint + ': the inner minimap is on dark ground (no light-cream plan)',
+          bool(pixels) and pixels['mean'] < 70 and pixels['cream'] < 0.02, pixels)
+    # The epilogue has no target (the objective's target is null), so no dot is drawn there.
+    has_target = page.evaluate("() => { const c = window.__CAMPUS.campaign; const o = c && c.state() ? c.objective() : null;"
+                               " return o ? !!o.target : true; }")
+    check(checkpoint + ': the current target is the opening green on the minimap',
+          bool(pixels) and (pixels['green'] > 0 or not has_target), {'pixels': pixels, 'target': has_target})
 
     eyebrow = style(page, '.opening-hud .opening-eyebrow')
     check(checkpoint + ': HUD eyebrow is the opening green', bool(eyebrow) and eyebrow['color'] == GREEN, eyebrow and eyebrow['color'])
@@ -218,6 +227,21 @@ def assert_hud(page, checkpoint):
         check('b4: save status is a toast on the opening paper',
               bool(toast) and is_paper(toast['bg'], toast['image']) and toast['color'] == GREEN,
               toast and (toast['bg'] + ' / ' + toast['color']))
+
+
+MAP_PIXELS = """() => {
+  const c = document.querySelector('.opening-mapcard canvas');
+  if (!c || !c.width) return null;
+  const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+  let sum = 0, n = 0, green = 0, cream = 0;
+  for (let i = 0; i < d.length; i += 4) {
+    const r = d[i], g = d[i + 1], b = d[i + 2];
+    sum += 0.2126 * r + 0.7152 * g + 0.0722 * b; n++;
+    if (Math.abs(r - 116) < 24 && Math.abs(g - 230) < 24 && Math.abs(b - 180) < 24) green++;
+    if (r > 200 && g > 200 && b > 180) cream++;
+  }
+  return {mean: Math.round(sum / n), green, cream: +(cream / n).toFixed(3), size: [c.width, c.height]};
+}"""
 
 
 def assert_hotbar(page, checkpoint):
@@ -308,9 +332,15 @@ def assert_chapter_card(page, checkpoint):
     if card is None:
         # The B4 approach and its interior sit inside Chapter 1: the host has no
         # boundary card there. Every later checkpoint is a boundary and must show one.
-        check(checkpoint + ': chapter card is absent only inside a chapter',
-              checkpoint in ('b4', 'b4-inside'), card)
+        # The B4 approach sits inside Chapter 1: the host has no boundary card there.
+        # b4-inside starts inside the B4 chapter and shows its card (M10).
+        check(checkpoint + ': chapter card is absent only on the Building 4 approach',
+              checkpoint == 'b4', card)
         return
+    if checkpoint == 'b4-inside':
+        kicker = page.evaluate("() => document.querySelector('.campaign-card-kicker')?.textContent ?? ''")
+        check('b4-inside: the checkpoint shows the CHAPTER 1 · BUILDING 4 card',
+              kicker == 'CHAPTER 1 · BUILDING 4', kicker)
     check(checkpoint + ': chapter card title uses Georgia',
           bool(title) and first_family(title['font']) == 'georgia', title and title['font'])
     check(checkpoint + ': chapter card uses the opening paper colour',
@@ -329,46 +359,97 @@ def toast_checks(page):
     log = page.evaluate("() => window.__toastLog || []")
     spurious = [text for text in log if not text.startswith('Saved on this device')]
     check('toast: no save toast before a real save', not spurious, log)
-    saved = page.evaluate(
-        "() => { try { window.__CAMPUS.experience.persist(true); return true; } catch (e) { return false; } }")
-    shown = False
-    try:
-        page.wait_for_function(
-            "() => { const t = document.querySelector('.opening-save-toast');"
-            " return !!t && !t.hidden && t.classList.contains('is-visible')"
-            " && (t.textContent || '').indexOf('Saved on this device') >= 0; }", timeout=10000)
-        shown = True
-    except Exception:
-        pass
-    check('toast: a real save raises the save toast',
-          saved and shown and visible(page, '.opening-save-toast'), style(page, '.opening-save-toast'))
+    # M2 / Ruling 33: the checkpoint start is an announced save. Before the first
+    # trusted input this window does not own the save, so it lands (and shows) then.
+    page.keyboard.press('Shift')
+    shown = toast_appears(page, 10000)
+    check('toast: the checkpoint save is announced at the first input',
+          shown, style(page, '.opening-save-toast'))
     # The fade is a fixed 2.4 s + 260 ms timer, not a per-frame animation, so the
     # rule's target is read with the transition disabled.
     page.wait_for_timeout(4000)
     check('toast: the save toast is gone 4 s after it appears',
           not visible(page, '.opening-save-toast'), style(page, '.opening-save-toast'))
+    # Quiet saves: a hotbar switch and a hearts write both save, neither announces.
+    revision = page.evaluate("() => window.__CAMPUS.explorer.game.inventory.revision")
+    page.keyboard.press('Digit2')
+    switched = toast_appears(page, 2500)
+    page.keyboard.press('Digit1')
+    switched_back = toast_appears(page, 2500)
+    moved = page.evaluate("() => window.__CAMPUS.explorer.game.inventory.revision") != revision
+    check('toast: no save toast on a hotbar switch', moved and not switched and not switched_back,
+          {'revision moved': moved, 'toast': switched or switched_back})
+    page.evaluate("() => window.__CAMPUS.experience.hearts.damage(1)")
+    hurt = toast_appears(page, 2500)
+    page.evaluate("() => window.__CAMPUS.experience.hearts.heal()")
+    healed = toast_appears(page, 2500)
+    check('toast: no save toast on a hearts write', not hurt and not healed, {'damage': hurt, 'heal': healed})
 
 
-def held_model_checks(page):
-    """The held MacBook and arms drop out of the lower centre third while walking."""
-    def pose():
-        return page.evaluate("""() => {
-          try { const s = window.__CAMPUS.explorer.firstPerson.socket;
-            return {pos: s.position.toArray(), scale: s.scale.toArray()}; } catch (e) { return null; }
-        }""")
+def toast_appears(page, timeout):
+    try:
+        page.wait_for_function(
+            "() => { const t = document.querySelector('.opening-save-toast');"
+            " return !!t && !t.hidden && t.classList.contains('is-visible')"
+            " && (t.textContent || '').indexOf('Saved on this device') >= 0; }", timeout=timeout)
+        return True
+    except Exception:
+        return False
 
-    walking = pose()
-    check('b4: the carried MacBook rides lower and ~30% smaller while walking',
-          bool(walking) and walking['scale'][0] <= 0.75 and walking['pos'][1] <= -0.4, walking)
-    page.evaluate("() => { try { window.__CAMPUS.explorer.openPanel('computer', true); } catch (e) {} }")
-    page.wait_for_timeout(600)
-    opened = pose()
-    check('b4: opening the MacBook restores the carry pose',
-          bool(opened) and abs(opened['scale'][0] - 1) <= 0.02 and abs(opened['pos'][1] + 0.30) <= 0.03,
-          opened)
-    page.evaluate("() => { try { window.__CAMPUS.explorer.closePanel(); } catch (e) {} }")
+
+def boundary_toast_checks(page):
+    """A campaign chapter boundary announces its save (M2); steps inside a chapter do not."""
+    page.wait_for_timeout(4000)
+    page.evaluate("() => window.__CAMPUS.campaign.emit('reach_lawn')")
+    inside = toast_appears(page, 2500)
+    check('toast: no save toast on a step inside a chapter (reach_lawn)', not inside,
+          page.evaluate("() => window.__CAMPUS.campaign.state()?.stage"))
+    page.evaluate("() => window.__CAMPUS.campaign.emit('guardian_shutdown')")
+    boundary = toast_appears(page, 6000)
+    check('toast: the CHAPTER 3 boundary announces its save', boundary,
+          page.evaluate("() => window.__CAMPUS.campaign.state()?.stage"))
+
+
+VIEW_MODEL = """() => {
+  try { const e = window.__CAMPUS.explorer, f = e.firstPerson;
+    return {arms: f.root.visible, socket: f.socket.visible, held: !!f.held, view: e.game.view,
+            panel: e.game.panel, pos: f.socket.position.toArray().map(n => +n.toFixed(3)),
+            scale: +f.socket.scale.x.toFixed(3)}; } catch (e) { return null; }
+}"""
+
+
+def view_model(page):
+    return page.evaluate(VIEW_MODEL)
+
+
+def held_model_checks(page, checkpoint):
+    """Ruling 36: in story mode the MacBook is stowed. No held model and no arms
+    while walking; they show only while the player has it open with C."""
+    page.wait_for_timeout(400)
+    walking = view_model(page)
+    check(checkpoint + ': no held MacBook and no arms while walking (story stow)',
+          bool(walking) and walking['held'] and walking['view'] == 'first' and not walking['arms'], walking)
+    if checkpoint != 'lawn':
+        return
+    shot(page, 'fw-lawn-walk.png')
+    page.keyboard.press('KeyC')
+    try:
+        page.wait_for_function("() => window.__CAMPUS.explorer.firstPerson.root.visible", timeout=8000)
+    except Exception:
+        pass
+    opened = view_model(page)
+    check('lawn: C opens the MacBook and shows it in the authored pose',
+          bool(opened) and opened['arms'] and opened['socket'] and abs(opened['scale'] - 1) <= 0.02
+          and abs(opened['pos'][1] + 0.30) <= 0.03, opened)
+    page.keyboard.press('Escape')
+    try:
+        page.wait_for_function("() => !window.__CAMPUS.explorer.game.panel", timeout=5000)
+    except Exception:
+        page.evaluate("() => { try { window.__CAMPUS.explorer.closePanel(); } catch (e) {} }")
     page.evaluate("() => { try { window.__CAMPUS.explorer.enterCompat(); } catch (e) {} }")
     page.wait_for_timeout(400)
+    closed = view_model(page)
+    check('lawn: closing the MacBook stows it again', bool(closed) and not closed['arms'], closed)
 
 
 def pause_bag_checks(page):
@@ -643,6 +724,16 @@ def credits_checks(page):
           visible_text.count('HKU SHANGHAI · CDS') == 1, visible_text)
     assert_no_stale_copy(page, 'ending')
     shot(page, 'check-ending-credits.png')
+    shot(page, 'fw-credits.png')
+    # I2: Play again starts the game, not the checkpoint the run came in through.
+    try:
+        with page.expect_navigation(timeout=30000):
+            page.click('#ending-play-again')
+    except Exception:
+        pass
+    url = page.url
+    check('ending: Play again goes to the opening without a checkpoint parameter',
+          'experience=opening' in url and 'checkpoint' not in url, url)
 
 
 def handoff_checks(page):
@@ -670,6 +761,10 @@ def handoff_checks(page):
         ".map(b => b.textContent.trim())")
     check('handoff: the dialog offers Close and Continue to Chapter 2',
           {'Close', 'Continue to Chapter 2'}.issubset(set(labels)), labels)
+    quick = page.evaluate("() => { const d = document.querySelector('.opening-handoff-dialog .opening-other-slices');"
+                          " return d ? {shown: d.getClientRects().length > 0, items: d.querySelectorAll('button').length} : null; }")
+    check('handoff: no empty "Quick restore" disclosure when there is nothing to restore',
+          quick is None or (not quick['shown']) or quick['items'] > 0, quick)
     page.evaluate("""() => {
       const dialog = document.querySelector('.opening-handoff-dialog');
       const close = [...(dialog ? dialog.querySelectorAll('button') : [])]
@@ -699,6 +794,10 @@ def handoff_checks(page):
     meta = style(page, '.opening-epilogue-meta')
     check('handoff: epilogue meta is the opening soft ink',
           bool(meta) and meta['color'] == INK_SOFT, meta and meta['color'])
+    note_text = page.evaluate("() => document.querySelector('.opening-epilogue-note')?.textContent ?? ''")
+    continue_label = page.evaluate("() => [...document.querySelectorAll('.opening-epilogue-actions button')].map(b => b.textContent.trim())")
+    check('handoff: the epilogue note matches its Continue button (Continue closes, F starts Chapter 2)',
+          'Continue' in continue_label and note_text.startswith('Continue, then press F'), (note_text, continue_label))
     note = style(page, '.opening-epilogue-note')
     check('handoff: epilogue note is the opening gold',
           bool(note) and note['color'] == GOLD, note and note['color'])
@@ -766,6 +865,24 @@ def survey_checks(page):
           bool(slot) and slot['number'] == '12px', slot)
     idle = page.evaluate("() => document.getElementById('inventory-hud').classList.contains('is-idle')")
     check('survey: the survey dock never takes the story idle fade', not idle, idle)
+    # Ruling 36 is story-only: survey keeps its held item and arms in first person,
+    # in the authored pose (no story carry, M6).
+    page.evaluate("""() => { const e = window.__CAMPUS.explorer, inv = e.game.inventory;
+      if (!inv.slots.some(s => s && s.itemId === 'macbook-air-13-silver'))
+        inv.slots[0] = {itemId: 'macbook-air-13-silver', instanceId: 'survey-check-mac', count: 1};
+      inv.select(inv.slots.findIndex(s => s && s.itemId === 'macbook-air-13-silver')); inv.revision++;
+      e.setEnabled(true); e.game.view = 'first'; e.enterCompat(); }""")
+    page.wait_for_timeout(1500)
+    survey = view_model(page)
+    check('survey: the held item and arms still show while walking',
+          bool(survey) and survey['held'] and survey['arms'] and survey['socket'], survey)
+    page.wait_for_timeout(2600)
+    held_name = page.evaluate("() => { const e = document.getElementById('held-name');"
+                              " return e ? {text: e.textContent, opacity: getComputedStyle(e).opacity} : null; }")
+    check('survey: the held-item name stays on screen (the story fade is story-only, M6)',
+          bool(held_name) and bool(held_name['text']) and float(held_name['opacity']) > 0.5, held_name)
+    check('survey: the held item keeps the authored pose (no story carry)',
+          bool(survey) and abs(survey['scale'] - 1) <= 0.02 and abs(survey['pos'][1] + 0.30) <= 0.03, survey)
     assert_no_stale_copy(page, 'survey')
     shot(page, 'check-survey.png')
 
@@ -803,9 +920,16 @@ def main():
                 assert_chapter_card(page, checkpoint)
                 assert_surfaces_fonts(page, checkpoint)
                 assert_no_stale_copy(page, checkpoint)
+                if checkpoint == 'lawn':
+                    held_model_checks(page, checkpoint)
+                    boundary_toast_checks(page)
+                if checkpoint == 'ending':
+                    door = page.evaluate("() => window.__CAMPUS.campaign.debug.sports?.door?.() ?? null")
+                    check('ending: the sports door is already open at the ending checkpoint (M4)',
+                          bool(door) and door.get('open') is True, door)
                 if checkpoint == 'b4-inside':
                     toast_checks(page)
-                    held_model_checks(page)
+                    held_model_checks(page, checkpoint)
                     pause_bag_checks(page)
                     focus_checks(page)
                 if checkpoint == 'sports':

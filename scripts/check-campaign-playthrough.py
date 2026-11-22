@@ -26,6 +26,9 @@ from playwright.sync_api import sync_playwright
 ORIGIN = os.environ.get('CAMPUS_URL', 'http://127.0.0.1:5255/')
 CHROME = os.environ.get('CHROME_PATH')
 SHOTS = os.environ.get('SHOTS', '/tmp/one-world/t6/')
+# The first-person view model: one writer (the explorer); stowed while walking in story mode.
+VIEW_MODEL = '''() => { try { const f = window.__CAMPUS.explorer.firstPerson;
+  return {arms: f.root.visible, socket: f.socket.visible, held: !!f.held}; } catch (e) { return null; } }'''
 ARGS = ['--use-gl=angle', '--use-angle=swiftshader', '--enable-webgl', '--enable-unsafe-swiftshader']
 
 COUNT_CARDS = """
@@ -199,6 +202,10 @@ def main_run(browser):
     page.evaluate('() => window.__t6.place(58, 25)')
     page.wait_for_timeout(1500)
     check('B4: room lights go out once the player is outside B04', until(page, "() => !window.__CAMPUS.asset.root.getObjectByName('B4_room_lights')", 30))
+    # Ruling 36 / I1: B4 stays attached for the rest of the run, but it no longer turns
+    # the held MacBook back on; the explorer keeps it stowed while walking.
+    vm = page.evaluate(VIEW_MODEL)
+    check('outside B4 after the B4 chapter: no held MacBook and no arms while walking', bool(vm) and vm['held'] and not vm['arms'], vm)
     page.evaluate("() => { document.getElementById('toast').textContent = ''; }")
     page.keyboard.press('f')
     got = until(page, "() => /move closer/i.test(document.getElementById('toast').textContent)", 15)
@@ -214,6 +221,8 @@ def main_run(browser):
     page.wait_for_timeout(800)
     after = page.evaluate(f'() => ({{phase: {L}.state().phase, toast: document.getElementById("toast").textContent}})')
     check('lawn: a real Q press reaches the fight (interrupt or its rule notice)', after['phase'] == 'stunned' or bool(after['toast']), (before, after))
+    vm = page.evaluate(VIEW_MODEL)
+    check('lawn: the fight view shows no held MacBook and no arms (story stow)', bool(vm) and vm['held'] and not vm['arms'], vm)
     shot(page, '03-lawn-fight.png')
     page.evaluate(f'() => {L}.complete()')
 
