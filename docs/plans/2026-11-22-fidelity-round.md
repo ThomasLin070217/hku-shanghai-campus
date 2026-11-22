@@ -14,25 +14,20 @@ Spec = the owner's three sentences plus the evidence below. No merge, no push.
 - `doc/12-design-state-2026-11-21.md`: keys assemble `I LOVE JCDS`; Enter → **cabinet opens** → backup power + supercomputer.
 - `doc/team/2026-11-16-photo-assignment.webp`: Building 4/CDS-1 `一楼入口及进入后的实际空间`, `右手边键盘座椅的整体结构与细节`.
 - `research/photos-2026-11-10/05-cds-zj-atrium.webp`: official CDS-1 ground-floor atrium — keyboard wall above three timber amphitheatre tiers, circular rug, curved white sofa, armchairs, pale floor, white ceiling.
-- `materials/_inbox/20261121__wechat-vibe-group.yaml:1806`: `1. HKU 可以翻的那个东西，在网球场前面的那个楼的1楼 2. cds1 的键盘。` → the flip wall is **not** in CDS-1. Inference: Building 5 (student activities, x 54–82, z −80…−54.7) is the low-rise standing between the campus core and the sports strip where the tennis courts are (`SPORTS_APPROACH` passes north of the tennis nets at z −106), so its 1F lobby is where the flip wall goes. Marked as an inference in code.
+- Team chat, 2026-11-21: `1. HKU 可以翻的那个东西，在网球场前面的那个楼的1楼 2. cds1 的键盘。` → the flip wall is **not** in CDS-1. Inference: Building 5 (student activities, x 54–82, z −80…−54.7) is the low-rise standing between the campus core and the sports strip where the tennis courts are (`SPORTS_APPROACH` passes north of the tennis nets at z −106), so its 1F lobby is where the flip wall goes. Marked as an inference in code.
 - `handoff/tasks/2026-11-21/04-unitree-g1/BRIEF.md` §3: Unitree proportions and the rule that the model is rebuilt low-poly, never imported.
 
 ## Global constraints
 
 - Work only on `feat/one-world`. Do not merge, push, or touch `main`.
-- Subagents run as DeepSeek Flash (`flash-worker`) or Opus 5.5 (`model: "opus"`) only.
-- No WebSearch/WebFetch. AnySearch via mcporter if research is needed.
 - Scene geometry changes go through source parameters → rebuild → visual/collision check. No runtime JS edits to the model.
 - Keep every existing `authorParts` / `sceneId` / `authorKey`; new parts get stable author keys and `sourceFile`.
 - UI copy stays English. Evidence comments cite the file they came from.
 - Checks passing is not human acceptance; the milestone is opened to the owner at the end.
-- Ports 5233/5260 belong to the owner; agents use 5251–5259.
 
 ---
 
 ## Task 1 — Put the keyboard wall and the flip wall where they belong
-
-**Model: Opus 5.5.**
 
 ### 1A. B4 lobby layout (east wall keyboard, north service wall)
 
@@ -72,7 +67,7 @@ New `src/opening/b5FlipWall.ts`:
 - `createB5FlipWall()` → `{root, update(dt, player), dispose()}`.
 - Place `HKU_flip_wall` from `buildObservedFeatureRoom('flipWall')` at origin `[56.36, 0.02, -60.70]`, `rotation.y = +Math.PI/2`, so louvred face looks east into the B5 lobby at x 54.60 and spans z −64.69…−57.31, y 0.08…3.94 (fits the 4.45 m lobby).
 - Add a small warm wash (one `PointLight`, intensity 3, distance 4, inside the lobby) and a plaque mesh named `B5_flip_wall_plaque`.
-- Ambient only: when the player first comes within 6 m, tiles flip over in a diagonal ripple (0.9 s, sorted by row+column), then settle back after 6 s; repeat at most once every 25 s. No key, no puzzle state, no campaign save. `userData.source` cites the WeChat line and marks the building choice as an inference.
+- Ambient only: when the player first comes within 6 m, tiles flip over in a diagonal ripple (0.9 s, sorted by row+column), then settle back after 6 s; repeat at most once every 25 s. No key, no puzzle state, no campaign save. `userData.source` cites the team-chat line and marks the building choice as an inference.
 - Mount in `src/opening/experience.ts`: `const flipWall=createB5FlipWall();scene.add(flipWall.root);` and `flipWall.update(dt,g.body.position)` in `update()` (skip when `g.paused`). Dispose on experience dispose if such a hook exists; otherwise remove from the scene there.
 
 ### 1D. Checks and scripts
@@ -88,8 +83,6 @@ Acceptance for Task 1: all of the above green, plus a screenshot of the B4 lobby
 ---
 
 ## Task 2 — The students are inside, then they run out
-
-**Model: DeepSeek Flash.**
 
 ### 2A. Crowd in campaign mode
 
@@ -124,8 +117,6 @@ Acceptance: new check green, `check:campaign` green, and a screenshot taken afte
 ---
 
 ## Task 3 — Unitree quadrupeds that move like animals
-
-**Model: Opus 5.5.**
 
 Replace the boxy tracked shell of the security fleet with a low-poly Unitree Go2/B2-style quadruped. Same FSM, same navigation, same blackboard, same capture rules. No imported STL/logo (project rule + handoff brief).
 
