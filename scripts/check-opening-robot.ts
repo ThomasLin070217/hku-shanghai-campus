@@ -112,8 +112,12 @@ function inSectorAndRange(robot:OpeningRobot,player:T.Vector3){
  return Math.abs(wrapAngle(headingOf(dx,dz)-scan))<=ROBOT.halfAngle;
 }
 
-/** Gait values from .superpowers/sdd/2026-11-22-fidelity-round/task-3-brief.md (3B), restated here on purpose. */
-const BRIEF_GAIT={thighSwing:0.42,kneeLift:0.55,hipRoll:0.07,bob:0.02,searchPitch:-0.12};
+/** Gait values from docs/plans/2026-11-22-fidelity-round.md (Task 3, 3B/3C), restated here on purpose. */
+const BRIEF_GAIT={thighSwing:0.42,kneeLift:0.55,hipRoll:0.07,bob:0.02,searchPitch:-0.12,neighbourRadius:1.2};
+/** Smallest centre-to-centre gap a walker keeps from a unit parked dead ahead, metres (0.24 measured).
+ *  The Task 3 review (fix round 1) asked for 0.5; every bias strong enough for that also moved the
+ *  B5 fairness timings in scripts/check-opening-fleet.ts, so the plan's gentle bias stays. */
+const MIN_SEPARATION=0.2;
 const LEGS=['fl','fr','rl','rr'] as const;
 interface LegPose{thigh:number;roll:number;knee:number}
 /** Joint angles as rendered: the hip group pitches and rolls, the knee pivot holding the shank bends. */
@@ -485,12 +489,17 @@ function legPose(robot:OpeningRobot):LegPose[]{
  const gA=geometriesOf(a),gB=geometriesOf(b);
  assert.equal([...gA].filter(g=>gB.has(g)).length,8,'body, head, band, eye, beacon and the three leg buffers are shared by both units');
  assert.equal(gA.size,9,'a unit adds only its own animated scan-sector polygon');
- // All four legs of a unit draw the same thigh, shank and foot buffers.
- for(const name of ['robot-leg-upper','robot-leg-lower','robot-foot']){
+ // All four legs of a unit draw the same thigh, shank and foot buffers, each its own pooled one.
+ const legBuffers:readonly (readonly [string,T.BufferGeometry,string])[]=[
+  ['robot-leg-upper',assets.legUpperGeometry,'legUpperGeometry'],
+  ['robot-leg-lower',assets.legLowerGeometry,'legLowerGeometry'],
+  ['robot-foot',assets.footGeometry,'footGeometry'],
+ ];
+ for(const [name,buffer,pooled] of legBuffers){
   const used=new Set<T.BufferGeometry>();
   a.root.traverse(object=>{const mesh=object as T.Mesh;if(mesh.isMesh&&mesh.name===name)used.add(mesh.geometry);});
   assert.equal(used.size,1,`every ${name} mesh shares one buffer`);
-  assert.ok(used.has(assets.legUpperGeometry)||used.has(assets.legLowerGeometry)||used.has(assets.footGeometry),`${name} draws a pooled leg buffer`);
+  assert.equal([...used][0],buffer,`${name} draws the pooled ${pooled}`);
  }
  const mA=materialsOf(a),mB=materialsOf(b);
  assert.equal([...mA].filter(m=>mB.has(m)).length,3,'the painted shell, band and leg materials are shared');
@@ -724,8 +733,10 @@ function legPose(robot:OpeningRobot):LegPose[]{
  const robot=fresh();
  const player=ground(O.patrol[1][0],O.patrol[1][2]);
  const lamp=(robot.root.getObjectByName('robot-beacon') as T.Mesh).material as T.MeshStandardMaterial;
+ const turret=robot.root.getObjectByName('opening-security-robot-turret')!;
  const stand=legPose(robot);
  let chaseAt:number|null=null,caughtAt:number|null=null,noticePulses=0,wasBright=false,noticeTravel=0,chaseSwing=0;
+ let headHigh=Number.NEGATIVE_INFINITY,headLow=Number.POSITIVE_INFINITY,noticeHeadHigh=Number.NEGATIVE_INFINITY;
  let noticeStart:T.Vector3|null=null,stillAt:T.Vector3|null=null;
  const solid=new Set<number>();
  const lastSecond:LegPose[][]=[];
@@ -733,11 +744,15 @@ function legPose(robot:OpeningRobot):LegPose[]{
   const t=(i+1)*DT;
   robot.update(DT,player,true,false);
   const state=robot.state;
+  headHigh=Math.max(headHigh,turret.rotation.x);headLow=Math.min(headLow,turret.rotation.x);
   if(state==='chase'&&chaseAt===null){chaseAt=t;noticeStart=robot.position.clone();}
   if(chaseAt!==null&&state==='chase'){
    const since=t-chaseAt;
    const bright=lamp.emissiveIntensity>1.5;
-   if(since<0.5){if(bright&&!wasBright)noticePulses++;wasBright=bright;noticeTravel=robot.position.distanceTo(noticeStart!);}
+   if(since<0.5){
+    if(bright&&!wasBright)noticePulses++;wasBright=bright;noticeTravel=robot.position.distanceTo(noticeStart!);
+    noticeHeadHigh=Math.max(noticeHeadHigh,turret.rotation.x);
+   }
    else if(since>0.55)solid.add(Math.round(lamp.emissiveIntensity*1e6));
    chaseSwing=Math.max(chaseSwing,...legPose(robot).map((p,k)=>Math.abs(p.thigh-stand[k].thigh)));
   }
@@ -750,6 +765,9 @@ function legPose(robot:OpeningRobot):LegPose[]{
  assert.ok(caughtAt!-chaseAt!>1,'scenario: the chase lasts past the notice window');
  assert.equal(noticePulses,2,`the beacon double-pulses in the first 0.5 s of a chase (${noticePulses} pulses)`);
  assert.ok(noticeTravel>0.3,`the notice does not pause the chase (${noticeTravel.toFixed(2)}m covered in 0.5 s)`);
+ // Plan 3B: the head only ever dips (search) or sits level; the notice is the beacon alone.
+ assert.ok(noticeHeadHigh<=1e-9,`the notice does not lift the head (${noticeHeadHigh.toFixed(3)} rad)`);
+ assert.ok(headHigh<=1e-9&&headLow>=BRIEF_GAIT.searchPitch-1e-9,`turret pitch stays inside ${BRIEF_GAIT.searchPitch}..0 rad through the chase (${headLow.toFixed(3)}..${headHigh.toFixed(3)})`);
  assert.equal(solid.size,1,`after the notice the beacon burns solid while chasing (${[...solid].map(v=>v/1e6)})`);
  assert.ok(chaseSwing>0.05,`the legs trot during the chase (${chaseSwing.toFixed(3)} rad)`);
  assert.ok(robot.position.distanceTo(stillAt!)<1e-9,'scenario: the caught unit holds still for 2 s');
@@ -784,21 +802,63 @@ function legPose(robot:OpeningRobot):LegPose[]{
   behind.update(DT,astern,true,false,true,parkedBehind);
   const p=ahead.position;
   assert.equal(world.blocked(p.x,p.z,p.y),false,'the biased unit never enters a solid');
+  // Same support and float invariants drive() enforces.
+  const floor=world.support(p.x,p.z,p.y+C.maxStep);
+  assert.notEqual(floor,null,`the biased unit left the walkable site at [${p.toArray().map(round)}]`);
+  assert.ok(floor===null||Math.abs(p.y-floor)<C.maxStep+.02,`the biased unit floated above its support at [${p.toArray().map(round)}]`);
   maxStep=Math.max(maxStep,Math.hypot(p.x-before.x,p.z-before.z));
-  if(ahead.diagnostics.patrolIndex===1){maxLateral=Math.max(maxLateral,Math.abs(p.z-O.patrol[0][2]));closest=Math.min(closest,Math.hypot(p.x-parkedAhead[0].x,p.z-parkedAhead[0].z));}
+  closest=Math.min(closest,Math.hypot(p.x-parkedAhead[0].x,p.z-parkedAhead[0].z));
+  if(ahead.diagnostics.patrolIndex===1)maxLateral=Math.max(maxLateral,Math.abs(p.z-O.patrol[0][2]));
   if(control.diagnostics.patrolIndex===1)controlLateral=Math.max(controlLateral,Math.abs(control.position.z-O.patrol[0][2]));
   if(behind.position.distanceTo(control.position)>1e-9)identical=false;
  }
  assert.ok(controlLateral<0.02,`scenario: the control walks the leg straight (${controlLateral.toFixed(3)}m)`);
  assert.ok(maxLateral>0.1&&maxLateral<1,`a unit parked ahead pushes the walker sideways, gently (${maxLateral.toFixed(2)}m)`);
- // Gentle by design (brief 3C): a spacing hint that opens a gap, not collision avoidance.
- assert.ok(closest>0.15,`and it passes beside the parked unit instead of through its spot (${closest.toFixed(2)}m)`);
+ assert.ok(closest>=MIN_SEPARATION,`it never comes closer than ${MIN_SEPARATION} m centre-to-centre to the parked unit (${closest.toFixed(3)}m)`);
  assert.ok(maxStep<=ROBOT.patrolSpeed*DT*1.02,`steering only: no extra speed and no jump (${maxStep.toFixed(4)}m per tick)`);
  assert.ok(identical,'a neighbour behind the unit changes nothing: same path as the call without neighbours');
  assert.ok(ahead.diagnostics.patrolIndex>=2&&control.diagnostics.patrolIndex>=2,'both units still reach the waypoint');
  pass('a neighbour within reach ahead adds a gentle steering bias; behind it, or with no neighbours, the path is unchanged',
   {maxLateral:round(maxLateral),closestToParked:round(closest),maxStep:round(maxStep*1000)/1000,controlLateral:round(controlLateral)});
  control.dispose();ahead.dispose();behind.dispose();
+}
+
+// ---------------------------------------------------------------- 20. a pincer chase ignores the spacing bias
+{
+ // The player has ducked just inside the Building 5 door. Two units outside, 60 degrees apart,
+ // spot it and chase; the trailing one (4 m out against 3 m) funnels through the 2.4 m opening
+ // behind the leader, inside its neighbour radius. Spacing must never cost a chaser its line.
+ const target=ground(O.b5.door,-56);
+ const starts=[[-30,3],[30,4]].map(([deg,out])=>{const a=deg*Math.PI/180;return [target.x+Math.sin(a)*out,0,target.z+Math.cos(a)*out] as const;});
+ const run=(spaced:boolean)=>{
+  const assets=createOpeningRobotAssets();
+  const units=starts.map((start,i)=>createOpeningRobot(world,{assets,id:`pincer-${i}`,route:[start,[target.x,0,target.z]],startIndex:0}));
+  const chaseAt:(number|null)[]=units.map(()=>null),caughtAt:(number|null)[]=units.map(()=>null);
+  const path:string[]=[];
+  let closest=Number.POSITIVE_INFINITY,gapAtChase=Number.POSITIVE_INFINITY,searched=false;
+  for(let i=0;i<60*12&&caughtAt.some(tick=>tick===null);i++){
+   units.forEach((unit,k)=>{
+    unit.update(DT,target,true,false,true,spaced?units.filter((_,j)=>j!==k).map(other=>other.position):undefined);
+    if(unit.state==='chase'&&chaseAt[k]===null){chaseAt[k]=i+1;gapAtChase=Math.min(gapAtChase,units[0].position.distanceTo(units[1].position));}
+    if(unit.state==='caught'&&caughtAt[k]===null)caughtAt[k]=i+1;
+    if(unit.state==='search')searched=true;
+   });
+   path.push(units.map(unit=>unit.position.toArray().join(',')).join(';'));
+   closest=Math.min(closest,units[0].position.distanceTo(units[1].position));
+  }
+  units.forEach(unit=>unit.dispose());assets.dispose();
+  return{chaseAt,caughtAt,path,closest,gapAtChase,searched};
+ };
+ const alone=run(false),spaced=run(true);
+ assert.ok(alone.chaseAt.every(tick=>tick!==null)&&alone.caughtAt.every(tick=>tick!==null),'scenario: both units confirm the player and capture');
+ assert.ok(!alone.searched,'scenario: neither unit loses the player, so every closing tick is a chase tick');
+ assert.ok(alone.gapAtChase>BRIEF_GAIT.neighbourRadius,`scenario: both units are chasing before they come near each other (${alone.gapAtChase.toFixed(2)}m apart)`);
+ assert.ok(alone.closest<BRIEF_GAIT.neighbourRadius,`scenario: the chasers then close inside each other's neighbour radius (${alone.closest.toFixed(2)}m)`);
+ assert.deepEqual(spaced.chaseAt,alone.chaseAt,'the chase starts on the same tick with or without neighbours');
+ assert.deepEqual(spaced.caughtAt,alone.caughtAt,`the capture tick is identical with and without neighbours (${spaced.caughtAt} vs ${alone.caughtAt})`);
+ assert.equal(spaced.path.findIndex((p,i)=>p!==alone.path[i]),-1,'and so is every position on the way');
+ pass('a two-unit pincer chase ignores the spacing bias: same chase, same path, same capture tick',
+  {chaseTicks:alone.chaseAt,captureTicks:alone.caughtAt,closestPair:round(alone.closest)});
 }
 
 function graphConnected(robot:OpeningRobot){

@@ -16,7 +16,8 @@ import type {Navigation} from '../exploration/navigation';
  *  - shadow ranking (T26): only the nearest `ROBOT.shadowUnits` keep shadows and lights;
  *  - per-unit far update tiering (T27) is handled inside `robot.ts`;
  *  - spacing (task 3C): every simulated tick hands each unit the others' live positions,
- *    and `robot.ts` bears away from one that is close ahead. No new physics, no teleport.
+ *    and `robot.ts` bears away from one that is close ahead (never during a chase). No new
+ *    physics, no teleport.
  */
 
 export interface OpeningFleetUpdate{

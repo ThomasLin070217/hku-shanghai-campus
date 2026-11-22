@@ -104,6 +104,7 @@ const legJoints=(unit:OpeningRobot)=>['fl','fr','rl','rr'].map(key=>{
  return [leg.rotation.x,leg.rotation.z,knee.rotation.x];
 });
 const midStride=fleet.units.filter(unit=>{const j=legJoints(unit);return j.some(v=>Math.abs(v[0]-j[0][0])>1e-3);}).length;
+assert.ok(midStride>0,`scenario: some units are mid-stride before standing down, so the standing-pose check is not vacuous (${midStride}/8)`);
 fleet.standby(true);
 const standPose=legJoints(fleet.units[0])[0];
 for(const [i,unit] of fleet.units.entries()){

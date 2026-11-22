@@ -576,6 +576,21 @@
         "maxStep": 0.020829999999999998,
         "controlLateral": 0
       }
+    },
+    {
+      "name": "a two-unit pincer chase ignores the spacing bias: same chase, same path, same capture tick",
+      "passed": true,
+      "detail": {
+        "chaseTicks": [
+          42,
+          42
+        ],
+        "captureTicks": [
+          231,
+          272
+        ],
+        "closestPair": 0.69
+      }
     }
   ],
   "notCovered": [

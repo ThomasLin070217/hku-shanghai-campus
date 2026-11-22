@@ -252,7 +252,7 @@ export interface OpeningRobotAssets{
 }
 
 /** Quadruped rig dimensions in metres, rig space: +y up, the robot faces -z, left is -x.
- *  Go2-style proportions from .superpowers/sdd/2026-11-22-fidelity-round/task-3-brief.md (3A). */
+ *  Go2-style proportions from docs/plans/2026-11-22-fidelity-round.md (Task 3, 3A). */
 const RIG={
  /** Hip pivots sit at x ±legX, z ±legZ, just outside the 0.46 m chassis. */
  legX:.26,legZ:.26,hipY:.5,
@@ -271,7 +271,8 @@ const SHELL=0xe6eaed,SHELL_LIGHT=0xc9d0d5,GRAPHITE=0x2a2f34,SENSOR=0x14181b,HUB=
 
 /**
  * Gait and posture, visual only: nothing here feeds detection, movement or any timer.
- * Amplitudes come from .superpowers/sdd/2026-11-22-fidelity-round/task-3-brief.md (3B/3C).
+ * Amplitudes come from docs/plans/2026-11-22-fidelity-round.md (Task 3, 3B/3C); the chase
+ * exemption for the spacing bias is the Task 3 review ruling (fix round 1) on top of 3C.
  */
 const GAIT={
  /** Thigh pitch either side of the standing pose, radians. */
@@ -300,18 +301,20 @@ const GAIT={
  /** Lean per m/s² of acceleration, radians, nose down when speeding up. */
  pitchPerAccel:.03,
  maxPitch:.05,
- /** Head dip while searching near the last-seen point, radians, and the radius that counts as near. */
+ /** Head dip while searching near the last-seen point, radians, and the radius that counts as near.
+  *  The turret only ever pitches between this and level. */
  searchPitch:-.12,
  searchRadius:2.5,
- /** "Notice" brace at the start of a chase: beacon double-pulse and a short head lift. */
+ /** "Notice" brace at the start of a chase, seconds: the beacon double-pulses while the unit keeps moving. */
  notice:.5,
- noticePitch:.1,
  headRate:8,
  /** Fleet spacing: a neighbour inside this radius and inside the forward cone biases the heading. */
  neighbourRadius:1.2,
  /** Cosine of the forward cone half angle: 0 counts anything in front of the unit (±90°). */
  neighbourCone:0,
- /** Largest heading bias, radians. Steering only: speed and physics are unchanged. */
+ /** Largest heading bias, radians. Steering only: speed and physics are unchanged. Kept at the
+  *  plan's gentle value: every stronger setting that held a 0.5 m gap also moved the B5
+  *  fairness timings in scripts/check-opening-fleet.ts (Task 3 review, fix round 1). */
  neighbourBias:.5,
 };
 
@@ -748,10 +751,11 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
  /**
   * Gentle spacing: a unit within `neighbourRadius` and in front of this one turns the
   * heading away from it, more the closer it is. It only offsets the steering target, so the
-  * body still moves through the same physics step at the same speed.
+  * body still moves through the same physics step at the same speed. Never in a chase: the
+  * line to the player always wins, so a pincer cannot push a chaser into a door jamb.
   */
  const neighbourBias=()=>{
-  if(!neighbours||!neighbours.length)return 0;
+  if(state==='chase'||!neighbours||!neighbours.length)return 0;
   const fx=-Math.sin(moveYaw),fz=-Math.cos(moveYaw),rx=Math.cos(moveYaw),rz=-Math.sin(moveYaw);
   let bias=0;
   for(const other of neighbours){
@@ -801,9 +805,8 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
   gaitSpeed+=(travel/dt-gaitSpeed)*(1-Math.exp(-GAIT.speedRate*dt));
   const lean=Math.max(-GAIT.maxPitch,Math.min(GAIT.maxPitch,-(gaitSpeed-previous)/dt*GAIT.pitchPerAccel));
   bodyPitch+=(lean-bodyPitch)*blend;
-  const noticing=state==='chase'&&chaseClock<GAIT.notice;
   const nearLastSeen=state==='search'&&hasLastSeen&&Math.hypot(lastSeen.x-body.position.x,lastSeen.z-body.position.z)<GAIT.searchRadius;
-  const headTarget=noticing?GAIT.noticePitch:nearLastSeen?GAIT.searchPitch:0;
+  const headTarget=nearLastSeen?GAIT.searchPitch:0;
   headPitch+=(headTarget-headPitch)*(1-Math.exp(-GAIT.headRate*dt));
   poseGait();
  };
@@ -1199,7 +1202,7 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
    * active=false -> hide the model and freeze everything.
    * paused=true or dt<=0 -> read only: same state, warning and timers, no movement, no lastSeen change.
    * shadowBudget=false -> emissive-only unit: no shadow casting, no point light (T26).
-   * others -> other units' feet positions; one inside 1.2 m ahead biases the heading (3C).
+   * others -> other units' feet positions; outside a chase, one inside 1.2 m ahead biases the heading (3C).
    */
   update(dt:number,player:T.Vector3,active:boolean,paused:boolean,shadowBudget=true,others?:readonly T.Vector3[]):OpeningRobotUpdate{
    const quiet=options.standby?.()??false;if(quiet!==standby){standby=quiet;publish(0);}
