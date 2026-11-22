@@ -117,8 +117,8 @@ def boot(page, query):
     page.wait_for_timeout(500)
 
 
-def boundary(page, label, stage, card, href, shot_name):
-    ok = until(page, f"() => window.__CAMPUS.campaign.state()?.stage === {json.dumps(stage)} && window.__cards.includes({json.dumps(card)})", 90)
+def boundary(page, label, stage, card, href, shot_name, wait=90):
+    ok = until(page, f"() => window.__CAMPUS.campaign.state()?.stage === {json.dumps(stage)} && window.__cards.includes({json.dumps(card)})", wait)
     s = snap(page)
     check(f'{label}: stage is {stage}', s['stage'] == stage, s)
     check(f'{label}: chapter card "{card}" appeared', card in s['cards'], s['cards'])
@@ -250,7 +250,12 @@ def main_run(browser):
     resume(page)
 
     # ---- Ending ----
-    boundary(page, 'Chapter 3 -> ending', 'ending', 'EPILOGUE', href, '06-ending-card.png')
+    # door_opened now waits for the crowd to run out (~28 s of chapter time). Under
+    # SwiftShader the run renders at ~1-2 fps with dt capped at 0.1 s, so the
+    # boundary can take several minutes of wall time; 900 s is the cap, and the
+    # wait returns as soon as the stage lands (a focused low-quality browser run
+    # measured ~290 s).
+    boundary(page, 'Chapter 3 -> ending', 'ending', 'EPILOGUE', href, '06-ending-card.png', 900)
     resume(page)
     t0 = time.time()
     done = until(page, "() => window.__CAMPUS.campaign.state()?.stage === 'done' && !!document.querySelector('#ending-credits.show')", 420)

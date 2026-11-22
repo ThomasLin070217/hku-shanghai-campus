@@ -22,7 +22,7 @@ import type {ChapterContext,Explorer} from '../src/campaign/types';
 import {WORLD_THREAT_KEY,loadWorldThreat,refreshedWorldThreat} from '../src/gameplay/worldThreat';
 import {OPENING_SAVE_KEY} from '../src/opening/persistence';
 import {clearProgress} from '../src/levels/resetProgress';
-import {SPORTS_ENTRY} from '../src/campaign/sportsChapter';
+import {SPORTS_ENTRY,RUNOUT_EMIT_CAP} from '../src/campaign/sportsChapter';
 import {createThreatRefresh} from '../src/opening/threatRefresh';
 import {ENDING_BEATS,ENDING_CLEAR_AT,ENDING_HOLD_SECONDS,ENDING_SECONDS,clearAllProgress,creditsMarkup,playAgain} from '../src/campaign/endingChapter';
 import {rescueBannerMarkup} from '../src/gameplay/sportsDoorCore';
@@ -115,6 +115,14 @@ function walkTo(x:number,z:number,max=20000){
  return count;
 }
 
+/** Drive chapter time until the delayed `door_opened` lands: the run-out holds `sports`. */
+function runOut(host:ReturnType<typeof makeHost>['host'],cap=RUNOUT_EMIT_CAP+1){
+ game.paused=false;
+ let elapsed=0;
+ while(host.stage()!=='ending'&&elapsed<cap){host.update(1/60);elapsed+=1/60;}
+ return elapsed;
+}
+
 group('(a) the opening-mode campus contains the east door and its collision',()=>{
  const door=asset.root.getObjectByName(SPORTS_DOOR.name);
  assert.ok(door,'the sports east door is built in opening mode');
@@ -150,7 +158,7 @@ group('(c) the lawn-to-sports walking leg is walkable on foot along approach',()
  assert.ok(steps<20000*6,`the leg is direct enough to be walked in one go (${steps} steps)`);
 });
 
-group('(d) the lock validates with the puzzle answers and opening emits door_opened',()=>{
+group('(d) the lock validates with the puzzle answers, then the crowded run emits door_opened',()=>{
  const {host,store}=makeHost({[WORLD_THREAT_KEY]:SEALED_WITH_POWER});
  host.start('mac-device','to_sports');
  game.body.position.set(...SPORTS_ENTRY.point as [number,number,number]);game.body.velocity.set(0,0,0);
@@ -163,7 +171,10 @@ group('(d) the lock validates with the puzzle answers and opening emits door_ope
  host.update(1/120);
  assert.equal(nav.doorOpen(SPORTS_DOOR.id),true,'collision opens with the door');
  assert.equal(nav.blocked(centre.x,centre.z,0),false,'the player can walk through');
- assert.equal(host.stage(),'ending','door_opened moves the campaign to the ending');
+ assert.equal(host.stage(),'sports','the stage holds on sports while the crowd runs out');
+ const waited=runOut(host);
+ assert.equal(host.stage(),'ending','door_opened moves the campaign to the ending after the run-out');
+ assert.ok(waited<=RUNOUT_EMIT_CAP,`the run-out lands within its ${RUNOUT_EMIT_CAP} s cap (${waited.toFixed(2)} s)`);
  const threat=loadWorldThreat({storage:store.storage});
  assert.deepEqual(threat.flags,{lionDefeated:true,powerCut:true,localModelCleared:true},'the ending clears the local model');
  assert.equal(threat.phase,'sealed','the purge waits for the ADMINISTRATOR beat so the dome lifts on screen');
@@ -177,8 +188,9 @@ group('(e) an already-open door still advances the campaign and the ending finis
  game.body.position.set(...SPORTS_ENTRY.point as [number,number,number]);
  host.update(1/120);
  assert.equal(host.stage(),'sports','reach_sports still arrives with the door open');
- host.update(1/120);
- assert.equal(host.stage(),'ending','an open door emits door_opened once the stage is sports (I4)');
+ const waited=runOut(host);
+ assert.equal(host.stage(),'ending','an open door emits door_opened once the stage is sports (I4), after the run-out');
+ assert.ok(waited<=RUNOUT_EMIT_CAP,`the run-out lands within its ${RUNOUT_EMIT_CAP} s cap (${waited.toFixed(2)} s)`);
  assert.equal(loadWorldThreat({storage:store.storage}).phase,'sealed','nothing purges during the rescue hold');
  const lines=ENDING_BEATS.map(beat=>beat.line).join('\n');
  for(const line of ['HKU SUPERCOMPUTER','CPU 01–04 … OFFLINE','CPU 01 ONLINE','CPU 02 ONLINE','CPU 03 ONLINE','CPU 04 ONLINE','SYNCHRONIZATION STARTED…','ALL PROCESSING UNITS ONLINE','ADMINISTRATOR ACCESS RESTORED'])assert.ok(lines.includes(line),`ending shows ${line}`);
@@ -256,7 +268,7 @@ group('(i) the epilogue holds the banner and leaves the atmosphere to the experi
  host.start('mac-device','to_sports');
  game.body.position.set(...SPORTS_ENTRY.point as [number,number,number]);
  host.update(1/120);
- host.update(1/120);
+ runOut(host);
  assert.equal(host.stage(),'ending');
  const state=()=>(host.debug.ending as unknown as {state:()=>Record<string,unknown>}).state();
  assert.ok(ENDING_HOLD_SECONDS>=3,`the rescue banner is readable for about 3 s (${ENDING_HOLD_SECONDS})`);
@@ -296,7 +308,7 @@ group('(k) the rescue banner is readable before the Mac screen',()=>{
  host.start('mac-device','to_sports');
  game.body.position.set(...SPORTS_ENTRY.point as [number,number,number]);
  host.update(1/120);
- host.update(1/120);
+ runOut(host);
  assert.equal(host.stage(),'ending');
  const state=()=>(host.debug.ending as unknown as {state:()=>Record<string,unknown>}).state();
  let elapsed=0;
@@ -356,6 +368,8 @@ group('(m) a run restored past the sports hall finds the door open, silently (M4
   host.update(0);
   assert.equal(game.doors[SPORTS_DOOR.id],true,`at ${stage} the east door is already open`);
   assert.equal(nav.doorOpen(SPORTS_DOOR.id),true,`at ${stage} the doorway collision is open`);
+  const counts=(host.debug.sports as unknown as {runout:()=>({inside:number;outside:number;moving:number;crowd:string})}).runout();
+  assert.deepEqual({inside:counts.inside,outside:counts.outside,moving:counts.moving},{inside:0,outside:100,moving:0},`at ${stage} the crowd is already outside`);
   assert.deepEqual(notices.filter(n=>/door|lock/i.test(n)),[],`no door notice at ${stage}`);
   host.reset();
  }
@@ -374,6 +388,7 @@ group('(n) an in-tab restart relocks the door, so the next Chapter 3 waits for t
  assert.equal(first.host.stage(),'sports');
  (first.host.debug.sports as unknown as {open:()=>unknown}).open();
  first.host.update(1/120);
+ runOut(first.host);
  assert.equal(first.host.stage(),'ending','the first run opened the door');
  // "Restart opening…" resets the host in the same document (experience.restart).
  first.host.reset();

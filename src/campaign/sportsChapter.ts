@@ -10,6 +10,12 @@ import type {Chapter,ChapterContext} from './types';
 /** Outside the sports hall east door, 2.6 m east like `createSportsRescueExperience.relocate`. */
 const door=sportsDoorWorld(SITE.sportsZ);
 export const SPORTS_ENTRY:Chapter['entry']={point:[door.x+2.6,0,door.z],radius:2.5,event:'reach_sports'};
+/**
+ * The rescue holds the campaign on `sports` until the crowd has cleared the
+ * doorway, so the player watches the run-out; `door_opened` then advances to the
+ * ending. The cap keeps an obstacle from stranding the run.
+ */
+export const RUNOUT_EMIT_CAP=30;
 /** Chapter checks attach the chapter with a stubbed explorer; the real game always has a world. */
 const HEADLESS_WORLD:StudentRunoutWorld={support:(x,_z,_from)=>x<SPORTS_HALL.x+SPORTS_HALL.eastX?SPORTS_HALL.floorTop:0};
 /**
@@ -38,7 +44,7 @@ type SportsDoorRuntime={
  */
 export function createSportsChapter():Chapter{
  let ctx:ChapterContext|null=null,doorRuntime:SportsDoorRuntime|null=null,opened=false;
- let crowd:ReturnType<typeof createStudentCrowd>|null=null,runout:StudentRunout|null=null;
+ let emitted=false,runTime=0,crowd:ReturnType<typeof createStudentCrowd>|null=null,runout:StudentRunout|null=null;
  const isOpen=()=>doorRuntime?.open??false;
  /** The crowd cheer is optional and must never block the rescue. */
  function playCheer(){
@@ -56,15 +62,16 @@ export function createSportsChapter():Chapter{
   doorRuntime.update(0);
   return{sudoku,password,open:doorRuntime.open};
  }
- /** A run restored past the rescue (reload or checkpoint at `ending`/`done`) finds the door open, silently. */
+ /** A run restored past the rescue finds the door open and the crowd already outside. */
  function restore(c:ChapterContext){
   if(!doorRuntime||stageIndex(c.stage())<=stageIndex('sports'))return;
-  doorRuntime.unlock(true);opened=true;
+  doorRuntime.unlock(true);opened=true;emitted=true;runout?.finish();
  }
  function attach(c:ChapterContext){
+  if(crowd)return;
   ctx=c;
   // The crowd is the same in both runtimes: it waits in the hall before the
-  // player reaches the door and runs out when the latch below fires.
+  // player reaches the door and runs out when the lock opens below.
   crowd=createStudentCrowd();
   c.root().add(crowd.root);
   runout=createStudentRunout(crowd,c.explorer.world??HEADLESS_WORLD);
@@ -87,10 +94,26 @@ export function createSportsChapter():Chapter{
  }
  function update(dt:number){
   doorRuntime?.update(dt);
-  // Latch only when the event is accepted: on the walking leg a door that is
-  // already open must not consume its one emit before the stage reaches `sports`.
-  if(!opened&&isOpen()&&ctx?.emit('door_opened')){opened=true;runout?.release();playCheer();}
+  // Release the moment the lock opens on the `sports` stage. The walking leg can
+  // arrive with the door already open (a per-run door never reset), and the crowd
+  // must not run out behind the player's back.
+  if(!opened&&ctx?.stage()==='sports'&&isOpen()){
+   opened=true;
+   runout?.release();
+   playCheer();
+   ctx.notify('The students are running for the gate.');
+  }
   runout?.update(dt);
+  // Hold `door_opened` until the crowd is through the doorway: the ending's
+  // overlay would otherwise hide the whole run-out. The cap keeps a stuck student
+  // from stranding the campaign.
+  if(opened&&!emitted){
+   runTime+=dt;
+   const counts=runout?.counts();
+   if(!counts||(counts.inside===0&&counts.moving===0)||runTime>=RUNOUT_EMIT_CAP){
+    if(ctx?.emit('door_opened'))emitted=true;
+   }
+  }
  }
  return{
   id:'sports',entry:SPORTS_ENTRY,approach:SPORTS_APPROACH,
@@ -105,7 +128,7 @@ export function createSportsChapter():Chapter{
    };
   },
   // Restart in the same tab: the next run's Chapter 3 starts at a locked door (the state is not saved).
-  detach(){runout?.dispose();runout=null;crowd?.dispose();crowd=null;doorRuntime?.lock(true);doorRuntime?.update(0);doorRuntime?.dispose();doorRuntime=null;ctx=null;opened=false;},
+  detach(){runout?.dispose();runout=null;crowd?.dispose();crowd=null;doorRuntime?.lock(true);doorRuntime?.update(0);doorRuntime?.dispose();doorRuntime=null;ctx=null;opened=false;emitted=false;runTime=0;},
   debug:{
    open:openDoor,
    door(){const state=doorRuntime?.state;return{...(typeof state==='function'?state():state??{}),entry:SPORTS_ENTRY};},

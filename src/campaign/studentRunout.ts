@@ -1,7 +1,7 @@
 import * as T from 'three';
 import {SITE} from '../model/campusParameters';
 import {SPORTS_HALL} from '../model/sportsDoor';
-import type {createStudentCrowd} from '../gameplay/studentCrowd';
+import {CROWD,type createStudentCrowd} from '../gameplay/studentCrowd';
 
 /**
  * The sports-hall run-out: when the east door opens, the 100 students walk to
@@ -101,9 +101,11 @@ export function createStudentRunout(crowd:Crowd,world:StudentRunoutWorld){
   }
   return 0;
  }
- /** Inside the hall the feet stay on the raised floor; outside they follow the terrain. */
+ /** Inside the hall the feet stay on the raised floor; outside they follow the terrain.
+  *  The door threshold slab spans x −48.63…−48.37 (top 0.31), so `floorTop` holds
+  *  across it and the terrain takes over east of the slab. */
  function settle(student:Student){
-  if(student.x<doorX){student.y=SPORTS_HALL.floorTop;return;}
+  if(student.x<=doorX+.13){student.y=SPORTS_HALL.floorTop;return;}
   const ground=world.support(student.x,student.z,student.y+.6);
   if(ground!==null)student.y=ground;
  }
@@ -152,9 +154,12 @@ export function createStudentRunout(crowd:Crowd,world:StudentRunoutWorld){
    if(!indices)continue;
    for(let i=0;i<indices.length;i++)mesh.setMatrixAt(i,matrices[indices[i]]);
    mesh.instanceMatrix.needsUpdate=true;
+   // `setMatrixAt` does not move the culling volume: without this the stale,
+   // hall-sized sphere frustum-culls the crowd the moment it walks outside.
+   mesh.computeBoundingSphere();
   }
  }
- /** Start the run-out once; the chapter calls this from its `door_opened` latch. */
+ /** Start the run-out once; the chapter calls this the moment the lock opens. */
  function release(){
   if(releasedAll)return false;
   releasedAll=true;elapsed=0;
@@ -166,6 +171,19 @@ export function createStudentRunout(crowd:Crowd,world:StudentRunoutWorld){
     :STUDENT_RUNOUT.firstLeavers*STUDENT_RUNOUT.firstGap+(rank-STUDENT_RUNOUT.firstLeavers)*STUDENT_RUNOUT.restGap;
   });
   return true;
+ }
+ /** Place the whole crowd at its stop points in one call, yaw east and no bob:
+  *  a save restored at `ending`/`done` finds the students already outside. */
+ function finish(){
+  releasedAll=true;elapsed=0;
+  for(const student of students){
+   const stop=student.route[student.route.length-1];
+   student.x=stop.x;student.z=stop.z;
+   student.released=true;student.stopped=true;student.speed=0;student.phase=0;
+   student.goal=student.route.length;student.yaw=CROWD.yaw;
+   settle(student);
+  }
+  writeMatrices();
  }
  function update(dt:number){
   if(!releasedAll||dt<=0)return;
@@ -187,9 +205,7 @@ export function createStudentRunout(crowd:Crowd,world:StudentRunoutWorld){
   return{inside,outside,moving};
  }
  return{
-  counts,update,release,
-  /** True once every student has reached their stop. */
-  get done(){return students.every(student=>student.stopped);},
+  counts,update,release,finish,
   dispose(){students.length=0;releasedAll=false;},
  };
 }
