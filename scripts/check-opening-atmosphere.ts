@@ -6,6 +6,7 @@
 import assert from 'node:assert/strict';
 import * as T from 'three';
 import {createOpeningAtmosphere,OPENING_DOME} from '../src/opening/atmosphere';
+import {OPENING as O} from '../src/opening/spatialLayout';
 import {BUILDINGS} from '../src/model/campusParameters';
 
 const scene=new T.Scene();
@@ -103,5 +104,16 @@ assert.equal(reset.curtainVisible,false);
 assert.equal(reset.redLights,0);
 assert.ok(Math.abs(reset.hemiIntensity-day.hemiIntensity)<.01,'reset restores the day light');
 assert.ok(Math.abs(renderer.toneMappingExposure-1)<.01,'reset restores tone mapping');
+{
+ // FU1: nothing of the atmosphere stands in the B04 entrance walkway (the beacon stem
+ // drew a thin black line through the crosshair at the Chapter 1 handoff).
+ const root=scene.getObjectByName('Opening_AI_curtain_boundary')!;root.updateMatrixWorld(true);
+ const half=O.b4.doorWidth/2+.6,inWay:string[]=[];
+ root.traverse(o=>{if(!(o instanceof T.Mesh)||o.name==='Opening_AI_curtain_dome')return;
+  const b=new T.Box3().setFromObject(o);
+  if(b.max.x>O.b4.door-half&&b.min.x<O.b4.door+half&&b.max.z>O.b4.z1&&b.min.z<O.handoff[2]+1.5&&b.min.y<3)inWay.push(`${o.name||'(unnamed)'} ${b.min.toArray().map(n=>n.toFixed(2))}..${b.max.toArray().map(n=>n.toFixed(2))}`);});
+ assert.deepEqual(inWay,[],'no beacon or stem stands in the B04 entrance walkway');
+ console.log('PASS FU1: the B04 entrance walkway is clear of beacon stems');
+}
 assert.doesNotThrow(()=>atmosphere.dispose(),'dispose is safe');
 console.log('PASS atmosphere: hemispherical dome clears every roof, animated deployment, instant sealed restore, animated purge to daylight, red beacons and pause freeze');

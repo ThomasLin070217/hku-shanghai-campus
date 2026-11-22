@@ -3,7 +3,7 @@ import {KEYS,keyLabel} from '../exploration/config';
 import {ITEMS} from './definitions';
 import {setHidden} from '../ui/dom';
 /** DOM only: all mutations are through the game's single inventory. No detached drag stack. */
-export function createInventoryUI(getGame:()=>CampusGame,open:()=>void,close:()=>void,_english=false){
+export function createInventoryUI(getGame:()=>CampusGame,open:()=>void,close:()=>void,story=false){
  const english=true;
  const hud=document.createElement('div');hud.id='inventory-hud';
  hud.innerHTML=`<div id="held-name" aria-live="polite"></div><div class="inventory-dock"><div class="hotbar" aria-label="物品快捷栏"></div><button class="bag-open" title="打开背包 (${keyLabel(KEYS.inventory)})">背包 <kbd>${keyLabel(KEYS.inventory)}</kbd></button></div>`;
@@ -32,9 +32,10 @@ export function createInventoryUI(getGame:()=>CampusGame,open:()=>void,close:()=
   if(priorGame===g&&revision===inv.revision)return;priorGame=g;revision=inv.revision;
   const selectionChanged=inv.selectedHotbar!==lastSelected;lastSelected=inv.selectedHotbar;if(selectionChanged)wake();
   for(const b of Array.from(document.querySelectorAll<HTMLButtonElement>('#inventory-hud .item-slot,#inventory-modal .item-slot'))){const i=Number(b.dataset.slot),s=inv.slots[i],def=s?ITEMS[s.itemId]:null,img=b.querySelector('img')!;b.classList.toggle('empty',!s);b.draggable=b.dataset.bag==='true'&&!!s;b.classList.toggle('selected',i===inv.selectedHotbar);b.classList.toggle('picked',i===source);b.setAttribute('aria-label',`${english?(i<9?'Hotbar':'Bag'):(i<9?'Hotbar':'Bag')} ${i<9?i+1:i-8}: ${def?(english?'MacBook Air':def.name):'Empty'}${s?' × '+s.count:''}`);b.setAttribute('aria-pressed',String(i===inv.selectedHotbar));img.hidden=!def;if(def)img.src=def.icon;b.querySelector('.slot-count')!.textContent=s&&s.count>1?String(s.count):'';}
-  // The held-item name is a toast: it shows when the selection changes, then fades after 2 s.
+  // Story mode: the held-item name is a toast that shows when the selection changes, then fades after 2 s.
+  // Survey and the legacy pages keep it on screen (Ruling 32).
   const heldName=hud.querySelector<HTMLElement>('#held-name')!,label=inv.equipped?(english?'MacBook Air · 13-inch':ITEMS[inv.equipped.itemId].name):'Empty hands';
-  if(heldName.textContent!==label){heldName.textContent=label;heldName.style.transition='opacity .4s';heldName.style.opacity='1';clearTimeout(heldTimer);heldTimer=setTimeout(()=>{heldName.style.opacity='0';},2000);}
+  if(heldName.textContent!==label){heldName.textContent=label;if(story){heldName.style.transition='opacity .4s';heldName.style.opacity='1';clearTimeout(heldTimer);heldTimer=setTimeout(()=>{heldName.style.opacity='0';},2000);}}
  }
  return{refresh,dispose(){clearTimeout(heldTimer);clearTimeout(idleTimer);if(typeof window!=='undefined')window.removeEventListener('keydown',wakeKeys);hud.remove();modal.remove();}};
 }

@@ -74,7 +74,9 @@ if(openingMode){
   openPanel:id=>{dragControls=document.pointerLockElement!==viewer.renderer.domElement;explorer.openPanel(id==='computer'||id==='settings'?id:'door');},
   closePanel:()=>explorer.closePanel(),resume:()=>dragControls?explorer.enterCompat():explorer.enter(),
   card:showChapterCard,hearts:(experience as {hearts?:HeartsChannel}).hearts,
- },chapters:CAMPAIGN_CHAPTERS});
+ },chapters:CAMPAIGN_CHAPTERS,
+ // The save toast belongs to chapter boundaries, not to every save (Ruling 33).
+ onChapterBoundary:()=>(experience as {announceSave?:()=>void}).announceSave?.()});
  campaign=host;
  const checkpoint=openingCheckpoint(new URLSearchParams(location.search).get('checkpoint')),resume=checkpoint?checkpointCampaign(checkpoint):null;
  const mac=explorer.game.inventory.slots.find(slot=>slot?.itemId==='macbook-air-13-silver')?.instanceId;

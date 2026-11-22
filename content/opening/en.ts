@@ -154,10 +154,11 @@ export const OPENING_UI = {
     /** The supercomputer is still offline at the Chapter 1 handoff; B4 boots it. */
     ticker: ['CPU 01 OFFLINE', 'CPU 02 OFFLINE', 'CPU 03 OFFLINE', 'CPU 04 OFFLINE'],
     meta: 'MacBook retained · Building 4 main entrance',
-    note: 'Press F to continue to Chapter 2.',
+    /** Continue only closes this screen; F at Building 4 then opens the Chapter 2 handoff. */
+    note: 'Continue, then press F at Building 4 to start Chapter 2.',
     continue: 'Continue',
     replay: 'Replay chapter',
-    aria: 'Chapter 1 handoff at Building 4. Press F to continue to Chapter 2.',
+    aria: 'Chapter 1 handoff at Building 4. Continue, then press F at Building 4 to start Chapter 2.',
   },
   settings: {
     eyebrow: 'Preferences',

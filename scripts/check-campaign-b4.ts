@@ -6,12 +6,13 @@ import {BUILDINGS,SITE} from '../src/model/campusParameters';
 import {OPENING as O} from '../src/opening/spatialLayout';
 import {B4_PHRASE,createKeyboardState,pressKeyboard,createFlipState,flipTiles,flipSolved,pullBreaker,connectMacBook,b4StepOf,sweepTiles,autoFinishTiles} from '../src/campaign/b4Puzzle';
 import {B4_LAYOUT,B4_OBSTACLES,B4_STATIONS,B4_DOOR_OBSTACLE,B4_FOCUS_FRAME,setB4FlipPanel,partBounds} from '../src/opening/b4Layout';
-import {buildB4Shell} from '../src/opening/b4Shell';
+import {buildB4Shell,B4_RACK_LED} from '../src/opening/b4Shell';
 import {createCampaignState,reduceCampaign,type CampaignState} from '../src/campaign/state';
 import type {ChapterContext,Explorer} from '../src/campaign/types';
 import {createB4Chapter} from '../src/campaign/b4Chapter';
 import {buildSite} from '../src/model/buildSite';
 import {disposeAsset} from '../src/model/buildCampus';
+import {firstPersonVisible} from '../src/exploration/viewmodel';
 
 // (a) Pure puzzle rules.
 {
@@ -112,7 +113,20 @@ const doorRay=()=>new T.Raycaster(new T.Vector3(O.b4.door,O.b4.floor+1.3,O.hando
 }
 let cs:CampaignState={...createCampaignState('mac-1'),stage:'b4_enter'};
 const camera=new T.PerspectiveCamera(70,16/9,.05,500),arms=new T.Group(),socket=new T.Group(),notes:string[]=[];arms.add(socket);
-const explorer={game:g2,world:w2,camera,firstPerson:{socket,root:arms},enabled:true} as unknown as Explorer;
+// B4 publishes "hide the view model" (in B04, in focus); the explorer is the one writer of arms/socket visibility.
+let viewHidden:boolean|null=null;
+const explorer={game:g2,world:w2,camera,firstPerson:{socket,root:arms},enabled:true,setFirstPersonHidden(v:boolean){viewHidden=v;}} as unknown as Explorer;
+{
+ const rule=(o:Partial<Parameters<typeof firstPersonVisible>[0]>)=>firstPersonVisible({enabled:true,first:true,story:true,deviceOpen:false,hidden:false,...o});
+ assert.equal(rule({}),false,'story mode: no arms or MacBook while walking (Ruling 36)');
+ assert.equal(rule({deviceOpen:true}),true,'story mode: the MacBook shows while opened with C');
+ assert.equal(rule({deviceOpen:true,hidden:true}),false,'story mode: B4 hides it in B04 and in focus');
+ assert.equal(rule({story:false}),true,'survey and legacy pages keep the held item while walking');
+ assert.equal(rule({story:false,hidden:true}),false);
+ assert.equal(rule({first:false,story:false}),false,'third person shows no view model');
+ assert.equal(rule({enabled:false,story:false}),false);
+ console.log('PASS first-person view model rule: stowed in story mode, held in survey');
+}
 const ctx:ChapterContext={scene:new T.Scene(),root:()=>site.root,explorer,deviceId:()=>'mac-1',stage:()=>cs.stage,
  emit:e=>{const r=reduceCampaign(cs,e);cs=r.state;return r.changed;},notify:t=>{notes.push(t);},atmosphere:()=>undefined,
  openPanel:()=>{g2.openPanel('door');},closePanel:()=>{g2.closePanel();},resume:()=>{g2.paused=false;},card:async()=>{}};
@@ -167,18 +181,18 @@ const lights=()=>{const out:T.PointLight[]=[];site.root.traverse(o=>{if(o instan
  assert.equal(dbg.state().near,'keyboard','the west end of the Keyboard Wall is in reach');
  const outline=(id:string)=>site.root.getObjectByName('B4_highlight_'+id)!;
  assert.ok(outline('keyboard')?.visible,'the in-range Keyboard Wall is outlined');assert.equal(outline('flip').visible,false);
- assert.equal(socket.visible,false,'the held MacBook is hidden inside B4');
+ assert.equal(viewHidden,true,'B4 asks the explorer to hide the view model inside B04');assert.equal(socket.visible,true,'B4 never writes the socket itself (one owner)');
  const text=b4.objective('b4_keyboard')!.text;assert.match(text,/Press F/);assert.doesNotMatch(text,/\bE\b/);
- g2.body.position.set(...O.handoff);step(1);assert.equal(socket.visible,true,'the held MacBook shows again outside B4');
+ g2.body.position.set(...O.handoff);step(1);assert.equal(viewHidden,false,'outside B04 B4 releases its hide flag');assert.equal(socket.visible,true);
  g2.body.position.set(...B4_STATIONS.keyboard.stand);step(1);
- dbg.focus('keyboard');step(1);assert.equal(socket.visible,false,'focus view hides the held MacBook');assert.equal(arms.visible,false,'focus view hides the first-person arms');
+ dbg.focus('keyboard');assert.equal(viewHidden,true,'entering focus hides the view model at once');step(1);assert.equal(viewHidden,true,'focus view keeps the view model hidden');assert.equal(arms.visible,true,'B4 never writes the arms itself (one owner)');
  framed('keyboard');
  dbg.type('ILOVECDS');dbg.enter();step(1);assert.equal(cs.stage,'b4_flip');
  // Flipped tiles read clearly: the back faces glow.
  const tile=site.root.getObjectByName('FlipTile_r0c0')!,face=(tile.children[0] as T.Mesh).material as T.MeshStandardMaterial[];
  assert.ok(face[5].emissiveIntensity>0&&face[5].emissive.getHex()!==face[4].emissive.getHex(),'the flipped face is clearly different');
  // Three full-screen drags from the flip stand finish the wall.
- g2.body.position.set(...B4_STATIONS.flip.stand);step(1);dbg.focus('flip');step(1);framed('flip');assert.equal(arms.visible,false);
+ g2.body.position.set(...B4_STATIONS.flip.stand);step(1);dbg.focus('flip');step(1);framed('flip');assert.equal(viewHidden,true);assert.equal(arms.visible,true);
  const one=dbg.sweepNdc([[-.98,0],[.98,0]]);assert.ok(one>=Math.ceil(561/8),`one drag flips ${one} tiles; needs >= ${Math.ceil(561/8)}`);
  const two=dbg.sweepNdc([[-.98,.55],[.98,.55]]);
  console.log('PASS sweep: one drag',one,'tiles, two drags',two);
@@ -200,11 +214,15 @@ const lights=()=>{const out:T.PointLight[]=[];site.root.traverse(o=>{if(o instan
  assert.ok(lights().length>0,'room lights stay on while the player is still at the port');
  g2.body.position.set(...O.handoff);step(1);
  assert.equal(lights().length,0,'room lights are removed once the player has left B04');
+ // FU3: with no lights the restored room still reads as powered: the racks keep a green emissive.
+ const rackGlow=(name:string)=>{let out=-1;site.root.traverse(o=>{if(o instanceof T.Mesh)for(const m of [o.material].flat())if(m instanceof T.MeshStandardMaterial&&m.name===name){const e=m.emissive;out=Math.max(out,m.emissiveIntensity*(e.r+e.g+e.b)/3);}});return out;};
+ assert.ok(rackGlow(B4_RACK_LED)>.5,`rack LEDs glow at to_lawn with the player outside (${rackGlow(B4_RACK_LED).toFixed(3)})`);
+ assert.ok(rackGlow('B4 rack body')>.02,`rack bodies keep a green emissive at to_lawn with the player outside (${rackGlow('B4 rack body').toFixed(3)})`);
  console.log('PASS focus, highlight, flip-face contrast, lights off after B4, F at every station');
 }
 // Reload at b4_connect keeps the supercomputer humming.
 {
- b4.detach();assert.ok(w2.blocked(O.b4.door,O.b4.z1+.9,O.b4.floor+.06),'detach closes the door again');
+ viewHidden=true;b4.detach();assert.equal(viewHidden,false,'detach releases the hide flag');assert.ok(w2.blocked(O.b4.door,O.b4.z1+.9,O.b4.floor+.06),'detach closes the door again');
  assert.match(hitPath(doorRay()?.object??null),/B04_entrance_door/,'detach slides the leaves shut');
  cs={...cs,stage:'b4_connect'};const again=createB4Chapter();again.attach(ctx);again.update(.1);
  assert.equal((again.debug as Record<string,()=>{hum:boolean}>).state().hum,true,'after a reload at b4_connect the hum resumes');again.detach();

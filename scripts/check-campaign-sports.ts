@@ -24,7 +24,7 @@ import {OPENING_SAVE_KEY} from '../src/opening/persistence';
 import {clearProgress} from '../src/levels/resetProgress';
 import {SPORTS_ENTRY} from '../src/campaign/sportsChapter';
 import {createThreatRefresh} from '../src/opening/threatRefresh';
-import {ENDING_BEATS,ENDING_CLEAR_AT,ENDING_HOLD_SECONDS,ENDING_SECONDS,clearAllProgress,creditsMarkup} from '../src/campaign/endingChapter';
+import {ENDING_BEATS,ENDING_CLEAR_AT,ENDING_HOLD_SECONDS,ENDING_SECONDS,clearAllProgress,creditsMarkup,playAgain} from '../src/campaign/endingChapter';
 import {rescueBannerMarkup} from '../src/gameplay/sportsDoorCore';
 
 let passed=0;
@@ -345,6 +345,70 @@ group('(l) a corrupt world-threat record is not re-read every frame',()=>{
  const backups=[...data.keys()].filter(key=>key.startsWith(WORLD_THREAT_KEY+'.unreadable.'));
  assert.ok(backups.length>=1,'the corrupt record is reported once');
  assert.ok(backups.length<=11,`10 s writes ~10 repair keys, not 600 (${backups.length})`);
+});
+
+group('(m) a run restored past the sports hall finds the door open, silently (M4)',()=>{
+ game.doors[SPORTS_DOOR.id]=false;
+ for(const stage of ['ending','done'] as const){
+  game.doors[SPORTS_DOOR.id]=false;
+  const {host,notices}=makeHost({[WORLD_THREAT_KEY]:SEALED_WITH_POWER});
+  host.start('mac-device',stage);
+  host.update(0);
+  assert.equal(game.doors[SPORTS_DOOR.id],true,`at ${stage} the east door is already open`);
+  assert.equal(nav.doorOpen(SPORTS_DOOR.id),true,`at ${stage} the doorway collision is open`);
+  assert.deepEqual(notices.filter(n=>/door|lock/i.test(n)),[],`no door notice at ${stage}`);
+  host.reset();
+ }
+ game.doors[SPORTS_DOOR.id]=false;
+ const before=makeHost();before.host.start('mac-device','sports');before.host.update(0);
+ assert.equal(game.doors[SPORTS_DOOR.id],false,'at sports the door is still locked');
+ before.host.reset();
+});
+
+group('(n) an in-tab restart relocks the door, so the next Chapter 3 waits for the lock (M3)',()=>{
+ game.doors[SPORTS_DOOR.id]=false;
+ const first=makeHost({[WORLD_THREAT_KEY]:SEALED_WITH_POWER});
+ first.host.start('mac-device','to_sports');
+ game.body.position.set(...SPORTS_ENTRY.point as [number,number,number]);game.body.velocity.set(0,0,0);
+ first.host.update(1/120);
+ assert.equal(first.host.stage(),'sports');
+ (first.host.debug.sports as unknown as {open:()=>unknown}).open();
+ first.host.update(1/120);
+ assert.equal(first.host.stage(),'ending','the first run opened the door');
+ // "Restart opening…" resets the host in the same document (experience.restart).
+ first.host.reset();
+ assert.equal(game.doors[SPORTS_DOOR.id],false,'restart relocks the door');
+ assert.deepEqual(first.notices.filter(n=>/engaged/i.test(n)),[],'the relock is silent');
+ const next=makeHost({[WORLD_THREAT_KEY]:SEALED_WITH_POWER});
+ next.host.start('mac-device','to_sports');
+ game.body.position.set(...SPORTS_ENTRY.point as [number,number,number]);game.body.velocity.set(0,0,0);
+ for(let i=0;i<5;i++)next.host.update(1/120);
+ assert.equal(next.host.stage(),'sports','the next run\'s Chapter 3 does not complete by itself');
+ next.host.reset();
+});
+
+group('(p) a reload at done goes straight to the credits, no replay (M1)',()=>{
+ const harness=makeHost({[WORLD_THREAT_KEY]:SEALED_WITH_POWER});
+ harness.host.start('mac-device','done');
+ harness.host.update(1/60);
+ const state=(harness.host.debug.ending as unknown as {state:()=>{finished:boolean;started:boolean;clock:number}}).state();
+ assert.equal(state.finished,true,'the ending is already finished at done');
+ harness.host.update(ENDING_HOLD_SECONDS+ENDING_SECONDS+2);
+ assert.equal(harness.released,0,'the dome release does not play again');
+ assert.equal(harness.host.stage(),'done');
+ harness.host.reset();
+});
+
+group('(o) Play again clears progress and starts the game, not the checkpoint (I2)',()=>{
+ const {storage,data}=memoryStorage({[CAMPAIGN_SAVE_KEY]:'{}',[OPENING_SAVE_KEY]:'{}',[WORLD_THREAT_KEY]:SEALED_WITH_POWER});
+ let target='';
+ playAgain(storage,{assign:url=>{target=url;}});
+ assert.ok(target,'Play again navigates once, on the player\'s click');
+ const url=new URL(target,'http://127.0.0.1:5258/?experience=opening&checkpoint=ending');
+ assert.equal(url.searchParams.get('experience'),'opening');
+ assert.equal(url.searchParams.has('checkpoint'),false,`no checkpoint parameter in ${url.search}`);
+ assert.equal(data.has(CAMPAIGN_SAVE_KEY)||data.has(OPENING_SAVE_KEY),false,'progress is cleared first');
+ assert.equal(loadWorldThreat({storage}).phase,'clear','the world threat is reset first');
 });
 
 if(failures.length){

@@ -138,6 +138,36 @@ with sync_playwright() as p:
         check('pre-campaign save opens no completion modal', s['modal'] is None and not s['dialog'], s)
         check('no page errors (pre-campaign save)', errors == [], errors)
         page.close()
+
+        # 4. A reload at `done` goes straight to the credits (M1) with the sports door open (M4).
+        page = browser.new_page(viewport={'width': 1280, 'height': 800})
+        errors = []
+        page.on('pageerror', lambda e: errors.append(str(e)))
+        page.add_init_script(COUNT_CARDS)
+        seed_campaign(page, ['enter_b4', 'keyboard_solved', 'flip_solved', 'breaker_pulled', 'macbook_connected',
+                             'reach_lawn', 'guardian_shutdown', 'reach_sports', 'door_opened', 'ending_finished'])
+        page.goto(ORIGIN + '?experience=opening', wait_until='load')
+        ready(page)
+        try:
+            page.wait_for_function("() => !!document.getElementById('ending-credits')", timeout=8000)
+            credits = True
+        except Exception:
+            credits = False
+        state = page.evaluate("() => { const d = __CAMPUS.campaign.debug; return {stage: __CAMPUS.campaign.state()?.stage,"
+                              " ending: d.ending?.state?.() ?? null, door: d.sports?.door?.() ?? null}; }")
+        check('reload at done: the credits show at once', credits and state['stage'] == 'done', state)
+        check('reload at done: the epilogue does not replay', bool(state['ending']) and state['ending']['clock'] == 0
+              and not page.evaluate("() => !!document.getElementById('ending-overlay')"), state['ending'])
+        try:
+            page.wait_for_function("() => __CAMPUS.campaign.debug.sports?.door?.()?.open === true", timeout=8000)
+            door_open = True
+        except Exception:
+            door_open = False
+        check('reload at done: the sports door is open, silently', door_open
+              and 'door lock' not in page.evaluate("() => document.getElementById('toast')?.textContent ?? ''").lower(),
+              page.evaluate("() => __CAMPUS.campaign.debug.sports?.door?.() ?? null"))
+        check('no page errors (reload at done)', errors == [], errors)
+        page.close()
     finally:
         browser.close()
 

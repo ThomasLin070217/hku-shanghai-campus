@@ -3,8 +3,8 @@ import{createOpeningState,reduceOpening,validOpeningState}from'./state';
 import{OPENING as O}from'./spatialLayout';
 import type{CampaignStage}from'../campaign/state';
 import{B4_ENTRY}from'../campaign/b4Chapter';
-import{LAWN_ENTRY}from'../campaign/lawnChapter';
-import{SPORTS_ENTRY}from'../campaign/sportsChapter';
+import{LAWN_APPROACH,LAWN_ENTRY}from'../campaign/lawnChapter';
+import{SPORTS_APPROACH,SPORTS_ENTRY}from'../campaign/sportsChapter';
 import{markLionDefeated,markPowerCut,sealWorld,type WorldThreat,type WorldThreatStorage}from'../gameplay/worldThreat';
 
 /**
@@ -36,6 +36,12 @@ const CHECKPOINT_EVENTS:Record<OpeningCheckpoint,readonly OpeningEvent[]>={
  * `experience.startAtCheckpoint()` feeds them to the same `pose()` used by
  * `safePose()` and the catch/respawn path.
  */
+/** Yaw that faces from `from` along a route (x/z pairs) to its first point more than 1 m away.
+ * Explorer convention: forward = (-sin yaw, -cos yaw) in x/z. */
+export function routeYaw(from:readonly number[],route:readonly (readonly number[])[]):number{
+ const next=route.find(([x,z])=>Math.hypot(x-from[0],z-from[2])>1);
+ return next?Math.atan2(-(next[0]-from[0]),-(next[1]-from[2])):0;
+}
 const CHECKPOINT_POSE:Record<OpeningCheckpoint,{position:readonly number[];yaw:number}>={
  b5:{position:O.checkpoints.b5,yaw:0},
  b6:{position:O.checkpoints.b6,yaw:0},
@@ -44,9 +50,9 @@ const CHECKPOINT_POSE:Record<OpeningCheckpoint,{position:readonly number[];yaw:n
  // Inside the B04 door (the b4 chapter's entry point), facing into the building.
  'b4-inside':{position:B4_ENTRY.point,yaw:0},
  // Outside the B04 entrance, where Chapter 1 hands over.
- lawn:{position:O.handoff,yaw:0},
+ lawn:{position:O.handoff,yaw:routeYaw(O.handoff,LAWN_APPROACH)},
  // At the lawn entry, after the guardian is down.
- sports:{position:LAWN_ENTRY.point,yaw:0},
+ sports:{position:LAWN_ENTRY.point,yaw:routeYaw(LAWN_ENTRY.point,SPORTS_APPROACH)},
  // At the sports hall east door, students freed.
  ending:{position:SPORTS_ENTRY.point,yaw:Math.PI/2},
 };

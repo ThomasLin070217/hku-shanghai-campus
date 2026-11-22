@@ -2150,7 +2150,7 @@ body:not(.exploring) .opening-danger-vignette {
   transform-origin: 50% 50%;
   transition: transform 0.12s linear;
 }
-.opening-distance-text { color: #315544; }
+.opening-distance-text { color: var(--opening-ink-soft); }
 
 /* ================================================================== */
 /* Cinematic wake-up / title / walk-and-talk subtitle                  */

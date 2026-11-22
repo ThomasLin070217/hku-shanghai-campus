@@ -12,6 +12,8 @@ export interface CampaignHostOptions{
  /** Chapter factories (`CAMPAIGN_CHAPTERS` in the game). Injected so headless checks can run the host with fakes. */
  chapters:Record<ChapterId,()=>Chapter>;
  now?:()=>number;
+ /** Called when the run starts or crosses a chapter boundary (a stage with a chapter card): the game announces its save then. */
+ onChapterBoundary?:(stage:CampaignStage)=>void;
 }
 
 /** Full-screen card shown when the campaign enters each chapter boundary stage. */
@@ -43,6 +45,11 @@ export function createCampaignHost(o:CampaignHostOptions){
  const instances=new Map<ChapterId,Chapter>(),attached=new Map<ChapterId,Chapter>();
  let state:CampaignState|null=load();
  let lastCard:Promise<void>=Promise.resolve();
+ /** Per-stage caches, so a frame allocates nothing while the stage holds (M5). */
+ let syncedStage:CampaignStage|null=null,live:Chapter[]=[];
+ let legStage:CampaignStage|null=null,legObjective:Objective|null=null;
+ /** The objective of the current frame; undefined = not computed yet this frame. */
+ let frameObjective:Objective|null|undefined;
 
  const ctx:ChapterContext={
   ...o.context,
@@ -73,40 +80,55 @@ export function createCampaignHost(o:CampaignHostOptions){
   return ids;
  }
  function sync(){
-  if(!state)return;
-  for(const id of needed(state.stage))if(!attached.has(id)){const c=instance(id);attached.set(id,c);c.attach(ctx);}
+  if(!state||syncedStage===state.stage)return;
+  const stage=state.stage;
+  for(const id of needed(stage))if(!attached.has(id)){const c=instance(id);attached.set(id,c);c.attach(ctx);}
+  live=[...attached.values()];syncedStage=stage;
  }
- function detachAll(){for(const c of attached.values())c.detach();attached.clear();instances.clear();}
- function card(stage:CampaignStage){const c=STAGE_CARDS[stage];if(c)lastCard=o.context.card(c[0],c[1]).catch(()=>{});}
+ function detachAll(){for(const c of attached.values())c.detach();attached.clear();instances.clear();live=[];syncedStage=null;changed();}
+ /** The stage moved (or the campaign was reset): drop the cached objectives. */
+ function changed(){legStage=null;legObjective=null;frameObjective=undefined;}
+ function card(stage:CampaignStage){const c=STAGE_CARDS[stage];if(!c)return;lastCard=o.context.card(c[0],c[1]).catch(()=>{});o.onChapterBoundary?.(stage);}
  function emit(event:CampaignEvent):boolean{
   if(!state)return false;
   const r=reduceCampaign(state,event,now());if(!r.changed)return false;
-  state=r.state;persist();sync();card(state.stage);
+  state=r.state;changed();persist();sync();card(state.stage);
   return true;
+ }
+ /** A start inside a chapter (a checkpoint such as b4-inside) shows the card of the boundary it sits behind. */
+ function startCard(stage:CampaignStage):CampaignStage{
+  for(let i=stageIndex(stage);i>=0;i--){const s=CAMPAIGN_STAGES[i];if(STAGE_CARDS[s])return s;}
+  return stage;
  }
  function start(deviceId:string,stage:CampaignStage='b4_enter'){
   if(!deviceId)return false;
-  detachAll();state={...createCampaignState(deviceId,now()),stage};persist();sync();card(stage);
+  detachAll();state={...createCampaignState(deviceId,now()),stage};persist();sync();card(startCard(stage));
   return true;
  }
  function reset(){detachAll();state=null;try{storage?.removeItem(CAMPAIGN_SAVE_KEY);}catch{/* Nothing to clear. */}}
  function update(dt:number){
   if(!state)return;
+  frameObjective=undefined;
   sync();
-  const live=o.context.explorer.enabled&&!o.context.explorer.game.paused;
-  for(const c of [...attached.values()])c.update(live?dt:0);
-  const leg=live&&state?walkTarget(state.stage):null;
+  const running=o.context.explorer.enabled&&!o.context.explorer.game.paused;
+  for(const c of live)c.update(running?dt:0);
+  const leg=running&&state?walkTarget(state.stage):null;
   if(leg){
    const p=o.context.explorer.game.body.position,[x,,z]=leg.entry.point;
    if(Math.hypot(p.x-x,p.z-z)<=leg.entry.radius)emit(leg.entry.event);
   }
  }
  function active():Chapter|null{const id=state?campaignChapterOf(state.stage):null;return id?attached.get(id)??null:null;}
+ /** Computed once per frame (several HUD readers ask); a walking leg's objective is built once per stage. */
  function objective():Objective|null{
   if(!state)return null;
-  const leg=walkTarget(state.stage);
-  if(leg)return{text:'Go to '+DESTINATION[leg.id],target:[...leg.entry.point],route:leg.approach.map(([x,z])=>[x,z] as [number,number])};
-  sync();return active()?.objective(state.stage)??null;
+  if(frameObjective!==undefined)return frameObjective;
+  const stage=state.stage,leg=walkTarget(stage);
+  if(leg){
+   if(legStage!==stage){legStage=stage;legObjective={text:'Go to '+DESTINATION[leg.id],target:[...leg.entry.point],route:leg.approach.map(([x,z])=>[x,z] as [number,number])};}
+   return frameObjective=legObjective;
+  }
+  sync();return frameObjective=active()?.objective(stage)??null;
  }
  return{
   get active(){return state!==null;},

@@ -194,8 +194,8 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
   if(isOpen()){notify('The glass door is open. Walk through.');return true;}
   flash=1;openLock();return true;
  }
- function unlock(){const nowOpen=core.unlock();if(nowOpen){audio(true);showRescue();}return nowOpen;}
- function lock(){core.lock();}
+ function unlock(silent=false){const nowOpen=core.unlock(silent);if(nowOpen&&!silent){audio(true);showRescue();}return nowOpen;}
+ function lock(silent=false){core.lock(silent);}
  function update(dt:number){
   ensure();const g=game(),open=isOpen();
   swing=T.MathUtils.damp(swing,open?1:0,7,Math.min(dt,.1));

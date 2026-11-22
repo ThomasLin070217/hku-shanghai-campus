@@ -5,6 +5,7 @@ import {createNavigation} from './navigation';
 import {createStudent} from './student';
 import {createFirstPersonArms} from '../characters/character';
 import {createDeviceView} from './deviceView';
+import {firstPersonVisible} from './viewmodel';
 import './deviceView.css';
 import {createInventoryUI} from '../items/inventoryUI';
 import {CampusGame} from './game';
@@ -14,6 +15,8 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  const events=new AbortController(),interactions=new Set<()=>void>(),computers=new Set<()=>void>();let disposed=false;
  /** Story mode pins the camera (e.g. first person); null keeps the V toggle. */
  let viewLock:'first'|'third'|null=null;
+ /** The MacBook is open on its physical screen (C); a chapter (B4) may ask to hide the view model. */
+ let deviceOpen=false,firstPersonHidden=false;
  const listenWindow=<K extends keyof WindowEventMap>(type:K,fn:(e:WindowEventMap[K])=>void,options:AddEventListenerOptions={})=>window.addEventListener(type,fn,{...options,signal:events.signal});
  const listenDocument=<K extends keyof DocumentEventMap>(type:K,fn:(e:DocumentEventMap[K])=>void,options:AddEventListenerOptions={})=>document.addEventListener(type,fn,{...options,signal:events.signal});
  const listenCanvas=<K extends keyof HTMLElementEventMap>(type:K,fn:(e:HTMLElementEventMap[K])=>void,options:AddEventListenerOptions={})=>canvas.addEventListener(type,fn,{...options,signal:events.signal});
@@ -59,8 +62,11 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  listenCanvas('pointerup',()=>dragging=false);listenCanvas('pointercancel',()=>dragging=false);
  listenCanvas('wheel',e=>{if(enabled&&!game.inventoryOpen&&!game.panel){e.preventDefault();game.takeover('human_hotbar_wheel');game.selectHotbar((game.inventory.selectedHotbar+(e.deltaY>0?1:8))%9);if(!controlled())game.paused=true;}},{passive:false});canvas.tabIndex=0;
  function enter(){if(!enabled||game.inventoryOpen||game.panel)return;compat=false;canvas.focus();void canvas.requestPointerLock()?.catch(()=>pause('pointer_lock_failed'));}
+ /** The one writer of the first-person arms and held item (Ruling 36): visibility and the
+  * story carry pose are set together, so the open MacBook never shows one frame in the walking pose. */
+ const showViewModel=()=>{if(opening)firstPerson.setCarry(deviceOpen);arms.visible=firstPersonVisible({enabled,first:game.view==='first',story:opening,deviceOpen,hidden:firstPersonHidden});};
  function updateCamera(dt:number){const p=game.body.position;
-  student.root.visible=enabled&&game.view==='third';arms.visible=enabled&&game.view==='first';
+  student.root.visible=enabled&&game.view==='third';showViewModel();
   if(game.view==='first'){
    camera.position.copy(p).y+=C.eyeHeight+(bob&&!game.paused&&game.body.grounded&&Math.hypot(game.body.velocity.x,game.body.velocity.z)>.1?Math.sin(game.timeMs*.012)*.018:0);camera.rotation.set(-game.pitch,game.yaw,0,'YXZ');actualDistance=0;
   }else{
@@ -73,7 +79,7 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
    student.root.visible=actualDistance>.65;
   }camera.updateMatrixWorld();
  }
- function update(dt:number){inventoryUI.refresh();if(viewLock)game.view=viewLock;if(!enabled)return;const held=game.inventory.equipped?.itemId??null;student.equip(held);firstPerson.equip(held);firstPerson.setCarry(game.panel==='computer');dt=Math.min(dt,.1);const before=game.body.position.clone();
+ function update(dt:number){inventoryUI.refresh();if(viewLock)game.view=viewLock;if(!enabled)return;const held=game.inventory.equipped?.itemId??null;student.equip(held);firstPerson.equip(held);dt=Math.min(dt,.1);const before=game.body.position.clone();
   game.human={forward:Number(keys.has(KEYS.forward))-Number(keys.has(KEYS.back)),right:Number(keys.has(KEYS.right))-Number(keys.has(KEYS.left)),sprint:keys.has(KEYS.sprint)};
   if(!game.paused){
    // A jump pressed a moment before landing is re-armed on the first grounded step.
@@ -91,11 +97,13 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  }
  function reset(){pause('reset');game.spawn();student.gait.reset();student.animate(.02,0,true,0);turn=game.yaw;actualDistance=distance;updateCamera(1);}
  reset();student.root.visible=false;
- return{camera,student,interactions,computers,enter,enterCompat(){if(game.inventoryOpen||game.panel)return;game.takeover('human_compat');compat=true;game.paused=false;clear();canvas.focus();},update,reset,pause,openInventory,closeInventory,firstPerson,openPanel(panel:'computer'|'settings'|'door',physicalScreen=false){deviceView.show(physicalScreen&&panel==='computer');clear();compat=false;game.openPanel(panel);if(locked())document.exitPointerLock();},closePanel(){deviceView.show(false);clear();game.closePanel();},setComfort(fov:number,shake:boolean){camera.fov=T.MathUtils.clamp(fov,60,90);camera.updateProjectionMatrix();bob=shake;}, get game(){return game;},get position(){return game.body.position;},get world(){return world;},get enabled(){return enabled;},get state(){return{...game.observe(),yaw:game.yaw,pitch:game.pitch,distance,actualDistance,locked:locked(),compat,keys:[...keys]};},
+ return{camera,student,interactions,computers,enter,enterCompat(){if(game.inventoryOpen||game.panel)return;game.takeover('human_compat');compat=true;game.paused=false;clear();canvas.focus();},update,reset,pause,openInventory,closeInventory,firstPerson,openPanel(panel:'computer'|'settings'|'door',physicalScreen=false){deviceOpen=physicalScreen&&panel==='computer';deviceView.show(deviceOpen);clear();compat=false;game.openPanel(panel);showViewModel();if(locked())document.exitPointerLock();},closePanel(){deviceOpen=false;deviceView.show(false);clear();game.closePanel();showViewModel();},
+  /** A chapter's request to hide the arms and held item (B4: inside B04 and in a focus view). */
+  setFirstPersonHidden(hidden:boolean){firstPersonHidden=hidden;showViewModel();},setComfort(fov:number,shake:boolean){camera.fov=T.MathUtils.clamp(fov,60,90);camera.updateProjectionMatrix();bob=shake;}, get game(){return game;},get position(){return game.body.position;},get world(){return world;},get enabled(){return enabled;},get state(){return{...game.observe(),yaw:game.yaw,pitch:game.pitch,distance,actualDistance,locked:locked(),compat,keys:[...keys]};},
   setSensitivity(v:number){sensitivity=T.MathUtils.clamp(v,.0004,.006);},
   /** Pin the view (story mode keeps first person) or pass null to give the V toggle back. */
   lockView(view:'first'|'third'|null){viewLock=view;if(view){game.view=view;updateCamera(1);}},get viewLock(){return viewLock;},takeover(){pause('human_takeover');},enableAI(){if(locked())document.exitPointerLock();clear();game.enableAI();},
-  setEnabled(v:boolean){if(!v)deviceView.show(false);game.inventoryOpen=false;enabled=v;pause('mode_change');student.root.visible=v&&game.view==='third';arms.visible=v&&game.view==='first';if(v)updateCamera(1);},
+  setEnabled(v:boolean){if(!v)deviceView.show(false);game.inventoryOpen=false;enabled=v;pause('mode_change');student.root.visible=v&&game.view==='third';showViewModel();if(v)updateCamera(1);},
   inspectAt(x:number,y:number,z:number,heading=0){pause('qa_inspection');student.gait.reset();student.animate(.02,0,true,0);game.body.position.set(x,y,z);game.body.velocity.set(0,0,0);game.yaw=heading;game.pitch=0;turn=heading;student.root.position.copy(game.body.position);updateCamera(1);},
   resize(w:number,h:number){if(w<=0||h<=0||!Number.isFinite(w/h)||camera.aspect===w/h)return;camera.aspect=w/h;camera.updateProjectionMatrix();},
   rebuild(next:BuildingSpec[],s:SiteParameters){pause('rebuild');world.dispose();specs=next;site=s;world=createNavigation(specs,site,opening);game.replaceWorld(world,specs,site);reset();},dispose(){if(disposed)return;disposed=true;enabled=false;deviceView.show(false);events.abort();pause('dispose');interactions.clear();computers.clear();world.dispose();student.root.removeFromParent();camera.removeFromParent();student.dispose();inventoryUI.dispose();firstPerson.dispose();firstPerson.root.removeFromParent();disposeAsset(camera);}};

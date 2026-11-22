@@ -3,6 +3,7 @@ import {OPENING_CHECKPOINTS,CHECKPOINT_LABELS,applyCheckpointThreat,checkpointCa
 import {B4_ENTRY} from '../src/campaign/b4Chapter';
 import {LAWN_ENTRY} from '../src/campaign/lawnChapter';
 import {SPORTS_ENTRY} from '../src/campaign/sportsChapter';
+import {CAMPAIGN_CHAPTERS} from '../src/campaign/chapters';
 import {OPENING as O} from '../src/opening/spatialLayout';
 import type {CampaignStage} from '../src/campaign/state';
 import {validOpeningState} from '../src/opening/state';
@@ -73,6 +74,17 @@ group('campaign checkpoint poses: inside B04, B04 entrance, lawn entry, sports d
  assert.deepEqual([...checkpointPose('lawn').position],[...O.handoff]);
  assert.deepEqual([...checkpointPose('sports').position],LAWN_ENTRY.point);
  assert.deepEqual([...checkpointPose('ending').position],SPORTS_ENTRY.point);
+});
+
+group('FU2: walking-leg checkpoints face along the route to the next objective',()=>{
+ const forward=(yaw:number)=>[-Math.sin(yaw),-Math.cos(yaw)];
+ for(const [id,route] of [['lawn',CAMPAIGN_CHAPTERS.lawn().approach],['sports',CAMPAIGN_CHAPTERS.sports().approach]] as const){
+  const pose=checkpointPose(id),[px,,pz]=pose.position;
+  const next=route.find(([x,z])=>Math.hypot(x-px,z-pz)>1)!;
+  const want=[next[0]-px,next[1]-pz],len=Math.hypot(want[0],want[1]),f=forward(pose.yaw);
+  const angle=Math.acos((f[0]*want[0]+f[1]*want[1])/len)*180/Math.PI;
+  assert.ok(angle<=45,`${id} checkpoint faces ${angle.toFixed(0)}° off the first route segment (yaw ${pose.yaw.toFixed(2)})`);
+ }
 });
 
 /** localStorage-shaped memory store: the checkpoint writers take the real seam. */
