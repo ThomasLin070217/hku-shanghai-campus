@@ -576,8 +576,11 @@ export function createOpeningUI(
     lawn.hidden = !!currentView?.campaign;
     const quick = node('details', 'opening-other-slices');
     const quickRow = node('div', 'opening-other-slices-row');
-    quickRow.append(bindBackupRelay(deviceId, () => { lawn.disabled = false; }));
+    const relay = bindBackupRelay(deviceId, () => { lawn.disabled = false; });
+    quickRow.append(relay);
     quick.append(node('summary', '', 'Quick restore (skip the puzzle)'), quickRow);
+    // Nothing to restore (the MacBook is already paired): no empty disclosure.
+    quick.hidden = relay.childElementCount === 0;
     body.append(quick);
     const replay = makeButton(T.epilogue.replay, 'secondary', () => actions.action('restart'));
     shell.append(actionRow(lawn, close, replay));
