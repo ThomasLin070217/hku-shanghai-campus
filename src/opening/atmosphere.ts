@@ -179,19 +179,21 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
  root.traverse(o=>{o.frustumCulled=false;});
 
  // Red emergency beacons on the Thomas route, plus one over the shuttle stop.
- const beaconPoints:[number,number,number][]=[
-  // The B04 entrance beacon stands beside the doorway (x 58 ± 1.3), not on its axis:
-  // its stem drew a black line through the crosshair at the Chapter 1 handoff (FU1).
-  [58,5.4,-52],[4,6.8,-54],[61.2,6.6,22],[24,5.6,-48],[63.4,4.6,30],[20,5.4,10],
+ // The B04 entrance beacon is mounted on the facade above the door, under the canopy
+ // (soffit y 5.18), with no ground stem: a stem drew a black line or a lone pole there (FU1, FU5).
+ const beaconPoints:{p:[number,number,number];stem:boolean}[]=[
+  {p:[58,5.4,-52],stem:true},{p:[4,6.8,-54],stem:true},{p:[58,4.6,20.9],stem:false},
+  {p:[24,5.6,-48],stem:true},{p:[63.4,4.6,30],stem:true},{p:[20,5.4,10],stem:true},
  ];
  const beaconLights:T.PointLight[]=[];
  const beaconMaterials:T.MeshStandardMaterial[]=[];
- for(const [x,y,z] of beaconPoints){
-  const light=new T.PointLight(0xff2a1c,0,20,2);light.position.set(x,y+.2,z);root.add(light);beaconLights.push(light);
+ for(const {p:[x,y,z],stem:onStem} of beaconPoints){
+  const light=new T.PointLight(0xff2a1c,0,20,2);light.name='Opening_beacon_light';light.position.set(x,y+.2,z);root.add(light);beaconLights.push(light);
   const material=new T.MeshStandardMaterial({color:0x2a0605,emissive:0xff2a1c,emissiveIntensity:0,roughness:.4,metalness:.2,name:'Opening_beacon_red'});
   beaconMaterials.push(material);
   const housing=new T.Mesh(new T.BoxGeometry(.34,.2,.34),material);housing.name='Opening_beacon_housing';
   housing.position.set(x,y,z);root.add(housing);
+  if(!onStem)continue;
   const stem=new T.Mesh(new T.BoxGeometry(.06,y,.06),new T.MeshStandardMaterial({color:0x1d2328,roughness:.8}));stem.name='Opening_beacon_stem';
   stem.position.set(x,y/2,z);root.add(stem);
  }
