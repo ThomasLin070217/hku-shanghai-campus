@@ -53,8 +53,8 @@ export function createB4Chapter():Chapter{
 
  /** Navigation and first-person socket of the explorer; absent in minimal host test doubles. */
  const world=()=>(ctx?.explorer as {world?:World}|undefined)?.world??null;
- const socket=()=>(ctx?.explorer as {firstPerson?:{socket?:T.Object3D}}|undefined)?.firstPerson?.socket??null;
- const arms=()=>(ctx?.explorer as {firstPerson?:{root?:T.Object3D}}|undefined)?.firstPerson?.root??null;
+ /** The explorer owns the arms and held item; B4 only asks it to hide them (in B04, in focus). */
+ const hideViewModel=(hidden:boolean)=>(ctx?.explorer as {setFirstPersonHidden?:(v:boolean)=>void}|undefined)?.setFirstPersonHidden?.(hidden);
  const body=()=>(ctx?.explorer as {game?:{body:{position:T.Vector3}}}|undefined)?.game?.body.position??null;
  const step=(stage=ctx?.stage()):B4Step|null=>stage?b4StepOf(stage):null;
  const reached=(stage:CampaignStage)=>ctx!==null&&stageIndex(ctx.stage())>=stageIndex(stage);
@@ -210,16 +210,15 @@ export function createB4Chapter():Chapter{
   ctx.openPanel('b4-focus');hint(FOCUS_HINT[id]);applyFocus();startLoop();
  }
  /** The explorer puts the camera at the body's eye every frame; the focus view overrides it
-  * afterwards (host.update runs after explorer.update) and hides the first-person arms. */
+  * afterwards (host.update runs after explorer.update) and asks the explorer to hide the view model. */
  function applyFocus(){
   if(!ctx||!focus)return;const cam=ctx.explorer.camera;
   cam.position.copy(focusEye);cam.lookAt(focusTarget);cam.rotateY(lookYaw);cam.rotateX(-lookPitch);cam.updateMatrixWorld();
-  const a=arms();if(a)a.visible=false;
+  hideViewModel(true);
  }
  function leaveFocus(){
   if(!ctx||!focus)return;focus=null;sweeping=false;lastCell=null;stopLoop();hint(null);
   if(typeof document!=='undefined')delete document.body.dataset.campaignFocus;
-  const a=arms();if(a)a.visible=true;
   ctx.closePanel();ctx.resume();
  }
  /** The focus view pauses the game and the host passes dt=0 while paused, so the focus view
@@ -307,14 +306,14 @@ export function createB4Chapter():Chapter{
   const near=focus?null:nearest();
   for(const [id,line] of outlines){line.visible=id===near;if(line.visible)(line.material as T.LineBasicMaterial).opacity=.55+.4*pulse;}
   if(lever){const m=lever.material as T.MeshStandardMaterial;if(near==='breaker'){m.emissive.setHex(GOLD);m.emissiveIntensity=.35+.45*pulse;}else{m.emissive.setHex(0);m.emissiveIntensity=0;}}
-  const s=socket(),p=body();if(s)s.visible=!(focus||(p&&inRoom(p.x,p.z)));
+  const p=body();hideViewModel(!!(focus||(p&&inRoom(p.x,p.z))));
   if(hum&&p){const r=B4_LAYOUT.lights.rack.p,d=Math.hypot(p.x-r[0],p.z-r[2]);hum.volume=.3*T.MathUtils.clamp(1-d/35,0,1);}
  }
  function detach(){
   leaveFocus();clearRetry();
   if(typeof window!=='undefined'){window.removeEventListener('keydown',onKey,true);window.removeEventListener('pointerdown',onDown);window.removeEventListener('pointermove',onMove);window.removeEventListener('pointerup',onUp);}
   const w=world();if(w){w.setDoorOpen(B4_DOOR_OBSTACLE,false);setB4FlipPanel(w,false);}
-  setB4DoorLeaves(leaves,0);leaves=[];const s=socket();if(s)s.visible=true;
+  setB4DoorLeaves(leaves,0);leaves=[];hideViewModel(false);
   removeLights();group?.removeFromParent();group?.traverse(o=>{if(o instanceof T.Mesh||o instanceof T.LineSegments)o.geometry.dispose();});
   for(const m of owned)m.dispose();owned.length=0;
   try{hum?.pause();}catch{/* optional */}
