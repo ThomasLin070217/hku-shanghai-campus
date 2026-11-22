@@ -319,6 +319,14 @@ cs={...cs,stage:'b4_keyboard'};step();
   matched.add(match!);
   const a=worldMatrix.elements,b=builderTiles.get(match!)!.matrixWorld.elements;
   for(let k=0;k<16;k++)assert.ok(Math.abs(a[k]!-b[k]!)<=1e-6,`${match} rest matrix element ${k} is ${a[k]} not ${b[k]}`);
+  // Same face as the builder's: its material slots (so dark/light is not inverted) and the
+  // pixel UVs voxelizeMaterials wrote (src/voxel/materials.ts), so the texel scale is unchanged.
+  const face=builderTiles.get(match!)!.children.find((c):c is T.Mesh=>c instanceof T.Mesh&&c.name==='Flip_tile_face');
+  assert.ok(face,`${match} has its builder face`);
+  const want=[face!.material].flat().map(m=>m.name),got=[mesh.material].flat().map(m=>m.name);
+  assert.deepEqual(got,want,`${match}: ${mesh.name} carries the builder face's material slots`);
+  const uvWant=face!.geometry.getAttribute('uv').array,uvGot=mesh.geometry.getAttribute('uv').array;
+  assert.ok(uvGot.length===uvWant.length&&Array.from(uvGot).every((v,k)=>Math.abs(v-uvWant[k]!)<=1e-6),`${match}: the instanced tile keeps the builder face's pixel UVs`);
  }
  assert.equal(matched.size,561,'all 561 builder tiles have an instance (none lost or duplicated)');
  disposeAsset(builderMount);disposeAsset(builder);
@@ -336,6 +344,9 @@ cs={...cs,stage:'b4_keyboard'};step();
  assert.equal(b5.debug.state().phase,'open','the trigger opens the ripple even on a frozen frame');
  assert.ok(same(rest,snapshot()),'a dt=0 call never writes an instance matrix');
  for(let i=0;i<180;i++)b5.update(1/60,near);
+ const midRipple=snapshot();
+ b5.update(0,near);
+ assert.ok(same(midRipple,snapshot()),'a dt=0 call mid-ripple never writes an instance matrix');
  const held=b5.debug.state();
  assert.deepEqual({phase:held.phase,turned:held.turned,total:held.total},{phase:'open',turned:561,total:561},'during the hold every one of the 561 tiles has turned');
  assert.ok(!same(rest,snapshot()),'the instance matrices move while the tiles are turned');

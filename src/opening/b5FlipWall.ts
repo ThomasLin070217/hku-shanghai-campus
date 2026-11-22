@@ -103,7 +103,10 @@ export function createB5FlipWall(){
   const key=group.userData.front==='green'?'dark':'light';
   if(!faceMaterials.has(key))faceMaterials.set(key,[face.material].flat() as T.Material[]);
  }
- const tileGeometry=new T.BoxGeometry(faceSize.width,faceSize.height,faceSize.depth);
+ // A clone of the builder's face, not a fresh box: voxelizeMaterials (src/voxel/materials.ts)
+ // rewrote its UVs to the pixel scale, and every tile face is the same size, so one clone keeps
+ // the wall's texel scale exactly.
+ const tileGeometry=firstFace.geometry.clone();
  const darkCount=groups.filter(g=>g.userData.front==='green').length;
  const darkTiles=new T.InstancedMesh(tileGeometry,faceMaterials.get('dark')!,darkCount);
  darkTiles.name='B5_flip_tiles_dark';
