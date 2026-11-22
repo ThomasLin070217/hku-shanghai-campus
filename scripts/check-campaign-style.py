@@ -185,6 +185,17 @@ def assert_no_stale_copy(page, label):
     check(label + ': no stale "current slice" / "not implemented" copy', not hits, text[:240])
 
 
+def contrast(fg, bg):
+    """WCAG contrast of two computed rgb()/rgba() colours (the card alpha is ignored: it sits on a dark scene)."""
+    def lum(value):
+        t = rgb_triplet(value) or (0, 0, 0)
+        c = [x / 255 for x in t]
+        c = [x / 12.92 if x <= 0.03928 else ((x + 0.055) / 1.055) ** 2.4 for x in c]
+        return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+    a, b = sorted((lum(fg), lum(bg)), reverse=True)
+    return (a + 0.05) / (b + 0.05)
+
+
 def assert_hud(page, checkpoint):
     hud = style(page, '.opening-hud')
     check(checkpoint + ': objective card is visible', visible(page, '.opening-hud'), hud)
@@ -218,6 +229,12 @@ def assert_hud(page, checkpoint):
     check(checkpoint + ': the current target is the opening green on the minimap',
           bool(pixels) and (pixels['green'] > 0 or not has_target), {'pixels': pixels, 'target': has_target})
 
+    # FU4: the distance line is readable on the dark card: ink-soft, contrast >= 4.5.
+    dist = style(page, '.opening-hud .opening-distance-text')
+    if dist and visible(page, '.opening-hud .opening-distance'):
+        ratio = contrast(dist['color'], hud['bg'] if hud else PAPER)
+        check(checkpoint + ': the distance line is the opening soft ink with contrast >= 4.5 (FU4)',
+              dist['color'] == INK_SOFT and ratio >= 4.5, {'color': dist['color'], 'contrast': round(ratio, 2)})
     eyebrow = style(page, '.opening-hud .opening-eyebrow')
     check(checkpoint + ': HUD eyebrow is the opening green', bool(eyebrow) and eyebrow['color'] == GREEN, eyebrow and eyebrow['color'])
 
@@ -431,15 +448,30 @@ def held_model_checks(page, checkpoint):
     if checkpoint != 'lawn':
         return
     shot(page, 'fw-lawn-walk.png')
+    # FU0: pose and visibility are set together. The open is read in the same
+    # evaluation that opens it, so no frame can come between them.
+    same = page.evaluate("""() => { const e = window.__CAMPUS.explorer; e.openPanel('computer', true);
+      const v = (""" + VIEW_MODEL + """)(); e.closePanel(); const w = (""" + VIEW_MODEL + """)(); return {open: v, closed: w}; }""")
+    o, c = same['open'], same['closed']
+    check('lawn: opening sets the authored pose on the same frame as visibility (FU0)',
+          bool(o) and o['arms'] and abs(o['scale'] - 1) <= 0.02 and abs(o['pos'][1] + 0.30) <= 0.03, o)
+    check('lawn: closing stows and restores the carry on the same frame (FU0)',
+          bool(c) and not c['arms'] and c['scale'] <= 0.75, c)
+    page.evaluate("() => { try { window.__CAMPUS.explorer.enterCompat(); } catch (e) {} }")
+    page.wait_for_timeout(300)
     page.keyboard.press('KeyC')
+    # Wait on the pose itself, not on visibility (the old race).
     try:
-        page.wait_for_function("() => window.__CAMPUS.explorer.firstPerson.root.visible", timeout=8000)
+        page.wait_for_function("""() => { const s = window.__CAMPUS.explorer.firstPerson.socket;
+          return window.__CAMPUS.explorer.firstPerson.root.visible && Math.abs(s.scale.x - 1) < .02; }""", timeout=8000)
     except Exception:
         pass
     opened = view_model(page)
     check('lawn: C opens the MacBook and shows it in the authored pose',
           bool(opened) and opened['arms'] and opened['socket'] and abs(opened['scale'] - 1) <= 0.02
           and abs(opened['pos'][1] + 0.30) <= 0.03, opened)
+    os.makedirs('/tmp/one-world/fu', exist_ok=True)
+    page.screenshot(path='/tmp/one-world/fu/fu0-open-macbook.png')
     page.keyboard.press('Escape')
     try:
         page.wait_for_function("() => !window.__CAMPUS.explorer.game.panel", timeout=5000)

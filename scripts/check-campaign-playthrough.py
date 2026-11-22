@@ -318,6 +318,12 @@ def handoff_dialog(browser):
     started = until(page, "() => window.__CAMPUS.campaign.state()?.stage === 'to_lawn'", 30)
     s = snap(page)
     check('handoff: Continue starts Chapter 2 in this document', started and s['href'] == href and s['doc'] == 1, s)
+    # FU2: Chapter 2 starts facing the lawn route, not the B04 door behind the objective.
+    facing = page.evaluate("""() => { const g = window.__CAMPUS.explorer.game, o = window.__CAMPUS.campaign.objective();
+      const p = g.body.position, r = (o && o.route) || [], n = r.find(([x, z]) => Math.hypot(x - p.x, z - p.z) > 1);
+      if (!n) return null; const fx = -Math.sin(g.yaw), fz = -Math.cos(g.yaw), dx = n[0] - p.x, dz = n[1] - p.z;
+      return Math.round(Math.acos((fx * dx + fz * dz) / Math.hypot(dx, dz)) * 180 / Math.PI); }""")
+    check('handoff: Chapter 2 starts facing within 45 degrees of the lawn route', facing is not None and facing <= 45, facing)
     check('handoff: no navigation or reload after boot', not navs, navs)
     check('handoff: no page errors before the same-frame reopen', not errors, errors)
     context.close()
