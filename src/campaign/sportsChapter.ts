@@ -1,13 +1,17 @@
 import {SPORTS_HALL_PUZZLE} from '../gameplay/sudokuPuzzle';
 import {createSportsDoorCore} from '../gameplay/sportsDoorCore';
-import {SPORTS_DOOR,sportsDoorWorld} from '../model/sportsDoor';
+import {createStudentCrowd} from '../gameplay/studentCrowd';
+import {SPORTS_DOOR,SPORTS_HALL,sportsDoorWorld} from '../model/sportsDoor';
 import {SITE} from '../model/campusParameters';
 import {stageIndex,type CampaignEvent} from './state';
+import {createStudentRunout,type StudentRunout,type StudentRunoutWorld} from './studentRunout';
 import type {Chapter,ChapterContext} from './types';
 
 /** Outside the sports hall east door, 2.6 m east like `createSportsRescueExperience.relocate`. */
 const door=sportsDoorWorld(SITE.sportsZ);
 export const SPORTS_ENTRY:Chapter['entry']={point:[door.x+2.6,0,door.z],radius:2.5,event:'reach_sports'};
+/** Chapter checks attach the chapter with a stubbed explorer; the real game always has a world. */
+const HEADLESS_WORLD:StudentRunoutWorld={support:(x,_z,_from)=>x<SPORTS_HALL.x+SPORTS_HALL.eastX?SPORTS_HALL.floorTop:0};
 /**
  * The walking leg from the lawn shelter to the east door. It stays in the
  * corridor between the towers, enters the sports strip through the gap between
@@ -34,7 +38,17 @@ type SportsDoorRuntime={
  */
 export function createSportsChapter():Chapter{
  let ctx:ChapterContext|null=null,doorRuntime:SportsDoorRuntime|null=null,opened=false;
+ let crowd:ReturnType<typeof createStudentCrowd>|null=null,runout:StudentRunout|null=null;
  const isOpen=()=>doorRuntime?.open??false;
+ /** The crowd cheer is optional and must never block the rescue. */
+ function playCheer(){
+  if(typeof Audio==='undefined'||typeof window==='undefined')return;
+  void import('../gameplay/storyAudioAssets').then(({STORY_AUDIO_URLS})=>{
+   const audio=new Audio(STORY_AUDIO_URLS['sfx_crowd_cheer'].href);
+   audio.volume=.45;
+   return audio.play().catch(()=>{});
+  }).catch(()=>{/* Audio is optional. */});
+ }
  function openDoor():{sudoku:boolean;password:boolean;open:boolean}{
   if(!doorRuntime)return{sudoku:false,password:false,open:false};
   const sudoku=doorRuntime.submitSudoku([...SPORTS_HALL_PUZZLE.answer]);
@@ -49,6 +63,11 @@ export function createSportsChapter():Chapter{
  }
  function attach(c:ChapterContext){
   ctx=c;
+  // The crowd is the same in both runtimes: it waits in the hall before the
+  // player reaches the door and runs out when the latch below fires.
+  crowd=createStudentCrowd();
+  c.root().add(crowd.root);
+  runout=createStudentRunout(crowd,c.explorer.world??HEADLESS_WORLD);
   if(typeof document==='undefined'){
    doorRuntime=createSportsDoorCore({game:()=>c.explorer.game,notify:c.notify});
    restore(c);
@@ -70,7 +89,8 @@ export function createSportsChapter():Chapter{
   doorRuntime?.update(dt);
   // Latch only when the event is accepted: on the walking leg a door that is
   // already open must not consume its one emit before the stage reaches `sports`.
-  if(!opened&&isOpen()&&ctx?.emit('door_opened'))opened=true;
+  if(!opened&&isOpen()&&ctx?.emit('door_opened')){opened=true;runout?.release();playCheer();}
+  runout?.update(dt);
  }
  return{
   id:'sports',entry:SPORTS_ENTRY,approach:SPORTS_APPROACH,
@@ -85,11 +105,13 @@ export function createSportsChapter():Chapter{
    };
   },
   // Restart in the same tab: the next run's Chapter 3 starts at a locked door (the state is not saved).
-  detach(){doorRuntime?.lock(true);doorRuntime?.update(0);doorRuntime?.dispose();doorRuntime=null;ctx=null;opened=false;},
+  detach(){runout?.dispose();runout=null;crowd?.dispose();crowd=null;doorRuntime?.lock(true);doorRuntime?.update(0);doorRuntime?.dispose();doorRuntime=null;ctx=null;opened=false;},
   debug:{
    open:openDoor,
    door(){const state=doorRuntime?.state;return{...(typeof state==='function'?state():state??{}),entry:SPORTS_ENTRY};},
    complete(){ctx?.emit('reach_sports');return openDoor();},
+   /** Read-only snapshot for the checks and the owner's visual pass. */
+   runout(){return crowd&&runout?{...runout.counts(),crowd:crowd.root.name}:null;},
   },
  };
 }

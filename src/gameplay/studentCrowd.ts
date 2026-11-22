@@ -81,8 +81,11 @@ export function createStudentCrowd(placements=crowdPlacements(),variants=crowdVa
  for(let i=rest.length-1;i>0;i--){const j=Math.floor(shuffle()*(i+1));[rest[i],rest[j]]=[rest[j],rest[i]];}
  const seats=new Map<number,CrowdVariant>();
  order.forEach((index,k)=>{const seat=k<nearestCount?women[k]:rest[k-nearestCount];if(seat)seats.set(index,seat.variant);});
- const placed=new Map<CrowdVariant,{x:number;z:number;yaw:number;scale:number}[]>();
- for(const [index,variant] of seats){const list=placed.get(variant)??[];list.push(placements[index]);placed.set(variant,list);}
+ // Keep the placement index beside the seat: pass 2 needs it to publish
+ // `userData.studentIndices` in the same order it writes `setMatrixAt`.
+ type Seat={placement:{x:number;z:number;yaw:number;scale:number};index:number};
+ const placed=new Map<CrowdVariant,Seat[]>();
+ for(const [index,variant] of seats){const list=placed.get(variant)??[];list.push({placement:placements[index],index});placed.set(variant,list);}
  for(const variant of variants){
   const character=createCharacter(variant.appearance);character.root.updateWorldMatrix(true,true);
   const textured:{mesh:T.Mesh;slot:number}[]=[],plain:T.Mesh[]=[];
@@ -137,12 +140,16 @@ export function createStudentCrowd(placements=crowdPlacements(),variants=crowdVa
    const mesh=new T.InstancedMesh(geometry,material,slots.length);
    mesh.name=`${CROWD.name}__${prototype.variant.key}__${material===skinMaterial?'skin':'flat'}`;
    mesh.castShadow=true;mesh.receiveShadow=true;
-   slots.forEach((p,i)=>{quaternion.setFromAxisAngle(up,p.yaw);position.set(p.x,CROWD.floor,p.z);scale.setScalar(p.scale);matrix.compose(position,quaternion,scale);mesh.setMatrixAt(i,matrix);
+   const studentIndices:number[]=[];
+   slots.forEach(({placement:p,index},i)=>{quaternion.setFromAxisAngle(up,p.yaw);position.set(p.x,CROWD.floor,p.z);scale.setScalar(p.scale);matrix.compose(position,quaternion,scale);mesh.setMatrixAt(i,matrix);studentIndices[i]=index;
     // A small per-student tint keeps identical variants from looking cloned.
     const d=.94+tintRandom()*.11,warm=.98+tintRandom()*.04;tint.setRGB(d*warm,d,(d*(2-warm)));mesh.setColorAt(i,tint);});
+   // Placement indices in instance order, captured while each matrix is written
+   // (a later run-out rewrites instance i from placement studentIndices[i]).
+   mesh.userData.studentIndices=studentIndices;
    mesh.instanceMatrix.needsUpdate=true;if(mesh.instanceColor)mesh.instanceColor.needsUpdate=true;mesh.computeBoundingSphere();root.add(mesh);meshes.push(mesh);
   }
  }
  for(const prototype of prototypes)prototype.root.removeFromParent();
- return{root,meshes,variants,seatOf:seats,count:placements.length,triangles:Math.round(triangles),atlas:slotCount,atlasInfo:{data:atlasData,width:atlasW,height:atlasH,slots:slotOf,slotCount},dispose(){for(const mesh of meshes){mesh.geometry.dispose();mesh.removeFromParent();}meshes.length=0;skinMaterial.dispose();plainMaterial.dispose();atlas.dispose();root.removeFromParent();}};
+ return{root,meshes,variants,placements,seatOf:seats,count:placements.length,triangles:Math.round(triangles),atlas:slotCount,atlasInfo:{data:atlasData,width:atlasW,height:atlasH,slots:slotOf,slotCount},dispose(){for(const mesh of meshes){mesh.geometry.dispose();mesh.removeFromParent();}meshes.length=0;skinMaterial.dispose();plainMaterial.dispose();atlas.dispose();root.removeFromParent();}};
 }
