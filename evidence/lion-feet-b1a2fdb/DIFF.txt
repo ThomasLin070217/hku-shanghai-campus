@@ -1,0 +1,15 @@
+Seated statue verification (identity rotations must reproduce the authored statue):
+
+1. Default third-person seated view, old build vs new build:
+   - changed pixels (channel delta > 8): 383 in a 52x17 px region at the inner paw gap
+   - whole-image mean channel difference: 0.0265
+   - those pixels are where the deleted added human-foot/joint meshes used to peek out;
+     the authored geometry itself is unchanged (identity rotations + rest bone matrices).
+
+2. New build, seated default view, with the six added leg stocks hidden (visible=false):
+   - changed pixels (channel delta > 2): 0
+   - maximum channel delta: 0
+   => every added leg mesh is fully enclosed by the authored gown / Trouser_leg / Paw.
+
+The pixel-identical claim therefore holds for the authored statue plus hidden rig meshes;
+the only visible difference from the previous build is the removed human foot.
