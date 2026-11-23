@@ -139,7 +139,7 @@ def main_run(browser):
     page = context.new_page()
     errors = []
     page.on('pageerror', lambda e: errors.append(str(e)))
-    boot(page, '?experience=opening')
+    boot(page, '?experience=opening&intro=0')
     href = page.evaluate('() => location.href')
     D = 'window.__CAMPUS.openingDebug'
     check('fresh run starts on the shuttle', snap(page)['story'] == 'bus', snap(page))
@@ -381,7 +381,7 @@ def lawn_cinema(browser):
     page = context.new_page()
     errors = []
     page.on('pageerror', lambda e: errors.append(str(e)))
-    boot(page, '?experience=opening')
+    boot(page, '?experience=opening&intro=0')
     D = 'window.__CAMPUS.openingDebug'
     page.evaluate(f'() => {{ {D}.readInvitation(); {D}.exitBus(); {D}.acceptErrand(); {D}.takeLaptop(); {D}.triggerIncident(); {D}.reachB5(); {D}.openComputer("tasks"); {D}.readAlert(); }}')
     page.wait_for_timeout(400)

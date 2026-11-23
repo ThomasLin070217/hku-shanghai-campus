@@ -261,6 +261,41 @@ check('styles: the overlay uses safe-area insets and hides the HUD',()=>{
 // Comments would otherwise satisfy these pins while the live code does not run.
 const stripComments=(source:string)=>source.replace(/\/\*[\s\S]*?\*\//g,'').replace(/(^|[^:])\/\/.*$/gm,'$1');
 const prologueCode=stripComments(prologueSource);
+/** Comment-stripped source lines. A quote-aware scan keeps `//` inside strings;
+ * the block-comment state carries across lines, so a `/* ... *\/` disabled
+ * handler reads as dead code instead of satisfying a pin (N9). Quote state is
+ * line-local: single and double quoted strings cannot span a line, and the
+ * multi-line templates hold HTML, never a pin. Regex literals containing quote
+ * characters can desynchronise one line, which is a false red, never a pass. */
+function liveLines(source:string):string[]{
+ const lines:string[]=[];
+ let block=false;
+ for(const sourceLine of source.split('\n')){
+  let live='';
+  let quote:string|null=null;
+  for(let index=0;index<sourceLine.length;index++){
+   const char=sourceLine[index];
+   if(block){
+    if(char==='*'&&sourceLine[index+1]==='/'){block=false;index++;}
+    continue;
+   }
+   if(quote){
+    live+=char;
+    if(char==='\\'){live+=sourceLine[++index]??'';continue;}
+    if(char===quote)quote=null;
+    continue;
+   }
+   if(char==='\''||char==='"'||char==='`'){quote=char;live+=char;continue;}
+   if(char==='/'&&sourceLine[index+1]==='/')break;
+   if(char==='/'&&sourceLine[index+1]==='*'){block=true;index++;continue;}
+   live+=char;
+  }
+  lines.push(live);
+ }
+ return lines;
+}
+const mainLive=liveLines(mainSource);
+const prologueLive=liveLines(prologueSource).join('\n');
 check('module: registers its camera callback and pauses the explorer',()=>{
  assert.ok(
   prologueCode.includes('if (!registered) { viewer.beforeRender.add(update); registered = true; }'),
@@ -268,25 +303,31 @@ check('module: registers its camera callback and pauses the explorer',()=>{
  );
  assert.ok(prologueCode.includes("explorer.pause('prologue')"),"prologue.ts does not call explorer.pause('prologue')");
 });
+check('module: the cinematic stops when the tab is hidden',()=>{
+ assert.match(prologueLive,/addEventListener\('visibilitychange',\s*onHidden\)/,'prologue.ts does not listen for visibilitychange');
+ assert.match(prologueLive,/removeEventListener\('visibilitychange',\s*onHidden\)/,'prologue.ts does not remove the visibilitychange listener in stop()');
+ assert.match(prologueLive,/if \(document\.hidden\) stop\(\);/, 'the visibilitychange handler does not stop the prologue on a hidden document');
+});
 check('main: the pause card offers one replay button',()=>{
  const occurrences=(mainSource.match(/id="replay-intro"/g)??[]).length;
  assert.equal(occurrences,1,`main.ts has ${occurrences} id="replay-intro" elements; expected exactly 1`);
  assert.match(mainSource,/<button id="replay-intro"[^>]*type="button"[^>]*>Replay intro<\/button>/,'the pause card has no Replay intro button');
- const candidates=mainSource.split('\n').filter((line)=>line.includes("el('replay-intro').onclick"));
- assert.ok(candidates.length>0,"main.ts has no live el('replay-intro').onclick handler");
- const handler=candidates.find((line)=>!line.trimStart().startsWith('//'))??candidates[0];
- // Strip only a trailing line comment on the handler line, and only a // that
- // is outside a string literal, so a commented-out tail cannot satisfy the pins.
- let live=handler;
- let quote:string|null=null;
- for(let index=0;index<live.length;index++){
-  const char=live[index];
-  if(quote){if(char==='\\'){index++;continue;}if(char===quote)quote=null;continue;}
-  if(char==='\''||char==='"'||char==='`'){quote=char;continue;}
-  if(char==='/'&&live[index+1]==='/'){live=live.slice(0,index);break;}
- }
- assert.ok(live.includes("sessionStorage.removeItem('hku.campus.prologue.v1')"),'the live replay handler does not clear the seen-intro session flag');
- assert.ok(live.includes("searchParams.set('intro', '1')"),'the live replay handler does not reload with intro=1');
+ const handlers=mainLive.filter((line)=>line.includes("el('replay-intro').onclick"));
+ assert.ok(handlers.length>0,"main.ts has no live el('replay-intro').onclick handler");
+ const handler=handlers[0];
+ assert.ok(handler.includes("sessionStorage.removeItem('hku.campus.prologue.v1')"),'the live replay handler does not clear the seen-intro session flag');
+ assert.ok(handler.includes("searchParams.set('intro', '1')"),'the live replay handler does not reload with intro=1');
+});
+check('main: the auto-play trigger is live, checkpoint-excluded and intro=1 forced',()=>{
+ const plays=mainLive.filter((line)=>line.trimEnd().endsWith('void prologue.play();'));
+ assert.equal(plays.length,1,`main.ts has ${plays.length} live lines ending in the auto-play call; expected exactly 1`);
+ const trigger=plays[0];
+ for(const pin of ['checkpoint===null',"intro==='1'",'atStart'])assert.ok(trigger.includes(pin),`the live auto-play line does not require ${pin}`);
+ const hidden=mainLive.filter((line)=>line.includes("el('replay-intro').hidden"));
+ assert.ok(
+  hidden.some((line)=>line.includes('!prologue')&&line.includes('checkpoint!==null')),
+  'the live replay button is not hidden when there is no prologue or a checkpoint is present',
+ );
 });
 check('styles: the replay button is at least 48 px tall on touch',()=>{
  const buttonRule=readSource('src/style.css').match(/#replay-intro\s*\{([^}]*)\}/)?.[1]??'';

@@ -153,7 +153,14 @@ function showLounge(){mode(false);loungeView=true;sync();lighting.set(false,asse
 el('lounge-toggle').onclick=()=>showLounge();
 index();stats();mode(true);if(openingMode){atmosphere=createOpeningAtmosphere(viewer.scene,viewer.renderer,viewer.lights);let threat=loadWorldThreat();if(threat.phase==='clear'&&(experience as {runtime?:{curtain_deployed:boolean}}).runtime?.curtain_deployed)threat=sealWorld();if(threat.phase==='sealed')atmosphere.restoreSealed();document.getElementById('night-toggle')?.style.setProperty('display','none');}if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign(window,{__CAMPUS:{viewer,explorer,experience,door,crowd,openingDebug:(experience as {debug?:unknown}).debug,campaign:campaign&&{state:()=>campaign!.state(),emit:(event:CampaignEvent)=>campaign!.emit(event),start:(deviceId:string)=>campaign!.start(deviceId),chapter:()=>campaign!.chapter(),objective:()=>campaign!.objective(),get debug(){return campaign!.debug;}},mode,showLounge,lighting,atmosphere,lounge,worldThreat:()=>loadWorldThreat(),get asset(){return asset;},get imported(){return imported;},stats,select,setView,rebuild,exportTarget,perf:()=>viewer.perf(),memory:()=>debugMemory(),resources:()=>resourceReport(viewer.scene),deferred:()=>deferredTextureStats(),ready:true}});
 const prologue=openingMode?createPrologue({viewer,explorer,audio:experience.audio,bounds:()=>{const box=new T.Box3();for(const object of asset.byId.values())box.expandByObject(object);return box;}}):undefined;
-if(prologue){const params=new URLSearchParams(location.search),intro=params.get('intro'),seen=(()=>{try{return sessionStorage.getItem('hku.campus.prologue.v1')==='1';}catch{return false;}})();if((experience as {story?:{stage:string}}).story?.stage==='bus'&&openingCheckpoint(params.get('checkpoint'))===null&&(intro==='1'||(intro!=='0'&&!seen)))void prologue.play();}
+// ?intro=1 forces a replay past the session flag and the bus stage, but never
+// over a checkpoint; the button is hidden wherever no prologue can play (review M1/N6).
+const prologueParams=new URLSearchParams(location.search),checkpoint=openingCheckpoint(prologueParams.get('checkpoint'));
+el('replay-intro').hidden=!prologue||checkpoint!==null;
+if(prologue){
+ const intro=prologueParams.get('intro'),seen=(()=>{try{return sessionStorage.getItem('hku.campus.prologue.v1')==='1';}catch{return false;}})(),atStart=(experience as {story?:{stage:string}}).story?.stage==='bus';
+ if(checkpoint===null&&(intro==='1'||(intro!=='0'&&!seen&&atStart)))void prologue.play();
+}
 if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign((window as unknown as {__CAMPUS:object}).__CAMPUS,{prologue});
 
 el('enter-game').onclick=()=>explorer.enter();
@@ -184,7 +191,7 @@ explorer.game.entityResolver=id=>{const entity=sceneRegistry(asset.root).get(id)
 if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign((window as unknown as {__CAMPUS:object}).__CAMPUS,{inspector});
 
 // pagehide with BFCache keeps a paused, resumable page; only final unload disposes resources.
-window.addEventListener('pagehide',event=>{experience.persist(true);explorer.pause('page_hidden');if(event.persisted)return;clearTimeout(timer);viewportObserver.disconnect();agentBridge?.dispose();inspector.dispose();door?.dispose();crowd?.dispose();experience.dispose();atmosphere?.dispose();explorer.dispose();lighting.dispose();glassEnvironment.dispose();disposeAsset(asset.root);disposeAsset(lounge);if(imported)disposeAsset(imported);viewer.dispose();});
+window.addEventListener('pagehide',event=>{experience.persist(true);explorer.pause('page_hidden');if(event.persisted)return;clearTimeout(timer);viewportObserver.disconnect();agentBridge?.dispose();inspector.dispose();door?.dispose();crowd?.dispose();experience.dispose();prologue?.dispose();atmosphere?.dispose();explorer.dispose();lighting.dispose();glassEnvironment.dispose();disposeAsset(asset.root);disposeAsset(lounge);if(imported)disposeAsset(imported);viewer.dispose();});
 
 if(!import.meta.env.DEV&&import.meta.env.MODE!=='review'){document.querySelectorAll('a[href*="evidence/"],.evidence-note').forEach(n=>n.remove());dialog.remove();}
 

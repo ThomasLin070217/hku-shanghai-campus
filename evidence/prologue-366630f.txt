@@ -1,0 +1,2 @@
+sha: 366630f
+note: captured before the .txt sidecars existed; this was the accepted frame at 366630f (clean tree, HUD gone). The final-fix runtime capture supersedes it as current evidence; it is kept for provenance.

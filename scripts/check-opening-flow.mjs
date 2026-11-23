@@ -23,7 +23,7 @@ for(let attempt=0;attempt<80&&!finished;attempt++){
   const state=()=>ev("(()=>{const s=__CAMPUS.explorer.game.scenario.snapshot();return{stage:s.story.stage,events:s.story.events,invitation:s.story.invitation_read,laptop:s.story.laptop_acquired,alert:s.story.campus_alert_triggered,alertRead:s.story.alert_read,hearts:s.runtime.hearts,catches:s.runtime.catches,curtain:s.runtime.curtain_deployed,chase:s.runtime.robot_chase_started,agent:s.runtime.agent_chat_unlocked,b4:s.runtime.go_to_building4_objective_unlocked,modal:s.modal,position:__CAMPUS.explorer.game.body.position.toArray()};})()");
   const click=s=>ev(`(()=>{const n=document.querySelector(${JSON.stringify(s)});if(!n)return false;n.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));return true;})()`);
   await send('Page.enable');await send('Runtime.enable');await send('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false});
-  await send('Page.navigate',{url:'http://127.0.0.1:5184/'});await sleep(5200);
+  await send('Page.navigate',{url:'http://127.0.0.1:5184/?intro=0'});await sleep(5200);
   await ev("(()=>{const s=document.createElement('style');s.textContent='#pause-panel{display:none!important}';document.head.append(s);})()");
   const trace=[];const mark=async label=>{const s=await state();trace.push({label,...s});console.log(label,s.stage,s.hearts,s.curtain);return s;};
 

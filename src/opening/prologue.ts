@@ -43,6 +43,14 @@ const END_HOLD = 2;
 const NOTICE = 'Narration unavailable';
 const STORAGE_KEY = 'hku.campus.prologue.v1';
 const UP = new T.Vector3(0, 1, 0);
+/** Keys the exploration controller acts on. Enter is absent on purpose: it is a
+ * prologue control at the gate and while running, not a game key. */
+const GAME_CODES = new Set([
+  'KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyV', 'KeyE', 'KeyC', 'KeyF',
+  'Space', 'Escape', 'ShiftLeft', 'ShiftRight', 'BracketLeft', 'BracketRight',
+  'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+  ...Array.from({length: 9}, (_, index) => `Digit${index + 1}`),
+]);
 const MARKUP = `<div class="prologue-gate"><h1>BARRIER 2030</h1><p>A CDS campus story</p><button class="prologue-begin" type="button">BEGIN</button></div>
 <div class="prologue-frame"><div class="prologue-bar top"></div><div class="prologue-bar bottom"></div><p class="prologue-subtitle" aria-live="polite"></p><button class="prologue-skip" type="button">Skip</button></div>
 <div class="prologue-endcard" hidden><p>RESTORE THE TOWERS</p><p>FREE THE STUDENTS</p></div>`;
@@ -50,7 +58,7 @@ const MARKUP = `<div class="prologue-gate"><h1>BARRIER 2030</h1><p>A CDS campus 
 export function createPrologue(options: PrologueOptions): Prologue {
   const {viewer, explorer, audio, bounds} = options;
   const reduced = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
-  const clock = options.clock ?? (() => audio.context?.state === 'running' ? audio.context.currentTime : performance.now() / 1000);
+  const externalClock = options.clock;
 
   let phase: Phase = 'idle';
   let promise: Promise<void> | null = null;
@@ -70,6 +78,17 @@ export function createPrologue(options: PrologueOptions): Prologue {
   let activeLine = -1;
   let silent = false;
   let noticeUntil = -1;
+  // One clock base per run, captured at begin(): audio time when the context is
+  // running, otherwise wall time. Never switched mid-run. A hidden tab suspends
+  // the context, and mixing bases would jump the cinematic by the hidden wall
+  // time and skip the one-shot intro (review M6).
+  let useAudio = false;
+  let audioBase = 0;
+  let perfBase = 0;
+  /** Bumped by reset()/stop(): a decode from an older generation must not write
+   * buffers or `silent` into the run that replaced it (review N1). */
+  let generation = 0;
+  let decodeRun: AbortController | null = null;
   let worldSpan = 100;
   let spawnPosition: T.Vector3 | null = null;
   let spawnLook: T.Vector3 | null = null;
@@ -182,13 +201,24 @@ export function createPrologue(options: PrologueOptions): Prologue {
     voices.clear();
   }
 
-  async function decodeNarration(): Promise<void> {
+  /** Seconds since the base captured at begin(). The base never changes inside a
+   * run: when the tab goes hidden the context suspends and this freezes (and
+   * `onHidden` ends the run) instead of jumping by the hidden wall time. */
+  function runClock(): number {
+    if (externalClock) return externalClock();
     const context = audio.context;
-    if (!context) { silent = true; return; }
+    return useAudio && context ? context.currentTime - audioBase : performance.now() / 1000 - perfBase;
+  }
+
+  async function decodeNarration(): Promise<void> {
+    const run = generation;
+    const context = audio.context;
+    if (!context) { if (run === generation) silent = true; return; }
+    const abort = new AbortController();
+    decodeRun = abort;
     await Promise.all(PROLOGUE_LINES.map(async line => {
       const url = PROLOGUE_URLS[line.id];
-      if (!url) { silent = true; return; }
-      const abort = new AbortController();
+      if (!url) { if (run === generation) silent = true; return; }
       let timer: ReturnType<typeof setTimeout> | undefined;
       try {
         const response = await Promise.race([
@@ -197,11 +227,20 @@ export function createPrologue(options: PrologueOptions): Prologue {
             timer = setTimeout(() => { abort.abort(); reject(new Error('audio_timeout')); }, 10000);
           }),
         ]);
+        // A stop()/replay bumps the generation and aborts the fetches; a decode
+        // already in flight cannot be aborted, so every resume checks the run.
+        if (run !== generation) return;
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        buffers.set(line.id, await context.decodeAudioData(await response.arrayBuffer()));
-      } catch { silent = true; }
+        const data = await response.arrayBuffer();
+        if (run !== generation) return;
+        const buffer = await context.decodeAudioData(data);
+        if (run !== generation) return;
+        buffers.set(line.id, buffer);
+      } catch { if (run === generation) silent = true; }
       finally { clearTimeout(timer); }
     }));
+    if (decodeRun === abort) decodeRun = null;
+    if (run !== generation) return;
     // A partial decode is treated as no narration: the visuals run silently
     // rather than half a story beat behind.
     if (silent) buffers.clear();
@@ -209,6 +248,7 @@ export function createPrologue(options: PrologueOptions): Prologue {
 
   async function begin(): Promise<void> {
     if (phase !== 'gate') return;
+    const run = generation;
     phase = 'starting';
     try { sessionStorage.setItem(STORAGE_KEY, '1'); } catch {}
     if (gate) gate.hidden = true;
@@ -219,11 +259,17 @@ export function createPrologue(options: PrologueOptions): Prologue {
     const started = audio.start();
     const narration = decodeNarration();
     try { await started; } catch {}
-    if (phase !== 'starting') return;
+    if (run !== generation || phase !== 'starting') return;
     await narration;
-    if (phase !== 'starting') return;
+    if (run !== generation || phase !== 'starting') return;
+    // A suspended or refused context cannot play the recording: use the same
+    // NOTICE the decode failures show instead of running silently (N2).
+    if (audio.context?.state !== 'running') { silent = true; buffers.clear(); }
     phase = 'running';
-    origin = clock();
+    useAudio = audio.context?.state === 'running';
+    audioBase = audio.context?.currentTime ?? 0;
+    perfBase = performance.now() / 1000;
+    origin = runClock();
     lastT = seekDelta;
     if (silent) noticeUntil = lastT + 2.4;
   }
@@ -247,7 +293,12 @@ export function createPrologue(options: PrologueOptions): Prologue {
       event.preventDefault();
       event.stopPropagation();
       skip();
+      return;
     }
+    // The controller acts on these before its paused guard (E/C/digits/F and the
+    // movement keys), so the cinematic swallows their propagation while it owns
+    // the screen. Outputs only: focus and button defaults still work (review M2).
+    if ((phase === 'gate' || phase === 'starting' || phase === 'running') && GAME_CODES.has(event.code)) event.stopPropagation();
   }
 
   /** The only frame callback: it runs after the explorer's update, so the
@@ -255,7 +306,7 @@ export function createPrologue(options: PrologueOptions): Prologue {
   function update(): void {
     if (phase !== 'starting' && phase !== 'running') return;
     captureSpawn();
-    const t = phase === 'running' ? Math.max(0, clock() - origin + seekDelta) : lastT;
+    const t = phase === 'running' ? Math.max(0, runClock() - origin + seekDelta) : lastT;
     lastT = t;
     applyShot(t);
     updateSubtitle(t);
@@ -293,9 +344,18 @@ export function createPrologue(options: PrologueOptions): Prologue {
     explorer.camera.updateProjectionMatrix();
     if (!registered) { viewer.beforeRender.add(update); registered = true; }
     window.addEventListener('keydown', onKey, true);
+    document.addEventListener('visibilitychange', onHidden);
+  }
+
+  /** A hidden tab suspends the audio context. End the run rather than resume a
+   * cinematic whose clock froze: the player comes back to the pause card and can
+   * replay it (review M6). */
+  function onHidden(): void {
+    if (document.hidden) stop();
   }
 
   function reset(): void {
+    generation++;
     stopVoices();
     buffers.clear();
     phase = 'idle';
@@ -320,10 +380,15 @@ export function createPrologue(options: PrologueOptions): Prologue {
    * deliberately left paused so the player presses Continue. */
   function stop(): void {
     if (phase === 'idle' || phase === 'done') return;
+    generation++;
     phase = 'done';
+    decodeRun?.abort();
+    decodeRun = null;
     stopVoices();
+    buffers.clear();
     if (registered) { viewer.beforeRender.delete(update); registered = false; }
     window.removeEventListener('keydown', onKey, true);
+    document.removeEventListener('visibilitychange', onHidden);
     if (fovSaved) { explorer.camera.fov = previousFov; fovSaved = false; explorer.camera.updateProjectionMatrix(); }
     if (overlay) {
       overlay.remove();
@@ -361,7 +426,7 @@ export function createPrologue(options: PrologueOptions): Prologue {
     const target = T.MathUtils.clamp(Number.isFinite(seconds) ? seconds : 0, 0, PROLOGUE_TOTAL + END_HOLD);
     seekDelta = target;
     lastT = target;
-    if (phase === 'running') origin = clock();
+    if (phase === 'running') origin = runClock();
     stopVoices();
     const inside = PROLOGUE_LINES.findIndex(line => target >= line.start && target <= line.end);
     nextLine = inside >= 0 ? inside + 1 : PROLOGUE_LINES.findIndex(line => line.start > target);
@@ -374,7 +439,7 @@ export function createPrologue(options: PrologueOptions): Prologue {
   }
 
   function state(): {t: number; line: number; shot: number} {
-    const t = phase === 'running' ? Math.max(0, clock() - origin + seekDelta) : lastT;
+    const t = phase === 'running' ? Math.max(0, runClock() - origin + seekDelta) : lastT;
     return {
       t,
       line: PROLOGUE_LINES.findIndex(line => t >= line.start && t <= line.end),
