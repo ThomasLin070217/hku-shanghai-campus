@@ -29,6 +29,8 @@ export interface MacOptions {
   devTools?:boolean;
   /** Window to open when the shell first appears. Story Macs default to Finder. */
   startApp?:WindowApp;
+  /** Fired once each time the campus security alert card opens. */
+  onAlert?:()=>void;
 }
 const names:Record<WindowApp,string>={
   finder:'Finder',map:'Maps',agent:'Harness',mission:'Vibe Console',robotics:'Robotics',
@@ -494,7 +496,7 @@ export function createMacBookExperience(options:MacOptions){
     if(shouldAlert!==alertOpen){
       alertOpen=shouldAlert;alert.hidden=!shouldAlert;
       bar.inert=desktop.inert=shouldAlert;
-      if(shouldAlert){toggleAppleMenu(false);queueMicrotask(()=>{if(alertOpen)accept.focus({preventScroll:true});});}
+      if(shouldAlert){toggleAppleMenu(false);options.onAlert?.();queueMicrotask(()=>{if(alertOpen)accept.focus({preventScroll:true});});}
     }
     const phase=alertOpen?'alert':sealed?'night':'day';
     if(root.dataset.phase!==phase)root.dataset.phase=phase;

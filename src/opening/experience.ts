@@ -182,6 +182,13 @@ export function createOpeningExperience(
    onError:()=>{showSubtitle(`YOU — ${STAFF_DIALOGUE.playerAccept}`,1.8);window.setTimeout(()=>showSubtitle(`COORDINATOR — ${STAFF_DIALOGUE.thanks}`,3.6),1900);},
   }).then(ok=>{if(ok)acceptVoicePlayed=true;}).finally(()=>{acceptVoiceBusy=false;});
  }
+ /** The alert card: the invader speaks first, then the local AI answers. */
+ function playAlertVoices(){
+  void voice.playAlert({
+   onItem:(_index,item,duration)=>showSubtitle(`${item.id==='external-ai'?'INVADER':'LOCAL AI'} — ${item.text}`,duration+.4),
+   onError:()=>{},
+  });
+ }
  function completeStaffIntro(){
   if(staffTalkDone)return;
   staffTalkDone=true;runtime={...runtime,staff_task_received:true};
@@ -408,7 +415,7 @@ export function createOpeningExperience(
     id:String(unit.root.userData.fleetId),name:'Campus guard '+(index+1),
     status:story.campus_alert_triggered?'Compromised · '+unit.state:'Standby',
   })),
- });
+ },{onAlert:playAlertVoices});
 
  function tick(dt:number){
   story.elapsedSeconds+=dt;

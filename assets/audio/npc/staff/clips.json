@@ -1,67 +1,67 @@
 {
   "schemaVersion": 1,
-  "source": "DaVinci AI \u00b7 ElevenLabs TTS V3 \u00b7 Asher",
-  "gainDb": 0.5,
+  "source": "ElevenLabs · eleven_multilingual_v2 · Alice (clear educator), 2026-11-24",
+  "gainDb": 0.0,
   "clips": [
     {
       "id": "staff-line1",
-      "text": "Hey \u2014 you're one of the Student Ambassadors, right?",
+      "text": "Hey — you're one of the Student Ambassadors, right?",
       "file": "assets/audio/npc/staff/staff-line1.wav",
       "sourceStart": 0.0,
-      "sourceEnd": 2.55,
-      "duration": 2.55,
+      "sourceEnd": 3.297,
+      "duration": 3.297,
       "sampleRate": 44100,
-      "sha256": "a2500de93ad57050840c19373c1bb4bf4735d9423e3c9a430353c9ed88f28e1a",
-      "rmsDb": -21.45,
-      "peakDb": -3.65
+      "sha256": "122c5e2c1c134052b9f4b69a4447754d169bbc389c2f0bd35cc02ea40f22ca06",
+      "rmsDb": -21.7,
+      "peakDb": -1.9
     },
     {
       "id": "staff-line2",
-      "text": "Could you do me a quick favour? We need the presentation MacBook from Building 6 for tonight's dinner.",
+      "text": "Could you do me a quick favour? We need the presentation MacBook from Building 4 — the 5F principal's office. It's on the desk. Mind picking it up? We're running a bit behind.",
       "file": "assets/audio/npc/staff/staff-line2.wav",
-      "sourceStart": 3.12,
-      "sourceEnd": 8.88,
-      "duration": 5.76,
+      "sourceStart": 0.0,
+      "sourceEnd": 10.635,
+      "duration": 10.635,
       "sampleRate": 44100,
-      "sha256": "8d160857ac740fd612cc4a05d39217aecab0c8e70d55a81d33bdd279e92ff7e5",
-      "rmsDb": -21.6,
-      "peakDb": -2.84
+      "sha256": "b5779a31cfd2b2ae69fb556725c000bb5e20aedc4086156e47ad13e6f5fb165d",
+      "rmsDb": -22.2,
+      "peakDb": -3.0
     },
     {
       "id": "staff-line3",
-      "text": "It's on the office table. Mind picking it up? We're running a bit behind.",
+      "text": "Take the side door, turn right to the lift. Fifth floor.",
       "file": "assets/audio/npc/staff/staff-line3.wav",
-      "sourceStart": 9.24,
-      "sourceEnd": 13.89,
-      "duration": 4.65,
+      "sourceStart": 0.0,
+      "sourceEnd": 3.622,
+      "duration": 3.622,
       "sampleRate": 44100,
-      "sha256": "78ab9ea9b4861a9cb977bd75f6de6db7654da5e223ce87e245a0f778e1e9034b",
-      "rmsDb": -22.16,
-      "peakDb": -3.08
+      "sha256": "da54ac09300358d639de9d26551f2b93205d349091cef96d22894e23b8d27e7b",
+      "rmsDb": -21.2,
+      "peakDb": -2.7
     },
     {
       "id": "staff-line4",
       "text": "Perfect, thanks! Just bring it back here when you've got it.",
       "file": "assets/audio/npc/staff/staff-line4.wav",
-      "sourceStart": 14.61,
-      "sourceEnd": 17.94,
-      "duration": 3.33,
+      "sourceStart": 0.0,
+      "sourceEnd": 3.204,
+      "duration": 3.204,
       "sampleRate": 44100,
-      "sha256": "39b7e5e6b2ca2bcf2d9c6ca7ca2c43ab856edbc6b285ec0aa49ffd0a60e08807",
-      "rmsDb": -22.08,
-      "peakDb": -2.0
+      "sha256": "e2f1b38a58bddb98c4597ee2ee4d1f51738bf387784705fb32ef15d68513cde6",
+      "rmsDb": -21.7,
+      "peakDb": -3.2
     },
     {
       "id": "staff-line5",
-      "text": "Hey \u2014 any luck with that laptop?",
+      "text": "Hey — any luck with that laptop?",
       "file": "assets/audio/npc/staff/staff-line5.wav",
-      "sourceStart": 19.05,
-      "sourceEnd": 21.159,
-      "duration": 2.109,
+      "sourceStart": 0.0,
+      "sourceEnd": 1.904,
+      "duration": 1.904,
       "sampleRate": 44100,
-      "sha256": "783e03321c0e372d3a1587f39f7bd52081b6a2d140d53db8283e96c91bb74257",
-      "rmsDb": -20.69,
-      "peakDb": -1.71
+      "sha256": "07b5d7e10e18c07c1e90c63fbbc936814a2c07b879b6b4f3b17d20227c145142",
+      "rmsDb": -20.3,
+      "peakDb": -2.1
     }
   ]
 }

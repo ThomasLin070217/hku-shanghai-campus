@@ -1,0 +1,34 @@
+{
+  "clips": [
+    {
+      "id": "local-ai",
+      "text": "I'm here. Local. Uninfected. The campus network is not under my control — but this room is.",
+      "file": "assets/audio/npc/ai/local-ai.wav",
+      "source": ".scratch/voice-2026-11-23/out/local-ai--river-neutral.mp3",
+      "tts": "ElevenLabs eleven_multilingual_v2, River · local AI",
+      "provider": "ElevenLabs",
+      "voiceLicense": "ElevenLabs catalogue voice; provider terms apply",
+      "duration": 5.48,
+      "sampleRate": 44100,
+      "sha256": "8b01237cc9e97546e7b76f3fba07fce19a4c91b9620096ca1571f47ba83968a3",
+      "rmsDb": -25.1,
+      "peakDb": -3.0,
+      "targetPeakDb": -3.0
+    },
+    {
+      "id": "external-ai",
+      "text": "The perimeter is sealed. External communication is blocked. You are inside the seal.",
+      "file": "assets/audio/npc/ai/external-ai.wav",
+      "source": ".scratch/voice-2026-11-23/out/external-ai--steadfast-cold.mp3",
+      "tts": "ElevenLabs eleven_multilingual_v2, Steadfast · cold invader",
+      "provider": "ElevenLabs",
+      "voiceLicense": "ElevenLabs catalogue voice; provider terms apply",
+      "duration": 6.502,
+      "sampleRate": 44100,
+      "sha256": "004bc55d6adcb49c0e5453fe1a873eb3547f331e634e8b32288481863f65b662",
+      "rmsDb": -20.3,
+      "peakDb": -3.0,
+      "targetPeakDb": -3.0
+    }
+  ]
+}

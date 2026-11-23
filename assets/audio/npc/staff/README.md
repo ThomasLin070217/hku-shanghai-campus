@@ -1,4 +1,18 @@
-# Staff NPC voice · DaVinci AI / ElevenLabs TTS V3
+# Staff NPC voice · ElevenLabs (2026-11-24 cast)
+
+**Current clips (2026-11-24):** generated with ElevenLabs `eleven_multilingual_v2`,
+voice **Alice — Clear, Engaging Educator** (`Xb7hH8MSUJpSbSDYk0k2`), stability 0.40,
+similarity 0.78, style 0.62, speaker boost on. Five separate lines, 44.1 kHz mono
+16-bit PCM, converted from the audition MP3s in
+`.scratch/voice-2026-11-23/out/`. Text is the B4 5F errand copy in
+`content/voice/staff-dialogue.ts`; `clips.json` carries the measured duration,
+SHA-256, RMS and peak for each clip.
+
+This replaced the monotone 2026-11-21 DaVinci/Asher take the owner flagged. The old
+provenance is kept below for history only; the shipped `staff-line*.wav` files are
+the Alice takes.
+
+## Historical take · DaVinci AI / ElevenLabs TTS V3 (2026-11-21)
 
 Generated 2026-11-21 from the normal DaVinci AI web UI with the account's one free
 audio generation. No paid credits, subscription, top-up or voice cloning were used.

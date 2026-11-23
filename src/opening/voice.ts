@@ -1,12 +1,14 @@
 import type {CampusAudio} from '../gameplay/audio';
 import clipManifest from '../../assets/audio/npc/staff/clips.json';
+import aiClipManifest from '../../assets/audio/npc/ai/clips.json';
 import {STAFF_DIALOGUE} from '../../content/voice/staff-dialogue';
 
 /**
  * Fixed-dialogue Staff voice player.
  *
- * The five clips come from one DaVinci AI / ElevenLabs TTS V3 take. They are
- * bundled files; the game never calls an online TTS service at runtime.
+ * The five clips are the 2026-11-24 Alice takes, generated from
+ * `content/voice/staff-dialogue.ts` with ElevenLabs `eleven_multilingual_v2`.
+ * They are bundled files; the game never calls an online TTS service at runtime.
  *
  * The player owns its sequence/epoch so closing a panel, moving away or a new
  * line immediately cancels the old clip and any pending gap. It uses the
@@ -40,7 +42,21 @@ export const STAFF_VOICE_URLS: Record<string, URL> = {
   'staff-line5': new URL('../../assets/audio/npc/staff/staff-line5.wav', import.meta.url),
 };
 
-export const PLAYER_ACCEPT_URL = new URL('../../assets/audio/npc/player/player-accept-ryan.wav', import.meta.url);
+export const PLAYER_ACCEPT_URL = new URL('../../assets/audio/npc/player/player-accept-harry.wav', import.meta.url);
+
+export const AI_VOICE_URLS: Record<string, URL> = {
+  'external-ai': new URL('../../assets/audio/npc/ai/external-ai.wav', import.meta.url),
+  'local-ai': new URL('../../assets/audio/npc/ai/local-ai.wav', import.meta.url),
+};
+
+const aiClipById = new Map(aiClipManifest.clips.map((clip) => [clip.id, clip]));
+
+function aiItem(id: string): VoiceItem {
+  const clip = aiClipById.get(id);
+  const url = AI_VOICE_URLS[id];
+  if (!clip || !url) throw new Error(`Missing AI voice clip: ${id}`);
+  return {id, url, text: clip.text, duration: clip.duration};
+}
 
 const clipById = new Map(clipManifest.clips.map((clip) => [clip.id, clip]));
 
@@ -59,8 +75,11 @@ const PLAYER_ACCEPT_ITEM: VoiceItem = {
   id: 'player-accept',
   url: PLAYER_ACCEPT_URL,
   text: STAFF_DIALOGUE.playerAccept,
-  duration: 1.022,
+  duration: 1.533,
 };
+/** The invader owns the campus network; the local AI answers from the MacBook. */
+const ALERT_ITEMS: readonly VoiceItem[] = [aiItem('external-ai'), aiItem('local-ai')];
+const ALERT_GAP_SECONDS = 0.55;
 
 /** Test-only surface: the exact text that is bundled with the generated clips. */
 export const STAFF_VOICE_TEXT = {
@@ -68,6 +87,12 @@ export const STAFF_VOICE_TEXT = {
   thanks: THANKS_ITEM.text,
   repeat: REPEAT_ITEM.text,
   playerAccept: PLAYER_ACCEPT_ITEM.text,
+} as const;
+
+/** Spoken lines for the campus alert; the on-screen copy stays as authored. */
+export const ALERT_VOICE_TEXT = {
+  invader: ALERT_ITEMS[0].text,
+  local: ALERT_ITEMS[1].text,
 } as const;
 
 /** Timeline the subtitles follow; the audio player uses the same clips and gap. */
@@ -205,6 +230,10 @@ class VoiceSequencePlayer {
     return this.playItems([REPEAT_ITEM], 0, options);
   }
 
+  playAlert(options: StaffVoicePlayOptions = {}): Promise<boolean> {
+    return this.playItems(ALERT_ITEMS, ALERT_GAP_SECONDS, options);
+  }
+
   dispose(): void {
     this.disposed = true;
     this.stop();
@@ -218,6 +247,7 @@ export function createStaffVoice(audio: CampusAudio) {
     playIntro: (options?: StaffVoicePlayOptions) => player.playIntro(options),
     playAcceptance: (options?: StaffVoicePlayOptions) => player.playAcceptance(options),
     playRepeat: (options?: StaffVoicePlayOptions) => player.playRepeat(options),
+    playAlert: (options?: StaffVoicePlayOptions) => player.playAlert(options),
     stop: () => player.stop(),
     dispose: () => player.dispose(),
   };

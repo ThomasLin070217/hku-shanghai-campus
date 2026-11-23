@@ -50,6 +50,7 @@ export function createOpeningUI(
   stage: HTMLElement,
   actions: OpeningUIActions,
   device: {instanceId:()=>string|undefined; units:()=>{id:string;name:string;status:string}[]},
+  voice?: {onAlert?:()=>void},
 ): {update(view: OpeningView): void; dispose(): void} {
   const events = new AbortController();
   let currentView:OpeningView|null=null;
@@ -292,6 +293,7 @@ export function createOpeningUI(
     drawMap: (canvas, large) => actions.drawMap(canvas, large),
     onClose: () => requestClose(),
     agent: localAgent,
+    onAlert: () => voice?.onAlert?.(),
   });
 
   // ------------------------------------------------------------ Modals.

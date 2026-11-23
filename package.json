@@ -72,6 +72,8 @@
   "check:lawn-browser": "node scripts/check-lawn-browser.mjs",
   "check:door": "tsx scripts/check-sports-door.ts",
   "check:voice": "tsx scripts/check-voice-profiles.ts",
+  "audition": "node scripts/build-audition-pages.mjs",
+  "voice:takes": "node scripts/generate-voice-takes.mjs --main-first",
   "check:opening-phone": "${PYTHON:-python3} scripts/check-opening-phone.py"
  },
  "dependencies": {
