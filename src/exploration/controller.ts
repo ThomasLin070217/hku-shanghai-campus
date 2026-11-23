@@ -6,6 +6,7 @@ import {createStudent} from './student';
 import {createFirstPersonArms} from '../characters/character';
 import {createDeviceView} from './deviceView';
 import {firstPersonVisible} from './viewmodel';
+import {useTouchControls} from '../opening/touchInput';
 import './deviceView.css';
 import {createInventoryUI} from '../items/inventoryUI';
 import {CampusGame} from './game';
@@ -27,10 +28,14 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  const keys=new Set<string>(),ray=new T.Raycaster();let bob=false;let distance=Number(C.cameraDistance),actualDistance=distance,sensitivity=Number(C.mouseSensitivity);
  /** Milliseconds left in which a queued jump may still fire on landing. */
  let jumpBuffer=0;
+ /** Analog stick intent from the touch layer, in [-1, 1]; zero on the keyboard path. */
+ let touchForward=0,touchRight=0,touchSprint=false;
+ /** Touch controls are for phones and tablets: a coarse pointer, or touch without hover. */
+ const touchPreferred=()=>useTouchControls({anyCoarse:matchMedia('(any-pointer: coarse)').matches,maxTouchPoints:navigator.maxTouchPoints,hoverNone:matchMedia('(hover: none)').matches});
  const editable=(t:EventTarget|null)=>t instanceof HTMLElement&&!!t.closest('input,select,textarea,[contenteditable="true"],dialog');
  const locked=()=>document.pointerLockElement===canvas;
  const controlled=()=>locked()||compat;
- const clear=()=>{dragging=false;keys.clear();game.human={forward:0,right:0,sprint:false};game.humanJump=false;jumpBuffer=0;accumulator=0;};
+ const clear=()=>{dragging=false;keys.clear();game.human={forward:0,right:0,sprint:false};game.humanJump=false;jumpBuffer=0;accumulator=0;touchForward=0;touchRight=0;touchSprint=false;};
  function openInventory(){if(!enabled||game.panel)return;clear();compat=false;game.openInventory();if(locked())document.exitPointerLock();}
  function closeInventory(){clear();game.closeInventory();}
  const inventoryUI=createInventoryUI(()=>game,openInventory,closeInventory,opening);
@@ -58,10 +63,20 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  listenWindow('keyup',e=>keys.delete(e.code));
  listenDocument('mousemove',e=>{if(enabled&&locked()&&!game.paused){game.yaw-=e.movementX*sensitivity;game.pitch=T.MathUtils.clamp(game.pitch+e.movementY*sensitivity,C.minPitch,C.maxPitch);}});
  listenCanvas('pointerdown',e=>{if(!enabled||!compat||game.paused||e.button!==0)return;canvas.focus();dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId);});
- listenCanvas('pointermove',e=>{if(!compat||!dragging||game.paused)return;game.yaw-=(e.clientX-lastX)*sensitivity;game.pitch=T.MathUtils.clamp(game.pitch+(e.clientY-lastY)*sensitivity,C.minPitch,C.maxPitch);lastX=e.clientX;lastY=e.clientY;});
+ listenCanvas('pointermove',e=>{if(!compat||!dragging||game.paused)return;const touchScale=e.pointerType === 'touch'?2.4:1;game.yaw-=(e.clientX-lastX)*sensitivity*touchScale;game.pitch=T.MathUtils.clamp(game.pitch+(e.clientY-lastY)*sensitivity*touchScale,C.minPitch,C.maxPitch);lastX=e.clientX;lastY=e.clientY;});
  listenCanvas('pointerup',()=>dragging=false);listenCanvas('pointercancel',()=>dragging=false);
  listenCanvas('wheel',e=>{if(enabled&&!game.inventoryOpen&&!game.panel){e.preventDefault();game.takeover('human_hotbar_wheel');game.selectHotbar((game.inventory.selectedHotbar+(e.deltaY>0?1:8))%9);if(!controlled())game.paused=true;}},{passive:false});canvas.tabIndex=0;
- function enter(){if(!enabled||game.inventoryOpen||game.panel)return;compat=false;canvas.focus();void canvas.requestPointerLock()?.catch(()=>pause('pointer_lock_failed'));}
+ /** Drag-to-look entry, shared by the compat button and the touch path. */
+ function enterCompat(){if(game.inventoryOpen||game.panel)return;game.takeover('human_compat');compat=true;game.paused=false;clear();canvas.focus();}
+ function enter(){if(!enabled||game.inventoryOpen||game.panel)return;if(touchPreferred()){enterCompat();return;}compat=false;canvas.focus();void canvas.requestPointerLock()?.catch(()=>pause('pointer_lock_failed'));}
+ /** Analog stick input in [-1, 1] per axis; a stick moved before Enter claims control. */
+ function touchMove(forward:number,right:number){
+  if(game.inventoryOpen||game.panel)return;
+  touchForward=T.MathUtils.clamp(Number.isFinite(forward)?forward:0,-1,1);touchRight=T.MathUtils.clamp(Number.isFinite(right)?right:0,-1,1);
+  if(touchForward===0&&touchRight===0)return;
+  if(!controlled()){game.takeover('human_compat');compat=true;game.paused=false;canvas.focus();}
+ }
+ function touchRun(on:boolean){touchSprint=!!on;}
  /** The one writer of the first-person arms and held item (Ruling 36): visibility and the
   * story carry pose are set together, so the open MacBook never shows one frame in the walking pose. */
  const showViewModel=()=>{if(opening)firstPerson.setCarry(deviceOpen);arms.visible=firstPersonVisible({enabled,first:game.view==='first',story:opening,deviceOpen,hidden:firstPersonHidden});};
@@ -80,7 +95,7 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
   }camera.updateMatrixWorld();
  }
  function update(dt:number){inventoryUI.refresh();if(viewLock)game.view=viewLock;if(!enabled)return;const held=game.inventory.equipped?.itemId??null;student.equip(held);firstPerson.equip(held);dt=Math.min(dt,.1);const before=game.body.position.clone();
-  game.human={forward:Number(keys.has(KEYS.forward))-Number(keys.has(KEYS.back)),right:Number(keys.has(KEYS.right))-Number(keys.has(KEYS.left)),sprint:keys.has(KEYS.sprint)};
+  game.human={forward:Number(keys.has(KEYS.forward))-Number(keys.has(KEYS.back))+touchForward,right:Number(keys.has(KEYS.right))-Number(keys.has(KEYS.left))+touchRight,sprint:keys.has(KEYS.sprint)||touchSprint};
   if(!game.paused){
    // A jump pressed a moment before landing is re-armed on the first grounded step.
    if(jumpBuffer>0){
@@ -97,7 +112,7 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  }
  function reset(){pause('reset');game.spawn();student.gait.reset();student.animate(.02,0,true,0);turn=game.yaw;actualDistance=distance;updateCamera(1);}
  reset();student.root.visible=false;
- return{camera,student,interactions,computers,enter,enterCompat(){if(game.inventoryOpen||game.panel)return;game.takeover('human_compat');compat=true;game.paused=false;clear();canvas.focus();},update,reset,pause,openInventory,closeInventory,firstPerson,openPanel(panel:'computer'|'settings'|'door',physicalScreen=false){deviceOpen=physicalScreen&&panel==='computer';deviceView.show(deviceOpen);clear();compat=false;game.openPanel(panel);showViewModel();if(locked())document.exitPointerLock();},closePanel(){deviceOpen=false;deviceView.show(false);clear();game.closePanel();showViewModel();},
+ return{camera,student,interactions,computers,enter,enterCompat,touchMove,touchRun,touchPreferred,update,reset,pause,openInventory,closeInventory,firstPerson,openPanel(panel:'computer'|'settings'|'door',physicalScreen=false){deviceOpen=physicalScreen&&panel==='computer';deviceView.show(deviceOpen);clear();compat=false;game.openPanel(panel);showViewModel();if(locked())document.exitPointerLock();},closePanel(){deviceOpen=false;deviceView.show(false);clear();game.closePanel();showViewModel();},
   /** A chapter's request to hide the arms and held item (B4: inside B04 and in a focus view). */
   setFirstPersonHidden(hidden:boolean){firstPersonHidden=hidden;showViewModel();},setComfort(fov:number,shake:boolean){camera.fov=T.MathUtils.clamp(fov,60,90);camera.updateProjectionMatrix();bob=shake;}, get game(){return game;},get position(){return game.body.position;},get world(){return world;},get enabled(){return enabled;},get state(){return{...game.observe(),yaw:game.yaw,pitch:game.pitch,distance,actualDistance,locked:locked(),compat,keys:[...keys]};},
   setSensitivity(v:number){sensitivity=T.MathUtils.clamp(v,.0004,.006);},
