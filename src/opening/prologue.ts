@@ -1,6 +1,7 @@
 /**
- * BARRIER 2030 prologue: the 30-second skippable in-engine cinematic that plays
- * before the player first takes control. The gate mounts on `play()`; the clock
+ * BARRIER 2030 prologue: the single-take skippable in-engine cinematic that
+ * plays before the player first takes control, timed to the four recorded
+ * narration lines. The gate mounts on `play()`; the clock
  * starts after the BEGIN click has resumed the audio context and the audio pack
  * has loaded, and the first line starts with the clock. The camera is driven
  * from `viewer.beforeRender`, which runs after the explorer's own update.
