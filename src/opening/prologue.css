@@ -144,7 +144,7 @@
 .prologue-endcard p + p { color: #c8a85e; font-size: clamp(16px, 3vw, 34px); }
 
 body.prologue-active #pause-panel { display: none !important; }
-body.prologue-active :is(.opening-hud,.opening-mapcard,.opening-prompt,.opening-warning,.opening-hearts,#inventory-hud,.stage-bottom,#crosshair,#control-badge,.touch-controls) { visibility: hidden; }
+body.prologue-active :is(.opening-hud,.opening-mapcard,.opening-prompt,.opening-warning,.opening-hearts,#inventory-hud,.stage-bottom,#crosshair,#control-badge,.touch-controls,#reset) { visibility: hidden; }
 body.prologue-active .header,
 body.prologue-active .sidebar { visibility: hidden; }
 

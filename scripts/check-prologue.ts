@@ -229,7 +229,7 @@ check('styles: the overlay uses safe-area insets and hides the HUD',()=>{
  );
  const hud=prologueStyles.match(/body\.prologue-active\s+:is\(([^)]*)\)/)?.[1]??'';
  assert.ok(hud,'prologue.css has no body.prologue-active :is(...) HUD hide list');
- for(const selector of ['.opening-hud','.opening-mapcard','.opening-prompt','.opening-warning','.opening-hearts','#inventory-hud','.stage-bottom','#crosshair','#control-badge','.touch-controls'])assert.ok(hud.includes(selector),`HUD hide list is missing ${selector}`);
+ for(const selector of ['.opening-hud','.opening-mapcard','.opening-prompt','.opening-warning','.opening-hearts','#inventory-hud','.stage-bottom','#crosshair','#control-badge','.touch-controls','#reset'])assert.ok(hud.includes(selector),`HUD hide list is missing ${selector}`);
  assert.match(prologueStyles,/body\.prologue-active\s+\.header\b/,'prologue.css does not hide the review-build header');
  assert.match(prologueStyles,/body\.prologue-active\s+\.sidebar\b/,'prologue.css does not hide the review-build sidebar');
  assert.match(prologueStyles,/\.prologue-subtitle\s*\{[^}]*left:\s*50%[^}]*transform:\s*translateX\(-50%\)/,'subtitle is not centred with left:50% + translateX(-50%)');
