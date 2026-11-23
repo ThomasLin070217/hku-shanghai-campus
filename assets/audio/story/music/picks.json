@@ -1,0 +1,116 @@
+{
+  "mus_title": {
+    "source": ".scratch/music-2026-11-23/family-d/mus_title/take-a/symphony_processional.wav",
+    "file": "assets/audio/story/music/mus_title.mp3",
+    "duration": 117.83,
+    "bytes": 2357857
+  },
+  "mus_prologue": {
+    "source": ".scratch/music-2026-11-23/family-a2/mus_prologue/take-a/prologue_symphony.wav",
+    "file": "assets/audio/story/music/mus_prologue.mp3",
+    "duration": 50.53,
+    "bytes": 1012028
+  },
+  "mus_invitation": {
+    "source": ".scratch/music-2026-11-23/family-a2/mus_invitation/take-a/invitation_music_box.wav",
+    "file": "assets/audio/story/music/mus_invitation.mp3",
+    "duration": 16.0,
+    "bytes": 321351
+  },
+  "mus_dinner": {
+    "source": ".scratch/music-2026-11-23/family-a2/mus_dinner/take-a/dinner_waltz.wav",
+    "file": "assets/audio/story/music/mus_dinner.mp3",
+    "duration": 36.92,
+    "bytes": 739832
+  },
+  "mus_dinner_toast": {
+    "source": ".scratch/music-2026-11-23/family-a2/mus_dinner_toast/take-a/toast_brass.wav",
+    "file": "assets/audio/story/music/mus_dinner_toast.mp3",
+    "duration": 7.5,
+    "bytes": 151555
+  },
+  "mus_office": {
+    "source": ".scratch/music-2026-11-23/family-a2/mus_office/take-a/office_piano_sparse.wav",
+    "file": "assets/audio/story/music/mus_office.mp3",
+    "duration": 43.64,
+    "bytes": 874102
+  },
+  "mus_abduction": {
+    "source": ".scratch/music-2026-11-23/family-b2/mus_abduction/take-b/inv_abduction_b.wav",
+    "file": "assets/audio/story/music/mus_abduction.mp3",
+    "duration": 41.64,
+    "bytes": 834396
+  },
+  "mus_abduction_stinger": {
+    "source": ".scratch/music-2026-11-23/family-b2/mus_abduction/take-a/inv_abduction_a.wav",
+    "file": "assets/audio/story/music/mus_abduction_stinger.mp3",
+    "duration": 45.0,
+    "bytes": 901269
+  },
+  "mus_alert": {
+    "source": ".scratch/music-2026-11-23/family-b2/mus_alert/take-a/inv_alert_a.wav",
+    "file": "assets/audio/story/music/mus_alert.mp3",
+    "duration": 26.67,
+    "bytes": 534510
+  },
+  "mus_patrol": {
+    "source": ".scratch/music-2026-11-23/family-b2/mus_patrol/take-a/inv_patrol_a.wav",
+    "file": "assets/audio/story/music/mus_patrol.mp3",
+    "duration": 80.0,
+    "bytes": 1601351
+  },
+  "mus_chase": {
+    "source": ".scratch/music-2026-11-23/family-b2/mus_chase/take-a/inv_chase_a.wav",
+    "file": "assets/audio/story/music/mus_chase.mp3",
+    "duration": 25.6,
+    "bytes": 513089
+  },
+  "mus_march_alt": {
+    "source": ".scratch/music-2026-11-23/family-b2/mus_march_alt/take-a/inv_march_a.wav",
+    "file": "assets/audio/story/music/mus_march_alt.mp3",
+    "duration": 66.21,
+    "bytes": 1325498
+  },
+  "mus_puzzle": {
+    "source": ".scratch/music-2026-11-23/family-c/mus_puzzle/take-a/puzzle_clockwork.wav",
+    "file": "assets/audio/story/music/mus_puzzle.mp3",
+    "duration": 64.0,
+    "bytes": 1281089
+  },
+  "mus_lawn": {
+    "source": ".scratch/music-2026-11-23/family-c/mus_lawn/take-a/lawn_drone.wav",
+    "file": "assets/audio/story/music/mus_lawn.mp3",
+    "duration": 128.0,
+    "bytes": 2561089
+  },
+  "mus_lion_boss": {
+    "source": ".scratch/music-2026-11-23/family-c/mus_lion_boss/take-a/boss_symphonic.wav",
+    "file": "assets/audio/story/music/mus_lion_boss.mp3",
+    "duration": 54.86,
+    "bytes": 1098232
+  },
+  "mus_lion_victory": {
+    "source": ".scratch/music-2026-11-23/family-c/mus_lion_victory/take-a/victory_brass.wav",
+    "file": "assets/audio/story/music/mus_lion_victory.mp3",
+    "duration": 32.09,
+    "bytes": 643179
+  },
+  "mus_sports": {
+    "source": ".scratch/music-2026-11-23/family-d/mus_sports/take-a/strings_piano_hope.wav",
+    "file": "assets/audio/story/music/mus_sports.mp3",
+    "duration": 83.9,
+    "bytes": 1679196
+  },
+  "mus_finale": {
+    "source": ".scratch/music-2026-11-23/family-d/mus_finale/take-a/symphony_mesh.wav",
+    "file": "assets/audio/story/music/mus_finale.mp3",
+    "duration": 54.9,
+    "bytes": 1099277
+  },
+  "mus_credits": {
+    "source": ".scratch/music-2026-11-23/family-a2/mus_credits/take-a/credits_strings_harp.wav",
+    "file": "assets/audio/story/music/mus_credits.mp3",
+    "duration": 58.18,
+    "bytes": 1165106
+  }
+}

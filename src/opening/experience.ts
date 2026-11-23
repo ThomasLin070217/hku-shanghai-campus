@@ -278,7 +278,7 @@ export function createOpeningExperience(
   open('complete');
  }
  function transition(event:OpeningEvent){const next=reduceOpening(story,event);if(next===story)return false;story=next;persist(true);return true;}
- function open(next:OpeningModal){if(failed&&next!=='caught')return;voice.stop();compatBeforePanel=explorer.state.compat;if(modal!==next)modalSerial++;modal=next;explorer.openPanel(next==='settings'?'settings':'computer',next==='computer');audio.setActive(false);audio.stopOpeningCues();audio.stopPreviews();if(next==='computer')audio.story?.cue('macbook_open',undefined,true);else if(next==='staff'&&story.stage==='to_b5')startStaffIntro(true);}
+ function open(next:OpeningModal){if(failed&&next!=='caught')return;voice.stop();compatBeforePanel=explorer.state.compat;if(modal!==next)modalSerial++;modal=next;explorer.openPanel(next==='settings'?'settings':'computer',next==='computer');audio.setActive(false);audio.stopOpeningCues();audio.stopPreviews();if(next==='computer')audio.story?.cue('macbook_open',undefined,true);else if(next==='invitation')audio.story?.cue('mus_invitation',undefined,true);else if(next==='staff'&&story.stage==='to_b5')startStaffIntro(true);}
  function close(){if(modal==='caught')return;const was=modal;voice.stop();audio.stopPreviews();if(modal==='computer')audio.story?.cue('macbook_close',undefined,true);modal=null;explorer.closePanel();persist(true);
   // A story panel should hand control straight back to the player. The same click
   // that closed it is still a user gesture, so pointer lock can be requested here.
@@ -417,6 +417,15 @@ export function createOpeningExperience(
   })),
  },{onAlert:playAlertVoices});
 
+ /** One cue per story beat; the score crossfades on every stage change. */
+ function openingScore(stage:string,dark:boolean,chasing:boolean){
+  if(chasing)return 'mus_chase';
+  if(dark)return 'mus_patrol';
+  if(stage==='to_b5')return 'mus_dinner';
+  if(stage==='to_b6'||stage==='return_b5')return 'mus_office';
+  if(stage==='complete')return 'mus_sports';
+  return 'mus_prologue';
+ }
  function tick(dt:number){
   story.elapsedSeconds+=dt;
   if(modal!=='caught'&&failed)failed=false;
@@ -540,7 +549,7 @@ export function createOpeningExperience(
   if(g.paused&&!wasPaused&&modal!=='staff')audio.stopOpeningCues();wasPaused=g.paused;
   const surface=explorer.world.surface(g.body.position.x,g.body.position.z,g.body.position.y);
   audio.update(explorer.student.gait,g.paused||!active,surface,g.body.position,explorer.camera.position,g.yaw);
-  audio.story?.update({stage:story.stage,dark:alert,chasing:r.chasing,player:g.body.position,dt,
+  audio.story?.update({stage:story.stage,dark:alert,chasing:r.chasing,music:openingScore(story.stage,alert,r.chasing),player:g.body.position,dt,
    robots:active&&alert&&hunting?fleet.units.map((unit,index)=>({id:'opening-robot-'+index,state:unit.state,position:unit.position})):[]});
   const item=target();
   const campaignGoal=campaign()?.objective()??null;

@@ -4,11 +4,16 @@ import type {CampusAudio} from './audio';
 type Point={x:number;y:number;z:number};
 type Music='safe'|'unease'|'tension'|'chase'|'hope';
 export interface AudioRobot {id:string;state:string;position:Point}
-export interface StoryAudioFrame {stage:string;dark:boolean;chasing:boolean;robots:AudioRobot[];player:Point;dt:number}
+export interface StoryAudioFrame {stage:string;dark:boolean;chasing:boolean;robots:AudioRobot[];player:Point;dt:number;/** Explicit cue id, e.g. `mus_dinner`. Falls back to the stage mapping. */music?:string}
 type Loop={source:AudioBufferSourceNode;gain:GainNode;panner?:PannerNode;level:number;retireAt?:number};
 interface Cue {id:string;bus:string;loop:boolean;spatial:boolean;gain:number;duck?:{music:number;ambient:number;durationMs:number;recoverMs:number}}
 const cues=new Map<string,Cue>(delivery.cues.map(c=>[c.id,c]));
 cues.set('bus_door',{id:'bus_door',bus:'sfx',loop:false,spatial:false,gain:.65});
+// Score one-shots. They are not in the synthetic delivery manifest, so they are
+// registered here with the same cue shape as the rest of the story audio.
+for(const id of ['mus_invitation','mus_dinner_toast','mus_abduction','mus_abduction_stinger','mus_lion_victory','mus_finale']){
+ cues.set(id,{id,bus:'music',loop:false,spatial:false,gain:.55});
+}
 
 /** Only the implemented opening loads these. Boss/gym/ending assets remain registered for later scenes. */
 export const OPENING_AUDIO_NAMES=[
@@ -17,13 +22,14 @@ export const OPENING_AUDIO_NAMES=[
  'sfx_safe_restore','step_jump','step_land','macbook_open','macbook_close',
  'agent_status','ui_confirm','ui_cancel','ui_error','decrypt_success','cc0_bus_engine_idle','cc0_amb_birds_loop','bus_door',
  'mus_safe','mus_unease','mus_tension','mus_chase','mus_hope',
+ 'mus_prologue','mus_invitation','mus_dinner','mus_office','mus_alert','mus_patrol','mus_sports',
 ];
 
 /** Uses the CampusAudio context/mixer; never owns a second AudioContext or movement clock. */
 export class StoryAudio {
  private loops=new Map<string,Loop>();
  private ducks:Partial<Record<'ambient'|'music',GainNode>>={};
- private music:Music|null=null;
+ private music:string|null=null;
  private epoch:number|null=null;
  private timeline:{elapsed:number;events:{at:number;id:string}[]}|null=null;
  private robotStates=new Map<string,string>();
@@ -97,12 +103,13 @@ export class StoryAudio {
   if(!this.owner.context||!this.owner.active){this.pause();return;}
   this.paused=false;const dt=Math.min(.1,Math.max(0,frame.dt));
   if(this.timeline){this.timeline.elapsed+=dt;while(this.timeline.events[0]?.at<=this.timeline.elapsed)this.cue(this.timeline.events.shift()!.id);if(!this.timeline.events.length)this.timeline=null;}
-  const music:Music=frame.stage==='complete'?'hope':frame.chasing?'chase':frame.dark?'tension':frame.stage==='return_b5'?'unease':'safe';
+  const fallback:Music=frame.stage==='complete'?'hope':frame.chasing?'chase':frame.dark?'tension':frame.stage==='return_b5'?'unease':'safe';
+  const music=frame.music??'mus_'+fallback;
   const changed=this.music!==music,previous=this.music;this.music=music;
-  const fade=music==='chase'?delivery.crossfadeMs.toChase/1000:previous==='chase'?delivery.crossfadeMs.fromChase/1000:delivery.crossfadeMs.normal/1000;
+  const fade=music==='mus_chase'?delivery.crossfadeMs.toChase/1000:previous==='mus_chase'?delivery.crossfadeMs.fromChase/1000:delivery.crossfadeMs.normal/1000;
   if(changed)for(const key of this.loops.keys())if(key.startsWith('music:')&&key!=='music:'+music)this.retire(key,fade);
-  this.loop('music:'+music,'mus_'+music,'music',.5,fade);
-  const ambient=frame.dark?'amb_dark_hum':'cc0_amb_birds_loop';
+  this.loop('music:'+music,music,'music',.5,fade);
+  const ambient=frame.dark?'amb_dark_hum':frame.stage==='bus'?'cc0_bus_engine_idle':'cc0_amb_birds_loop';
   const ambientKeys=new Set(['ambient:'+ambient]);
   if(!frame.dark)ambientKeys.add('ambient:campus-breeze');
   for(const key of this.loops.keys())if(key.startsWith('ambient:')&&!ambientKeys.has(key))this.retire(key,.8);
