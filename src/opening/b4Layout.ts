@@ -1,5 +1,5 @@
 import * as T from 'three';
-import {OPENING} from './spatialLayout';
+import {B4_LIFT,OPENING} from './spatialLayout';
 import type {Obstacle} from '../exploration/navigation';
 
 /**
@@ -154,7 +154,11 @@ const arm=L.armchairSize/2;
 /** Every static collision box of the lobby. Rects with `render` are drawn by the shell;
  * the prop rects are drawn by the observed room builders the chapter places. */
 export const B4_OBSTACLES:B4Rect[]=[
- rect('opening-b4-wall-west',R.x0+.01,R.x0+.01+WALL,R.z0,R.z1,0,TOP,'wall'),
+ // The west wall carries the lift doorway (Task D: 2.00 × 2.30 m at z 11.40…13.40), so it is
+ // authored in three pieces exactly like the façade: the two returns and the lintel above.
+ rect('opening-b4-wall-west-south',R.x0+.01,R.x0+.01+WALL,R.z0,B4_LIFT.door.z0,0,TOP,'wall'),
+ rect('opening-b4-wall-west-north',R.x0+.01,R.x0+.01+WALL,B4_LIFT.door.z1,R.z1,0,TOP,'wall'),
+ rect('opening-b4-wall-west-lift-lintel',R.x0+.01,R.x0+.01+WALL,B4_LIFT.door.z0,B4_LIFT.door.z1,F+B4_LIFT.door.height,TOP,'wall'),
  rect('opening-b4-wall-east',R.x1-.01-WALL,R.x1-.01,R.z0,R.z1,0,TOP,'wall'),
  rect('opening-b4-wall-back',R.x0,R.x1,R.z0+.01,inner.z0,0,TOP,'wall'),
  // The front wall is split around the side entrance; the lintel bridges it above 2.60 m.

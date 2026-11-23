@@ -5,7 +5,7 @@
  * body runs along +X, its passenger door faces north onto the entrance forecourt.
  * That is why `width` is the road-width across Z and `length` runs along X.
  */
-export const OPENING_WORLD_REVISION='opening-2030-v7-b4-side-door';
+export const OPENING_WORLD_REVISION='opening-2030-v8-lift';
 export const OPENING={
  bus:{
   x:64.4,z:30.9,
@@ -69,6 +69,44 @@ export const OPENING={
  routeB5:[[63.4,27.8],[52,27.8],[52,33.5],[24,33.5],[24,-48],[58,-48],[58,-61.5],[64,-61]],
  routeB6:[[64,-61],[58,-61.5],[58,-48],[24,-48],[18,-48],[18,-26],[4,-26],[4,-52.2],[4,-58],[7.3,-57]],
  routeB4:[[64,-61],[58,-61.5],[58,-26],[90,-26],[90,33.5],[58,33.5],[58,25]],
+} as const;
+
+/** B04 room-shell wall thickness (`b4Layout.ts` `WALL`); repeated here so this
+ * constants module stays free of a cycle back into the room layout. */
+const B4_WALL=.12;
+/**
+ * B04 core lift (Task D, 2026-11-24). A car in a shaft cut into the west wall — the
+ * wall at `x = 46.13` is an interior partition of the band-tower mass, not a façade,
+ * which is where a core lift belongs.
+ *
+ * The car interior is the brief's 2.20 m (x) × 2.60 m (z) with 2.60 m clear; its east
+ * face is the lobby's west interior plane. The door is a 2.00 × 2.30 m opening in that
+ * wall at z 11.40…13.40. The car floor rests on the lobby floor and rises to the fifth
+ * floor: `floor + 4 × 4.72`, because B04 is 14 floors over 66.15 m.
+ */
+export const B4_LIFT={
+ /** Interior faces of the car. `x1` is the lobby's west interior plane. */
+ x0:OPENING.b4.x0+.01+B4_WALL-2.20,
+ x1:OPENING.b4.x0+.01+B4_WALL,
+ z0:11.10,z1:13.70,
+ clearHeight:2.60,
+ /** Door in the west wall: 2.00 m clear, 2.30 m high, measured from the car floor. */
+ door:{z0:11.40,z1:13.40,height:2.30},
+ /** Car shell thickness shared with the room wall. */
+ wall:B4_WALL,
+ /** Car floor at the ground lobby, and the 5F landing four 4.72 m storeys above it. */
+ ground:OPENING.b4.floor,
+ floorToFloor:4.72,
+ landing:OPENING.b4.floor+4*4.72,
+ /** Accel–cruise–decel travel and the door timing. */
+ travelSeconds:6.0,
+ doorSeconds:.8,
+ /** How long the doors wait for a passenger before the car leaves. */
+ dwellSeconds:1.4,
+ /** 5F: the landing is the car footprint plus a 3.0 m lobby, then a 6.0 m corridor. */
+ lobbyDepth:3.0,corridorLength:6.0,corridorWidth:1.8,
+ /** The principal's office door closes the corridor. Task E builds what is behind it. */
+ officeDoor:{width:1.0,height:2.20},
 } as const;
 
 /** Building 6 office dimensions shared by scenery and collision. */

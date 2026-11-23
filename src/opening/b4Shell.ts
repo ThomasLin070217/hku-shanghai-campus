@@ -1,6 +1,10 @@
 import * as T from 'three';
+import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
+import {campusFont} from '../model/fonts';
 import {B4_DOOR_LEAVES,B4_LAYOUT,B4_LOBBY,B4_OBSTACLES} from './b4Layout';
 import {createB4FlipWall} from './b4FlipWall';
+import {B4_LIFT as L} from './spatialLayout';
+import {attachLiftVisual,LIFT_LANDING,liftLandingBoxes} from './lift';
 
 /**
  * Static B04 ground-floor shell, built with the opening world so B04 is never
@@ -15,6 +19,8 @@ export const B4_SHELL_NAME='B04_room_shell';
 export const B4_RACK_LED='B4 rack status';
 export const B4_RACK_BODY='B4 rack body';
 export const B4_CEILING='B4 room ceiling';
+export const B4_LIFT_CAR='B04_lift_car';
+export const B4_LIFT_LANDING='B04_lift_landing';
 const std=(name:string,color:number,emissive=0,intensity=0)=>{const m=new T.MeshStandardMaterial({name,color,roughness:.85,metalness:.05});if(emissive){m.emissive.setHex(emissive);m.emissiveIntensity=intensity;}return m;};
 const SOURCE={sourceFile:'src/opening/b4Shell.ts',source:'B04 campaign rooms (src/opening/b4Layout.ts)',confidence:'provisional 2030 scenery; not a surveyed interior'};
 // No authorKey here: repeated boxes (the rack status strips, the sofa modules) must get a
@@ -23,6 +29,74 @@ function box(parent:T.Object3D,name:string,w:number,h:number,d:number,x:number,y
  const mesh=new T.Mesh(new T.BoxGeometry(w,h,d),m);mesh.name=name;mesh.position.set(x,y,z);mesh.castShadow=mesh.receiveShadow=true;mesh.userData={...SOURCE};parent.add(mesh);return mesh;
 }
 function group(parent:T.Object3D,name:string){const g=new T.Group();g.name=name;g.userData={...SOURCE};parent.add(g);return g;}
+
+/** The lift materials `buildLiftCar`/`buildLiftLanding` need, structurally typed so the
+ * shell's one material table stays the only place a colour is chosen. */
+interface LiftMats{
+ car:T.Material;carDark:T.Material;carFloor:T.Material;lamp:T.Material;door:T.Material;doorSill:T.Material;
+ landingFloor:T.Material;landingWall:T.Material;landingCeiling:T.Material;officeDoor:T.Material;
+ officePlate:T.Material;officeText:T.Material;
+}
+
+/**
+ * The car: a 2.20 × 2.60 m steel box with its own ceiling, two jambs, a door head and two
+ * sliding leaves. Every part is positioned relative to the car floor, and the group's
+ * `position.y` is the car floor, so `lift.ts` moves the whole car by writing one number
+ * (plus one z per leaf). `B4_LAYOUT.sideDoor`-style parked leaves are not reused: these
+ * leaves are the collision, so they must match `liftObstacleBoxes` exactly.
+ */
+function buildLiftCar(m:LiftMats){
+ const root=new T.Group();root.name=B4_LIFT_CAR;root.userData={...SOURCE,authorKey:B4_LIFT_CAR,sceneLabel:'B04 core lift car'};
+ const W=L.x1-L.x0,D=L.z1-L.z0,H=L.clearHeight,TH=L.wall,cx=(L.x0+L.x1)/2,cz=(L.z0+L.z1)/2;
+ const mid=(L.door.z0+L.door.z1)/2,half=(L.door.z1-L.door.z0)/2;
+ box(root,'B4_lift_car_floor',W,TH,D,cx,-TH/2,cz,m.carFloor);
+ box(root,'B4_lift_car_west',TH,H,D,L.x0+TH/2,H/2,cz,m.car);
+ box(root,'B4_lift_car_north',W,H,TH,cx,H/2,L.z0+TH/2,m.car);
+ box(root,'B4_lift_car_south',W,H,TH,cx,H/2,L.z1-TH/2,m.car);
+ box(root,'B4_lift_car_ceiling',W,TH,D,cx,H+TH/2,cz,m.car);
+ box(root,'B4_lift_jamb_north',TH,H,L.door.z0-L.z0,L.x1-TH/2,H/2,(L.z0+L.door.z0)/2,m.car);
+ box(root,'B4_lift_jamb_south',TH,H,L.z1-L.door.z1,L.x1-TH/2,H/2,(L.door.z1+L.z1)/2,m.car);
+ box(root,'B4_lift_door_head',TH,H-L.door.height,L.door.z1-L.door.z0,L.x1-TH/2,(L.door.height+H)/2,mid,m.car);
+ box(root,'B4_lift_car_sill',.10,.02,L.door.z1-L.door.z0,L.x1-.05,.01,mid,m.doorSill);
+ box(root,'B4_lift_car_lamp',.90,.03,.90,cx,H-.02,cz,m.lamp);
+ box(root,'B4_lift_car_rail',.05,.05,1.40,L.x0+.07,1.02,cz,m.carDark);
+ const leaves=[-1,1].map(direction=>{
+  const leafMesh=box(root,direction<0?'B4_lift_door_north':'B4_lift_door_south',.06,L.door.height,half,L.x1-TH/2,L.door.height/2,mid+direction*half/2,m.door);
+  // `lift.ts` reads these: the closed centre and which way the leaf slides clear.
+  leafMesh.userData.closedZ=mid+direction*half/2;
+  leafMesh.userData.slideDirection=direction;
+  return leafMesh;
+ });
+ return{root,leaves};
+}
+
+/** Floor, walls, ceiling, corridor and the closed principal's door — D.3's landing, built
+ * from `liftLandingBoxes()` so the scenery and the collision are one set of numbers. */
+function buildLiftLanding(m:LiftMats){
+ const root=new T.Group();root.name=B4_LIFT_LANDING;root.userData={...SOURCE,authorKey:B4_LIFT_LANDING,sceneLabel:'B04 fifth-floor landing'};
+ const boxes=liftLandingBoxes();
+ for(const b of boxes){
+  const material=b.name.includes('floor')?m.landingFloor:b.name.includes('ceiling')?m.landingCeiling:b.name.includes('office-door')?m.officeDoor:m.landingWall;
+  box(root,b.name,b.x1-b.x0,b.top-b.bottom,b.z1-b.z0,(b.x0+b.x1)/2,(b.top+b.bottom)/2,(b.z0+b.z1)/2,material);
+ }
+ const top=L.landing+L.clearHeight;
+ box(root,'B4_lift_5f_lamp_lobby',1.20,.03,.24,(L.x1+LIFT_LANDING.lobbyX1)/2,top-.02,(L.z0+L.z1)/2,m.lamp);
+ box(root,'B4_lift_5f_lamp_corridor',2.40,.03,.18,(LIFT_LANDING.lobbyX1+LIFT_LANDING.corridorX1)/2,top-.02,(LIFT_LANDING.corridorZ0+LIFT_LANDING.corridorZ1)/2,m.lamp);
+ // The door plate names the room behind it, so the landing reads as an office door and
+ // not as the end of a corridor. Scenery only: Task E owns the room.
+ const door=boxes.find(b=>b.name==='opening-lift-5f-office-door')!;
+ const signZ=(door.z0+door.z1)/2,signY=L.landing+1.55,signX=door.x0-.012;
+ box(root,'B4_lift_office_sign_plate',.02,.22,door.z1-door.z0+.10,signX,signY,signZ,m.officePlate);
+ const glyphs=new TextGeometry('PRINCIPAL',{font:campusFont,size:.115,depth:.006,curveSegments:1});
+ glyphs.computeBoundingBox();
+ const bb=glyphs.boundingBox!;
+ glyphs.translate(-(bb.min.x+bb.max.x)/2,-(bb.min.y+bb.max.y)/2,0);
+ const text=new T.Mesh(glyphs,m.officeText);
+ text.name='B4_lift_office_sign_text';text.position.set(signX-.013,signY,signZ);text.rotation.y=-Math.PI/2;
+ text.userData={...SOURCE,authorKey:'B4_lift_office_sign_text'};
+ root.add(text);
+ return root;
+}
 
 export function buildB4Shell(){
  const root=new T.Group();root.name=B4_SHELL_NAME;root.userData={...SOURCE,authorKey:B4_SHELL_NAME,sceneLabel:'B04 ground floor (Keyboard Wall rooms)'};
@@ -33,6 +107,13 @@ export function buildB4Shell(){
   tierTop:std('B4 timber tier tread',0x9a6f45),tierRiser:std('B4 timber tier riser',0x7c5735),
   sofa:std('B4 lobby sofa upholstery',0xe8e4da),rug:std('B4 lobby rug',0x2f5d52),rugRing:std('B4 lobby rug border',0xece5d4),
   stone:std('B4 lobby table stone',0xe9e2d2),timber:std('B4 lobby stool timber',0xb59167),
+  /* Lift: brushed steel car, a lit ceiling, a dark door and the 5F finishes. */
+  car:std('B4 lift car steel',0xb9c2c4),carDark:std('B4 lift car trim',0x3c4649),
+  carFloor:std('B4 lift car floor',0x2b3234),lamp:std('B4 lift car lamp',0xfff4d8,0xffe9b8,.85),
+  door:std('B4 lift door',0x8f9a9d),doorSill:std('B4 lift door sill',0x6d787b),
+  landingFloor:std('B4 5F floor',0xcfc6b4),landingWall:std('B4 5F wall',0xe3ddcf),
+  landingCeiling:std('B4 5F ceiling',0xe9e5da),officeDoor:std('B4 5F office door',0x6b4a2f),
+  officePlate:std('B4 5F office plate',0x2a2f31),officeText:std('B4 5F office lettering',0xe7c877,.45,.35),
  };
  const shell=group(root,'B04_room_structure');
  box(shell,'B4_floor',R.x1-R.x0,R.floor,R.z1-R.z0,(R.x0+R.x1)/2,R.floor/2,(R.z0+R.z1)/2,mats.floor).castShadow=false;
@@ -131,6 +212,13 @@ export function buildB4Shell(){
  }
  // The ruled flip wall on the façade's interior face, east of the main door.
  root.add(createB4FlipWall().root);
+ // The core lift and the fifth floor it opens onto. The car is the one part of the shell
+ // that moves: `lift.ts` owns the pose and rewrites these transforms from the same tick
+ // that moves the car's collision.
+ const lift=buildLiftCar(mats);
+ root.add(lift.root);
+ root.add(buildLiftLanding(mats));
+ attachLiftVisual({root:lift.root,leaves:lift.leaves});
  return root;
 }
 

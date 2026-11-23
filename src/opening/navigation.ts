@@ -2,6 +2,7 @@ import * as T from 'three';
 import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H,OFFICE_LAYOUT as B6,dinnerHallPoint} from './spatialLayout';
 import type {Obstacle} from '../exploration/navigation';
 import {B4_LAYOUT,B4_OBSTACLES} from './b4Layout';
+import {LIFT,LIFT_LANDING,liftLandingBoxes,liftLandingContains,liftShaftSplit,liftSupport,mountLift,tickLift} from './lift';
 
 /** Door clearance is shared by the scenery, collision and the step transition. */
 export function openingBusDoorSpan(){
@@ -16,8 +17,13 @@ export function openingObstacles(obstacles:Obstacle[]){
   const index=obstacles.findIndex(o=>o.name===r.id+'/closed-exterior'||(r.id===O.b4.id&&o.name===r.id+'/wing'&&o.z-o.d/2<r.z1&&o.z+o.d/2>r.z0));if(index<0)continue;
   const old=obstacles[index],x0=old.x-old.w/2,x1=old.x+old.w/2,z0=old.z-old.d/2,z1=old.z+old.d/2,l=r.door-r.doorWidth/2,h=r.door+r.doorWidth/2;
   const inside=r.id===O.b6.id?B6.interior:r;
+  // The B04 west mass carries the lift shaft: hollow it from the lobby floor to the top of
+  // the 5F car, or the car and its passengers would rise through solid tower.
+  const left=r.id===O.b4.id
+   ?liftShaftSplit(r.id+'/opening-left',{x0,x1:inside.x0,z0,z1,bottom:0,top:old.top}).map(p=>box(p.name,p.x0,p.x1,p.z0,p.z1,p.bottom,p.top))
+   :[box(r.id+'/opening-left',x0,inside.x0,z0,z1,0,old.top)];
   const carved=[
-   box(r.id+'/opening-left',x0,inside.x0,z0,z1,0,old.top),
+   ...left,
    box(r.id+'/opening-right',inside.x1,x1,z0,z1,0,old.top),
    box(r.id+'/opening-back',inside.x0,inside.x1,z0,inside.z0,0,old.top),
   ];
@@ -90,14 +96,31 @@ export function openingObstacles(obstacles:Obstacle[]){
   box('opening-bus-step-1',lo,hi,z0-1.6,z0-.8,0,.18),
   box('opening-bus-step-2',lo,hi,z0-.8,z0,0,.36),
  );
+ // The 5F landing the lift opens onto: a plate above the lobby, a 6 m corridor and the
+ // principal's closed door. Its shell is authored here and rendered by `b4Shell.ts` from
+ // the same boxes; the car itself is mounted last because its collision moves.
+ for(const p of liftLandingBoxes())obstacles.push(box(p.name,p.x0,p.x1,p.z0,p.z1,p.bottom,p.top));
+ mountLift(obstacles);
 }
 
 export function openingSupport(x:number,z:number,y:number,base:number|null){
+ // The lift is the only moving floor in the world. `support()` is the one query the
+ // physics makes on every fixed step, so it is also the lift's clock (see `lift.ts`).
+ tickLift(x,z,y);
  let h=base;
  const hall=O.b5;if(x>=hall.x0&&x<=hall.x1&&z>=hall.z0&&z<=hall.z1&&hall.floor<=y+.242)h=Math.max(h??-Infinity,hall.floor);
  const dais=H.stage,[dx,dz]=dinnerHallPoint(dais.x,dais.z),daisTop=hall.floor+dais.h;
  if(Math.abs(x-dx)<=dais.d/2&&Math.abs(z-dz)<=dais.w/2&&daisTop<=y+.242)h=Math.max(h??-Infinity,daisTop);
  const k=O.b4;if(x>=k.x0&&x<=k.x1&&z>=k.z0&&z<=k.z1&&k.floor<=y+.242)h=Math.max(h??-Infinity,k.floor);
+ // The lift shaft: its floor is the lobby floor, and the car floor is added only when it
+ // is reachable from the queried height — the car is at the 5F landing the rest of the time.
+ const car=liftSupport(LIFT,x,z);
+ if(car!==null){
+  if(k.floor<=y+.242)h=Math.max(h??-Infinity,k.floor);
+  if(car<=y+.242)h=Math.max(h??-Infinity,car);
+ }
+ // The 5F plate is a floor like any other once the player has ridden up to it.
+ if(liftLandingContains(x,z)&&LIFT_LANDING.floorTop<=y+.242)h=Math.max(h??-Infinity,LIFT_LANDING.floorTop);
  const r=O.b6;if(x>=r.x0&&x<=r.x1&&z>=r.z0&&z<=r.z1&&r.floor<=y+.242)h=Math.max(h??-Infinity,r.floor);
  const b=O.bus,x0=b.x-b.length/2,x1=b.x+b.length/2,z0=b.z-b.width/2,z1=b.z+b.width/2;
  if(x>=x0&&x<=x1&&z>=z0&&z<=z1&&b.floor<=y+.242)h=Math.max(h??-Infinity,b.floor);
