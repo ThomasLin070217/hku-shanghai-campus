@@ -19,6 +19,10 @@ export const OPENING_EVENT_LOG:readonly string[]=[
  * starts in the crowd on the plaza; `bus` is a legacy save stage, mapped to
  * `crowd` by the parser so old saves stay readable. */
 const STAGES:readonly OpeningStage[]=['crowd','to_b5','to_b6','return_b5','incident','to_b4','complete'];
+/** Save stage names read as the canonical beat position. `bus` predates the crowd
+ * opening; `to_b4_office` / `b4_office` are the B4 5F office spelling of the errand
+ * beat that the canonical order still calls `to_b6` until the rename lands. */
+const STAGE_ALIASES:Readonly<Record<string,OpeningStage>>={'bus':'crowd','to_b4_office':'to_b6','b4_office':'to_b6'};
 type FlagKey='invitation_read'|'laptop_acquired'|'campus_alert_triggered'|'alert_read';
 const FLAGS:readonly FlagKey[]=['invitation_read','laptop_acquired','campus_alert_triggered','alert_read'];
 /** Cumulative flags that must be true at each stage index (the crowd stage is handled separately). */
@@ -88,9 +92,13 @@ export function validOpeningState(raw:unknown):OpeningState|null{
  const r=raw as Record<string,unknown>;
  if(r.schemaVersion!==1)return null;
  // Old saves that predate the crowd opening carry `bus`; it is the same beat
- // position as `crowd`, so it maps forward instead of being rejected.
+ // position as `crowd`, so it maps forward instead of being rejected. The same
+ // goes for the B4 5F office spelling of the errand beat: `to_b4_office` and
+ // `b4_office` are `to_b6` under another name, so a save written either side of
+ // the route change still loads. Everything unknown stays illegal.
  const rawStage=r.stage;
- const stage:OpeningStage|null=rawStage==='bus'?'crowd':typeof rawStage==='string'&&STAGES.includes(rawStage as OpeningStage)?rawStage as OpeningStage:null;
+ const aliased=typeof rawStage==='string'&&Object.hasOwn(STAGE_ALIASES,rawStage)?STAGE_ALIASES[rawStage]:null;
+ const stage:OpeningStage|null=aliased??(typeof rawStage==='string'&&STAGES.includes(rawStage as OpeningStage)?rawStage as OpeningStage:null);
  if(!stage)return null;
  const flags:Record<'invitation_read'|'laptop_acquired'|'campus_alert_triggered'|'alert_read',boolean>={invitation_read:false,laptop_acquired:false,campus_alert_triggered:false,alert_read:false};
  for(const key of ['invitation_read','laptop_acquired','campus_alert_triggered','alert_read'] as const){const value=r[key];if(typeof value!=='boolean')return null;flags[key]=value;}

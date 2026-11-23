@@ -59,6 +59,17 @@ group('openingCheckpoint only accepts the menu ids',()=>{
  assert.equal(openingCheckpoint(undefined),null);
 });
 
+group('future B4-office checkpoint ids alias onto the canonical b6',()=>{
+ // The canonical list still says `b6`; old and future links may name the B4 5F office.
+ assert.equal(openingCheckpoint('b4-office'),'b6','the future dashed id must resolve to b6');
+ assert.equal(openingCheckpoint('b4_office'),'b6','the future snake_case id must resolve to b6');
+ assert.equal(openingCheckpoint('b6'),'b6','the canonical id must keep working');
+ assert.equal(openingCheckpoint('b4'),'b4','the canonical b4 checkpoint must not be swallowed by the alias');
+ assert.equal(openingCheckpoint('b50'),null,'an unknown future id must stay null');
+ assert.equal(openingCheckpoint('toString'),null,'prototype-chain keys must not resolve to a checkpoint');
+ assert.equal(openingCheckpoint('__proto__'),null,'prototype keys must not resolve to a checkpoint');
+});
+
 group('campaign checkpoints resume the campaign with the earlier chapter results',()=>{
  const expected:Partial<Record<OpeningCheckpoint,{stage:CampaignStage;relay:boolean;corePower:boolean}>>={
   'b4-inside':{stage:'b4_keyboard',relay:false,corePower:false},

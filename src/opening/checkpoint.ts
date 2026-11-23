@@ -118,8 +118,18 @@ export function applyCheckpointThreat(id:OpeningCheckpoint,storage?:WorldThreatS
  return threat;
 }
 
+/**
+ * Chapter-select ids read as a canonical checkpoint. The canonical list keeps `b6`
+ * until the B4 5F office renames it; both the dashed URL spelling and the
+ * underscore spelling already resolve there, so old links and future links replay
+ * the same prefix. `b4` stays a checkpoint of its own and is never an alias.
+ */
+const CHECKPOINT_ALIASES:Readonly<Record<string,OpeningCheckpoint>>={'b4-office':'b6',b4_office:'b6'};
+
 export function openingCheckpoint(raw:string|null|undefined):OpeningCheckpoint|null{
- return raw&&(OPENING_CHECKPOINTS as readonly string[]).includes(raw)?raw as OpeningCheckpoint:null;
+ if(!raw)return null;
+ if(Object.hasOwn(CHECKPOINT_ALIASES,raw))return CHECKPOINT_ALIASES[raw]!;
+ return (OPENING_CHECKPOINTS as readonly string[]).includes(raw)?raw as OpeningCheckpoint:null;
 }
 
 /** Replay the reducer chain for a checkpoint, then run the strict validator. */

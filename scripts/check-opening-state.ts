@@ -191,6 +191,31 @@ group('坏 events 的状态被拒绝（乱序 / 缺项 / 多余 / 重复）',()=
  assert.ok(validOpeningState({...crowd,stage:'bus'}),'a legacy bus save without the invitation must validate as the crowd');
 });
 
+group('未来关卡 ID：to_b4_office / b4_office 读作 to_b6（旧档不丢）',()=>{
+ // The errand beat is canonical `to_b6` today. A save written after the route moves
+ // to the B4 5F office may carry the future stage name; both spellings must read back
+ // as the canonical stage so the same flags and log prefix still validate.
+ const errand=storyAfter(ORDER.slice(0,3));
+ assert.equal(errand.stage,'to_b6','the pickup beat still lands on to_b6');
+ for(const stage of ['to_b4_office','b4_office']){
+  const valid=validOpeningState({...errand,stage});
+  assert.ok(valid,`${stage} must validate like to_b6`);
+  assert.equal(valid!.stage,'to_b6',`${stage} must map to to_b6`);
+  assert.deepEqual(valid!.events,errand.events,`${stage} must keep the canonical log`);
+  assert.equal(valid!.invitation_read,true,`${stage} must keep the invitation flag`);
+  assert.equal(valid!.laptop_acquired,false,`${stage} must not invent the pickup`);
+  const save=parseOpeningSave(rawSave({story:{...errand,stage}}));
+  assert.ok(save,`a save at ${stage} must parse`);
+  assert.equal(save!.story.stage,'to_b6',`a save at ${stage} must load at the canonical stage`);
+  assert.deepEqual(save!.story.events,errand.events,`a save at ${stage} must keep its log`);
+ }
+ // The alias maps a name, never relaxes the rules: an unknown stage stays illegal and a
+ // future name cannot carry a log that the canonical stage would reject.
+ assert.equal(validOpeningState({...errand,stage:'b4_office_2'}),null,'an unknown future stage must stay illegal');
+ assert.equal(validOpeningState({...fullStory(),stage:'to_b4_office'}),null,'the alias must not accept the full log at the errand beat');
+ assert.equal(parseOpeningSave(rawSave({story:{...fullStory(),stage:'to_b4_office'}})),null,'a save mixing the alias with a later log must be rejected');
+});
+
 group('NaN / Infinity / 负数时间被拒绝',()=>{
  const good=fullStory();
  for(const value of [NaN,Infinity,-Infinity,-1,'3',null,undefined])assert.equal(validOpeningState({...good,elapsedSeconds:value}),null,`elapsedSeconds ${String(value)} must be rejected`);
