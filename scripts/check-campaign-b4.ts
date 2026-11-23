@@ -7,6 +7,7 @@ import {OPENING as O} from '../src/opening/spatialLayout';
 import {B4_PHRASE,createKeyboardState,pressKeyboard,createFlipState,flipTiles,flipSolved,pullBreaker,connectMacBook,b4StepOf,sweepTiles,autoFinishTiles} from '../src/campaign/b4Puzzle';
 import {B4_LAYOUT,B4_LOBBY,B4_OBSTACLES,B4_STATIONS,B4_DOOR_OBSTACLE,B4_FOCUS_FRAME,setB4FlipPanel,partBounds} from '../src/opening/b4Layout';
 import {buildB4Shell,B4_RACK_LED} from '../src/opening/b4Shell';
+import {B4_FLIP_WALL} from '../src/opening/b4FlipWall';
 import {buildObservedFeatureRoom,flipWallTiles} from '../src/model/observedFeatureRooms';
 import {createB5FlipWall,B5_FLIP_WALL_ORIGIN,B5_FLIP_WALL_YAW,B5_FLIP_TRIGGER,B5_FLIP_COOLDOWN} from '../src/opening/b5FlipWall';
 import {createCampaignState,reduceCampaign,type CampaignState} from '../src/campaign/state';
@@ -196,8 +197,14 @@ cs={...cs,stage:'b4_keyboard'};step();
  // The service shutter: the chapter's own slab covers the closet mouth.
  const sh=partBounds(props!,'opening-b4-service-shutter'),S=B4_LAYOUT.shutter;
  near(sh.min.x,S.x0,'shutter x0');near(sh.max.x,S.x1,'shutter x1');near(sh.min.z,S.z0,'shutter z0');near(sh.max.z,S.z1,'shutter z1');near(sh.max.y,S.top,'shutter top');
- // The HKU flip wall is not in B4 any more.
- assert.equal(site.root.getObjectByName('HKU_flip_wall'),undefined,'the HKU flip wall no longer stands in B4');
+ // Ruling G1: the HKU flip wall returns to B4 as the façade's puzzle face, mounted by
+ // `b4FlipWall.ts` in the shell; the B5 lobby keeps its ambient wall until the route rewire.
+ // Assert the ruled mount, not mere presence.
+ const b4Flip=site.root.getObjectByName('HKU_flip_wall');assert.ok(b4Flip,'Ruling G1: the HKU flip wall stands in B4');
+ const fb=new T.Box3().setFromObject(b4Flip!),fbw=B4_FLIP_WALL;
+ assert.ok(fb.min.x>=fbw.x0-.01&&fb.max.x<=fbw.x1+.01,`the B4 flip wall spans x ${fb.min.x.toFixed(3)}–${fb.max.x.toFixed(3)}, ruled ${fbw.x0}–${fbw.x1}`);
+ assert.ok(fb.max.z<=B4_LAYOUT.room.z1+.001,`the B4 flip wall stays inside the façade (z ${fb.min.z.toFixed(3)}–${fb.max.z.toFixed(3)})`);
+ assert.ok(fb.min.y>=B4_LAYOUT.room.floor+.05&&fb.max.y<=B4_LAYOUT.room.floor+4,`the B4 flip wall sits on the façade wall (y ${fb.min.y.toFixed(3)}–${fb.max.y.toFixed(3)})`);
  // The tiers: three timber steps from the layout rects, drawn by the shell. Each tier is a
  // riser plus a tread; the tread overlaps the riser by 2 mm and tops out 2 mm proud of the
  // collision top, so the two materials never share a plane (coplanar faces flicker).

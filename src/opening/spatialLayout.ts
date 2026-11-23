@@ -5,7 +5,7 @@
  * body runs along +X, its passenger door faces north onto the entrance forecourt.
  * That is why `width` is the road-width across Z and `length` runs along X.
  */
-export const OPENING_WORLD_REVISION='opening-2030-v6-b4-east-keyboard';
+export const OPENING_WORLD_REVISION='opening-2030-v7-b4-side-door';
 export const OPENING={
  bus:{
   x:64.4,z:30.9,

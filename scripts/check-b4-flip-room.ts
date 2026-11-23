@@ -1,242 +1,236 @@
-import assert from 'node:assert/strict';
 import {pathToFileURL} from 'node:url';
 import * as T from 'three';
 import {BUILDINGS, SITE} from '../src/model/campusParameters';
-import {buildObservedFeatureRoom, type FeatureRoomPart} from '../src/model/observedFeatureRooms';
-import {B4_OBSTACLES, type B4Rect} from '../src/opening/b4Layout';
+import {createNavigation} from '../src/exploration/navigation';
+import {B4_FLIP_WALL, createB4FlipWall} from '../src/opening/b4FlipWall';
+import {B4_LAYOUT, B4_OBSTACLES, B4_SOFA_RECTS, SIDE_DOOR_HEIGHT, type B4Rect} from '../src/opening/b4Layout';
 import {OPENING as O} from '../src/opening/spatialLayout';
 
 /**
- * B4 side-entrance flip-room fit gate (Task 2.1 Step 1).
+ * B04 side-entrance + flip-wall fit gate (Ruling G1, 2026-11-24).
  *
- * The flip wall moves from the B5 lobby to the B4 campus-facing side entrance. Before
- * a door is cut or the room is mounted, this gate measures what a naive mount does:
- * derive B04's exterior faces from the site footprint, build the observed room with
- * the real builder, place it at the withdrawn origin/yaw, and assert the world box
- * against the interior shell, the furniture/racks, and a walkable corridor.
+ * Ruling G1 retires the 11.4 × 5.2 preview room in B4: the lobby is a cavity inside the band
+ * tower, so the south façade (`z = 20.5`) is its only exterior plane. B4 gets a side door in
+ * that façade, west of the main door, and the observed flip wall mounted on the same wall's
+ * interior face, east of the main door. This gate measures both against the real source
+ * constants and the real builder output:
  *
- * TODAY THIS GATE MUST FAIL. The withdrawn mount `[48.05,.02,11.80]`, yaw π/2 spills
- * past the B4 shell at x=46 and z=7 and swallows racks 1–3. A red gate with numbers is
- * the deliverable; Task 2.1 Step 4 re-derives the origin/rotation until this turns green.
+ *   1. the side door sits inside the façade span, ≥ 0.20 m from each end, and its clear
+ *      volume overlaps no `B4_OBSTACLES` rect at `z 19.9…20.5`;
+ *   2. the flip wall sits inside the façade span, ≥ 0.20 m from the main door edge, and the
+ *      built mount lands on the declared interval;
+ *   3. the ruled wall box intersects no `B4_OBSTACLES` rect and no `B4_SOFA_RECTS` entry;
+ *   4. a 0.60 m-wide corridor from the plaza `(47.75, 23.00)` through the side door to the
+ *      wall centre `(63.69, 19.50)` is clear of every `B4_OBSTACLES` rect below 1.8 m;
+ *   5. every measured number is printed as JSON (`door`, `wall`, `margins`, `corridor`,
+ *      `intersections`) so the report carries evidence, not prose.
  *
- * Ruling G1 (docs/plans/2026-11-24-b4-side-entrance-ruling.md) subsequently retired the
- * 11.4 × 5.2 room shell in B4 in favour of a wall-only mount on the south façade, so the
- * premise measured here is superseded: Task C rewrites this gate to the ruled door and
- * flip-wall numbers. Until that rewrite, this file records what the withdrawn room
- * measurement proves — do not satisfy it by moving racks.
+ * A straight chord from the plaza point to the wall centre crosses the façade near x≈59.1,
+ * i.e. through the *main* door, so the corridor is walked as a polyline through the side
+ * door's centre line. The last assertion also checks the built campus navigation, because
+ * the façade collision is authored twice: by `B4_OBSTACLES` (the room) and by
+ * `openingObstacles` (the band-tower wing carve-out). Splitting only the first would leave
+ * an invisible wall in the new door.
  */
 
-/** The mapper's withdrawn mount (2026-11-23). Kept here as the thing to disprove, not
- * as a placement: Task 2.1 Step 4 owns the accepted origin/yaw. */
-export const WITHDRAWN_FLIP_ORIGIN: readonly [number, number, number] = [48.05, .02, 11.80];
-export const WITHDRAWN_FLIP_YAW = Math.PI / 2;
-/** The room as the observed builder makes it. The closet is part of the room; mounting
- * only shell+wall would hide its overflow rather than measure the room that ships. */
-export const FLIP_ROOM_PARTS: readonly FeatureRoomPart[] = ['shell', 'wall', 'closet'];
-/** Task 2.1 Step 4 mounts shell+wall first, so the same measurement is reported for it. */
-const WALL_MOUNT_PARTS: readonly FeatureRoomPart[] = ['shell', 'wall'];
-/** Clearance required between the room box and every interior-shell face. */
-export const REQUIRED_CLEARANCE = .20;
-/** A walking corridor is this wide and this tall, measured from the B4 floor. */
-export const CORRIDOR = {width: .5, height: 2.0, sampleStep: .05} as const;
-/** The plaza point stands this far outside the exterior face, on the arrival forecourt. */
-const SIDE_APPROACH_DISTANCE = 4;
+const R = O.b4;
+const WALL = B4_LAYOUT.wall;
+const SD = B4_LAYOUT.sideDoor;
+const F = R.floor;
 const EPS = 1e-6;
-const r = (value: number) => +value.toFixed(4);
+/** The façade's usable span: west interior face to the main door's west edge. */
+const FACADE = {x0: R.x0 + .01 + WALL, x1: R.door - R.doorWidth / 2, z0: 19.9, z1: R.z1};
+/** The wall's usable span: main door's east edge to the east interior face. */
+const WALL_SPAN = {x0: R.door + R.doorWidth / 2, x1: R.x1 - .01 - WALL};
+const MIN_END_CLEARANCE = .20;
+/** The brief's corridor: 0.60 m wide, sampled every 5 cm, obstacles below 1.8 m tall. */
+const CORRIDOR = {width: .60, step: .05, obstacleTop: 1.8} as const;
+const CORRIDOR_START: readonly [number, number] = [47.75, 23.00];
+/** Inside the room, clear of the wall and the sofa, before turning east. */
+const CORRIDOR_VIA: readonly [number, number] = [47.75, 19.50];
+const CORRIDOR_WALL_END: readonly [number, number] = [63.69, 19.50];
 
-export interface Rect2 {
-  x0: number; x1: number; z0: number; z1: number;
-}
-export interface Box3 {
-  x0: number; x1: number; y0: number; y1: number; z0: number; z1: number;
-}
-export interface Face {
-  id: 'south' | 'west' | 'north' | 'east';
-  axis: 'x' | 'z';
-  plane: number;
-  outward: '+x' | '-x' | '+z' | '-z';
-  /** The face's tangent span [min,max], for reporting where a door could sit. */
-  span: [number, number];
-  /** An in-source campus anchor (forecourt handoff or plaza) lies outward of this face.
-   * This says which way the face looks, not that it is an exterior wall — a face is
-   * buildable only when it also `coincidesWithShell` (Ruling G1: the south façade). */
-  campusAnchorOutward: boolean;
-  /** The face plane is the interior shell's own plane (the room's wall is the façade). */
-  coincidesWithShell: boolean;
-}
-export interface Overlap {
-  name: string;
-  rect: B4Rect;
-  overlap: { x: [number, number]; y: [number, number]; z: [number, number] };
-}
-export interface FlipRoomReport {
-  mount: { origin: [number, number, number]; yaw: number; parts: FeatureRoomPart[] };
-  interiorShell: Rect2;
-  footprint: Rect2;
-  exteriorFaces: Face[];
-  box: Box3;
-  margins: Record<'x0' | 'x1' | 'z0' | 'z1', number>;
-  requiredClearance: number;
-  intersections: Overlap[];
-  racksSwallowed: string[];
-  /** shell+wall only, the sub-mount Task 2.1 Step 4 fits first. */
-  wallMount: { parts: FeatureRoomPart[]; box: Box3; margins: FlipRoomReport['margins'] };
+const r4 = (value: number) => +value.toFixed(4);
+const r2 = (value: number) => +value.toFixed(2);
+
+export interface Box3 {x0: number; x1: number; y0: number; y1: number; z0: number; z1: number}
+export interface Overlap {name: string; overlap: Box3}
+
+export interface B4SideDoorReport {
+  door: {
+    x0: number; x1: number; width: number; centre: number; height: number; z: number;
+    facade: {x0: number; x1: number};
+    margins: {west: number; east: number};
+    overlaps: string[];
+  };
+  wall: {
+    declared: Box3;
+    measured: Box3;
+    origin: [number, number, number];
+    yaw: number;
+    width: number;
+    span: {x0: number; x1: number};
+    margins: {mainDoor: number; east: number};
+  };
+  margins: {sideDoorWest: number; sideDoorEast: number; flipWallMainDoor: number; flipWallEast: number};
+  intersections: {obstacles: Overlap[]; sofa: Overlap[]; doorVolume: Overlap[]};
   corridor: {
     width: number;
-    from: [number, number, number];
-    to: [number, number, number];
+    from: [number, number];
+    via: [number, number];
+    to: [number, number];
+    path: [number, number][];
     samples: number;
     blockedBy: string[];
   };
+  nav: {sideDoorOpen: boolean; frontWallSolid: boolean; facadeSegments: string[]};
 }
 
-/** B04's axis-aligned footprint, straight from the campus parameters that build the site. */
-export function b04Footprint(): Rect2 {
-  const spec = BUILDINGS.find(b => b.id === 'B04');
-  assert.ok(spec, 'B04 must exist in the campus parameters');
-  assert.equal(spec!.rotation, 0, 'the footprint derivation assumes B04 is unrotated');
-  const footprint = {
-    x0: r(spec!.x - spec!.width / 2), x1: r(spec!.x + spec!.width / 2),
-    z0: r(spec!.z - spec!.depth / 2), z1: r(spec!.z + spec!.depth / 2),
-  };
-  // The canon ruling's footprint. Pin it: if the site table moves B04, this gate must
-  // say the room fit was measured against a different building.
-  assert.deepEqual(footprint, {x0: 28.15, x1: 87.85, z0: -24.5, z1: 20.5},
-    'B04 footprint must match the canon site table (x 28.15–87.85, z −24.5…20.5)');
-  return footprint;
+function overlapOf(a: Box3, b: Box3): Box3 | null {
+  const x: [number, number] = [Math.max(a.x0, b.x0), Math.min(a.x1, b.x1)];
+  const y: [number, number] = [Math.max(a.y0, b.y0), Math.min(a.y1, b.y1)];
+  const z: [number, number] = [Math.max(a.z0, b.z0), Math.min(a.z1, b.z1)];
+  return x[0] < x[1] - EPS && y[0] < y[1] - EPS && z[0] < z[1] - EPS ? {x0: r4(x[0]), x1: r4(x[1]), y0: r4(y[0]), y1: r4(y[1]), z0: r4(z[0]), z1: r4(z[1])} : null;
 }
 
-/** The four exterior faces, each checked against the two campus anchors already in source:
- * the arrival forecourt handoff (south of B04) and the central plaza (west of B04). */
-export function exteriorFaces(footprint: Rect2): Face[] {
-  const shell = O.b4;
-  const anchors: readonly [number, number][] = [[O.handoff[0], O.handoff[2]], [SITE.plazaX, SITE.plazaZ]];
-  const face = (id: Face['id'], axis: Face['axis'], plane: number, outward: Face['outward'], span: [number, number], shellPlane: number): Face => ({
-    id, axis, plane, outward, span,
-    campusAnchorOutward: anchors.some(([x, z]) => axis === 'x'
-      ? (outward === '-x' ? x < plane && z >= span[0] && z <= span[1] : x > plane && z >= span[0] && z <= span[1])
-      : (outward === '-z' ? z < plane && x >= span[0] && x <= span[1] : z > plane && x >= span[0] && x <= span[1])),
-    coincidesWithShell: Math.abs(plane - shellPlane) <= EPS,
-  });
-  return [
-    face('south', 'z', footprint.z1, '+z', [footprint.x0, footprint.x1], shell.z1),
-    face('west', 'x', footprint.x0, '-x', [footprint.z0, footprint.z1], shell.x0),
-    face('north', 'z', footprint.z0, '-z', [footprint.x0, footprint.x1], shell.z0),
-    face('east', 'x', footprint.x1, '+x', [footprint.z0, footprint.z1], shell.x1),
-  ];
+const rectBox = (rect: B4Rect): Box3 => ({x0: rect.x0, x1: rect.x1, y0: rect.bottom, y1: rect.top, z0: rect.z0, z1: rect.z1});
+
+/** Every B4_OBSTACLES rect the door's clear volume (floor to its clear height, across the
+ * doorway) hits. The lintel sits exactly on the volume's top plane, so touching is not a hit. */
+function doorVolumeOverlaps(x0: number, x1: number, height: number): Overlap[] {
+  const volume: Box3 = {x0, x1, y0: F, y1: F + height, z0: FACADE.z0, z1: FACADE.z1};
+  const out: Overlap[] = [];
+  for (const rect of B4_OBSTACLES) {
+    const overlap = overlapOf(volume, rectBox(rect));
+    if (overlap) out.push({name: rect.name, overlap});
+  }
+  return out;
 }
 
-/** Build the observed room with the real builder, mount it at origin/yaw, and return its
- * world AABB. The builder is the source of truth for the box, not a hand-copied constant. */
-export function roomBox(parts: readonly FeatureRoomPart[], origin: readonly [number, number, number], yaw: number): { box: Box3; dispose: () => void } {
-  const room = buildObservedFeatureRoom('flipWall', {parts});
-  const mount = new T.Group();
-  mount.position.fromArray([...origin]);
-  mount.rotation.y = yaw;
-  mount.add(room);
-  mount.updateMatrixWorld(true);
-  const bounds = new T.Box3().setFromObject(mount);
-  const dispose = () => {
+function wallIntersections(box: Box3): {obstacles: Overlap[]; sofa: Overlap[]} {
+  const obstacles: Overlap[] = [];
+  for (const rect of B4_OBSTACLES) {
+    const overlap = overlapOf(box, rectBox(rect));
+    if (overlap) obstacles.push({name: rect.name, overlap});
+  }
+  const sofaTop = F + B4_LAYOUT.lobby.sofa.back;
+  const sofa: Overlap[] = [];
+  for (const [i, [x0, x1, z0, z1]] of B4_SOFA_RECTS.entries()) {
+    const overlap = overlapOf(box, {x0, x1, y0: F, y1: sofaTop, z0, z1});
+    if (overlap) sofa.push({name: 'B4_SOFA_RECTS[' + i + ']', overlap});
+  }
+  return {obstacles, sofa};
+}
+
+/** Sample a 0.60 m-wide walking corridor along a polyline against the room's low obstacles. */
+function corridorBlockers(path: readonly (readonly [number, number])[], obstacles: readonly B4Rect[]): {samples: number; blockedBy: string[]} {
+  const half = CORRIDOR.width / 2;
+  const blocked: string[] = [];
+  let samples = 0;
+  for (let segment = 0; segment < path.length - 1; segment++) {
+    const from = path[segment]!, to = path[segment + 1]!;
+    const dx = to[0] - from[0], dz = to[1] - from[1];
+    const length = Math.hypot(dx, dz);
+    const steps = Math.max(1, Math.ceil(length / CORRIDOR.step));
+    for (let i = segment === 0 ? 0 : 1; i <= steps; i++) {
+      const t = i / steps, x = from[0] + dx * t, z = from[1] + dz * t;
+      const probe: Box3 = {x0: x - half, x1: x + half, y0: F, y1: F + CORRIDOR.obstacleTop, z0: z - half, z1: z + half};
+      samples++;
+      for (const rect of obstacles) {
+        if (rect.bottom >= CORRIDOR.obstacleTop) continue;
+        if (overlapOf(probe, rectBox(rect)) && !blocked.includes(rect.name)) blocked.push(rect.name);
+      }
+    }
+  }
+  return {samples, blockedBy: blocked};
+}
+
+/** All measured numbers the gate and the task report need, as data rather than prose. */
+export function measuredReport(): B4SideDoorReport {
+  const mount = createB4FlipWall();
+  try {
+    const door = {
+      x0: SD.x0, x1: SD.x1, width: r4(SD.x1 - SD.x0), centre: r4((SD.x0 + SD.x1) / 2),
+      height: SD.height, z: SD.z,
+      facade: {x0: r4(FACADE.x0), x1: r4(FACADE.x1)},
+      margins: {west: r4(SD.x0 - FACADE.x0), east: r4(FACADE.x1 - SD.x1)},
+      overlaps: doorVolumeOverlaps(SD.x0, SD.x1, SD.height).map(o => o.name),
+    };
+    const wallBox: Box3 = {x0: B4_FLIP_WALL.x0, x1: B4_FLIP_WALL.x1, y0: B4_FLIP_WALL.y0, y1: B4_FLIP_WALL.y1, z0: B4_FLIP_WALL.z1 - B4_FLIP_WALL.depth, z1: B4_FLIP_WALL.z1};
+    const intersections = {...wallIntersections(wallBox), doorVolume: doorVolumeOverlaps(SD.x0, SD.x1, SD.height)};
+    const path: [number, number][] = [
+      [CORRIDOR_START[0], CORRIDOR_START[1]],
+      [CORRIDOR_VIA[0], CORRIDOR_VIA[1]],
+      [r4(CORRIDOR_WALL_END[0]), CORRIDOR_WALL_END[1]],
+    ];
+    const corridor = corridorBlockers(path, B4_OBSTACLES);
+    const nav = createNavigation(BUILDINGS, SITE, true);
+    let sideDoorOpen: boolean, frontWallSolid: boolean;
+    const facadeSegments: string[] = [];
+    try {
+      sideDoorOpen = !nav.blocked(door.centre, FACADE.z1 + .10, F + .5)
+        && !nav.blocked(door.centre, FACADE.z1 - .10, F + .5)
+        && !nav.blocked(door.centre, FACADE.z1 - .30, F + .5);
+      frontWallSolid = nav.blocked(52.0, FACADE.z1 - .10, F + .5);
+      for (const obstacle of nav.obstacles) {
+        if (obstacle.z - obstacle.d / 2 >= FACADE.z0 - EPS && obstacle.z + obstacle.d / 2 <= R.z1 + .2 && Math.abs(obstacle.z - R.z1) < 1) {
+          facadeSegments.push(`${obstacle.name} x ${r2(obstacle.x - obstacle.w / 2)}…${r2(obstacle.x + obstacle.w / 2)} y ${r2(obstacle.bottom)}…${r2(obstacle.top)}`);
+        }
+      }
+    } finally {
+      nav.dispose();
+    }
+    return {
+      door,
+      wall: {
+        declared: wallBox,
+        measured: mount.measured,
+        origin: [r4(mount.origin[0]), r4(mount.origin[1]), r4(mount.origin[2])],
+        yaw: mount.yaw,
+        width: r4(mount.width),
+        span: {x0: r4(WALL_SPAN.x0), x1: r4(WALL_SPAN.x1)},
+        margins: {mainDoor: r4(B4_FLIP_WALL.x0 - WALL_SPAN.x0), east: r4(WALL_SPAN.x1 - B4_FLIP_WALL.x1)},
+      },
+      margins: {
+        sideDoorWest: door.margins.west,
+        sideDoorEast: door.margins.east,
+        flipWallMainDoor: r4(B4_FLIP_WALL.x0 - WALL_SPAN.x0),
+        flipWallEast: r4(WALL_SPAN.x1 - B4_FLIP_WALL.x1),
+      },
+      intersections,
+      corridor: {
+        width: CORRIDOR.width,
+        from: [CORRIDOR_START[0], CORRIDOR_START[1]],
+        via: [CORRIDOR_VIA[0], CORRIDOR_VIA[1]],
+        to: path[2]!,
+        path,
+        samples: corridor.samples,
+        blockedBy: corridor.blockedBy,
+      },
+      nav: {sideDoorOpen, frontWallSolid, facadeSegments},
+    };
+  } finally {
     const geometries = new Set<T.BufferGeometry>(), materials = new Set<T.Material>();
-    mount.traverse(o => {
+    mount.root.traverse(o => {
       if (!(o instanceof T.Mesh)) return;
       geometries.add(o.geometry);
       for (const m of [o.material].flat()) materials.add(m);
     });
     for (const g of geometries) g.dispose();
     for (const m of materials) m.dispose();
-  };
-  return {
-    box: {x0: r(bounds.min.x), x1: r(bounds.max.x), y0: r(bounds.min.y), y1: r(bounds.max.y), z0: r(bounds.min.z), z1: r(bounds.max.z)},
-    dispose,
-  };
-}
-
-function marginsOf(box: Box3): FlipRoomReport['margins'] {
-  return {
-    x0: r(box.x0 - O.b4.x0),
-    x1: r(O.b4.x1 - box.x1),
-    z0: r(box.z0 - O.b4.z0),
-    z1: r(O.b4.z1 - box.z1),
-  };
-}
-
-function intersect(box: Box3, rect: B4Rect): Overlap['overlap'] | null {
-  const x: [number, number] = [Math.max(box.x0, rect.x0), Math.min(box.x1, rect.x1)];
-  const y: [number, number] = [Math.max(box.y0, rect.bottom), Math.min(box.y1, rect.top)];
-  const z: [number, number] = [Math.max(box.z0, rect.z0), Math.min(box.z1, rect.z1)];
-  return x[0] < x[1] && y[0] < y[1] && z[0] < z[1] ? {x: [r(x[0]), r(x[1])], y: [r(y[0]), r(y[1])], z: [r(z[0]), r(z[1])]} : null;
-}
-
-function corridorBlockers(from: readonly [number, number, number], to: readonly [number, number, number], obstacles: readonly B4Rect[]): { samples: number; blockedBy: string[] } {
-  const half = CORRIDOR.width / 2, dx = to[0] - from[0], dz = to[2] - from[2];
-  const length = Math.hypot(dx, dz), samples = Math.max(1, Math.ceil(length / CORRIDOR.sampleStep));
-  const blocked: string[] = [];
-  for (let i = 0; i <= samples; i++) {
-    const t = i / samples, x = from[0] + dx * t, z = from[2] + dz * t;
-    const probe: Box3 = {x0: r(x - half), x1: r(x + half), y0: O.b4.floor, y1: r(O.b4.floor + CORRIDOR.height), z0: r(z - half), z1: r(z + half)};
-    for (const rect of obstacles) if (intersect(probe, rect) && !blocked.includes(rect.name)) blocked.push(rect.name);
-  }
-  return {samples: samples + 1, blockedBy: blocked};
-}
-
-/** All measured numbers the gate and the task report need, as data rather than prose. */
-export function measuredReport(): FlipRoomReport {
-  const footprint = b04Footprint();
-  const full = roomBox(FLIP_ROOM_PARTS, WITHDRAWN_FLIP_ORIGIN, WITHDRAWN_FLIP_YAW);
-  const wall = roomBox(WALL_MOUNT_PARTS, WITHDRAWN_FLIP_ORIGIN, WITHDRAWN_FLIP_YAW);
-  try {
-    const intersections: Overlap[] = [];
-    for (const rect of B4_OBSTACLES) {
-      const overlap = intersect(full.box, rect);
-      if (overlap) intersections.push({name: rect.name, rect, overlap});
-    }
-    const centreX = r((full.box.x0 + full.box.x1) / 2), centreZ = r((full.box.z0 + full.box.z1) / 2);
-    const centre: [number, number, number] = [centreX, O.b4.floor, centreZ];
-    // The side door is on the shell-coincident exterior face: derive it, do not assume it.
-    const coincident = exteriorFaces(footprint).filter(f => f.coincidesWithShell);
-    assert.equal(coincident.length, 1, 'exactly one B04 exterior face must coincide with the interior shell plane');
-    const doorFace = coincident[0]!;
-    const outward = doorFace.outward.startsWith('-') ? -1 : 1;
-    const from: [number, number, number] = doorFace.axis === 'z'
-      ? [centreX, O.b4.floor, doorFace.plane + outward * SIDE_APPROACH_DISTANCE]
-      : [doorFace.plane + outward * SIDE_APPROACH_DISTANCE, O.b4.floor, centreZ];
-    const corridor = corridorBlockers(from, centre, B4_OBSTACLES);
-    return {
-      mount: {origin: [...WITHDRAWN_FLIP_ORIGIN], yaw: WITHDRAWN_FLIP_YAW, parts: [...FLIP_ROOM_PARTS]},
-      interiorShell: {x0: O.b4.x0, x1: O.b4.x1, z0: O.b4.z0, z1: O.b4.z1},
-      footprint,
-      exteriorFaces: exteriorFaces(footprint),
-      box: full.box,
-      margins: marginsOf(full.box),
-      requiredClearance: REQUIRED_CLEARANCE,
-      intersections,
-      racksSwallowed: intersections.filter(o => o.name.startsWith('opening-b4-rack-')).map(o => o.name),
-      wallMount: {parts: [...WALL_MOUNT_PARTS], box: wall.box, margins: marginsOf(wall.box)},
-      corridor: {width: CORRIDOR.width, from, to: centre, samples: corridor.samples, blockedBy: corridor.blockedBy},
-    };
-  } finally {
-    full.dispose();
-    wall.dispose();
   }
 }
 
 /** Print the measured numbers, assert the fit, and return the named failures. */
 export function runGate(): string[] {
   const report = measuredReport();
-  console.log('== check-b4-flip-room: B4 side-entrance flip-room fit ==');
-  console.log('B04 footprint (campusParameters):', JSON.stringify(report.footprint));
-  console.log('B04 interior shell (spatialLayout):', JSON.stringify(report.interiorShell));
-  for (const face of report.exteriorFaces) {
-    console.log(`face ${face.id} ${face.outward}: plane ${face.plane.toFixed(2)}, span ${face.span.join('–')}, anchor-outward=${face.campusAnchorOutward}, shell-coincident=${face.coincidesWithShell}`);
-  }
-  console.log('mount:', JSON.stringify(report.mount));
-  console.log('room world box:', JSON.stringify(report.box));
-  console.log('margins:', JSON.stringify(report.margins), '(required', report.requiredClearance + ')');
-  console.log('wall-only mount box:', JSON.stringify(report.wallMount.box), 'margins:', JSON.stringify(report.wallMount.margins));
-  console.log('intersections:', report.intersections.length ? report.intersections.map(o => o.name).join(', ') : 'none');
-  console.log('racks swallowed:', report.racksSwallowed.length ? report.racksSwallowed.join(', ') : 'none');
+  console.log('== check-b4-flip-room: B04 side entrance + façade flip wall (Ruling G1) ==');
+  console.log('side door:', JSON.stringify(report.door));
+  console.log('flip wall:', JSON.stringify(report.wall));
+  console.log('margins:', JSON.stringify(report.margins));
+  console.log('intersections:', JSON.stringify(report.intersections));
   console.log('corridor:', JSON.stringify(report.corridor));
+  console.log('nav:', JSON.stringify(report.nav));
   console.log('measuredReport JSON:');
   console.log(JSON.stringify(report, null, 1));
 
@@ -245,35 +239,67 @@ export function runGate(): string[] {
     if (!ok) failures.push(`${name}: ${message}`);
   }
 
-  const box = report.box, shell = report.interiorShell;
-  function marginFailure(key: 'x0' | 'x1' | 'z0' | 'z1', value: number, plane: number): void {
-    const have = key === 'x0' || key === 'z0' ? value - plane : plane - value;
-    check(have >= REQUIRED_CLEARANCE - EPS, `clearance:${key}`,
-      `room ${key} ${value.toFixed(3)} m against shell plane ${plane.toFixed(3)} m leaves ${have.toFixed(3)} m clearance (need ${REQUIRED_CLEARANCE.toFixed(2)} m; short by ${Math.max(0, REQUIRED_CLEARANCE - have).toFixed(3)} m)`);
-  }
-  marginFailure('x0', box.x0, shell.x0);
-  marginFailure('x1', box.x1, shell.x1);
-  marginFailure('z0', box.z0, shell.z0);
-  marginFailure('z1', box.z1, shell.z1);
-  for (const hit of report.intersections) {
-    check(false, `intersect:${hit.name}`,
-      `room box overlaps ${hit.name} over x ${hit.overlap.x[0].toFixed(2)}–${hit.overlap.x[1].toFixed(2)}, y ${hit.overlap.y[0].toFixed(2)}–${hit.overlap.y[1].toFixed(2)}, z ${hit.overlap.z[0].toFixed(2)}–${hit.overlap.z[1].toFixed(2)}`);
-  }
-  check(report.racksSwallowed.length === 0, 'racks:swallowed',
-    `racks 1–3 are inside the room box (${report.racksSwallowed.join(', ') || 'none'})`);
-  for (const name of report.corridor.blockedBy) {
-    check(false, `corridor:${name}`,
-      `the ${CORRIDOR.width} m corridor from the forecourt (${report.corridor.from.map(v => v.toFixed(2)).join(',')}) to the room centre (${report.corridor.to.map(v => v.toFixed(2)).join(',')}) is blocked by ${name}`);
+  // 1. The side door inside the façade span, with the ruled end clearances, and its clear
+  //    volume free of every room obstacle. The clear height comes from the layout's exported
+  //    `SIDE_DOOR_HEIGHT`, so a drifting copy in `B4_LAYOUT.sideDoor` fails here.
+  check(SD.height === SIDE_DOOR_HEIGHT, 'side-door:height',
+    `B4_LAYOUT.sideDoor.height ${SD.height} must equal the exported SIDE_DOOR_HEIGHT ${SIDE_DOOR_HEIGHT}`);
+  check(report.door.margins.west >= MIN_END_CLEARANCE - EPS, 'side-door:west-clearance',
+    `door x0 ${report.door.x0.toFixed(3)} against the west interior face ${FACADE.x0.toFixed(3)} leaves ${report.door.margins.west.toFixed(3)} m (need ${MIN_END_CLEARANCE.toFixed(2)} m)`);
+  check(report.door.margins.east >= MIN_END_CLEARANCE - EPS, 'side-door:east-clearance',
+    `door x1 ${report.door.x1.toFixed(3)} against the main door edge ${FACADE.x1.toFixed(3)} leaves ${report.door.margins.east.toFixed(3)} m (need ${MIN_END_CLEARANCE.toFixed(2)} m)`);
+  for (const hit of report.intersections.doorVolume) {
+    check(false, `side-door:overlap:${hit.name}`,
+      `the clear doorway (x ${report.door.x0}–${report.door.x1}, y ${F.toFixed(2)}–${(F + report.door.height).toFixed(2)}, z ${FACADE.z0}–${FACADE.z1}) overlaps ${hit.name} over x ${hit.overlap.x0}–${hit.overlap.x1}, y ${hit.overlap.y0}–${hit.overlap.y1}, z ${hit.overlap.z0}–${hit.overlap.z1}`);
   }
 
+  // 2. The flip wall inside its span, clear of the main door, and the built mount on the
+  //    declared interval.
+  check(report.wall.margins.mainDoor >= MIN_END_CLEARANCE - EPS, 'flip-wall:main-door-clearance',
+    `wall x0 ${B4_FLIP_WALL.x0.toFixed(3)} against the main door edge ${WALL_SPAN.x0.toFixed(3)} leaves ${report.wall.margins.mainDoor.toFixed(3)} m (need ${MIN_END_CLEARANCE.toFixed(2)} m)`);
+  check(report.wall.margins.east >= MIN_END_CLEARANCE - EPS, 'flip-wall:east-clearance',
+    `wall x1 ${B4_FLIP_WALL.x1.toFixed(3)} against the east interior face ${WALL_SPAN.x1.toFixed(3)} leaves ${report.wall.margins.east.toFixed(3)} m (need ${MIN_END_CLEARANCE.toFixed(2)} m)`);
+  check(B4_FLIP_WALL.x0 >= WALL_SPAN.x0 - EPS && B4_FLIP_WALL.x1 <= WALL_SPAN.x1 + EPS, 'flip-wall:inside-span',
+    `wall ${B4_FLIP_WALL.x0}–${B4_FLIP_WALL.x1} must sit inside ${WALL_SPAN.x0}–${WALL_SPAN.x1}`);
+  check(Math.abs(report.wall.measured.x0 - B4_FLIP_WALL.x0) <= .01, 'flip-wall:mount-x0',
+    `the built panel starts at x ${report.wall.measured.x0} (declared ${B4_FLIP_WALL.x0})`);
+  check(Math.abs(report.wall.measured.x1 - B4_FLIP_WALL.x1) <= .01, 'flip-wall:mount-x1',
+    `the built panel ends at x ${report.wall.measured.x1} (declared ${B4_FLIP_WALL.x1}; builder width ${report.wall.width})`);
+  check(Math.abs(report.wall.origin[2] - B4_FLIP_WALL.z1) <= EPS, 'flip-wall:mount-z',
+    `the mount origin z ${report.wall.origin[2]} must be the wall's interior plane ${B4_FLIP_WALL.z1}`);
+  check(Math.abs(report.wall.yaw - Math.PI) <= EPS, 'flip-wall:mount-yaw',
+    `the mount yaw ${report.wall.yaw} must be π so the builder's +Z face looks north`);
+
+  // 3. The ruled wall box clear of every room obstacle and every sofa module.
+  for (const hit of report.intersections.obstacles) {
+    check(false, `flip-wall:intersect:${hit.name}`,
+      `the wall box overlaps ${hit.name} over x ${hit.overlap.x0}–${hit.overlap.x1}, y ${hit.overlap.y0}–${hit.overlap.y1}, z ${hit.overlap.z0}–${hit.overlap.z1}`);
+  }
+  for (const hit of report.intersections.sofa) {
+    check(false, `flip-wall:sofa:${hit.name}`,
+      `the wall box overlaps ${hit.name} over x ${hit.overlap.x0}–${hit.overlap.x1}, z ${hit.overlap.z0}–${hit.overlap.z1}`);
+  }
+
+  // 4. The 0.60 m corridor from the plaza, through the side door, to the wall centre.
+  for (const name of report.corridor.blockedBy) {
+    check(false, `corridor:${name}`,
+      `the ${CORRIDOR.width} m corridor from (${CORRIDOR_START.join(', ')}) through the side door to (${report.corridor.to.join(', ')}) is blocked by ${name}`);
+  }
+
+  // 6. The built campus collision agrees: the doorway is open, the façade either side is not.
+  //    This is the one check the brief's B4_OBSTACLES-only corridor cannot see: the wing
+  //    carve-out is a second collider in front of the room's own front wall.
+  check(report.nav.sideDoorOpen, 'nav:side-door-closed',
+    `the campus navigation still blocks the side doorway at x ${report.door.centre} (the band-tower wing carve-out was not split)`);
+  check(report.nav.frontWallSolid, 'nav:front-wall-open',
+    'the façade wall east of the side door must stay solid');
+
   if (failures.length) {
-    console.error(`\ncheck-b4-flip-room: FAIL — the withdrawn mount does not fit B4 (${failures.length} named case(s)):`);
+    console.error(`\ncheck-b4-flip-room: FAIL — the ruled side entrance / flip wall does not fit (${failures.length} named case(s)):`);
     for (const failure of failures) console.error('  FAIL', failure);
-    console.error('\nThe gate is red by design. Ruling G1 retires this 11.4 × 5.2 room and mounts');
-    console.error('only the wall on the south façade; Task C rewrites this gate to the ruled numbers.');
-    console.error('Do not move geometry or racks here.');
+    console.error('\nA red case here means the geometry is wrong, not the gate.');
   } else {
-    console.log('\ncheck-b4-flip-room: PASS — the room fits the B4 side entrance with margin and a clear corridor.');
+    console.log('\ncheck-b4-flip-room: PASS — side door 46.45–49.05 in the façade, flip wall 60.00–67.37 on its interior face, corridor clear.');
   }
   return failures;
 }

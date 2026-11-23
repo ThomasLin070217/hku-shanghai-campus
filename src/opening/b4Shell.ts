@@ -1,5 +1,6 @@
 import * as T from 'three';
 import {B4_DOOR_LEAVES,B4_LAYOUT,B4_LOBBY,B4_OBSTACLES} from './b4Layout';
+import {createB4FlipWall} from './b4FlipWall';
 
 /**
  * Static B04 ground-floor shell, built with the opening world so B04 is never
@@ -110,6 +111,26 @@ export function buildB4Shell(){
   box(g,'B4_door_leaf_stile',.08,D.height,D.thickness,side*-(leaf/2-.03),D.height/2,0,mats.frame);
   const pane=new T.Mesh(new T.BoxGeometry(leaf-.06,D.height-.12,.02),panel);pane.name='B4_door_leaf_panel';pane.position.set(0,D.height/2,0);pane.userData={...SOURCE,authorKey:'B4_door_leaf_panel'};g.add(pane);
  }
+ // Side entrance in the same façade, west of the main door (Ruling G1): the same frame and
+ // two-leaf construction as the entrance, parked open so the doorway reads as the way in.
+ const SD=B4_LAYOUT.sideDoor,sdMid=(SD.x0+SD.x1)/2,sdLeaf=(SD.x1-SD.x0)/2;
+ const sideDoorGroup=group(root,'B04_side_door');
+ for(const x of [SD.x0-.04,SD.x1+.04])box(sideDoorGroup,'B4_side_door_post',.08,SD.height,.2,x,F+SD.height/2,SD.z,mats.frame);
+ box(sideDoorGroup,'B4_side_door_header',SD.x1-SD.x0+.16,.08,.2,sdMid,F+SD.height+.04,SD.z,mats.frame);
+ for(const [i,name] of ['B4_side_door_west','B4_side_door_east'].entries()){
+  const dir=i===0?-1:1,leaf=group(sideDoorGroup,name);
+  // Closed centre kept for a later animation; the leaves start slid clear of the 2.60 m
+  // opening by 1.35 m each, the same relationship as the main entrance (leaf 1.30 m).
+  leaf.userData.closedX=sdMid+dir*sdLeaf/2;leaf.userData.slide=dir*(sdLeaf+.05);
+  leaf.position.set(leaf.userData.closedX+leaf.userData.slide,F,SD.z);
+  box(leaf,'B4_side_door_leaf_frame',sdLeaf,.06,SD.thickness,0,.03,0,mats.frame);
+  box(leaf,'B4_side_door_leaf_frame',sdLeaf,.06,SD.thickness,0,SD.height-.03,0,mats.frame);
+  box(leaf,'B4_side_door_leaf_stile',.08,SD.height,SD.thickness,dir*-(sdLeaf/2-.03),SD.height/2,0,mats.frame);
+  const pane=new T.Mesh(new T.BoxGeometry(sdLeaf-.06,SD.height-.12,.02),panel);
+  pane.name='B4_side_door_leaf_panel';pane.position.set(0,SD.height/2,0);pane.userData={...SOURCE,authorKey:'B4_side_door_leaf_panel'};leaf.add(pane);
+ }
+ // The ruled flip wall on the façade's interior face, east of the main door.
+ root.add(createB4FlipWall().root);
  return root;
 }
 

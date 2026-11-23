@@ -7,8 +7,10 @@ import type {Obstacle} from '../exploration/navigation';
  * collision. Entering B04 at x 58 from the south, facing north, the right hand is
  * east: the Keyboard Wall stands on the **east** wall (facing west, the timber
  * tiers in front of it), and the aux power closet, the breaker, the MacBook port
- * and the supercomputer racks line the **north** wall. The HKU flip wall is not in
- * B04 at all; it stands in the Building 5 ground-floor lobby (`b5FlipWall.ts`).
+ * and the supercomputer racks line the **north** wall. The HKU flip wall now stands on
+ * B04's south façade (`b4FlipWall.ts`); the Building 5 lobby keeps its own ambient
+ * wall (`b5FlipWall.ts`) until the route rewire retires it. A side entrance is cut in the
+ * same façade, west of the main door (Ruling G1).
  *
  * The static shell (floor, walls, ceiling, tiers, racks, lobby furniture, entrance
  * door) is built with the opening world (`b4Shell.ts`); the campaign chapter adds
@@ -23,6 +25,8 @@ const R=OPENING.b4,F=R.floor,TOP=R.floor+R.clearHeight,WALL=.12;
 export interface B4Rect{name:string;x0:number;x1:number;z0:number;z1:number;bottom:number;top:number;render?:'wall'|'ceiling'|'rack'|'tier'}
 export interface B4Box{x0:number;x1:number;y0:number;y1:number;z0:number;z1:number}
 const doorL=R.door-R.doorWidth/2,doorR=R.door+R.doorWidth/2;
+/** Clear height of the side entrance in the south façade (Ruling G1). */
+export const SIDE_DOOR_HEIGHT=2.60;
 
 /** Builder-local extents (src/model/observedFeatureRooms.ts), measured from the built
  * parts. Builders face +z, y=0 is their floor. */
@@ -33,9 +37,10 @@ export const B4_BUILDER={
   /** `Keyboard_wall` (backing frame + caps): what the focus view frames. */
   panelBox:{x0:-3.425,x1:4.385,y0:1.565,y1:3.715,z0:-4.239,z1:-3.664},
  },
- /** The observed flip-wall room's aux power cabinet, in builder-local coordinates. B4
-  * builds only this part; the `HKU_flip_wall` part of the same builder stands in the B5
-  * lobby (`b5FlipWall.ts`), so its extents are not repeated here.
+ /** The observed flip-wall room's aux power cabinet, in builder-local coordinates. The
+  * chapter builds only this part; the `HKU_flip_wall` part of the same builder is mounted
+  * separately on B4's façade (`b4FlipWall.ts`) and still stands in the B5 lobby
+  * (`b5FlipWall.ts`), so its extents are not repeated here.
   * `contentsFront` is the front of the PSU modules inside the cavity. */
  flip:{
   closet:{x0:-3.42,x1:4.02,y0:.03,y1:3.951,z0:-2.985,z1:-1.91,contentsFront:-2.18,side:.1},
@@ -138,6 +143,10 @@ export const B4_LAYOUT={
  rackTop:2.3,
  /** Entrance door leaves in the B04 doorway, rendered and solid during Chapter 1. */
  door:{x0:doorL,x1:doorR,z:R.z1+.06,height:R.doorHeight,thickness:.06,slide:R.doorWidth/2+.05},
+ /** The side entrance in the same façade, west of the main door (Ruling G1): 2.60 m clear,
+  * 0.32 m from the west interior face and 7.65 m from the main door's west edge. The leaves
+  * are built parked open in `b4Shell.ts`; the rect split in `B4_OBSTACLES` is the collision. */
+ sideDoor:{x0:46.45,x1:49.05,z:R.z1+.06,height:SIDE_DOOR_HEIGHT,thickness:.06},
 } as const;
 
 const rect=(name:string,x0:number,x1:number,z0:number,z1:number,bottom:number,top:number,render?:B4Rect['render']):B4Rect=>({name,x0,x1,z0,z1,bottom,top,render});
@@ -148,7 +157,10 @@ export const B4_OBSTACLES:B4Rect[]=[
  rect('opening-b4-wall-west',R.x0+.01,R.x0+.01+WALL,R.z0,R.z1,0,TOP,'wall'),
  rect('opening-b4-wall-east',R.x1-.01-WALL,R.x1-.01,R.z0,R.z1,0,TOP,'wall'),
  rect('opening-b4-wall-back',R.x0,R.x1,R.z0+.01,inner.z0,0,TOP,'wall'),
- rect('opening-b4-wall-front-left',R.x0,doorL,R.z1-.13,R.z1-.01,0,TOP,'wall'),
+ // The front wall is split around the side entrance; the lintel bridges it above 2.60 m.
+ rect('opening-b4-wall-front-west',R.x0,46.45,R.z1-.13,R.z1-.01,0,TOP,'wall'),
+ rect('opening-b4-wall-front-left',49.05,doorL,R.z1-.13,R.z1-.01,0,TOP,'wall'),
+ rect('opening-b4-side-lintel',46.45,49.05,R.z1-.13,R.z1-.01,F+SIDE_DOOR_HEIGHT,TOP,'wall'),
  rect('opening-b4-wall-front-right',doorR,R.x1,R.z1-.13,R.z1-.01,0,TOP,'wall'),
  rect('opening-b4-wall-lintel',doorL,doorR,R.z1-.13,R.z1-.01,F+R.doorHeight,TOP,'wall'),
  rect('opening-b4-ceiling',R.x0,R.x1,R.z0,R.z1,TOP-.1,TOP+.08,'ceiling'),

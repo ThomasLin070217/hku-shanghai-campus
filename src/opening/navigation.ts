@@ -1,7 +1,7 @@
 import * as T from 'three';
 import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H,OFFICE_LAYOUT as B6,dinnerHallPoint} from './spatialLayout';
 import type {Obstacle} from '../exploration/navigation';
-import {B4_OBSTACLES} from './b4Layout';
+import {B4_LAYOUT,B4_OBSTACLES} from './b4Layout';
 
 /** Door clearance is shared by the scenery, collision and the step transition. */
 export function openingBusDoorSpan(){
@@ -16,7 +16,31 @@ export function openingObstacles(obstacles:Obstacle[]){
   const index=obstacles.findIndex(o=>o.name===r.id+'/closed-exterior'||(r.id===O.b4.id&&o.name===r.id+'/wing'&&o.z-o.d/2<r.z1&&o.z+o.d/2>r.z0));if(index<0)continue;
   const old=obstacles[index],x0=old.x-old.w/2,x1=old.x+old.w/2,z0=old.z-old.d/2,z1=old.z+old.d/2,l=r.door-r.doorWidth/2,h=r.door+r.doorWidth/2;
   const inside=r.id===O.b6.id?B6.interior:r;
-  obstacles.splice(index,1,box(r.id+'/opening-left',x0,inside.x0,z0,z1,0,old.top),box(r.id+'/opening-right',inside.x1,x1,z0,z1,0,old.top),box(r.id+'/opening-back',inside.x0,inside.x1,z0,inside.z0,0,old.top),box(r.id+'/opening-front-left',r.x0,l,z1-.2,z1,0,old.top),box(r.id+'/opening-front-right',h,r.x1,z1-.2,z1,0,old.top),box(r.id+'/opening-lintel',l,h,z1-.2,z1,r.floor+r.doorHeight,old.top));
+  const carved=[
+   box(r.id+'/opening-left',x0,inside.x0,z0,z1,0,old.top),
+   box(r.id+'/opening-right',inside.x1,x1,z0,z1,0,old.top),
+   box(r.id+'/opening-back',inside.x0,inside.x1,z0,inside.z0,0,old.top),
+  ];
+  if(r.id===O.b4.id){
+   // Ruling G1: the façade carries a side entrance west of the main door. The wing's
+   // front-left slab is a second, independent collider in front of `B4_OBSTACLES`; split
+   // both or the new door stays an invisible wall in the built world.
+   const sd=B4_LAYOUT.sideDoor;
+   carved.push(
+    box(r.id+'/opening-front-west',x0,sd.x0,z1-.2,z1,0,old.top),
+    box(r.id+'/opening-front-left',sd.x1,l,z1-.2,z1,0,old.top),
+    box(r.id+'/opening-side-lintel',sd.x0,sd.x1,z1-.2,z1,r.floor+sd.height,old.top),
+    box(r.id+'/opening-front-right',h,x1,z1-.2,z1,0,old.top),
+    box(r.id+'/opening-lintel',l,h,z1-.2,z1,r.floor+r.doorHeight,old.top),
+   );
+  }else{
+   carved.push(
+    box(r.id+'/opening-front-left',r.x0,l,z1-.2,z1,0,old.top),
+    box(r.id+'/opening-front-right',h,r.x1,z1-.2,z1,0,old.top),
+    box(r.id+'/opening-lintel',l,h,z1-.2,z1,r.floor+r.doorHeight,old.top),
+   );
+  }
+  obstacles.splice(index,1,...carved);
   if(r.floor>0)obstacles.push(box(r.id+'/opening-floor',r.x0,r.x1,r.z0,z1,0,r.floor));
  }
  // B04 room shell, stations and racks: the same rects the chapter renders.
