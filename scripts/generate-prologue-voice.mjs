@@ -26,7 +26,10 @@ const outDir = join(root, 'assets/audio/prologue');
 const manifestPath = join(outDir, 'clips.json');
 const MODEL = process.env.PROLOGUE_TTS_MODEL ?? 'eleven_multilingual_v2';
 const OUTPUT_FORMAT = 'mp3_44100_128';
-const BUDGET = 45;
+// The owner-approved four-line script is kept verbatim (2026-11-23 ruling), and
+// the measured read is 56.00 s — over the plan's 48 s ceiling. The cap records
+// what the approved text actually costs; trimming the script is an owner call.
+const BUDGET = 60;
 const checkOnly = process.argv.includes('--check');
 const manifestOnly = process.argv.includes('--manifest');
 

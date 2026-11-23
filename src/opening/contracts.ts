@@ -1,9 +1,12 @@
 import type {ItemStack} from '../items/inventory';
 import type {Settings} from '../gameplay/save';
 import type {OpeningRuntime} from './runtime';
-export type OpeningStage='bus'|'to_b5'|'to_b6'|'return_b5'|'incident'|'to_b4'|'complete';
+export type OpeningStage='crowd'|'to_b5'|'to_b6'|'return_b5'|'incident'|'to_b4'|'complete';
 export type OpeningEvent='read_invitation'|'exit_bus'|'accept_errand'|'take_laptop'|'return_b5'|'read_alert'|'reach_b4';
-export interface OpeningState {schemaVersion:1;stage:OpeningStage;invitation_read:boolean;laptop_acquired:boolean;campus_alert_triggered:boolean;alert_read:boolean;events:string[];elapsedSeconds:number}
+/** `ambassador` is the phone invitation's acceptance flag. It mirrors
+ * `invitation_read` (both are set by `read_invitation`); it is carried
+ * explicitly so the role is readable without inferring it from the log. */
+export interface OpeningState {schemaVersion:1;stage:OpeningStage;invitation_read:boolean;ambassador:boolean;laptop_acquired:boolean;campus_alert_triggered:boolean;alert_read:boolean;events:string[];elapsedSeconds:number}
 export type OpeningModal='invitation'|'staff'|'computer'|'alert'|'caught'|'settings'|'complete'|null;
 export interface OpeningSave {version:1;mode:'opening';worldRevision:string;savedAt:number;position:[number,number,number];yaw:number;pitch:number;view:'first'|'third';slots:(ItemStack|null)[];selectedHotbar:number;story:OpeningState;runtime:OpeningRuntime;settings:Settings}
 export interface OpeningCinema {mode:'off'|'wake'|'title'|'subtitle';title:string;subtitle:string;hint:string;opacity:number;letterbox:boolean}

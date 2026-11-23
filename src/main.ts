@@ -152,13 +152,15 @@ el('night-toggle').onclick=()=>{if(loungeView){notify('The lounge uses indoor li
 function showLounge(){mode(false);loungeView=true;sync();lighting.set(false,asset.root);viewer.view('selected',lounge);el('mode-label').textContent='Building 5 · 4F stepped lounge / standalone section · estimated dimensions';stats();notify('Building and floor confirmed. This is a standalone reference asset; use Return to outdoor exploration to go back to campus.');}
 el('lounge-toggle').onclick=()=>showLounge();
 index();stats();mode(true);if(openingMode){atmosphere=createOpeningAtmosphere(viewer.scene,viewer.renderer,viewer.lights);let threat=loadWorldThreat();if(threat.phase==='clear'&&(experience as {runtime?:{curtain_deployed:boolean}}).runtime?.curtain_deployed)threat=sealWorld();if(threat.phase==='sealed')atmosphere.restoreSealed();document.getElementById('night-toggle')?.style.setProperty('display','none');}if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign(window,{__CAMPUS:{viewer,explorer,experience,door,crowd,openingDebug:(experience as {debug?:unknown}).debug,campaign:campaign&&{state:()=>campaign!.state(),emit:(event:CampaignEvent)=>campaign!.emit(event),start:(deviceId:string)=>campaign!.start(deviceId),chapter:()=>campaign!.chapter(),objective:()=>campaign!.objective(),get debug(){return campaign!.debug;}},mode,showLounge,lighting,atmosphere,lounge,worldThreat:()=>loadWorldThreat(),get asset(){return asset;},get imported(){return imported;},stats,select,setView,rebuild,exportTarget,perf:()=>viewer.perf(),memory:()=>debugMemory(),resources:()=>resourceReport(viewer.scene),deferred:()=>deferredTextureStats(),ready:true}});
-const prologue=openingMode?createPrologue({viewer,explorer,audio:experience.audio,bounds:()=>{const box=new T.Box3();for(const object of asset.byId.values())box.expandByObject(object);return box;}}):undefined;
-// ?intro=1 forces a replay past the session flag and the bus stage, but never
+const prologue=openingMode?createPrologue({viewer,explorer,scene:viewer.scene,audio:experience.audio,bounds:()=>{const box=new T.Box3();for(const object of asset.byId.values())box.expandByObject(object);return box;},atmosphere}):undefined;
+// ?intro=1 forces a replay past the session flag and the crowd stage, but never
 // over a checkpoint; the button is hidden wherever no prologue can play (review M1/N6).
 const prologueParams=new URLSearchParams(location.search),checkpoint=openingCheckpoint(prologueParams.get('checkpoint'));
 el('replay-intro').hidden=!prologue||checkpoint!==null;
 if(prologue){
- const intro=prologueParams.get('intro'),seen=(()=>{try{return sessionStorage.getItem('hku.campus.prologue.v1')==='1';}catch{return false;}})(),atStart=(experience as {story?:{stage:string}}).story?.stage==='bus';
+ const intro=prologueParams.get('intro'),seen=(()=>{try{return sessionStorage.getItem('hku.campus.prologue.v1')==='1';}catch{return false;}})(),
+  start=experience as {story?:{stage:string;invitation_read?:boolean}},
+  atStart=start.story?.stage==='crowd'&&start.story.invitation_read!==true;
  if(checkpoint===null&&(intro==='1'||(intro!=='0'&&!seen&&atStart)))void prologue.play();
 }
 if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign((window as unknown as {__CAMPUS:object}).__CAMPUS,{prologue});

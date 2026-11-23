@@ -8,6 +8,9 @@
 import * as T from 'three';
 import type {CampusAudio} from '../gameplay/audio';
 import {PROLOGUE_LINES,PROLOGUE_TOTAL,PROLOGUE_URLS} from './prologueVoice';
+import {prologuePath,type PrologueWaypoint} from './prologueTimeline';
+import {createPrologueVisuals,type PrologueVisuals} from './prologueVisuals';
+import {findB4DoorLeaves,setB4DoorLeaves} from './b4Shell';
 import './prologue.css';
 
 export interface PrologueOptions {
@@ -15,13 +18,19 @@ export interface PrologueOptions {
   explorer: {camera: T.PerspectiveCamera; pause(reason: string): void; game: {paused: boolean}};
   audio: CampusAudio;
   bounds: () => T.Box3;
+  /** The live scene: prologue-only visuals are added to it and removed on stop. */
+  scene: T.Scene;
+  /** Prologue-only Magic Hour override; restored on stop/skip. */
+  atmosphere?: {enterDusk(): void; endDusk(): void};
   clock?: () => number;
 }
 
 export interface PrologueDebug {
   seek(seconds: number): void;
   state(): {t: number; line: number; shot: number};
-}
+  /** The timed waypoints of the one-shot path, for the browser continuity gate. */
+  waypoints(): {t: number; position: [number, number, number]}[];}
+
 
 export interface Prologue {
   readonly active: boolean;
@@ -31,14 +40,12 @@ export interface Prologue {
   debug: PrologueDebug;
 }
 
-type Pose = {position: T.Vector3; look: T.Vector3};
 type ShotWindow = {start: number; end: number};
 type VoiceHandle = {stop(): void};
 type Phase = 'idle' | 'gate' | 'starting' | 'running' | 'done';
 
 const FOV = 52;
 const VOICE_GAIN = 0.9;
-const DRIFT = 0.02;
 const END_HOLD = 2;
 const NOTICE = 'Narration unavailable';
 const STORAGE_KEY = 'hku.campus.prologue.v1';
@@ -56,7 +63,7 @@ const MARKUP = `<div class="prologue-gate"><h1>BARRIER 2030</h1><p>A CDS campus 
 <div class="prologue-endcard" hidden><p>RESTORE THE TOWERS</p><p>FREE THE STUDENTS</p></div>`;
 
 export function createPrologue(options: PrologueOptions): Prologue {
-  const {viewer, explorer, audio, bounds} = options;
+  const {viewer, explorer, audio, scene, atmosphere} = options;
   const reduced = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
   const externalClock = options.clock;
 
@@ -89,11 +96,20 @@ export function createPrologue(options: PrologueOptions): Prologue {
    * buffers or `silent` into the run that replaced it (review N1). */
   let generation = 0;
   let decodeRun: AbortController | null = null;
-  let worldSpan = 100;
   let spawnPosition: T.Vector3 | null = null;
   let spawnLook: T.Vector3 | null = null;
-  let shots: Pose[] = [];
+  let finalQuaternion: T.Quaternion | null = null;
+  let waypoints: PrologueWaypoint[] = [];
+  let positionCurve: T.CatmullRomCurve3 | null = null;
+  let lookCurve: T.CatmullRomCurve3 | null = null;
   let windows: ShotWindow[] = [];
+  let visuals: PrologueVisuals | null = null;
+  let doorLeaves: T.Object3D[] = [];
+  let doorsOpened = false;
+  let ducked = false;
+  const scratchPosition = new T.Vector3();
+  const scratchLook = new T.Vector3();
+  const lookMatrix = new T.Matrix4();
   const buffers = new Map<string, AudioBuffer>();
   const voices = new Set<VoiceHandle>();
 
@@ -102,25 +118,24 @@ export function createPrologue(options: PrologueOptions): Prologue {
   function captureSpawn(): void {
     if (spawnPosition) return;
     spawnPosition = explorer.camera.position.clone();
+    finalQuaternion = explorer.camera.quaternion.clone();
     spawnLook = spawnPosition.clone().add(new T.Vector3(0, 0, -1).applyQuaternion(explorer.camera.quaternion).multiplyScalar(12));
-    buildShots();
+    buildPath();
   }
 
-  /** Shot poses and windows come from the campus bounds (buildings only) and the
-   * narration timeline. E is the spawn pose; its window is the last line. */
-  function buildShots(): void {
-    const box = bounds();
-    const centre = box.getCenter(new T.Vector3());
-    const size = box.getSize(new T.Vector3());
-    worldSpan = T.MathUtils.clamp(Math.max(size.x, size.y, size.z), 70, 220);
-    const at = (x: number, y: number, z: number) => centre.clone().add(new T.Vector3(x * worldSpan, y * worldSpan, z * worldSpan));
-    shots = [
-      {position: at(0.62, 0.42, 0.75), look: at(0, 0.05, 0)},
-      {position: at(-0.55, 0.34, 0.52), look: at(0.15, 0.02, 0)},
-      {position: at(0.1, 0.1, 0.42), look: at(0, 0.03, -0.1)},
-      {position: at(0.16, 0.08, 0.3), look: at(0, 0.06, 0)},
-      {position: spawnPosition!, look: spawnLook!},
-    ];
+  /** One Catmull-Rom spline through every timed waypoint of the whole take. The
+   * waypoint table is pure data in prologueTimeline.ts; the last waypoint is the
+   * captured spawn pose. Look targets ride their own spline so the camera does
+   * not whip through the doorway turns. */
+  function buildPath(): void {
+    waypoints = prologuePath(PROLOGUE_LINES, {
+      position: spawnPosition!.toArray() as [number, number, number],
+      look: spawnLook!.toArray() as [number, number, number],
+    });
+    positionCurve = new T.CatmullRomCurve3(
+      waypoints.map((waypoint) => new T.Vector3(...waypoint.position)), false, 'centripetal', 0.5);
+    lookCurve = new T.CatmullRomCurve3(
+      waypoints.map((waypoint) => new T.Vector3(...waypoint.look)), false, 'centripetal', 0.5);
     windows = PROLOGUE_LINES.map((line, index) => ({
       start: line.start,
       end: index + 1 < PROLOGUE_LINES.length ? PROLOGUE_LINES[index + 1].start : PROLOGUE_TOTAL,
@@ -132,30 +147,45 @@ export function createPrologue(options: PrologueOptions): Prologue {
     return 0;
   }
 
-  /** Smoothstep inside the current window, from the previous shot to this one,
-   * plus a slow span-scaled drift so no shot is frozen. Reduced motion uses
-   * linear interpolation and no drift. */
+  /** Index of the waypoint segment that holds `t`. */
+  function segmentIndex(t: number): number {
+    let index = 0;
+    while (index < waypoints.length - 2 && t > waypoints[index + 1].t) index++;
+    return index;
+  }
+
+  /**
+   * Sample the one-shot path by the prologue clock. No cuts: the position and
+   * look splines are sampled at the same parameter. Reduced motion walks the
+   * same spline at constant arc-length speed. After the last narration line the
+   * camera holds the captured spawn pose, so the first frame of player control
+   * is identical to the last frame of the cinematic.
+   */
   function applyShot(t: number): void {
-    if (!shots.length || !windows.length) return;
-    const index = shotIndex(t);
-    const window = windows[index];
-    const from = shots[Math.max(0, index - 1)];
-    const to = shots[index];
-    const span = Math.max(1e-6, window.end - window.start);
-    const u = T.MathUtils.clamp((t - window.start) / span, 0, 1);
-    const eased = reduced?.matches ? u : u * u * (3 - 2 * u);
-    const position = from.position.clone().lerp(to.position, eased);
-    const look = from.look.clone().lerp(to.look, eased);
-    if (!reduced?.matches) {
-      // The last window fades its drift out so the final frame is exactly the
-      // spawn pose and taking control does not jump the camera.
-      const drift = DRIFT * worldSpan * (index === windows.length - 1 ? 1 - eased : 1);
-      position.x += Math.sin(t * 0.21) * drift;
-      position.z += Math.cos(t * 0.17) * drift;
-    }
+    if (!waypoints.length || !positionCurve || !lookCurve || !spawnPosition || !finalQuaternion) return;
     const camera = explorer.camera;
-    camera.position.copy(position);
-    camera.quaternion.setFromRotationMatrix(new T.Matrix4().lookAt(position, look, UP));
+    if (t >= PROLOGUE_TOTAL) {
+      camera.position.copy(spawnPosition);
+      camera.quaternion.copy(finalQuaternion);
+      camera.updateMatrixWorld();
+      return;
+    }
+    if (reduced?.matches) {
+      const u = positionCurve.getUtoTmapping(T.MathUtils.clamp(t / PROLOGUE_TOTAL, 0, 1), 0);
+      positionCurve.getPoint(u, scratchPosition);
+      lookCurve.getPoint(u, scratchLook);
+    } else {
+      const index = segmentIndex(t);
+      const from = waypoints[index];
+      const to = waypoints[Math.min(index + 1, waypoints.length - 1)];
+      const span = Math.max(1e-6, to.t - from.t);
+      const local = T.MathUtils.clamp((t - from.t) / span, 0, 1);
+      const u = waypoints.length > 1 ? (index + local) / (waypoints.length - 1) : 0;
+      positionCurve.getPoint(u, scratchPosition);
+      lookCurve.getPoint(u, scratchLook);
+    }
+    camera.position.copy(scratchPosition);
+    camera.quaternion.setFromRotationMatrix(lookMatrix.lookAt(scratchPosition, scratchLook, UP));
     camera.updateMatrixWorld();
   }
 
@@ -178,14 +208,26 @@ export function createPrologue(options: PrologueOptions): Prologue {
     subtitle.classList.toggle('is-visible', index >= 0);
   }
 
+  /** Narration ducks the music bed and restores it after the last line. */
+  function duck(active: boolean): void {
+    if (ducked === active) return;
+    ducked = active;
+    audio.setDialogueDuck(active);
+  }
+
   function playLine(index: number): void {
     if (silent) return;
     const line = PROLOGUE_LINES[index];
     const buffer = buffers.get(line.id);
     if (!buffer) return;
+    duck(true);
     let handle: VoiceHandle | null = null;
-    handle = audio.playVoice(buffer, {gain: VOICE_GAIN, onended: () => { if (handle) voices.delete(handle); }});
+    handle = audio.playVoice(buffer, {gain: VOICE_GAIN, onended: () => {
+      if (handle) voices.delete(handle);
+      if (!voices.size) duck(false);
+    }});
     if (handle) voices.add(handle);
+    else duck(false);
   }
 
   function updateVoices(t: number): void {
@@ -199,6 +241,39 @@ export function createPrologue(options: PrologueOptions): Prologue {
   function stopVoices(): void {
     for (const handle of voices) handle.stop();
     voices.clear();
+    duck(false);
+  }
+
+  /** Prologue-only scenery (mesh die-shot, traces, shaft, window lights, sky,
+   * practicals) lives in one owned group and is disposed on stop/skip/replay. */
+  function mountVisuals(): void {
+    if (visuals) return;
+    visuals = createPrologueVisuals();
+    scene.add(visuals.root);
+    visuals.update(0);
+  }
+
+  function disposeVisuals(): void {
+    if (!visuals) return;
+    visuals.dispose();
+    visuals = null;
+  }
+
+  /** The camera flies through the closed B4 entrance, so the authored leaves are
+   * opened for the take and closed again when the cinematic stops. */
+  function openDoors(): void {
+    if (doorsOpened) return;
+    doorLeaves = findB4DoorLeaves(scene);
+    if (!doorLeaves.length) return;
+    setB4DoorLeaves(doorLeaves, 1);
+    doorsOpened = true;
+  }
+
+  function closeDoors(): void {
+    if (!doorsOpened) return;
+    setB4DoorLeaves(doorLeaves, 0);
+    doorsOpened = false;
+    doorLeaves = [];
   }
 
   /** Seconds since the base captured at begin(). The base never changes inside a
@@ -309,6 +384,7 @@ export function createPrologue(options: PrologueOptions): Prologue {
     const t = phase === 'running' ? Math.max(0, runClock() - origin + seekDelta) : lastT;
     lastT = t;
     applyShot(t);
+    visuals?.update(t);
     updateSubtitle(t);
     if (endcard) endcard.hidden = t < PROLOGUE_TOTAL;
     if (phase === 'running') {
@@ -342,6 +418,9 @@ export function createPrologue(options: PrologueOptions): Prologue {
     if (!fovSaved) { previousFov = explorer.camera.fov; fovSaved = true; }
     explorer.camera.fov = FOV;
     explorer.camera.updateProjectionMatrix();
+    atmosphere?.enterDusk();
+    openDoors();
+    mountVisuals();
     if (!registered) { viewer.beforeRender.add(update); registered = true; }
     window.addEventListener('keydown', onKey, true);
     document.addEventListener('visibilitychange', onHidden);
@@ -358,6 +437,9 @@ export function createPrologue(options: PrologueOptions): Prologue {
     generation++;
     stopVoices();
     buffers.clear();
+    disposeVisuals();
+    closeDoors();
+    atmosphere?.endDusk();
     phase = 'idle';
     promise = null;
     resolvePlay = null;
@@ -368,10 +450,12 @@ export function createPrologue(options: PrologueOptions): Prologue {
     activeLine = -1;
     silent = false;
     noticeUntil = -1;
-    worldSpan = 100;
     spawnPosition = null;
     spawnLook = null;
-    shots = [];
+    finalQuaternion = null;
+    waypoints = [];
+    positionCurve = null;
+    lookCurve = null;
     windows = [];
   }
 
@@ -386,6 +470,9 @@ export function createPrologue(options: PrologueOptions): Prologue {
     decodeRun = null;
     stopVoices();
     buffers.clear();
+    disposeVisuals();
+    closeDoors();
+    atmosphere?.endDusk();
     if (registered) { viewer.beforeRender.delete(update); registered = false; }
     window.removeEventListener('keydown', onKey, true);
     document.removeEventListener('visibilitychange', onHidden);
@@ -435,7 +522,9 @@ export function createPrologue(options: PrologueOptions): Prologue {
     if (inside >= 0) playLine(inside);
     updateSubtitle(target);
     if (endcard) endcard.hidden = target < PROLOGUE_TOTAL;
+    captureSpawn();
     applyShot(target);
+    visuals?.update(target);
   }
 
   function state(): {t: number; line: number; shot: number} {
@@ -452,6 +541,10 @@ export function createPrologue(options: PrologueOptions): Prologue {
     play,
     stop,
     dispose,
-    debug: {seek, state},
+    debug: {
+      seek,
+      state,
+      waypoints: () => waypoints.map((waypoint) => ({t: waypoint.t, position: [...waypoint.position] as [number, number, number]})),
+    },
   };
 }

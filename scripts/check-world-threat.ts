@@ -35,7 +35,7 @@ const openingSealed=JSON.stringify({
 });
 const openingClear=JSON.stringify({
  version:1,mode:'opening',worldRevision:'test',savedAt:1235,
- story:{stage:'bus',events:[]},runtime:{curtain_deployed:false},
+ story:{stage:'crowd',events:[]},runtime:{curtain_deployed:false},
 });
 
 // A fresh install starts clear and writes the migrated record once.

@@ -30,7 +30,7 @@ interface BossMacOptions {
 export function createBossMacBook(options:BossMacOptions) {
   // A standalone lawn entry starts after the same B4 handoff as a continued game.
   const story:OpeningState=options.opening?.story??{
-    schemaVersion:1,stage:'complete',invitation_read:true,laptop_acquired:true,campus_alert_triggered:true,
+    schemaVersion:1,stage:'complete',invitation_read:true,ambassador:true,laptop_acquired:true,campus_alert_triggered:true,
     alert_read:true,events:[...OPENING_EVENT_LOG],elapsedSeconds:0,
   };
   const overlay=document.createElement('div');

@@ -26,27 +26,22 @@
     {
       "id": "prologue-1",
       "speaker": "narrator",
-      "text": "November 2030. HKU Shanghai. Four towers. One core. An entire campus wired as a single supercomputer."
+      "text": "By 2030, the world had become more interconnected, and more intelligent, than anyone had imagined. Not a network of machines — a single mind with no centre, wrapped around a planet."
     },
     {
       "id": "prologue-2",
       "speaker": "narrator",
-      "text": "Last night, something else got inside it. The barrier sealed. The guardian lion turned. And the students at the High Table Dinner never came home."
+      "text": "HKU Shanghai was not built with computers in it. It was built as one. Four towers — PU-01 to PU-04 — and no master core. Every room, every light, every door: a node. Take a tower away, and the machine keeps thinking. CDS."
     },
     {
       "id": "prologue-3",
       "speaker": "narrator",
-      "text": "You are the only Student Ambassador still moving, and your MacBook still has root."
+      "text": "Step inside, and the machine is everywhere. Server halls breathe. Lecture theatres wake row by row. Doors open before you reach them. The building is not holding a computer — the building is the computer."
     },
     {
       "id": "prologue-4",
-      "speaker": "player",
-      "text": "Okay. Let's reboot this campus."
-    },
-    {
-      "id": "prologue-5",
       "speaker": "narrator",
-      "text": "Restore the four towers. Free the students. Bring CDS back online."
+      "text": "At six, the light turns gold. The towers put on a show for the city — HKU Magic Hour — and the campus comes out to watch. Then the last beam fades, and the crowd turns toward the long tables. You turn with them."
     }
   ]
 }

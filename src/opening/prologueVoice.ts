@@ -26,5 +26,4 @@ export const PROLOGUE_URLS: Record<string, URL> = {
   'prologue-2': new URL('../../assets/audio/prologue/prologue-2.mp3', import.meta.url),
   'prologue-3': new URL('../../assets/audio/prologue/prologue-3.mp3', import.meta.url),
   'prologue-4': new URL('../../assets/audio/prologue/prologue-4.mp3', import.meta.url),
-  'prologue-5': new URL('../../assets/audio/prologue/prologue-5.mp3', import.meta.url),
 };

@@ -142,7 +142,7 @@ def main_run(browser):
     boot(page, '?experience=opening&intro=0')
     href = page.evaluate('() => location.href')
     D = 'window.__CAMPUS.openingDebug'
-    check('fresh run starts on the shuttle', snap(page)['story'] == 'bus', snap(page))
+    check('fresh run starts in the plaza crowd', snap(page)['story'] == 'crowd', snap(page))
 
     # ---- Chapter 1 (debug hooks, one real input: Enter on the invitation) ----
     page.evaluate(f'() => {D}.openInvitation()')

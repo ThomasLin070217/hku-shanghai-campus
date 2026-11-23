@@ -3287,3 +3287,139 @@ body[data-campaign-focus] .opening-heart {
   width: 9px;
   height: 13px;
 }
+
+/* ================================================================== */
+/* Student Ambassador phone (replaces the paper invitation)            */
+/* A notification slides up from the bottom edge; the scene behind it  */
+/* stays visible, dimmed by the modal backdrop.                        */
+/* ================================================================== */
+
+.opening-dialog--invitation.opening-phone-shell {
+  width: min(392px, calc(100vw - 32px));
+  max-height: none;
+  align-self: end;
+  margin: 0 0 max(10px, env(safe-area-inset-bottom));
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  overflow: visible;
+  animation: opening-phone-rise 0.42s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+@keyframes opening-phone-rise {
+  from { opacity: 0; transform: translateY(64px); }
+  to { opacity: 1; transform: none; }
+}
+.opening-phone {
+  position: relative;
+  padding: 10px;
+  border-radius: 42px;
+  background: linear-gradient(160deg, #1a2421, #0a1210 60%);
+  border: 1px solid #000000;
+  box-shadow:
+    0 26px 80px #000000cc,
+    inset 0 0 0 2px #2c3934,
+    inset 0 0 0 4px #0b100e;
+}
+.opening-phone-notch {
+  position: absolute;
+  left: 50%;
+  top: 18px;
+  z-index: 2;
+  width: 96px;
+  height: 22px;
+  border-radius: 12px;
+  background: #050807;
+  transform: translateX(-50%);
+}
+.opening-phone-notch::after {
+  content: "";
+  position: absolute;
+  right: 9px;
+  top: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #12312a;
+  box-shadow: 0 0 6px #2d6b5c;
+}
+.opening-phone-screen {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  min-height: 430px;
+  padding: 46px 14px 16px;
+  border-radius: 32px;
+  background: radial-gradient(ellipse at 50% -10%, #24483e 0%, #0d1a17 52%, #060c0a 100%);
+}
+.opening-phone-notification {
+  width: 100%;
+  padding: 18px 18px 16px;
+  border-radius: 24px;
+  color: #f4f2e6;
+  background: linear-gradient(170deg, #26473d, #16302a 55%, #102420);
+  border: 1px solid #3d6b5c;
+  box-shadow: 0 10px 30px #00000080, inset 0 1px 0 #ffffff1f;
+  animation: opening-phone-notify 0.5s 0.12s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+@keyframes opening-phone-notify {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+.opening-phone-app {
+  margin: 0 0 6px;
+  font-size: 10.5px;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #9fd9c2;
+}
+.opening-phone-title {
+  margin: 0 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px;
+  line-height: 1.25;
+  color: #fff6dd;
+}
+.opening-phone-body {
+  margin: 0 0 8px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #e6e2d2;
+}
+.opening-phone-body--muted {
+  color: #b9c9bf;
+}
+.opening-phone-yes {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 8px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+@media (max-width: 640px) {
+  .opening-dialog--invitation.opening-phone-shell {
+    width: calc(100vw - 20px);
+    margin-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  .opening-phone-screen {
+    min-height: min(430px, 66dvh);
+    padding: 42px 10px 12px;
+  }
+  .opening-phone-title {
+    font-size: 19px;
+  }
+}
+@media (max-height: 720px) {
+  .opening-phone-screen {
+    min-height: 0;
+    padding-top: 40px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .opening-dialog--invitation.opening-phone-shell,
+  .opening-phone-notification {
+    animation: none;
+  }
+}

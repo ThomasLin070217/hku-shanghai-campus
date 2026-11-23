@@ -295,52 +295,28 @@ export function createOpeningUI(
   });
 
   // ------------------------------------------------------------ Modals.
-  function invitationDialog(view: OpeningView): HTMLElement {
+  /** The phone that replaces the paper invitation: a notification sliding up
+   * from the bottom of the screen, exactly the approved copy, one Yes button. */
+  function invitationDialog(): HTMLElement {
     const shell = dialogShell('invitation');
-    shell.classList.add('opening-invite-shell');
-    const card = node('div', 'opening-invite-card');
-    const crest = node('div', 'opening-invite-crest');
-    crest.innerHTML =
-      '<svg viewBox="0 0 84 100" aria-hidden="true" focusable="false">' +
-      '<path d="M42 3 78 15v33c0 24-15 39-36 49C21 87 6 72 6 48V15z" fill="none" stroke="currentColor" stroke-width="2.4"/>' +
-      '<path d="M42 12 69 21v27c0 18-11 31-27 40-16-9-27-22-27-40V21z" fill="none" stroke="currentColor" stroke-width="1" opacity=".55"/>' +
-      '<path d="M27 40h30v4H27zM30 48h24v3H30zM30 55h24v3H30z" fill="currentColor" opacity=".85"/>' +
-      '<path d="M34 70c4-5 12-5 16 0" fill="none" stroke="currentColor" stroke-width="1.8"/>' +
-      '<text x="42" y="34" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="700" fill="currentColor" letter-spacing="1">HKU</text>' +
-      '</svg>';
-    const top = node('p', 'opening-invite-top', T.invitation.eyebrow);
-    const host = node('p', 'opening-invite-host', T.invitation.host);
-    const name = node('p', 'opening-invite-name', T.invitation.name);
-    const rule = node('div', 'opening-invite-rule');
-    rule.setAttribute('aria-hidden', 'true');
-    rule.innerHTML = '<i></i><b>◆</b><i></i>';
-    const title = node('h2', 'opening-invite-title', T.invitation.title);
+    shell.classList.add('opening-phone-shell');
+    const card = node('div', 'opening-phone');
+    const notch = node('div', 'opening-phone-notch');
+    notch.setAttribute('aria-hidden', 'true');
+    const screen = node('div', 'opening-phone-screen');
+    const notification = node('div', 'opening-phone-notification');
+    const app = node('p', 'opening-phone-app', T.invitation.eyebrow);
+    const title = node('h2', 'opening-phone-title', T.invitation.title);
     title.id = 'opening-modal-title';
-    const subtitle = node('p', 'opening-invite-subtitle', T.invitation.subtitle);
-    const facts = node('dl', 'opening-invite-facts');
-    for (const [label, value] of [
-      [T.invitation.dateLabel, T.invitation.dateValue],
-      [T.invitation.timeLabel, T.invitation.timeValue],
-      [T.invitation.venueLabel, T.invitation.venueValue],
-      [T.invitation.dressLabel, T.invitation.dressValue],
-    ] as [string, string][]) {
-      const row = node('div', 'opening-invite-fact');
-      row.append(node('dt', '', label), node('dd', '', value));
-      facts.append(row);
-    }
-    const body = node('p', 'opening-invite-body', T.invitation.body);
-    const note = node('p', 'opening-invite-note', T.invitation.note);
-    const seal = node('div', 'opening-invite-seal', T.invitation.seal);
-    seal.setAttribute('aria-hidden', 'true');
-    card.append(top, crest, host, name, rule, title, subtitle, facts, body, note, seal);
+    const body = node('p', 'opening-phone-body', T.invitation.body);
+    const provisioned = node('p', 'opening-phone-body opening-phone-body--muted', T.invitation.provisioned);
+    const yes = makeButton(T.invitation.yes, 'primary', () => actions.action('read_invitation'));
+    yes.classList.add('opening-phone-yes');
+    yes.dataset.autofocus = 'true';
+    notification.append(app, title, body, provisioned, yes);
+    screen.append(notification);
+    card.append(notch, screen);
     shell.append(card);
-    const continueButton = view.story.invitation_read
-      ? makeButton(T.invitation.alreadyRead, 'primary', () => requestClose())
-      : makeButton(T.invitation.continue, 'primary', () => actions.action('read_invitation'));
-    continueButton.dataset.autofocus = 'true';
-    const footer = actionRow(makeButton(T.invitation.close, 'secondary', requestClose), continueButton);
-    footer.classList.add('opening-invite-actions');
-    shell.append(footer);
     return shell;
   }
 
@@ -709,7 +685,7 @@ export function createOpeningUI(
       return;
     }
     const next = view.modal === 'invitation'
-      ? invitationDialog(view)
+      ? invitationDialog()
       : view.modal === 'staff'
         ? staffDialog(view)
         : view.modal === 'alert'
@@ -771,11 +747,15 @@ export function createOpeningUI(
     }
     if (!dialog || modalRoot.hidden) return;
     if(kind==='invitation'){
+      // The phone has exactly one action. Escape and every other key are
+      // swallowed, so the invitation cannot be dismissed without answering.
       event.preventDefault();event.stopImmediatePropagation();
       if(event.repeat||event.isComposing)return;
-      dismissedKey=event.code;
-      if(currentView?.story.invitation_read)requestClose();else actions.action('read_invitation');
-      hideDialog();lastSignature=null;
+      if(event.key==='Enter'||event.code==='NumpadEnter'||event.key===' '||event.code==='Space'){
+        dismissedKey=event.code;
+        actions.action('read_invitation');
+        hideDialog();lastSignature=null;
+      }
       return;
     }
     if (event.key === 'Tab') {

@@ -79,7 +79,7 @@ export function syncRuntimeWithStory(runtime:OpeningRuntime,story:{stage:string;
  const alert=story.alert_read||story.stage==='to_b4'||story.stage==='complete';
  return{
   ...runtime,
-  staff_task_received:runtime.staff_task_received||(story.stage!=='bus'&&story.stage!=='to_b5'),
+  staff_task_received:runtime.staff_task_received||(story.stage!=='crowd'&&story.stage!=='to_b5'),
   curtain_deployed:runtime.curtain_deployed||incident,
   // Chase is an observed encounter fact, not implied by a campus incident.
   robot_chase_started:runtime.robot_chase_started,

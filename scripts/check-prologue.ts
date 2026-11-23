@@ -95,8 +95,10 @@ check('timeline: a non-finite duration throws with the clip id',()=>{
 });
 
 // 2. Every source line has a recorded clip.
-check('source: prologue.json declares five lines',()=>{
- assert.equal(source.lines.length,5);
+check('source: prologue.json declares the four approved narrator lines',()=>{
+ assert.equal(source.lines.length,4);
+ assert.deepEqual(source.lines.map((line)=>line.id),['prologue-1','prologue-2','prologue-3','prologue-4']);
+ for(const line of source.lines)assert.equal(line.speaker,'narrator',`${line.id} must be narrated, not spoken by the player`);
 });
 check('manifest: every source line has a clip with the same id',()=>{
  for(const line of source.lines){
@@ -157,8 +159,22 @@ check('manifest: total equals the duration sum within 0.01 s',()=>{
 });
 check('manifest: narration stays inside the declared budget',()=>{
  assert.ok(Number.isFinite(manifest.budget),'clips.json has no numeric budget');
- assert.ok(manifest.budget<=45,`budget ${manifest.budget}s exceeds the 45 s cap`);
+ // The four approved lines are longer than the 48 s plan ceiling when read
+ // verbatim (56.006 s measured); the budget records the approved overrun and
+ // trimming is an owner decision, never a silent edit of the script.
+ assert.ok(manifest.budget<=60,`budget ${manifest.budget}s exceeds the 60 s approved cap`);
  assert.ok(manifest.total<=manifest.budget,`${manifest.total}s exceeds the ${manifest.budget}s budget`);
+ assert.ok(manifest.total>48,'the approved verbatim script should measure past the old 48 s plan ceiling');
+});
+
+const APPROVED=[
+ 'By 2030, the world had become more interconnected, and more intelligent, than anyone had imagined. Not a network of machines — a single mind with no centre, wrapped around a planet.',
+ 'HKU Shanghai was not built with computers in it. It was built as one. Four towers — PU-01 to PU-04 — and no master core. Every room, every light, every door: a node. Take a tower away, and the machine keeps thinking. CDS.',
+ 'Step inside, and the machine is everywhere. Server halls breathe. Lecture theatres wake row by row. Doors open before you reach them. The building is not holding a computer — the building is the computer.',
+ 'At six, the light turns gold. The towers put on a show for the city — HKU Magic Hour — and the campus comes out to watch. Then the last beam fades, and the crowd turns toward the long tables. You turn with them.',
+];
+check('source: the four lines are the owner-approved text verbatim',()=>{
+ assert.deepEqual(source.lines.map((line)=>line.text),APPROVED);
 });
 
 // 4. Voices and URLs.
@@ -174,15 +190,10 @@ check('voices: every clip uses the voice declared for its speaker',()=>{
   assert.equal(clip.voiceId,voice.id,`${clip.id}: ${clip.voiceId} is not the ${clip.speaker} voice`);
  }
 });
-check('voices: the player line uses a different voice from the narrator',()=>{
- const player=source.lines.find((line)=>line.speaker==='player');
- assert.ok(player,'no player line');
- assert.ok(source.voices.player,'content/voice/prologue.json declares no voice for speaker player');
+check('voices: every recorded line uses the narrator voice and no player line is recorded',()=>{
  assert.ok(source.voices.narrator,'content/voice/prologue.json declares no voice for speaker narrator');
- assert.notEqual(source.voices.player.id,source.voices.narrator.id);
- const clip=manifest.clips.find((entry)=>entry.id===player.id);
- assert.ok(clip);
- assert.equal(clip.voiceId,source.voices.player.id);
+ assert.ok(!source.lines.some((line)=>line.speaker==='player'),'the prologue has no player line');
+ for(const clip of manifest.clips)assert.equal(clip.voiceId,source.voices.narrator.id,`${clip.id} must use the narrator voice`);
 });
 
 check('PROLOGUE_CLIPS is the manifest clips in order',()=>{

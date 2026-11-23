@@ -102,11 +102,11 @@ export class StoryAudio {
   const fade=music==='chase'?delivery.crossfadeMs.toChase/1000:previous==='chase'?delivery.crossfadeMs.fromChase/1000:delivery.crossfadeMs.normal/1000;
   if(changed)for(const key of this.loops.keys())if(key.startsWith('music:')&&key!=='music:'+music)this.retire(key,fade);
   this.loop('music:'+music,'mus_'+music,'music',.5,fade);
-  const ambient=frame.stage==='bus'?'cc0_bus_engine_idle':frame.dark?'amb_dark_hum':'cc0_amb_birds_loop';
+  const ambient=frame.dark?'amb_dark_hum':'cc0_amb_birds_loop';
   const ambientKeys=new Set(['ambient:'+ambient]);
-  if(frame.stage!=='bus'&&!frame.dark)ambientKeys.add('ambient:campus-breeze');
+  if(!frame.dark)ambientKeys.add('ambient:campus-breeze');
   for(const key of this.loops.keys())if(key.startsWith('ambient:')&&!ambientKeys.has(key))this.retire(key,.8);
-  this.loop('ambient:'+ambient,ambient,'ambient',frame.stage==='bus'?.32:frame.dark?.3:.4,.8);
+  this.loop('ambient:'+ambient,ambient,'ambient',frame.dark?.3:.4,.8);
   if(ambientKeys.has('ambient:campus-breeze'))this.loop('ambient:campus-breeze','campus-breeze','ambient',.32,.8);
   const near=frame.robots.map(robot=>({robot,distance:Math.hypot(robot.position.x-frame.player.x,robot.position.z-frame.player.z)})).filter(r=>r.distance<24).sort((a,b)=>a.distance-b.distance).slice(0,2);
   const wanted=new Set<string>();

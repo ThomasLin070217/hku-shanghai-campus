@@ -327,9 +327,8 @@ export function createMacBookExperience(options:MacOptions){
     const paper=el('article','mac-invite-paper');
     paper.append(
       el('p','mac-invite-top',info.eyebrow),el('div','mac-invite-crest','HKU'),
-      el('p','mac-invite-request',info.host),el('h2','mac-invite-name',info.name),
-      el('h1','mac-invite-title',info.title),el('p','mac-invite-meta',info.venueValue),
-      el('p','mac-invite-meta',info.dateValue+' · '+info.timeValue),el('p','mac-invite-note',info.body),
+      el('h1','mac-invite-title',info.title),el('p','mac-invite-note',info.body),
+      el('p','mac-invite-note',info.provisioned),
     );
     const side=el('aside','mac-invite-side');
     side.append(el('p','mac-eyebrow','PREVIEW'),el('h3','','High Table Dinner'),el('p','mac-muted','The presentation MacBook holds the invitation, the campus map and the recovery assistant.'));
@@ -452,8 +451,9 @@ export function createMacBookExperience(options:MacOptions){
   const alertSleep=action('Sleep',options.onClose,'mac-alert-secondary');
   const alertCopy=el('div','mac-alert-copy');
   alertCopy.append(el('p','mac-alert-eyebrow','CAMPUS SECURITY ALERT'),el('h2','','Security breach'),
-    el('p','','The campus robotics network is compromised. The perimeter is sealed and external communication is blocked.'),
-    el('p','','Emergency assistance is available on this MacBook.'));
+    el('p','','The campus robotics network is compromised. I know. I did it.'),
+    el('p','','The perimeter is sealed and external communication is blocked. You are inside the seal.'),
+    el('p','','Emergency assistance is available on this MacBook. Local. Uninfected. The only thing on campus the invader does not own.'));
   alertCard.append(alertIcon,alertCopy);
   const alertActions=el('div','mac-alert-actions');alertActions.append(alertSleep,accept);alertCard.append(alertActions);
   alert.append(alertCard);root.append(alert);

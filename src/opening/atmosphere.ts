@@ -19,7 +19,7 @@ import * as T from 'three';
 
 type Lights={hemi:T.Light;sun:T.Light;fill:T.Light};
 
-export type OpeningAtmospherePhase='day'|'disturbance'|'night';
+export type OpeningAtmospherePhase='day'|'disturbance'|'night'|'dusk';
 
 export interface OpeningAtmosphereState{
  incident:boolean;
@@ -43,6 +43,8 @@ export interface OpeningAtmosphereSnapshot{
  domeRadius:number;
  /** World height of the dome apex when fully deployed, metres. */
  domeTop:number;
+ /** True while the prologue's Magic Hour override owns the lights. */
+ dusk:boolean;
 }
 
 /**
@@ -66,6 +68,14 @@ const DOME_DROP=DOME_RADIUS*1.18;
 const NIGHT_FOG=.0075;
 const DAY_BG=new T.Color(0xb5d7e4);
 const NIGHT_BG=new T.Color(0x05080c);
+/** Prologue-only Magic Hour: low warm sun, rose-amber sky, cool east fill. */
+const DUSK_BG=new T.Color(0xe08a5a);
+const DUSK_FOG=new T.Color(0xd6976e);
+const DUSK_SUN=new T.Color(0xffb36b);
+const DUSK_FILL=new T.Color(0x7d9bd6);
+const DUSK_HEMI_SKY=new T.Color(0xffd2a0);
+const DUSK_HEMI_GROUND=new T.Color(0x3f3a3a);
+const DUSK_SUN_POSITION=new T.Vector3(-190,52,160);
 
 const lerp=(a:number,b:number,t:number)=>a+(b-a)*t;
 const smooth=(x:number)=>{const t=Math.min(1,Math.max(0,x));return t*t*(3-2*t);};
@@ -206,6 +216,10 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
  let clock=0;
  let pulse=0;
  let lastSnapshot:OpeningAtmosphereSnapshot|null=null;
+ /** Prologue-only dusk override. While true, update() leaves the Magic Hour
+  * lighting alone; endDusk() restores the saved day/sealed state. */
+ let dusk=false;
+ let savedSunPosition:T.Vector3|null=null;
 
  function apply(p:number,dt:number){
   const dark=smooth(p);
@@ -242,6 +256,36 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
   }
  }
 
+ /** Prologue-only Magic Hour. Saved values are the authored preview defaults;
+  * `endDusk()` replays the current day/sealed state through apply(). */
+ function enterDusk(){
+  if(dusk)return;
+  dusk=true;releasing=false;curtain=false;target=0;progress=0;
+  if(!savedSunPosition)savedSunPosition=(lights.sun as T.DirectionalLight).position.clone();
+  root.visible=false;
+  scene.background=DUSK_BG.clone();
+  scene.environmentIntensity=.18;
+  const hemi=lights.hemi as T.HemisphereLight;
+  hemi.intensity=.82;hemi.color.copy(DUSK_HEMI_SKY);hemi.groundColor.copy(DUSK_HEMI_GROUND);
+  const sun=lights.sun as T.DirectionalLight;
+  sun.intensity=3.1;sun.color.copy(DUSK_SUN);sun.position.copy(DUSK_SUN_POSITION);
+  const fill=lights.fill as T.DirectionalLight;
+  fill.intensity=.6;fill.color.copy(DUSK_FILL);
+  renderer.toneMappingExposure=1.12;
+  const fog=new T.FogExp2(DUSK_FOG.getHex(),.0016);
+  scene.fog=fog;
+ }
+
+ /** Restore the pre-prologue atmosphere: the authored lighting plus whatever
+  * day/sealed progress the run already holds. */
+ function endDusk(){
+  if(!dusk)return;
+  dusk=false;
+  if(savedSunPosition)(lights.sun as T.DirectionalLight).position.copy(savedSunPosition);
+  phase=progress>=1?'night':progress>0?'disturbance':'day';
+  apply(progress,0);
+ }
+
  /** Called by the experience when the laptop pickup starts the takeover. */
  function startIncident(){
   target=1;curtain=true;releasing=false;
@@ -271,6 +315,8 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
  }
 
  function update(dt:number,state:OpeningAtmosphereState){
+  // The prologue owns the sky while it runs: no day/night application, no dome.
+  if(dusk){root.visible=false;return;}
   const wantsSeal=state.incident||state.curtain;
   if(wantsSeal){
    // A new seal cancels an in-flight purge.
@@ -297,6 +343,8 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
 
  function reset(){
   progress=0;target=0;curtain=false;releasing=false;phase='day';clock=0;pulse=0;
+  dusk=false;
+  if(savedSunPosition)(lights.sun as T.DirectionalLight).position.copy(savedSunPosition);
   root.visible=false;curtainRoot.position.y=dropFor(0);
   scene.background=baseBackground.clone();
   scene.environmentIntensity=baseEnvironment;
@@ -320,6 +368,7 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
    fillIntensity:Math.round(lights.fill.intensity*100)/100,
    redLights:beaconLights.filter(l=>l.intensity>.1).length,
    domeRadius:DOME_RADIUS,domeTop:OPENING_DOME.top,
+   dusk,
   };
   lastSnapshot=s;return s;
  }
@@ -332,11 +381,14 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
   startIncident,
   restoreSealed,
   release,
+  enterDusk,
+  endDusk,
   reset,
   snapshot,
   get phase(){return phase;},
   get curtainProgress(){return progress;},
   get releasing(){return releasing;},
+  get dusk(){return dusk;},
   dispose(){
    root.traverse(o=>{
     const renderable=o as T.Mesh;
@@ -348,6 +400,7 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
    scene.background=baseBackground.clone();
    scene.fog=baseFog;
    lights.hemi.intensity=baseHemi;lights.sun.intensity=baseSun;lights.fill.intensity=baseFill;
+   if(savedSunPosition)(lights.sun as T.DirectionalLight).position.copy(savedSunPosition);
    renderer.toneMappingExposure=baseExposure;
   },
  };

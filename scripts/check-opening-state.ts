@@ -12,7 +12,7 @@ const OPENING_MACBOOK='opening-macbook-001';
 type FlagKey='invitation_read'|'laptop_acquired'|'campus_alert_triggered'|'alert_read';
 /** The authored beat table of the Thomas opening: event, resulting stage, log entry, flag. */
 const BEATS:readonly {event:OpeningEvent;stage:OpeningStage;log:string;flag?:FlagKey}[]=[
- {event:'read_invitation',stage:'bus',log:'invitation_read',flag:'invitation_read'},
+ {event:'read_invitation',stage:'crowd',log:'invitation_read',flag:'invitation_read'},
  {event:'exit_bus',stage:'to_b5',log:'opening.bus_exited'},
  {event:'accept_errand',stage:'to_b6',log:'opening.laptop_requested'},
  {event:'take_laptop',stage:'return_b5',log:'laptop_acquired',flag:'laptop_acquired'},
@@ -66,15 +66,29 @@ const snapshot=(value:unknown):string=>JSON.stringify(value);
 
 console.log('== opening state / persistence behaviour checks ==');
 
-group('初始状态是 bus 阶段的空状态',()=>{
+group('初始状态是 crowd 阶段的空状态',()=>{
  const state=createOpeningState();
  assert.equal(state.schemaVersion,1);
- assert.equal(state.stage,'bus');
+ assert.equal(state.stage,'crowd');
  assert.deepEqual(state.events,[]);
  assert.equal(state.elapsedSeconds,0);
  for(const flag of FLAGS)assert.equal(state[flag],false,`${flag} must start false`);
  assert.ok(validOpeningState(state),'initial state must validate');
  assert.deepEqual(validOpeningState(state),state,'initial state must round-trip');
+});
+
+group('接受邀请同时成为 Student Ambassador',()=>{
+ const initial=createOpeningState();
+ assert.equal(initial.ambassador,false,'the role must start unaccepted');
+ const read=reduceOpening(initial,'read_invitation');
+ assert.equal(read.ambassador,true,'Yes must set the ambassador flag');
+ assert.equal(read.invitation_read,true,'Yes must set the invitation flag');
+ assert.ok(validOpeningState(read),'the accepted state must validate');
+ assert.equal(validOpeningState({...read,ambassador:false}),null,'ambassador and invitation_read may never disagree');
+ // Old saves predate the field: it defaults to the invitation flag.
+ const legacy=validOpeningState({...read,ambassador:undefined});
+ assert.ok(legacy,'a save without the ambassador field must validate');
+ assert.equal(legacy!.ambassador,true,'a missing ambassador field defaults to invitation_read');
 });
 
 group('完整七拍按顺序推进并产生规范事件日志',()=>{
@@ -116,7 +130,7 @@ group('乱序 / 越级事件返回原对象引用',()=>{
   }
  }
  const start=createOpeningState();
- for(const beat of BEATS.slice(1))assert.equal(reduceOpening(start,beat.event),start,`${beat.event} must be rejected on the bus`);
+ for(const beat of BEATS.slice(1))assert.equal(reduceOpening(start,beat.event),start,`${beat.event} must be rejected before the invitation`);
  assert.equal(reduceOpening(start,'chapter_01_completed' as OpeningEvent),start,'unknown events must be rejected');
  assert.equal(reduceOpening(start,'nope' as OpeningEvent),start,'unknown events must be rejected');
 });
@@ -166,10 +180,15 @@ group('坏 events 的状态被拒绝（乱序 / 缺项 / 多余 / 重复）',()=
  assert.equal(validOpeningState({...good,events:'invitation_read'}),null,'non array events must be rejected');
  assert.equal(validOpeningState({...good,events:[1,2,3,4,5,6,7]}),null,'non string entries must be rejected');
  assert.equal(validOpeningState({...good,events:[]}),null,'empty log at a late stage must be rejected');
- const bus=createOpeningState();
- assert.equal(validOpeningState({...bus,events:['invitation_read']}),null,'bus stage cannot carry the invitation log without the flag');
- assert.equal(validOpeningState({...bus,invitation_read:true}),null,'bus stage with the flag must carry the log');
- assert.ok(validOpeningState({...bus,invitation_read:true,events:['invitation_read']}),'bus stage with flag and log must validate');
+ const crowd=createOpeningState();
+ assert.equal(validOpeningState({...crowd,events:['invitation_read']}),null,'crowd stage cannot carry the invitation log without the flag');
+ assert.equal(validOpeningState({...crowd,invitation_read:true}),null,'crowd stage with the flag must carry the log');
+ assert.ok(validOpeningState({...crowd,invitation_read:true,ambassador:true,events:['invitation_read']}),'crowd stage with flag and log must validate');
+ // The shuttle-era stage string is the same beat position: it maps forward.
+ const legacy=validOpeningState({...crowd,stage:'bus',invitation_read:true,events:['invitation_read'],ambassador:true});
+ assert.ok(legacy,'a legacy bus save must still validate');
+ assert.equal(legacy!.stage,'crowd','a legacy bus stage maps to the crowd');
+ assert.ok(validOpeningState({...crowd,stage:'bus'}),'a legacy bus save without the invitation must validate as the crowd');
 });
 
 group('NaN / Infinity / 负数时间被拒绝',()=>{
@@ -179,16 +198,16 @@ group('NaN / Infinity / 负数时间被拒绝',()=>{
  assert.ok(validOpeningState({...good,elapsedSeconds:12.5}),'fractional elapsed must be valid');
 });
 
-group('初始档（空背包）与已读请柬未下车档合法',()=>{
+group('初始档（空背包）与已读请柬档合法',()=>{
  const initial=parseOpeningSave(rawSave());
- assert.ok(initial,'the initial bus save must parse');
- assert.equal(initial!.story.stage,'bus');
+ assert.ok(initial,'the initial crowd save must parse');
+ assert.equal(initial!.story.stage,'crowd');
  assert.equal(initial!.story.invitation_read,false);
  assert.equal(initial!.slots.length,36);
  assert.equal(initial!.slots.filter(Boolean).length,0);
  const read=parseOpeningSave(rawSave({story:storyAfter(['read_invitation'])}));
  assert.ok(read,'the invitation-read save must parse');
- assert.equal(read!.story.stage,'bus');
+ assert.equal(read!.story.stage,'crowd');
  assert.equal(read!.story.invitation_read,true);
  assert.deepEqual(read!.story.events,['invitation_read']);
 });
