@@ -31,6 +31,10 @@ const HEAD_PARTS = new Set([
   'Nose', 'Smile', 'Tongue', 'Lower_lip', 'Whisker', 'Whisker_dot',
 ]);
 const isHeadPart = (name: string) => HEAD_PARTS.has(name) || name.startsWith('Mane_');
+/** The authored gold paws (round, toes, lettering, crest) are the lion's feet. */
+const FOOT_PARTS = new Set([
+  'Paw', 'Paw_toe', 'Paw_HKU_lettering', 'Paw_crest', 'Paw_crest_book',
+]);
 
 const lion = createLion();
 const body = lion.getObjectByName(BODY_NAME) as T.Group;
@@ -126,7 +130,8 @@ function checkSkinning(layout: string, rig: LionRig) {
   const sideOf = (part: PrimitiveTrace) => (part.bounds[0] + part.bounds[3]) / 2 < 0 ? 'L' : 'R';
 
   let headVertices = 0, headBad = 0;
-  let pawTraces = 0, pawBad = 0, sleeveTraces = 0, sleeveBad = 0, tailTipTraces = 0, tailTipBad = 0;
+  let footTraces = 0, footBad = 0, thighTraces = 0, thighBad = 0;
+  let sleeveTraces = 0, sleeveBad = 0, tailTipTraces = 0, tailTipBad = 0;
   let eyeTraces = 0, eyeOutside = 0;
   for (const mesh of rig.meshes) {
     const position = mesh.geometry.getAttribute('position');
@@ -137,10 +142,15 @@ function checkSkinning(layout: string, rig: LionRig) {
           if (dominantBone(mesh, vertex) !== 'head') headBad += 1;
         });
       }
-      if (part.name === 'Paw') {
-        pawTraces += 1;
-        const expected = ('foreArm' + sideOf(part)) as LionBoneName;
-        forEachTraceVertex(mesh.geometry, part, vertex => { if (dominantBone(mesh, vertex) !== expected) pawBad += 1; });
+      if (FOOT_PARTS.has(part.name)) {
+        footTraces += 1;
+        const expected = ('foot' + sideOf(part)) as LionBoneName;
+        forEachTraceVertex(mesh.geometry, part, vertex => { if (dominantBone(mesh, vertex) !== expected) footBad += 1; });
+      }
+      if (part.name === 'Trouser_leg') {
+        thighTraces += 1;
+        const expected = ('thigh' + sideOf(part)) as LionBoneName;
+        forEachTraceVertex(mesh.geometry, part, vertex => { if (dominantBone(mesh, vertex) !== expected) thighBad += 1; });
       }
       if (part.name === 'Gown_sleeve') {
         sleeveTraces += 1;
@@ -167,8 +177,10 @@ function checkSkinning(layout: string, rig: LionRig) {
   }
   check(`[${layout}] head traces are rigidly weighted to the head bone`, headVertices > 0 && headBad === 0,
     `${headVertices} trace slots across mane/face parts, ${headBad} off-head`);
-  check(`[${layout}] left and right paw traces follow their own forearms`, pawTraces >= 2 && pawBad === 0,
-    `${pawTraces} traces, ${pawBad} wrong`);
+  check(`[${layout}] left and right paw traces follow their own feet`, footTraces >= 8 && footBad === 0,
+    `${footTraces} traces (paw, toes, lettering, crest), ${footBad} wrong`);
+  check(`[${layout}] left and right trouser legs follow their own thighs`, thighTraces >= 2 && thighBad === 0,
+    `${thighTraces} traces, ${thighBad} wrong`);
   check(`[${layout}] left and right sleeves follow their own upper arms`, sleeveTraces >= 2 && sleeveBad === 0,
     `${sleeveTraces} traces, ${sleeveBad} wrong`);
   check(`[${layout}] tail tip follows the last tail bone`, tailTipTraces === 1 && tailTipBad === 0);
@@ -179,6 +191,17 @@ checkSkinning('flattened', rig);
 check('leg bones exist and carry new leg meshes',
   (['thighL', 'shinL', 'footL', 'thighR', 'shinR', 'footR'] as LionBoneName[])
     .every(name => rig.bones[name].children.some(child => child instanceof T.Mesh)));
+{
+  const added: string[] = [];
+  compactedBody.traverse(child => {
+    if (child instanceof T.Mesh && child.name.startsWith('Lion_rig_')) added.push(child.name);
+  });
+  const expected = ['L', 'R'].flatMap(side => ['thigh', 'shin', 'ankle'].map(kind => `Lion_rig_${kind}_${side}`));
+  check('added leg meshes are exactly three stocks per side',
+    added.length === expected.length && expected.every(name => added.includes(name)), added.join(', '));
+  check('no added human foot or toe meshes',
+    added.every(name => !name.startsWith('Lion_rig_foot_') && !name.startsWith('Lion_rig_toe_')));
+}
 
 /* ------------------------------------------------------------------ */
 /* Eyes attach to the head bone                                        */
@@ -319,7 +342,12 @@ const DT = 1 / 60;
   for (let i = 0; i < 40; i++) rig.update(DT, state, 0);
   check('patrol starts the walk cycle', rig.current === 'walk', `clip ${rig.current}`);
   const footY: number[][] = [[], []];
+  const soleY: number[][] = [[], []];
   const hipY: number[] = [];
+  // Exact paw sole in foot-bone space: authored Paw centre [±.76,.51,1.04] minus foot rest
+  // [±.76,.52,.86], then down the paw's own .51 radius. The old synthetic point measured the
+  // added human foot that no longer exists.
+  const pawSole = new T.Vector3(0, -.52, .18);
   let minSole = Infinity;
   for (let i = 0; i < 120; i++) {
     state.lion.x += 1.4 * DT;
@@ -329,8 +357,10 @@ const DT = 1 / 60;
       footY[side].push(matrix.elements[13]);
       const position = new T.Vector3().setFromMatrixPosition(matrix);
       const quaternion = new T.Quaternion().setFromRotationMatrix(matrix);
-      minSole = Math.min(minSole, new T.Vector3(0, -.10, .13)
-        .applyMatrix4(new T.Matrix4().compose(position, quaternion, new T.Vector3(1, 1, 1))).y);
+      const sole = pawSole.clone()
+        .applyMatrix4(new T.Matrix4().compose(position, quaternion, new T.Vector3(1, 1, 1))).y;
+      soleY[side].push(sole);
+      minSole = Math.min(minSole, sole);
     }
     hipY.push(rig.bones.hips.position.y);
   }
@@ -341,13 +371,20 @@ const DT = 1 / 60;
   check('walking feet stay on or above the ground',
     (minSole - GROUND) * WORLD_SCALE > -.05,
     `lowest sole ${((minSole - GROUND) * WORLD_SCALE).toFixed(3)} m relative to ground`);
+  const stanceReach = [Math.min(...soleY[0]), Math.min(...soleY[1])];
+  check('walk places each stance paw on the ground at least once per cycle',
+    stanceReach.every(y => y * WORLD_SCALE <= .02),
+    `lowest sole L ${(stanceReach[0] * WORLD_SCALE).toFixed(3)} m, R ${(stanceReach[1] * WORLD_SCALE).toFixed(3)} m above the paw plane`);
+  check('walk paw soles never drop below −.01 m',
+    minSole * WORLD_SCALE >= -.01,
+    `lowest sole ${(minSole * WORLD_SCALE).toFixed(3)} m above the paw plane`);
 }
 
 // Attack and shutdown poses must not push geometry through the floor.
 {
   const state = createCombat().state;
   state.awakened = true;
-  for (const [phase, seconds] of [['chargeWarn', 1], ['charge', .82], ['swipeWarn', 1.05], ['stunned', 1.2], ['complete', 1.7]] as Array<[CombatState['phase'], number]>) {
+  for (const [phase, seconds] of [['chase', .9], ['chargeWarn', 1], ['charge', .82], ['swipeWarn', 1.05], ['stunned', 1.2], ['complete', 1.7]] as Array<[CombatState['phase'], number]>) {
     state.phase = phase;
     for (let i = 0; i < Math.ceil(seconds / DT); i++) rig.update(DT, state, 0);
     const bounds = evaluateBounds();

@@ -325,6 +325,9 @@ viewer.beforeRender.add(dt => {
 if (import.meta.env.DEV || import.meta.env.MODE === 'review') {
   Object.assign(window,{__LION_BOSS:{
     snapshot:() => game.scenario?.snapshot(),
+    // Evidence capture only: play the seated → standing awaken clip without starting patrol.
+    awaken(){ explorer.enterCompat(); playing = true; combat.awaken(); },
+    viewer, explorer,
     worldThreat:() => loadWorldThreat(),
     atmosphere:() => ({phase:atmosphere.phase,progress:atmosphere.curtainProgress,sealed}),
     markLionDefeated(){markLionDefeated();syncWorldThreat();},

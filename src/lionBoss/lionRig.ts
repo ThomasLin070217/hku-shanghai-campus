@@ -7,8 +7,9 @@ import {AWAKEN_SECONDS, type CombatState, type Phase} from './combat';
  *
  * `src/model/nov13Details.ts::createLion()` stays untouched: the campus statue and
  * `assets/items/entrance-lion.glb` remain the seated sculpture. This module rebuilds
- * the already-compacted boss body as skinned meshes, adds hidden legs and authors the
- * clips that stand the lion up and walk it around the lawn.
+ * the already-compacted boss body as skinned meshes, binds the authored gold paws to the
+ * foot bones, adds trouser legs inside the gown and authors the clips that stand the lion
+ * up and walk it around the lawn.
  *
  * Coordinate space: everything here is in `Lion_body_uniform_scale` local space,
  * before `body.scale` / `body.position`. The lion faces +Z (muzzle at z~1.0), which
@@ -50,10 +51,12 @@ const REST_POSITION: Record<LionBoneName, V3> = {
   chest: [0, 1.86, 0],
   neck: [0, 2.42, 0],
   head: [0, 2.64, 0],
-  // Rest legs hang straight; the seated clip folds them under the gown. In the standing
-  // pose the hips rise 0.55 so the feet land exactly on the statue's support top.
-  thighL: [-.36, .84, 0], shinL: [-.36, .10, 0], footL: [-.36, -.47, 0],
-  thighR: [.36, .84, 0], shinR: [.36, .10, 0], footR: [.36, -.47, 0],
+  // Bind pose = the authored seated statue: the leg chain is folded inside the gown, with the
+  // ankle behind the authored Paw. Identity bone rotations therefore reproduce the sculpture
+  // exactly. Standing pitches the chain straight down and the hips rise .55; the foot bone
+  // cancels the chain so the paw stays level and its sole lands on the authored paw plane (y 0).
+  thighL: [-.66, .84, .10], shinL: [-.72, .54, .48], footL: [-.76, .52, .86],
+  thighR: [.66, .84, .10], shinR: [.72, .54, .48], footR: [.76, .52, .86],
   upperArmL: [-.95, 1.98, .16], foreArmL: [-1.12, 1.30, .62],
   upperArmR: [.95, 1.98, .16], foreArmR: [1.12, 1.30, .62],
   tail1: [.18, .32, -.72], tail2: [.52, .27, -1.10], tail3: [.88, .24, -1.36],
@@ -74,18 +77,24 @@ const HEAD_PARTS = new Set([
 const CHEST_PARTS = new Set([
   'Gown_badge', 'Gown_badge_field', 'Gown_badge_book',
 ]);
-const HIPS_PARTS = new Set(['Seated_body', 'Seated_trousers', 'Trouser_leg']);
-const FOREARM_PARTS = new Set([
-  'Gown_cuff', 'Arm', 'Paw', 'Paw_toe', 'Paw_HKU_lettering', 'Paw_crest', 'Paw_crest_book',
+const HIPS_PARTS = new Set(['Seated_body', 'Seated_trousers']);
+const FOREARM_PARTS = new Set(['Gown_cuff', 'Arm']);
+/** The authored gold paws are the feet: paw round, three toe bumps, lettering and crest. */
+const FOOT_PARTS = new Set([
+  'Paw', 'Paw_toe', 'Paw_HKU_lettering', 'Paw_crest', 'Paw_crest_book',
 ]);
+/** The round dark lower-body ovals are the trouser legs, driven by the thigh. */
+const THIGH_PARTS = new Set(['Trouser_leg']);
 
 /** Rigid part → bone. Returns null when the trace needs per-vertex blending. */
 function boneForTrace(name: string, centerX: number): LionBoneName | null {
   if (HEAD_PARTS.has(name) || name.startsWith('Mane_')) return 'head';
   if (CHEST_PARTS.has(name)) return 'chest';
   if (HIPS_PARTS.has(name)) return 'hips';
+  if (THIGH_PARTS.has(name)) return centerX < 0 ? 'thighL' : 'thighR';
   if (name === 'Gown_sleeve') return centerX < 0 ? 'upperArmL' : 'upperArmR';
   if (FOREARM_PARTS.has(name)) return centerX < 0 ? 'foreArmL' : 'foreArmR';
+  if (FOOT_PARTS.has(name)) return centerX < 0 ? 'footL' : 'footR';
   if (name === 'Tail_tip') return 'tail3';
   if (name === 'Rounded_body_mid' || name === 'Shirt_front_panel'
     || name.startsWith('Shirt_vertical_stripe') || name === 'Tail') return null;
@@ -122,6 +131,70 @@ interface Pose {
 }
 
 const ZERO: V3 = [0, 0, 0];
+
+/* ------------------------------------------------------------------ */
+/* Leg solve                                                           */
+/* ------------------------------------------------------------------ */
+/**
+ * Standing leg baseline. The rest chain (hip → knee → ankle) points down and forward toward the
+ * authored Paw; pitching the thigh by +.902 rad and the shin by +.616 rad aligns both segments
+ * straight down, which puts the ankle at body-local y .522, z .08. The foot bone cancels the
+ * chain (−1.518 rad) so the paw keeps the statue's level orientation, and the authored paw sole
+ * (0, −.52, .18 from the foot bone) lands on the authored paw plane y 0.
+ */
+const STAND_THIGH = .902, STAND_SHIN = .616;
+/** Paw sole relative to the foot bone at rest (paw centre [±.76, .51, 1.04] − foot rest). */
+const PAW_SOLE: V3 = [0, -.52, .18];
+
+/** Leg rotations for one side: the foot cancels the chain so the paw stays level. */
+function legRotations(thigh: number, shin: number): V3 {
+  return [thigh, shin, -(thigh + shin)];
+}
+
+function addLegRotations(bones: Partial<Record<LionBoneName, V3>>, side: 'L' | 'R',
+  thigh: number, shin: number) {
+  const [t, s, f] = legRotations(thigh, shin);
+  if (side === 'L') {
+    bones.thighL = [t, 0, 0]; bones.shinL = [s, 0, 0]; bones.footL = [f, 0, 0];
+  } else {
+    bones.thighR = [t, 0, 0]; bones.shinR = [s, 0, 0]; bones.footR = [f, 0, 0];
+  }
+}
+
+/** Both legs; the right defaults to the left so symmetric poses stay symmetric. */
+function legs(thighL: number, shinL: number, thighR = thighL, shinR = shinL) {
+  const bones: Partial<Record<LionBoneName, V3>> = {};
+  addLegRotations(bones, 'L', thighL, shinL);
+  addLegRotations(bones, 'R', thighR, shinR);
+  return bones;
+}
+
+const SEGMENT_D1: V3 = [
+  REST_POSITION.shinL[0] - REST_POSITION.thighL[0],
+  REST_POSITION.shinL[1] - REST_POSITION.thighL[1],
+  REST_POSITION.shinL[2] - REST_POSITION.thighL[2],
+];
+const SEGMENT_D2: V3 = [
+  REST_POSITION.footL[0] - REST_POSITION.shinL[0],
+  REST_POSITION.footL[1] - REST_POSITION.shinL[1],
+  REST_POSITION.footL[2] - REST_POSITION.shinL[2],
+];
+
+/** Body-local y of a level paw sole under `hipsOffsetY` and the given leg angles. */
+function soleHeight(hipsOffsetY: number, thigh: number, shin: number): number {
+  return REST_POSITION.hips[1] + hipsOffsetY
+    + Math.cos(thigh) * SEGMENT_D1[1] - Math.sin(thigh) * SEGMENT_D1[2]
+    + Math.cos(thigh + shin) * SEGMENT_D2[1] - Math.sin(thigh + shin) * SEGMENT_D2[2]
+    + PAW_SOLE[1];
+}
+
+/** Hips offset that lowers/raises the pose so its lowest paw sole rests on the paw plane. */
+function groundedHips(hipsOffsetY: number, hipsOffsetZ: number,
+  thighL: number, shinL: number, thighR = thighL, shinR = shinL): V3 {
+  const lowest = Math.min(soleHeight(hipsOffsetY, thighL, shinL), soleHeight(hipsOffsetY, thighR, shinR));
+  return [0, hipsOffsetY - lowest, hipsOffsetZ];
+}
+
 // An upright stance: only a slight forward lean through the spine and chest, with the neck and
 // head tilted back so the face looks forward rather than at the ground. The rear mane tufts
 // stick out behind the skull, so any further head lift raises the crown fast.
@@ -131,17 +204,16 @@ const STAND: Pose = {
   bones: {
     spine: [BASE_SPINE, 0, 0], chest: [BASE_CHEST, 0, 0],
     neck: [BASE_NECK, 0, 0], head: [BASE_HEAD, 0, 0],
+    ...legs(STAND_THIGH, STAND_SHIN),
     upperArmL: [.5, 0, -.05], upperArmR: [.5, 0, .05],
     foreArmL: [-.14, 0, 0], foreArmR: [-.14, 0, 0],
   },
 };
 
+/** Bind pose: the authored seated statue. Legs at identity keep the paws exactly where authored. */
 const SEATED: Pose = {
   hips: [0, 0, 0],
-  bones: {
-    thighL: [-1.62, 0, 0], shinL: [2.9, 0, 0], footL: [-.36, 0, 0],
-    thighR: [-1.62, 0, 0], shinR: [2.9, 0, 0], footR: [-.36, 0, 0],
-  },
+  bones: legs(0, 0),
 };
 
 const euler = (v: V3) => new T.Euler(v[0], v[1], v[2], 'YXZ');
@@ -195,15 +267,24 @@ const clamp = T.MathUtils.clamp;
 
 const WALK_SECONDS = 1.4;
 const RUN_SECONDS = .9;
-/** World metres per full (two-step) cycle at timeScale 1, used to sync feet to travel. */
-const WALK_CYCLE_METRES = 2.75;
-const RUN_CYCLE_METRES = 3.9;
+/**
+ * World metres per full (two-step) cycle at timeScale 1, used to sync feet to travel. Measured
+ * from the authored paw's forward travel in the new gait: 2 × .79 body units × 1.285 world scale
+ * for walk, 2 × 1.04 × 1.285 for run.
+ */
+const WALK_CYCLE_METRES = 2.03;
+const RUN_CYCLE_METRES = 2.68;
+
+/** Gait amplitudes around the standing baseline; the stance paw keeps reaching the paw plane. */
+const WALK_SWING = .44, WALK_KNEE = .60, WALK_BOB = .012;
+const RUN_SWING = .60, RUN_KNEE = .90, RUN_BOB = .02;
 
 function idlePose(t: number): Pose {
   const p = t / 3.2 * TAU;
   const breath = Math.sin(p);
   return mergePose(STAND, {
-    hips: [0, .55 + .012 * breath, -.02],
+    // Breathing only lifts from the baseline so the planted paws never sink.
+    hips: [0, .55 + .006 * (1 + breath), -.02],
     bones: {
       spine: [BASE_SPINE + .018 * breath, 0, 0],
       chest: [BASE_CHEST + .022 * Math.sin(p + .3), 0, 0],
@@ -220,18 +301,18 @@ function idlePose(t: number): Pose {
 
 function walkPose(t: number): Pose {
   const p = t / WALK_SECONDS * TAU, s = Math.sin(p), kneeL = Math.max(0, -Math.cos(p)), kneeR = Math.max(0, Math.cos(p));
-  const thighL = -.46 * s, thighR = .46 * s;
-  const shinL = .62 * kneeL, shinR = .62 * kneeR;
+  const thighL = STAND_THIGH - WALK_SWING * s, thighR = STAND_THIGH + WALK_SWING * s;
+  const shinL = STAND_SHIN + WALK_KNEE * kneeL, shinR = STAND_SHIN + WALK_KNEE * kneeR;
   return mergePose(STAND, {
-    hips: [.015 * s, .55 + .03 * (.5 + .5 * Math.sin(2 * p)), -.02],
+    // Bob peaks at mid-swing and returns to the baseline at contact, so the stance paw can plant.
+    hips: [.015 * s, .55 + WALK_BOB * (.5 - .5 * Math.cos(2 * p)), -.02],
     bones: {
       hips: [0, .06 * s, .02 * s],
       spine: [BASE_SPINE, -.05 * s, 0],
       chest: [BASE_CHEST, -.05 * s, 0],
       neck: [BASE_NECK, .02 * s, 0],
       head: [BASE_HEAD + .02 * Math.sin(2 * p), .02 * s, 0],
-      thighL: [thighL, 0, 0], shinL: [shinL, 0, 0], footL: [-.8 * (thighL + shinL), 0, 0],
-      thighR: [thighR, 0, 0], shinR: [shinR, 0, 0], footR: [-.8 * (thighR + shinR), 0, 0],
+      ...legs(thighL, shinL, thighR, shinR),
       upperArmL: [.42 + .20 * s, 0, -.05], upperArmR: [.42 - .20 * s, 0, .05],
       foreArmL: [-.12 - .06 * Math.max(0, -s), 0, 0], foreArmR: [-.12 - .06 * Math.max(0, s), 0, 0],
       tail1: [-.06, .16 * Math.sin(p + .3), 0],
@@ -243,18 +324,17 @@ function walkPose(t: number): Pose {
 
 function runPose(t: number): Pose {
   const p = t / RUN_SECONDS * TAU, s = Math.sin(p), kneeL = Math.max(0, -Math.cos(p)), kneeR = Math.max(0, Math.cos(p));
-  const thighL = -.66 * s, thighR = .66 * s;
-  const shinL = .92 * kneeL, shinR = .92 * kneeR;
+  const thighL = STAND_THIGH - RUN_SWING * s, thighR = STAND_THIGH + RUN_SWING * s;
+  const shinL = STAND_SHIN + RUN_KNEE * kneeL, shinR = STAND_SHIN + RUN_KNEE * kneeR;
   return mergePose(STAND, {
-    hips: [.025 * s, .57 + .05 * (.5 + .5 * Math.sin(2 * p)), 0],
+    hips: [.025 * s, .55 + RUN_BOB * (.5 - .5 * Math.cos(2 * p)), 0],
     bones: {
       hips: [0, .1 * s, .03 * s],
       spine: [BASE_SPINE + .06, -.08 * s, 0],
       chest: [BASE_CHEST + .04, -.08 * s, 0],
       neck: [BASE_NECK - .06, .03 * s, 0],
       head: [BASE_HEAD - .06 + .025 * Math.sin(2 * p), .03 * s, 0],
-      thighL: [thighL, 0, 0], shinL: [shinL, 0, 0], footL: [-.75 * (thighL + shinL), 0, 0],
-      thighR: [thighR, 0, 0], shinR: [shinR, 0, 0], footR: [-.75 * (thighR + shinR), 0, 0],
+      ...legs(thighL, shinL, thighR, shinR),
       upperArmL: [.44 + .34 * s, 0, -.06], upperArmR: [.44 - .34 * s, 0, .06],
       foreArmL: [-.2 - .1 * Math.max(0, -s), 0, 0], foreArmR: [-.2 - .1 * Math.max(0, s), 0, 0],
       tail1: [-.12, .18 * Math.sin(p + .3), 0],
@@ -265,14 +345,18 @@ function runPose(t: number): Pose {
 }
 
 function chargeWarnPose(t: number): Pose {
-  const p = t * TAU, pulse = .01 * Math.sin(p);
+  const p = t * TAU, pulse = .006 * (1 + Math.sin(p));
+  // Delta crouch around the standing baseline; the hips follow the legs so the paws stay planted.
+  // The wind-up pulse only lifts from the grounded height, never pushes the paws through it.
+  const thigh = STAND_THIGH - .55, shin = STAND_SHIN + .95;
+  const hips = groundedHips(.40, -.18, thigh, shin);
+  hips[1] += pulse;
   return mergePose(STAND, {
-    hips: [0, .40 + pulse, -.18],
+    hips,
     bones: {
       hips: [0, 0, 0],
       spine: [.18 + pulse, 0, 0], chest: [.16, 0, 0], neck: [-.06, 0, 0], head: [-.08, 0, 0],
-      thighL: [-.55, 0, 0], shinL: [.95, 0, 0], footL: [-.40, 0, 0],
-      thighR: [-.55, 0, 0], shinR: [.95, 0, 0], footR: [-.40, 0, 0],
+      ...legs(thigh, shin),
       upperArmL: [.62, 0, -.12], upperArmR: [.62, 0, .12],
       foreArmL: [-.02, 0, 0], foreArmR: [-.02, 0, 0],
       tail1: [-.18, 0, 0], tail2: [-.08, 0, 0], tail3: [0, 0, 0],
@@ -282,13 +366,14 @@ function chargeWarnPose(t: number): Pose {
 
 function chargePose(t: number): Pose {
   const p = t * TAU, pulse = .008 * Math.sin(p);
+  const thighL = STAND_THIGH - .62, shinL = STAND_SHIN + .30;
+  const thighR = STAND_THIGH + .28, shinR = STAND_SHIN + .42;
   return mergePose(STAND, {
-    hips: [0, .39, .36],
+    hips: groundedHips(.39, .36, thighL, shinL, thighR, shinR),
     bones: {
       hips: [0, 0, 0],
       spine: [.26 + pulse, 0, 0], chest: [.20, 0, 0], neck: [-.08, 0, 0], head: [-.10, 0, 0],
-      thighL: [-.62, 0, 0], shinL: [.30, 0, 0], footL: [.32, 0, 0],
-      thighR: [.28, 0, 0], shinR: [.42, 0, 0], footR: [-.70, 0, 0],
+      ...legs(thighL, shinL, thighR, shinR),
       upperArmL: [.12, 0, -.16], upperArmR: [.12, 0, .16],
       foreArmL: [-.42, 0, 0], foreArmR: [-.42, 0, 0],
       tail1: [-.28, 0, 0], tail2: [-.16, 0, 0], tail3: [-.06, 0, 0],
@@ -298,14 +383,14 @@ function chargePose(t: number): Pose {
 
 function swipeWarnPose(t: number): Pose {
   const p = t * TAU, wind = .02 * Math.sin(p);
+  const thigh = STAND_THIGH - .26, shin = STAND_SHIN + .56;
   return mergePose(STAND, {
-    hips: [0, .50, -.06],
+    hips: groundedHips(.50, -.06, thigh, shin),
     bones: {
       hips: [0, -.10, 0],
       spine: [.20, .18 + wind, 0], chest: [.18, .30, 0],
       neck: [-.06, -.16, 0], head: [-.10, -.24, 0],
-      thighL: [-.26, 0, 0], shinL: [.56, 0, 0], footL: [-.30, 0, 0],
-      thighR: [-.26, 0, 0], shinR: [.56, 0, 0], footR: [-.30, 0, 0],
+      ...legs(thigh, shin),
       upperArmR: [-.35, 0, .85], foreArmR: [-.55, 0, .25],
       upperArmL: [.55, 0, -.16], foreArmL: [-.05, 0, 0],
       tail1: [-.10, -.12, 0], tail2: [0, -.16, 0], tail3: [0, -.2, 0],
@@ -314,14 +399,16 @@ function swipeWarnPose(t: number): Pose {
 }
 
 function stunnedPose(t: number): Pose {
-  const p = t * TAU, tremble = .01 * Math.sin(p * 3);
+  const p = t * TAU, tremble = .005 * (1 + Math.sin(p * 3));
+  const thigh = STAND_THIGH - .72, shin = STAND_SHIN + 1.28;
+  const hips = groundedHips(.28, -.04, thigh, shin);
+  hips[1] += tremble;
   return mergePose(STAND, {
-    hips: [0, .28 + tremble, -.04],
+    hips,
     bones: {
       hips: [0, 0, .02],
       spine: [.52, .02, .03], chest: [.44, 0, .03], neck: [.16, 0, 0], head: [.24, 0, .04],
-      thighL: [-.72, 0, 0], shinL: [1.28, 0, 0], footL: [-.56, 0, 0],
-      thighR: [-.72, 0, 0], shinR: [1.28, 0, 0], footR: [-.56, 0, 0],
+      ...legs(thigh, shin),
       upperArmL: [.18, 0, -.24], upperArmR: [.18, 0, .24],
       foreArmL: [.12, 0, 0], foreArmR: [.12, 0, 0],
       tail1: [.02, .04, 0], tail2: [0, .04, 0], tail3: [0, .04, 0],
@@ -331,11 +418,10 @@ function stunnedPose(t: number): Pose {
 
 /** Bow that matches the existing 1.6 s power-off presentation. */
 const SHUTDOWN_END: Pose = {
-  hips: [0, .50, -.02],
+  hips: groundedHips(.50, -.02, STAND_THIGH - .32, STAND_SHIN + .64),
   bones: {
     spine: [.80, 0, 0], chest: [.55, 0, 0], neck: [.20, 0, 0], head: [.26, 0, 0],
-    thighL: [-.32, 0, 0], shinL: [.64, 0, 0], footL: [-.32, 0, 0],
-    thighR: [-.32, 0, 0], shinR: [.64, 0, 0], footR: [-.32, 0, 0],
+    ...legs(STAND_THIGH - .32, STAND_SHIN + .64),
     upperArmL: [.62, 0, -.14], upperArmR: [.62, 0, .14],
     foreArmL: [-.2, 0, 0], foreArmR: [-.2, 0, 0],
     tail1: [.06, 0, 0], tail2: [.04, 0, 0], tail3: [0, 0, 0],
@@ -352,28 +438,30 @@ function buildClips(): Record<LionClipName, T.AnimationClip> {
   clips.charge = sampledClip('charge', .82, 24, chargePose);
   clips.swipeWarn = sampledClip('swipeWarn', 1.05, 24, swipeWarnPose);
   clips.stunned = sampledClip('stunned', 1.2, 24, stunnedPose);
-  // The pelvis lifts while the legs are still folded, then each leg extends down onto the
-  // ground in turn. Extending a leg while the pelvis is still low would push the foot through
-  // the support plane, so the hips reach standing height before the first foot plants.
-  const awakenTimes = [0, .5, 1.0, 1.45, 1.95, AWAKEN_SECONDS];
+  // Two-stage stand. Stage 1 (.0–.35 s) lifts the hips to standing height with the legs still at
+  // identity, so both paws leave the ground immediately and can never be pushed through it.
+  // Stage 2 (.35–1.72 s) extends each leg from identity to the standing baseline; the paws stay
+  // level via the foot cancellation and their soles descend monotonically to the paw plane.
+  // The right leg lags the left by .12 s, so the second paw plants after the first. A single
+  // linear mix of hips and legs would sink the paws ~.12 m at the midpoint.
+  const awakenTimes = [0, .35, .5, .95, 1.45, 1.6, 1.72, 2.05, AWAKEN_SECONDS];
   const awakenPoses: Pose[] = [
     SEATED,
-    mergePose(SEATED, {hips: [0, .30, -.03], bones: {spine: [.08, 0, 0], chest: [.06, 0, 0],
-      neck: [-.02, 0, 0], head: [-.03, 0, 0],
-      thighL: [-1.55, 0, 0], shinL: [2.80, 0, 0], footL: [-.35, 0, 0],
-      thighR: [-1.55, 0, 0], shinR: [2.80, 0, 0], footR: [-.35, 0, 0]}}),
-    mergePose(SEATED, {hips: [0, .55, -.02], bones: {spine: [.14, 0, 0], chest: [.10, 0, 0],
-      neck: [-.03, 0, 0], head: [-.05, 0, 0],
-      thighL: [-1.10, 0, 0], shinL: [2.00, 0, 0], footL: [-.30, 0, 0],
-      thighR: [-1.50, 0, 0], shinR: [2.70, 0, 0], footR: [-.35, 0, 0]}}),
-    mergePose(STAND, {hips: [0, .55, -.02], bones: {spine: [.16, 0, 0], chest: [.12, 0, 0],
-      neck: [-.06, 0, 0], head: [-.09, 0, 0],
-      thighL: [0, 0, 0], shinL: [0, 0, 0], footL: [0, 0, 0],
-      thighR: [-1.20, 0, 0], shinR: [2.20, 0, 0], footR: [-.35, 0, 0]}}),
-    mergePose(STAND, {hips: [0, .55, -.01], bones: {spine: [.22, 0, 0], chest: [.18, 0, 0],
-      neck: [-.04, 0, 0], head: [-.06, 0, 0],
-      thighL: [0, 0, 0], shinL: [0, 0, 0], footL: [0, 0, 0],
-      thighR: [-.30, 0, 0], shinR: [.55, 0, 0], footR: [-.25, 0, 0]}}),
+    {hips: [0, .55, -.02], bones: {spine: [.06, 0, 0], chest: [.04, 0, 0],
+      neck: [-.02, 0, 0], head: [-.03, 0, 0], ...legs(0, 0)}},
+    {hips: [0, .55, -.02], bones: {spine: [.09, 0, 0], chest: [.06, 0, 0],
+      neck: [-.03, 0, 0], head: [-.04, 0, 0], ...legs(.30, .20, 0, 0)}},
+    {hips: [0, .55, -.02], bones: {spine: [.12, 0, 0], chest: [.09, 0, 0],
+      neck: [-.04, 0, 0], head: [-.06, 0, 0], ...legs(.62, .42, .20, .13)}},
+    {hips: [0, .55, -.02], bones: {spine: [.15, 0, 0], chest: [.11, 0, 0],
+      neck: [-.05, 0, 0], head: [-.08, 0, 0], ...legs(.86, .58, .45, .31)}},
+    {hips: [0, .55, -.02], bones: {spine: [.17, 0, 0], chest: [.12, 0, 0],
+      neck: [-.06, 0, 0], head: [-.09, 0, 0], ...legs(STAND_THIGH, STAND_SHIN, .72, .49)}},
+    {hips: [0, .55, -.02], bones: {spine: [.18, 0, 0], chest: [.13, 0, 0],
+      neck: [-.07, 0, 0], head: [-.10, 0, 0], ...legs(STAND_THIGH, STAND_SHIN)}},
+    mergePose(STAND, {hips: [0, .55, -.02], bones: {spine: [.18, 0, 0], chest: [.14, 0, 0],
+      neck: [-.07, 0, 0], head: [-.10, 0, 0],
+      upperArmL: [.46, 0, -.05], upperArmR: [.46, 0, .05]}}),
     STAND,
   ];
   clips.awaken = buildClip('awaken', AWAKEN_SECONDS, awakenTimes, awakenPoses);
@@ -542,7 +630,6 @@ export function createLionRig(body: T.Object3D): LionRig {
     return material;
   };
   const trousers = materialFor('Lion dark trousers', 0x2f2934);
-  const gold = materialFor('Lion golden fabric', 0xeeb262);
 
   const legGeometries = new Set<T.BufferGeometry>();
   const addedMeshes: T.Mesh[] = [];
@@ -559,23 +646,33 @@ export function createLionRig(body: T.Object3D): LionRig {
     addedMeshes.push(mesh);
     return mesh;
   };
-  const thighGeometry = new T.CylinderGeometry(.20, .27, .74, 8);
-  const shinGeometry = new T.CylinderGeometry(.16, .20, .57, 8);
-  const jointGeometry = new T.SphereGeometry(1, 10, 8);
-  const footGeometry = new T.SphereGeometry(1, 10, 8);
-  const toeGeometry = new T.SphereGeometry(1, 8, 6);
+  // Stocky trouser legs connect hip → knee → ankle, ending in a small cuff. They follow the
+  // rest segments, and in the seated bind pose every one of them is inside the gown,
+  // Trouser_leg oval or authored Paw, so the statue silhouette does not change. No human foot
+  // or toe meshes: the authored gold paws are the feet.
+  const d1 = new T.Vector3(...SEGMENT_D1);
+  const d2 = new T.Vector3(...SEGMENT_D2);
+  const up = new T.Vector3(0, 1, 0);
+  const thighLength = d1.length(), shinLength = d2.length();
+  // Radii kept inside the authored Trouser_leg ovals and Paw: the first pass at .30/.27 and
+  // .27/.23 poked two dark nubs through the paw inner edge in the seated statue (383 px in the
+  // default-view diff). These still fill the ovals when standing.
+  const thighGeometry = new T.CylinderGeometry(.22, .26, thighLength, 10);
+  const shinGeometry = new T.CylinderGeometry(.17, .21, shinLength, 10);
+  const cuffGeometry = new T.CylinderGeometry(.20, .22, .10, 10);
+  const thighDirection = d1.clone().normalize();
+  const shinDirection = d2.clone().normalize();
   for (const side of ['L', 'R'] as const) {
     const thigh = ('thigh' + side) as LionBoneName;
     const shin = ('shin' + side) as LionBoneName;
     const foot = ('foot' + side) as LionBoneName;
-    addPart(thigh, jointGeometry, trousers, [0, 0, 0], [.27, .27, .27], 'Lion_rig_hip_' + side);
-    addPart(thigh, thighGeometry, trousers, [0, -.37, 0], undefined, 'Lion_rig_thigh_' + side);
-    addPart(shin, jointGeometry, trousers, [0, 0, 0], [.2, .2, .2], 'Lion_rig_knee_' + side);
-    addPart(shin, shinGeometry, trousers, [0, -.285, 0], undefined, 'Lion_rig_shin_' + side);
-    addPart(foot, footGeometry, gold, [0, -.025, .13], [.25, .075, .34], 'Lion_rig_foot_' + side);
-    for (const [index, x] of [-.13, 0, .13].entries()) {
-      addPart(foot, toeGeometry, gold, [x, -.05, .38], [.09, .05, .11], 'Lion_rig_toe_' + side + '_' + index);
-    }
+    const thighMesh = addPart(thigh, thighGeometry, trousers,
+      [d1.x / 2, d1.y / 2, d1.z / 2], undefined, 'Lion_rig_thigh_' + side);
+    thighMesh.quaternion.setFromUnitVectors(up, thighDirection);
+    const shinMesh = addPart(shin, shinGeometry, trousers,
+      [d2.x / 2, d2.y / 2, d2.z / 2], undefined, 'Lion_rig_shin_' + side);
+    shinMesh.quaternion.setFromUnitVectors(up, shinDirection);
+    addPart(foot, cuffGeometry, trousers, [0, 0, 0], undefined, 'Lion_rig_ankle_' + side);
   }
 
   /* ---------- clips ---------- */
