@@ -181,12 +181,15 @@ keep a working gamepad. It builds:
 ```
 
 Behaviour: pointer capture per control; release and `pointercancel` reset the
-stick; `touchmove` on the document releases a captured stick; MENU is Escape;
-RUN toggles `aria-pressed` and calls `explorer.touchRun`; USE/JUMP/BAG dispatch
-the synthetic keys; a MutationObserver on `body.dataset.campaignFocus` swaps the
-USE label to `BACK` while focused; the rotate hint follows
-`matchMedia('(orientation: portrait)')` and the Dismiss button hides it for the
-session.
+stick; while the stick is held it re-sends `touchMove` every frame, because any
+`clear()` (pause, inventory, focus) zeroes the axes and a move-less hold would
+otherwise stall until the next pointermove; `touchmove` on the document releases
+a captured stick; MENU is Escape; RUN toggles `aria-pressed` and calls
+`explorer.touchRun`, and re-syncs `aria-pressed` from the explorer after any
+`clear()`; USE/JUMP/BAG dispatch the synthetic keys; a MutationObserver on
+`body.dataset.campaignFocus` swaps the USE label to `BACK` while focused; the
+rotate hint follows `matchMedia('(orientation: portrait)')` and the Dismiss
+button hides it for the session.
 
 Copy parity: a MutationObserver rewrites keyboard-only HUD copy on mount and on
 change — `Press F` → `Tap USE`, standalone `Esc` → `MENU`, and the B4 focus hint
