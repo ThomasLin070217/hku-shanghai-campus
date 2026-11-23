@@ -216,7 +216,9 @@ Extend `scripts/check-mobile.ts` with:
 6. source asserts: controller returns `touchMove` and `touchRun`; the touch
    module contains the five synthetic codes; the CSS contains
    `env(safe-area-inset` and an orientation media query; `TOUCH_MAX_PIXEL_RATIO`
-   is 1.15 and main.ts passes it to `createSiteViewer`
+   is 1.15 and main.ts passes it to `createSiteViewer`; both call sites contain
+   the full `matchMedia('(pointer: coarse)')` expression (the earlier
+   substring pin could be satisfied by a comment)
 7. the desktop path is untouched: the compat pointermove has the touch
    multiplier behind `pointerType === 'touch'`.
 
