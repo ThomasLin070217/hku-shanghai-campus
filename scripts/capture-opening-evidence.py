@@ -46,8 +46,18 @@ def shot(page, name):
 def capture(page, label):
     page.goto(ORIGIN + '?experience=opening&intro=1', wait_until='domcontentloaded')
     page.wait_for_function('() => window.__CAMPUS && window.__CAMPUS.prologue', timeout=120000)
-    page.click('.prologue-begin')
+    page.click('.prologue-begin', timeout=120000)
     page.wait_for_function('() => window.__CAMPUS.prologue.debug.state().t > 0', timeout=120000)
+
+    # The prologue clock reads AudioContext.currentTime while it runs. Suspend
+    # the context so a seek lands exactly on its beat: a SwiftShader screenshot
+    # can take seconds, and an unfrozen clock would carry the take past the
+    # frame we asked for before the pixels are read.
+    page.evaluate("() => window.__CAMPUS.experience.audio.context?.suspend?.()")
+    page.wait_for_function(
+        "() => ['suspended', 'closed'].includes(window.__CAMPUS.experience.audio.context?.state)",
+        timeout=30000,
+    )
 
     page.evaluate('(t) => window.__CAMPUS.prologue.debug.seek(t)', LIGHT_SHOW)
     frames(page, 3)
@@ -56,7 +66,10 @@ def capture(page, label):
     beam = page.evaluate(FIND_WAYPOINT, [54.6, 13.4])
     if beam is None:
         raise RuntimeError('the interior-beam waypoint moved; update FIND_WAYPOINT')
-    page.evaluate('(t) => window.__CAMPUS.prologue.debug.seek(t)', beam)
+    # The camera is inside the shaft at the waypoint, so the cylinder's lit wall
+    # is behind the near plane and the frame reads as a plain room. 1.5 s before
+    # it, the shaft stands ahead in the doorway and the pass-through is legible.
+    page.evaluate('(t) => window.__CAMPUS.prologue.debug.seek(t)', beam - 1.5)
     frames(page, 3)
     shot(page, f'{label}-interior-beam.png')
 
@@ -67,13 +80,14 @@ def capture(page, label):
     frames(page, 3)
     shot(page, f'{label}-dinner-hall.png')
 
-    # The last waypoint is exactly the spawn pose. Skipping removes the overlay
-    # and hands control back; the explorer camera then follows the body there.
+    # The last waypoint is exactly the spawn pose. Seek there, then stop the take
+    # the same way Skip does: waiting for the automatic END_HOLD teardown would
+    # race the still-running clock while the screenshot is taken.
     last = page.evaluate("() => { const w = window.__CAMPUS.prologue.debug.waypoints(); return w[w.length - 1].t; }")
     page.evaluate('(t) => window.__CAMPUS.prologue.debug.seek(t)', last)
     frames(page, 2)
-    page.click('.prologue-skip')
-    page.wait_for_function("() => !document.querySelector('#prologue')", timeout=60000)
+    page.evaluate('() => window.__CAMPUS.prologue.stop()')
+    frames(page, 1)
     page.evaluate('() => window.__CAMPUS.explorer.enterCompat()')
     frames(page, 4)
     pose = page.evaluate("() => ({position: window.__CAMPUS.explorer.position.toArray(), story: window.__CAMPUS.openingDebug.state().story.stage})")
