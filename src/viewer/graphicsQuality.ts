@@ -1,3 +1,5 @@
+import {useTouchControls} from '../opening/touchInput';
+
 export type GraphicsQuality = 'auto' | 'low';
 
 const storageKey = 'hku.campus.graphics-quality.v1';
@@ -6,11 +8,38 @@ const storageKey = 'hku.campus.graphics-quality.v1';
  * are never scaled by the governor below. */
 export const MAX_PIXEL_RATIO = 1.5;
 
+/** Quality for a device when the player has made no explicit choice.
+ *
+ * An explicit `?quality=` override wins; then a stored `low`; then a touch
+ * device whose shortest screen side is at most 900 px starts low. Everything
+ * else keeps the desktop default. */
+export function defaultGraphicsQuality(input: {override: string | null; stored: string | null; touch: boolean; shortestSide: number}): GraphicsQuality {
+  if (input.override === 'auto' || input.override === 'low') return input.override;
+  if (input.stored === 'low') return 'low';
+  if (input.touch && input.shortestSide <= 900) return 'low';
+  return 'auto';
+}
+
+function touchDevice() {
+  if (typeof matchMedia !== 'function' || typeof navigator === 'undefined') return false;
+  return useTouchControls({
+    anyCoarse: matchMedia('(any-pointer: coarse)').matches,
+    maxTouchPoints: navigator.maxTouchPoints,
+    hoverNone: matchMedia('(hover: none)').matches,
+  });
+}
+
 export function getGraphicsQuality(): GraphicsQuality {
   const override = new URLSearchParams(location.search).get('quality');
-  if (override === 'auto' || override === 'low') return override;
-  try { return localStorage.getItem(storageKey) === 'low' ? 'low' : 'auto'; }
-  catch { return 'auto'; }
+  let stored: string | null = null;
+  try { stored = localStorage.getItem(storageKey); }
+  catch { /* Storage can be unavailable; the URL override still applies. */ }
+  return defaultGraphicsQuality({
+    override,
+    stored,
+    touch: touchDevice(),
+    shortestSide: Math.min(screen.width, screen.height),
+  });
 }
 
 export function setGraphicsQuality(quality: GraphicsQuality) {
