@@ -64,12 +64,24 @@ function constantReport() {
   from: [r4((B4_LAYOUT.sideDoor.x0 + B4_LAYOUT.sideDoor.x1) / 2), B4_LAYOUT.sideDoor.z] as [number, number],
   north: r4(B4_LAYOUT.sideDoor.z - door.centre),
   west: r4((B4_LAYOUT.sideDoor.x0 + B4_LAYOUT.sideDoor.x1) / 2 - (L.x0 + L.x1) / 2),
+  /**
+   * The brief's "5–7 m along the west wall", under the ruled convention: the façade's inner
+   * face → the lift doorway's near jamb. The band-tower's front slab is 0.20 m thick with its
+   * outer face 0.10 m beyond the room's front face (`openingObstacles` carves it at `z1 − .2`),
+   * so its inner face is `b4.z1 − .10` = 20.40 and the near jamb is `door.z1` = 13.40.
+   * The room shell's own front wall sits 0.03 m further in; that narrower reading is printed
+   * too but not pinned.
+   */
+  facadeInner: r4(OPENING.b4.z1 - .1),
+  nearJamb: L.door.z1,
+  innerFaceToNearJamb: r4(OPENING.b4.z1 - .1 - L.door.z1),
+  roomWallToNearJamb: r4(OPENING.b4.z1 - .13 - L.door.z1),
  };
  return { revision: OPENING_WORLD_REVISION, car, door, floors, approach, lobbyWestFace: r4(OPENING.b4.x0 + .01 + B4_LAYOUT.wall) };
 }
 
 function assertConstants(constants: ReturnType<typeof constantReport>) {
- const { car, door, floors } = constants;
+ const { car, door, floors, approach } = constants;
  check(Math.abs(car.width - 2.20) < EPS, 'car:width', `car interior width ${car.width} m must be 2.20 m`);
  check(Math.abs(car.depth - 2.60) < EPS, 'car:depth', `car interior depth ${car.depth} m must be 2.60 m`);
  check(Math.abs(car.clearHeight - 2.60) < EPS, 'car:clear-height', `car clear height ${car.clearHeight} m must be 2.60 m`);
@@ -88,6 +100,8 @@ function assertConstants(constants: ReturnType<typeof constantReport>) {
   `the landing must be four 4.72 m storeys above the lobby: ${floors.expectedLanding}, read ${floors.landing}`);
  check(/v8/.test(constants.revision) && /lift/.test(constants.revision), 'revision:bumped',
   `OPENING_WORLD_REVISION must name the lift, read ${constants.revision}`);
+ check(approach.innerFaceToNearJamb >= 5 - EPS && approach.innerFaceToNearJamb <= 7 + EPS, 'approach:distance',
+  `the lift door must be 5–7 m along the west wall from the façade's inner face, measured ${approach.innerFaceToNearJamb} m`);
 }
 
 /* ------------------------------------------------------------------ */
@@ -128,21 +142,6 @@ function machineReport() {
  const final = { phase: s.phase, y: s.y, doors: s.doors };
  /** The accel–cruise–decel profile's peak speed and peak acceleration, for the report. */
  const peakSpeed = LIFT_TRAVEL_DISTANCE / (L.travelSeconds * (1 - .25));
- /** What the mounted car costs per frame, against the cost of rebuilding the list. */
- const cost = (() => {
-  const perf = (globalThis as { performance?: { now(): number } }).performance;
-  const nowMs = () => (perf ? perf.now() : Date.now());
-  const iterations = 2000;
-  resetLift();
-  const t0 = nowMs();
-  for (let i = 0; i < iterations; i++) { stepLift(LIFT, 1 / 120, true); syncLiftObstacles(); }
-  const inPlace = (nowMs() - t0) / iterations * 1000;
-  const t1 = nowMs();
-  for (let i = 0; i < iterations; i++) liftObstacles(LIFT);
-  const rebuild = (nowMs() - t1) / iterations * 1000;
-  resetLift();
-  return { iterations, inPlaceMicroseconds: +inPlace.toFixed(3), rebuildMicroseconds: +rebuild.toFixed(3) };
- })();
  return {
   support, beforeY, final, timeline, samples,
   measured: {
@@ -150,7 +149,6 @@ function machineReport() {
    doorsOpenedAt: +doorsOpenAt.toFixed(4), arrivedAt: +arrivedAt.toFixed(4),
    maxRisePerStep: +maxRise.toFixed(5), peakSpeed: +peakSpeed.toFixed(4),
    peakAcceleration: +(peakSpeed / (.25 * L.travelSeconds)).toFixed(4),
-   cost,
   },
  };
 }
@@ -163,6 +161,20 @@ function assertMachine(report: ReturnType<typeof machineReport>) {
  }
  stepLift(s, 6, true);
  check(Math.abs(liftSupport(s, cx, cz)! - s.y) < EPS, 'support:follows', 'liftSupport must follow the car floor');
+ // One 6 s call only opens the doors, so the line above sees the car at the ground. Drive two
+ // fresh cars to prove the answer tracks the floor at height and leaves the lobby behind.
+ const mid = createLift();
+ for (let i = 0; i < 12 * 120 && !(mid.phase === 'rising' && mid.y > 6); i++) stepLift(mid, 1 / 120, true);
+ const midSupport = liftSupport(mid, cx, cz);
+ check(mid.y > 6 && midSupport === mid.y, 'support:follows-mid-rise',
+  `liftSupport must return the car's own height mid-rise, read ${midSupport} against ${mid.y} in phase '${mid.phase}'`);
+ const top = createLift();
+ for (let i = 0; i < 12 * 120; i++) stepLift(top, 1 / 120, true);
+ const topSupport = liftSupport(top, cx, cz);
+ check(topSupport === L.landing, 'support:follows-landing',
+  `liftSupport must return the landing ${L.landing} once the car is up, read ${topSupport}`);
+ check(topSupport !== L.ground, 'support:left-ground',
+  `liftSupport still reports the lobby floor ${L.ground} after the car has left it`);
  check(report.final.phase === 'arrived', 'machine:arrived', `12 s of travel must end in 'arrived', read '${report.final.phase}'`);
  check(report.final.y === L.landing, 'machine:landing', `the car must stop exactly on the landing ${L.landing}, read ${report.final.y}`);
  check(report.final.doors === 1, 'machine:doors-open', `the doors must be open on arrival, read ${report.final.doors}`);
@@ -223,8 +235,54 @@ function worldReport() {
  const missing = [...carBoxes, ...landingBoxes].filter(name => !nav.obstacles.some(o => o.name === name));
  const duplicated = [...carBoxes, ...landingBoxes].filter(name => nav.obstacles.filter(o => o.name === name).length > 1);
  const obstacleCount = nav.obstacles.length;
+ /**
+  * What the mounted car costs per query, against the cost of rebuilding the obstacle list.
+  * `syncLiftObstacles` returns immediately when nothing is mounted, so this has to run after
+  * `createNavigation` has mounted the car: measuring it any earlier measures a no-op.
+  * `carBoxStillMounted` and `carFloorFollows` below prove the loop ran on the live objects.
+  */
+ const carFloor = nav.obstacles.find(o => o.name === 'opening-lift-car-floor');
+ const mountedLiftBoxes = nav.obstacles.filter(o => o.name.startsWith('opening-lift-')).length;
+ const perf = (globalThis as { performance?: { now(): number } }).performance;
+ const nowMs = () => (perf ? perf.now() : Date.now());
+ const iterations = 2000, trials = 9, warmUp = 2000;
+ const median = (values: number[]) => values.slice().sort((a, b) => a - b)[Math.floor(values.length / 2)]!;
+ const paths = {
+  sync: () => { syncLiftObstacles(); },
+  rebuild: () => { liftObstacles(LIFT); },
+ };
+ // Warm every path, then interleave the trials round-robin: measuring one path to completion
+ // and then the next lets JIT and GC state decide the ranking (the first run pays for all).
+ resetLift();
+ for (let i = 0; i < warmUp; i++) for (const fn of Object.values(paths)) fn();
+ const runs: Record<keyof typeof paths, number[]> = { sync: [], rebuild: [] };
+ for (let t = 0; t < trials; t++) {
+  for (const name of ['sync', 'rebuild'] as const) {
+   const t0 = nowMs();
+   for (let i = 0; i < iterations; i++) paths[name]();
+   runs[name].push((nowMs() - t0) / iterations * 1000);
+  }
+ }
+ const syncMicroseconds = +median(runs.sync).toFixed(3);
+ const rebuildMicroseconds = +median(runs.rebuild).toFixed(3);
+ // The timing above runs with the car parked, where a sync that did nothing would still look
+ // right. Drive it to the landing and sync once: the mounted box can only reach 18.9 by being
+ // rewritten in place, so this is the proof that the loop above measured the live objects.
+ for (let i = 0; i < 12 * 120; i++) stepLift(LIFT, 1 / 120, true);
+ syncLiftObstacles();
+ const carBoxStillMounted = !!carFloor && nav.obstacles.includes(carFloor);
+ const carFloorFollows = !!carFloor && LIFT.y === L.landing && Math.abs(carFloor.top - LIFT.y) < 1e-12;
+ const carFloorTop = carFloor ? r4(carFloor.top) : NaN;
+ const liftBoxesAfter = nav.obstacles.filter(o => o.name.startsWith('opening-lift-')).length;
+ const cost = {
+  iterations, trials, warmUp,
+  syncMicroseconds, rebuildMicroseconds,
+  mountedLiftBoxes, liftBoxesAfter, carBoxStillMounted, carFloorFollows, carFloorTop,
+ };
+ resetLift();
+ syncLiftObstacles();
  nav.dispose();
- return { closed, open, plateSupport: r4(plateSupport ?? NaN), reaching, underPlate, shaftColumn, carBoxes, landingBoxes, missing, duplicated, obstacleCount };
+ return { closed, open, plateSupport: r4(plateSupport ?? NaN), reaching, underPlate, shaftColumn, carBoxes, landingBoxes, missing, duplicated, obstacleCount, cost };
 }
 
 function assertWorld(report: ReturnType<typeof worldReport>) {
@@ -250,10 +308,25 @@ function assertWorld(report: ReturnType<typeof worldReport>) {
  // D.3: the plate is above the room, and nothing but the lift's own car reaches it.
  check(LIFT_LANDING.floorTop > OPENING.b4.floor + OPENING.b4.clearHeight, 'plate:above-room',
   `the plate ${LIFT_LANDING.floorTop} must clear the room's ${OPENING.b4.floor + OPENING.b4.clearHeight} m clear height`);
- const reaching = report.reaching.filter(o => !o.name.startsWith('opening-lift-'));
- for (const o of reaching) {
+ // Only the plate's own two ceilings may span the plate footprint; every other obstacle that
+ // reaches the plate's height must stay off it.
+ const spanning = ['opening-lift-5f-ceiling-lobby', 'opening-lift-5f-ceiling-corridor'];
+ for (const name of spanning) {
+  const o = report.reaching.find(r => r.name === name);
+  check(!!o && o.overPlate, `plate:ceiling:${name}`,
+   `${name} must be present and span the plate, read ${o ? `top ${o.top} overPlate ${o.overPlate}` : 'absent'}`);
+ }
+ for (const o of report.reaching) {
+  if (spanning.includes(o.name)) continue;
   check(!o.overPlate, `plate:reached:${o.name}`, `${o.name} (top ${o.top}) reaches the 5F plate's footprint`);
  }
+ // The cost benchmark above is only meaningful on the mounted objects.
+ check(report.cost.carBoxStillMounted, 'cost:mounted-identity',
+  'the in-place sync replaced the mounted car-floor obstacle instead of rewriting it');
+ check(report.cost.carFloorFollows, 'cost:mounted-pose',
+  `the mounted car floor must follow the car, read ${report.cost.carFloorTop} against the car's last height`);
+ check(report.cost.liftBoxesAfter === report.cost.mountedLiftBoxes, 'cost:mounted-count',
+  `the world mounted ${report.cost.mountedLiftBoxes} lift boxes but ${report.cost.liftBoxesAfter} are present after the sync`);
 }
 
 /* ------------------------------------------------------------------ */

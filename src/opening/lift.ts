@@ -37,7 +37,7 @@ const TRAVEL=L.travelSeconds;
 export const LIFT_TRAVEL_DISTANCE=L.landing-L.ground;
 
 /** Height above the ground floor after `seconds` of the accel–cruise–decel ride. */
-export function liftTravelY(seconds:number):number{
+function liftTravelY(seconds:number):number{
  const t=Math.max(0,Math.min(TRAVEL,seconds)),a=ACCEL*TRAVEL,v=LIFT_TRAVEL_DISTANCE/(TRAVEL*(1-ACCEL));
  if(t<=0)return 0;
  if(t>=TRAVEL)return LIFT_TRAVEL_DISTANCE;
@@ -103,23 +103,30 @@ const leafX0=L.x1-L.wall/2-.03,leafX1=L.x1-L.wall/2+.03;
 /**
  * The car's collision boxes at a given floor height and door opening. Car walls, floor,
  * ceiling, the two door jambs, the door head and the two sliding leaves.
+ *
+ * `out` lets a caller hand in a preallocated list to fill, so the per-query sync can write
+ * the ten boxes without allocating. Callers that keep the result get fresh boxes.
  */
-export function liftObstacleBoxes(y:number,doors:number):LiftBox[]{
+export function liftObstacleBoxes(y:number,doors:number,out:LiftBox[]=[]):LiftBox[]{
  const {x0,x1,z0,z1}=L,top=y+L.clearHeight,wall=L.wall;
  const mid=(L.door.z0+L.door.z1)/2,half=(L.door.z1-L.door.z0)/2;
  const slide=Math.max(0,Math.min(1,doors))*half;
- return [
-  {name:'opening-lift-car-floor',x0,x1,z0,z1,bottom:y-wall,top:y},
-  {name:'opening-lift-car-west',x0,x1:x0+wall,z0,z1,bottom:y,top},
-  {name:'opening-lift-car-north',x0,x1,z0,z1:z0+wall,bottom:y,top},
-  {name:'opening-lift-car-south',x0,x1,z0:z1-wall,z1,bottom:y,top},
-  {name:'opening-lift-car-ceiling',x0,x1,z0,z1,bottom:top,top:top+wall},
-  {name:'opening-lift-jamb-north',x0:x1-wall,x1,z0,z1:L.door.z0,bottom:y,top},
-  {name:'opening-lift-jamb-south',x0:x1-wall,x1,z0:L.door.z1,z1,bottom:y,top},
-  {name:'opening-lift-door-head',x0:x1-wall,x1,z0:L.door.z0,z1:L.door.z1,bottom:y+L.door.height,top},
-  {name:'opening-lift-door-north',x0:leafX0,x1:leafX1,z0:L.door.z0-slide,z1:mid-slide,bottom:y,top:y+L.door.height},
-  {name:'opening-lift-door-south',x0:leafX0,x1:leafX1,z0:mid+slide,z1:L.door.z1+slide,bottom:y,top:y+L.door.height},
- ];
+ const put=(i:number,name:string,bx0:number,bx1:number,bz0:number,bz1:number,bottom:number,btop:number)=>{
+  const b=out[i]??(out[i]={name,x0:0,x1:0,z0:0,z1:0,bottom:0,top:0});
+  b.name=name;b.x0=bx0;b.x1=bx1;b.z0=bz0;b.z1=bz1;b.bottom=bottom;b.top=btop;
+ };
+ put(0,'opening-lift-car-floor',x0,x1,z0,z1,y-wall,y);
+ put(1,'opening-lift-car-west',x0,x0+wall,z0,z1,y,top);
+ put(2,'opening-lift-car-north',x0,x1,z0,z0+wall,y,top);
+ put(3,'opening-lift-car-south',x0,x1,z1-wall,z1,y,top);
+ put(4,'opening-lift-car-ceiling',x0,x1,z0,z1,top,top+wall);
+ put(5,'opening-lift-jamb-north',x1-wall,x1,z0,L.door.z0,y,top);
+ put(6,'opening-lift-jamb-south',x1-wall,x1,L.door.z1,z1,y,top);
+ put(7,'opening-lift-door-head',x1-wall,x1,L.door.z0,L.door.z1,y+L.door.height,top);
+ put(8,'opening-lift-door-north',leafX0,leafX1,L.door.z0-slide,mid-slide,y,y+L.door.height);
+ put(9,'opening-lift-door-south',leafX0,leafX1,mid+slide,L.door.z1+slide,y,y+L.door.height);
+ out.length=10;
+ return out;
 }
 
 const toObstacle=(b:LiftBox):Obstacle=>({name:b.name,x:(b.x0+b.x1)/2,z:(b.z0+b.z1)/2,w:b.x1-b.x0,d:b.z1-b.z0,bottom:b.bottom,top:b.top,angle:0});
@@ -208,13 +215,19 @@ export function liftLandingBoxes():LiftBox[]{
 export const LIFT=createLift();
 
 let mounted:{obstacles:Obstacle[];boxes:Obstacle[]}|null=null;
+/** A private ten-box scratch, rewritten by every sync, so the mounted path allocates nothing. */
+const SCRATCH:LiftBox[]=[];
 
-/** Move the mounted collision boxes to the car's current pose. No allocation, no rebuild. */
+/**
+ * Move the mounted collision boxes to the car's current pose. The ten `Obstacle` objects are
+ * rewritten where they sit — no allocation, no rebuild — so everything that holds a reference
+ * to them (the path finder, the vision cone, the bus door) sees the new pose immediately.
+ */
 export function syncLiftObstacles():void{
  if(!mounted)return;
- const boxes=liftObstacleBoxes(LIFT.y,LIFT.doors);
- for(let i=0;i<boxes.length;i++){
-  const b=boxes[i]!,o=mounted.boxes[i]!;
+ liftObstacleBoxes(LIFT.y,LIFT.doors,SCRATCH);
+ for(let i=0;i<SCRATCH.length;i++){
+  const b=SCRATCH[i]!,o=mounted.boxes[i]!;
   o.x=(b.x0+b.x1)/2;o.z=(b.z0+b.z1)/2;o.w=b.x1-b.x0;o.d=b.z1-b.z0;o.bottom=b.bottom;o.top=b.top;
  }
 }
@@ -240,7 +253,7 @@ export function attachLiftVisual(next:LiftVisual):void{
  syncLiftVisual();
 }
 
-export function syncLiftVisual():void{
+function syncLiftVisual():void{
  if(!visual)return;
  if(visual.root.position.y!==LIFT.y)visual.root.position.y=LIFT.y;
  const slide=LIFT.doors*((L.door.z1-L.door.z0)/2);
@@ -267,7 +280,7 @@ const SLICE=1/240;
  * point inside the car footprint at the car floor. Queries that are not the player (the
  * camera, the path finder) are far from the car floor and do not call the car.
  */
-export function advanceLift(now:number,x:number,z:number,y:number):void{
+function advanceLift(now:number,x:number,z:number,y:number):void{
  if(lastAdvance<0){lastAdvance=now;return;}
  const dt=Math.min(.05,Math.max(0,now-lastAdvance));
  if(dt<=0)return;
@@ -292,6 +305,9 @@ export function tickLift(x:number,z:number,y:number):void{advanceLift(nowSeconds
 export function resetLift():void{
  LIFT.phase='idle';LIFT.y=L.ground;LIFT.doors=0;
  clocks.delete(LIFT);
+ // The clock is discarded too: a later query must bootstrap instead of measuring a gap
+ // across the reset (which would hand the car up to the 50 ms clamp in one go).
+ lastAdvance=-1;
  syncLiftObstacles();
  syncLiftVisual();
 }
