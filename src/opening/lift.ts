@@ -215,13 +215,14 @@ export function liftLandingBoxes():LiftBox[]{
 export const LIFT=createLift();
 
 let mounted:{obstacles:Obstacle[];boxes:Obstacle[]}|null=null;
-/** A private ten-box scratch, rewritten by every sync, so the mounted path allocates nothing. */
+/** A private ten-box scratch, rewritten by every sync, so the sync reuses the same ten boxes. */
 const SCRATCH:LiftBox[]=[];
 
 /**
  * Move the mounted collision boxes to the car's current pose. The ten `Obstacle` objects are
- * rewritten where they sit — no allocation, no rebuild — so everything that holds a reference
- * to them (the path finder, the vision cone, the bus door) sees the new pose immediately.
+ * rewritten where they sit and the ten description boxes are reused rather than reallocated, so
+ * the obstacle array is never rebuilt; everything that holds a reference to those objects (the
+ * path finder, the vision cone, the bus door) sees the new pose immediately.
  */
 export function syncLiftObstacles():void{
  if(!mounted)return;

@@ -43,6 +43,19 @@ const EPS = 1e-9;
 /* 1. The brief's constants                                            */
 /* ------------------------------------------------------------------ */
 
+/**
+ * The two solid layers the side entrance is cut through, named at their source:
+ *  - `FACADE_SLAB` is the band-tower's front slab: `openingObstacles` carves it at `z1 − .2` from
+ *    a mass whose front face sits `FACADE_SLAB_OUTSET` beyond the room's own front face, so its
+ *    inner face is `b4.z1 + .10 − .20` = 20.40.
+ *  - `B4_FRONT_WALL` is the room shell's front wall (`b4Layout.ts`, `opening-b4-wall-front-*`,
+ *    authored `R.z1 − .13` … `R.z1 − .01`), whose inner face is 20.37 — the narrower reading,
+ *    printed but not pinned.
+ */
+const FACADE_SLAB = .20, FACADE_SLAB_OUTSET = .10, B4_FRONT_WALL = .13;
+const FACADE_INNER_Z = OPENING.b4.z1 + FACADE_SLAB_OUTSET - FACADE_SLAB;
+const ROOM_WALL_INNER_Z = OPENING.b4.z1 - B4_FRONT_WALL;
+
 function constantReport() {
  const car = {
   x0: r4(L.x0), x1: r4(L.x1), width: r4(L.x1 - L.x0), z0: L.z0, z1: L.z1, depth: r4(L.z1 - L.z0),
@@ -66,16 +79,14 @@ function constantReport() {
   west: r4((B4_LAYOUT.sideDoor.x0 + B4_LAYOUT.sideDoor.x1) / 2 - (L.x0 + L.x1) / 2),
   /**
    * The brief's "5–7 m along the west wall", under the ruled convention: the façade's inner
-   * face → the lift doorway's near jamb. The band-tower's front slab is 0.20 m thick with its
-   * outer face 0.10 m beyond the room's front face (`openingObstacles` carves it at `z1 − .2`),
-   * so its inner face is `b4.z1 − .10` = 20.40 and the near jamb is `door.z1` = 13.40.
-   * The room shell's own front wall sits 0.03 m further in; that narrower reading is printed
-   * too but not pinned.
+   * face → the lift doorway's near jamb. Both front layers are named at their source (see
+   * `FACADE_INNER_Z` / `ROOM_WALL_INNER_Z`) so a change to either cannot drift silently.
    */
-  facadeInner: r4(OPENING.b4.z1 - .1),
+  facadeInner: r4(FACADE_INNER_Z),
   nearJamb: L.door.z1,
-  innerFaceToNearJamb: r4(OPENING.b4.z1 - .1 - L.door.z1),
-  roomWallToNearJamb: r4(OPENING.b4.z1 - .13 - L.door.z1),
+  innerFaceToNearJamb: r4(FACADE_INNER_Z - L.door.z1),
+  roomWallInner: r4(ROOM_WALL_INNER_Z),
+  roomWallToNearJamb: r4(ROOM_WALL_INNER_Z - L.door.z1),
  };
  return { revision: OPENING_WORLD_REVISION, car, door, floors, approach, lobbyWestFace: r4(OPENING.b4.x0 + .01 + B4_LAYOUT.wall) };
 }
