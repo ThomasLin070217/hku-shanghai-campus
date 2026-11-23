@@ -19,6 +19,7 @@ const R=54;
 const close=(a:number,b:number,what:string)=>assert.ok(Math.abs(a-b)<=1e-9,`${what}: ${a} != ${b}`);
 
 // 1. Joystick mapping.
+check('joystick: the dead zone is the binding 0.16',()=>assert.equal(TOUCH_DEAD_ZONE,0.16));
 check('joystick: centre is neutral',()=>assert.deepEqual(joystickAxes(0,0,R),{forward:0,right:0}));
 check('joystick: screen up is forward 1',()=>assert.deepEqual(joystickAxes(0,-R,R),{forward:1,right:0}));
 check('joystick: screen right is right 1',()=>assert.deepEqual(joystickAxes(R,0,R),{forward:0,right:1}));
@@ -44,18 +45,25 @@ check('joystick: invalid radius or non-finite input is neutral',()=>{
 });
 
 // 2. Touch detection.
-check('detection: a coarse pointer alone asks for touch controls',()=>{
- assert.equal(useTouchControls({anyCoarse:true,maxTouchPoints:0,hoverNone:false}),true);
+check('detection: a coarse primary pointer is touch',()=>{
+ assert.equal(useTouchControls({coarsePointer:true,maxTouchPoints:0,hoverNone:false}),true);
 });
 check('detection: touch points with no hover asks for touch controls',()=>{
- assert.equal(useTouchControls({anyCoarse:false,maxTouchPoints:5,hoverNone:true}),true);
+ assert.equal(useTouchControls({coarsePointer:false,maxTouchPoints:5,hoverNone:true}),true);
 });
-check('detection: touch points with hover keeps the desktop path',()=>{
- assert.equal(useTouchControls({anyCoarse:false,maxTouchPoints:5,hoverNone:false}),false);
+check('detection: a hybrid with touch points and hover keeps the desktop path',()=>{
+ assert.equal(useTouchControls({coarsePointer:false,maxTouchPoints:5,hoverNone:false}),false);
 });
 check('detection: a fine pointer with no touch points keeps the desktop path',()=>{
- assert.equal(useTouchControls({anyCoarse:false,maxTouchPoints:0,hoverNone:false}),false);
- assert.equal(useTouchControls({anyCoarse:false,maxTouchPoints:0,hoverNone:true}),false,'no hover without touch is still a mouse');
+ assert.equal(useTouchControls({coarsePointer:false,maxTouchPoints:0,hoverNone:false}),false);
+ assert.equal(useTouchControls({coarsePointer:false,maxTouchPoints:0,hoverNone:true}),false,'no hover without touch is still a mouse');
+});
+check('detection: both call sites ask the primary pointer, never any-pointer',()=>{
+ for(const file of ['../src/exploration/controller.ts','../src/viewer/graphicsQuality.ts']){
+  const source=readFileSync(new URL(file,import.meta.url),'utf8');
+  assert.ok(source.includes('(pointer: coarse)'),`${file} asks for the primary pointer`);
+  assert.ok(!source.includes('(any-pointer: coarse)'),`${file} must not use the any-pointer query`);
+ }
 });
 
 // 3. Default graphics quality precedence.

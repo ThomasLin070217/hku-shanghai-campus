@@ -30,8 +30,8 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  let jumpBuffer=0;
  /** Analog stick intent from the touch layer, in [-1, 1]; zero on the keyboard path. */
  let touchForward=0,touchRight=0,touchSprint=false;
- /** Touch controls are for phones and tablets: a coarse pointer, or touch without hover. */
- const touchPreferred=()=>useTouchControls({anyCoarse:matchMedia('(any-pointer: coarse)').matches,maxTouchPoints:navigator.maxTouchPoints,hoverNone:matchMedia('(hover: none)').matches});
+ /** Touch controls are for phones and tablets: a coarse primary pointer, or touch without hover. */
+ const touchPreferred=()=>useTouchControls({coarsePointer:matchMedia('(pointer: coarse)').matches,maxTouchPoints:navigator.maxTouchPoints,hoverNone:matchMedia('(hover: none)').matches});
  const editable=(t:EventTarget|null)=>t instanceof HTMLElement&&!!t.closest('input,select,textarea,[contenteditable="true"],dialog');
  const locked=()=>document.pointerLockElement===canvas;
  const controlled=()=>locked()||compat;
@@ -69,14 +69,14 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  /** Drag-to-look entry, shared by the compat button and the touch path. */
  function enterCompat(){if(game.inventoryOpen||game.panel)return;game.takeover('human_compat');compat=true;game.paused=false;clear();canvas.focus();}
  function enter(){if(!enabled||game.inventoryOpen||game.panel)return;if(touchPreferred()){enterCompat();return;}compat=false;canvas.focus();void canvas.requestPointerLock()?.catch(()=>pause('pointer_lock_failed'));}
- /** Analog stick input in [-1, 1] per axis; a stick moved before Enter claims control. */
+ /** Analog stick input in [-1, 1] per axis; a moved stick claims control only while the game is running, never from pause. */
  function touchMove(forward:number,right:number){
-  if(game.inventoryOpen||game.panel)return;
+  if(!enabled||game.paused||game.inventoryOpen||game.panel)return;
   touchForward=T.MathUtils.clamp(Number.isFinite(forward)?forward:0,-1,1);touchRight=T.MathUtils.clamp(Number.isFinite(right)?right:0,-1,1);
   if(touchForward===0&&touchRight===0)return;
   if(!controlled()){game.takeover('human_compat');compat=true;game.paused=false;canvas.focus();}
  }
- function touchRun(on:boolean){touchSprint=!!on;}
+ function touchRun(on:boolean){if(!enabled)return;touchSprint=!!on;}
  /** The one writer of the first-person arms and held item (Ruling 36): visibility and the
   * story carry pose are set together, so the open MacBook never shows one frame in the walking pose. */
  const showViewModel=()=>{if(opening)firstPerson.setCarry(deviceOpen);arms.visible=firstPersonVisible({enabled,first:game.view==='first',story:opening,deviceOpen,hidden:firstPersonHidden});};

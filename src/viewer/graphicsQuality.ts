@@ -23,7 +23,7 @@ export function defaultGraphicsQuality(input: {override: string | null; stored: 
 function touchDevice() {
   if (typeof matchMedia !== 'function' || typeof navigator === 'undefined') return false;
   return useTouchControls({
-    anyCoarse: matchMedia('(any-pointer: coarse)').matches,
+    coarsePointer: matchMedia('(pointer: coarse)').matches,
     maxTouchPoints: navigator.maxTouchPoints,
     hoverNone: matchMedia('(hover: none)').matches,
   });

@@ -27,11 +27,13 @@ export function joystickAxes(dx: number, dy: number, radius: number, deadZone = 
 
 /** True when the device should get the touch controls.
  *
- * A coarse pointer of any kind is enough. A device that reports touch points
- * but also reports hover is a touch laptop with a mouse, and keeps the desktop
- * path. The checks are passed in so this stays a pure function.
+ * A coarse primary pointer is enough (phone, tablet, touch-first hybrid). A
+ * device that reports touch points but also reports hover is a touchscreen
+ * laptop with a trackpad or mouse, and keeps the desktop path: its primary
+ * pointer is fine. A fine pointer without touch points is a desktop. The
+ * checks are passed in so this stays a pure function.
  */
-export function useTouchControls(input: {anyCoarse: boolean; maxTouchPoints: number; hoverNone: boolean}): boolean {
-  if (input.anyCoarse) return true;
+export function useTouchControls(input: {coarsePointer: boolean; maxTouchPoints: number; hoverNone: boolean}): boolean {
+  if (input.coarsePointer) return true;
   return input.maxTouchPoints > 0 && input.hoverNone;
 }
