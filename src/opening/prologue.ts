@@ -1,9 +1,9 @@
 /**
  * BARRIER 2030 prologue: the 30-second skippable in-engine cinematic that plays
  * before the player first takes control. The gate mounts on `play()`; the clock
- * starts only after the BEGIN click has resumed the audio context and decoded
- * the narration, so the first line is never late. The camera is driven from
- * `viewer.beforeRender`, which runs after the explorer's own update.
+ * starts after the BEGIN click has resumed the audio context and the audio pack
+ * has loaded, and the first line starts with the clock. The camera is driven
+ * from `viewer.beforeRender`, which runs after the explorer's own update.
  */
 import * as T from 'three';
 import type {CampusAudio} from '../gameplay/audio';
@@ -11,7 +11,7 @@ import {PROLOGUE_LINES,PROLOGUE_TOTAL,PROLOGUE_URLS} from './prologueVoice';
 import './prologue.css';
 
 export interface PrologueOptions {
-  viewer: {scene: T.Scene; camera: T.Camera; beforeRender: Set<(dt: number) => void>};
+  viewer: {beforeRender: Set<(dt: number) => void>};
   explorer: {camera: T.PerspectiveCamera; pause(reason: string): void; game: {paused: boolean}};
   audio: CampusAudio;
   bounds: () => T.Box3;
@@ -27,6 +27,7 @@ export interface Prologue {
   readonly active: boolean;
   play(): Promise<void>;
   stop(): void;
+  dispose(): void;
   debug: PrologueDebug;
 }
 
@@ -187,11 +188,19 @@ export function createPrologue(options: PrologueOptions): Prologue {
     await Promise.all(PROLOGUE_LINES.map(async line => {
       const url = PROLOGUE_URLS[line.id];
       if (!url) { silent = true; return; }
+      const abort = new AbortController();
+      let timer: ReturnType<typeof setTimeout> | undefined;
       try {
-        const response = await fetch(url);
+        const response = await Promise.race([
+          fetch(url, {signal: abort.signal}),
+          new Promise<never>((_, reject) => {
+            timer = setTimeout(() => { abort.abort(); reject(new Error('audio_timeout')); }, 10000);
+          }),
+        ]);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         buffers.set(line.id, await context.decodeAudioData(await response.arrayBuffer()));
       } catch { silent = true; }
+      finally { clearTimeout(timer); }
     }));
     // A partial decode is treated as no narration: the visuals run silently
     // rather than half a story beat behind.
@@ -206,7 +215,7 @@ export function createPrologue(options: PrologueOptions): Prologue {
     if (frame) frame.hidden = false;
     // `start()` creates the context synchronously, so the five narration clips
     // can decode while it finishes loading the rest of the audio pack. Both
-    // settle before the clock starts, so no line is ever late.
+    // settle before the clock starts; the first line then starts with the clock.
     const started = audio.start();
     const narration = decodeNarration();
     try { await started; } catch {}
@@ -332,6 +341,12 @@ export function createPrologue(options: PrologueOptions): Prologue {
     resolve?.();
   }
 
+  /** Final teardown: stop() plus releasing the decoded narration buffers. */
+  function dispose(): void {
+    stop();
+    buffers.clear();
+  }
+
   function play(): Promise<void> {
     if (phase === 'gate' || phase === 'starting' || phase === 'running') return promise ?? Promise.resolve();
     reset();
@@ -371,6 +386,7 @@ export function createPrologue(options: PrologueOptions): Prologue {
     get active() { return phase === 'gate' || phase === 'starting' || phase === 'running'; },
     play,
     stop,
+    dispose,
     debug: {seek, state},
   };
 }

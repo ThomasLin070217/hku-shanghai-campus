@@ -105,6 +105,9 @@ check('manifest: every source line has a clip with the same id',()=>{
 check('manifest: clips.json and prologue.json list the same lines',()=>{
  assert.equal(manifest.clips.length,source.lines.length,'clips.json and prologue.json must list the same lines');
 });
+check('manifest: clip order matches the source lines',()=>{
+ assert.deepEqual(manifest.clips.map((clip)=>clip.id),source.lines.map((line)=>line.id),'clips.json order must match prologue.json');
+});
 check('manifest: every clip text matches its source line',()=>{
  for(const line of source.lines){
   const clip=manifest.clips.find((entry)=>entry.id===line.id);
@@ -221,9 +224,15 @@ check('styles: the overlay uses safe-area insets and hides the HUD',()=>{
  assert.ok(prologueStyles.includes('body.prologue-active'),'prologue.css has no body.prologue-active rule');
  assert.match(
   prologueStyles,
-  /body\.prologue-active\s+#pause-panel\s*\{[^}]*visibility:\s*hidden/,
-  'body.prologue-active does not hide #pause-panel',
+  /body\.prologue-active\s+#pause-panel\s*\{[^}]*display:\s*none(?:\s*!important)?/,
+  'body.prologue-active does not hide #pause-panel with display:none',
  );
+ const hud=prologueStyles.match(/body\.prologue-active\s+:is\(([^)]*)\)/)?.[1]??'';
+ assert.ok(hud,'prologue.css has no body.prologue-active :is(...) HUD hide list');
+ for(const selector of ['.opening-hud','.opening-mapcard','.opening-prompt','.opening-warning','.opening-hearts','#inventory-hud','.stage-bottom','#crosshair','#control-badge','.touch-controls'])assert.ok(hud.includes(selector),`HUD hide list is missing ${selector}`);
+ assert.match(prologueStyles,/body\.prologue-active\s+\.header\b/,'prologue.css does not hide the review-build header');
+ assert.match(prologueStyles,/body\.prologue-active\s+\.sidebar\b/,'prologue.css does not hide the review-build sidebar');
+ assert.match(prologueStyles,/\.prologue-subtitle\s*\{[^}]*left:\s*50%[^}]*transform:\s*translateX\(-50%\)/,'subtitle is not centred with left:50% + translateX(-50%)');
 });
 check('module: registers its camera callback and pauses the explorer',()=>{
  assert.ok(prologueSource.includes('beforeRender.add'),'prologue.ts does not register on beforeRender');
