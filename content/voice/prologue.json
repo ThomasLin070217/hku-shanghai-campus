@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "voices": {
+    "narrator": {
+      "id": "JBFqnCBsd6RMkjVDRZzb",
+      "name": "George - Warm, Captivating Storyteller",
+      "settings": {
+        "stability": 0.55,
+        "similarity_boost": 0.75,
+        "style": 0.35,
+        "use_speaker_boost": true
+      }
+    },
+    "player": {
+      "id": "SOYHLrjzK2X1ezoPC6cr",
+      "name": "Harry - Fierce Warrior",
+      "settings": {
+        "stability": 0.4,
+        "similarity_boost": 0.8,
+        "style": 0.45,
+        "use_speaker_boost": true
+      }
+    }
+  },
+  "lines": [
+    {
+      "id": "prologue-1",
+      "speaker": "narrator",
+      "text": "November 2030. HKU Shanghai. Four towers. One core. An entire campus wired as a single supercomputer."
+    },
+    {
+      "id": "prologue-2",
+      "speaker": "narrator",
+      "text": "Last night, something else got inside it. The barrier sealed. The guardian lion turned. And the students at the High Table Dinner never came home."
+    },
+    {
+      "id": "prologue-3",
+      "speaker": "narrator",
+      "text": "You are the only Student Ambassador still moving, and your MacBook still has root."
+    },
+    {
+      "id": "prologue-4",
+      "speaker": "player",
+      "text": "Okay. Let's reboot this campus."
+    },
+    {
+      "id": "prologue-5",
+      "speaker": "narrator",
+      "text": "Restore the four towers. Free the students. Bring CDS back online."
+    }
+  ]
+}

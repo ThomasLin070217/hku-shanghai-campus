@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "model": "eleven_multilingual_v2",
+  "outputFormat": "mp3_44100_128",
+  "generated": "2026-11-23",
+  "total": 29.071999999999996,
+  "clips": [
+    {
+      "id": "prologue-1",
+      "speaker": "narrator",
+      "voiceId": "JBFqnCBsd6RMkjVDRZzb",
+      "voiceName": "George - Warm, Captivating Storyteller",
+      "text": "November 2030. HKU Shanghai. Four towers. One core. An entire campus wired as a single supercomputer.",
+      "file": "prologue-1.mp3",
+      "duration": 8.545
+    },
+    {
+      "id": "prologue-2",
+      "speaker": "narrator",
+      "voiceId": "JBFqnCBsd6RMkjVDRZzb",
+      "voiceName": "George - Warm, Captivating Storyteller",
+      "text": "Last night, something else got inside it. The barrier sealed. The guardian lion turned. And the students at the High Table Dinner never came home.",
+      "file": "prologue-2.mp3",
+      "duration": 8.824
+    },
+    {
+      "id": "prologue-3",
+      "speaker": "narrator",
+      "voiceId": "JBFqnCBsd6RMkjVDRZzb",
+      "voiceName": "George - Warm, Captivating Storyteller",
+      "text": "You are the only Student Ambassador still moving, and your MacBook still has root.",
+      "file": "prologue-3.mp3",
+      "duration": 4.644
+    },
+    {
+      "id": "prologue-4",
+      "speaker": "player",
+      "voiceId": "SOYHLrjzK2X1ezoPC6cr",
+      "voiceName": "Harry - Fierce Warrior",
+      "text": "Okay. Let's reboot this campus.",
+      "file": "prologue-4.mp3",
+      "duration": 2.508
+    },
+    {
+      "id": "prologue-5",
+      "speaker": "narrator",
+      "voiceId": "JBFqnCBsd6RMkjVDRZzb",
+      "voiceName": "George - Warm, Captivating Storyteller",
+      "text": "Restore the four towers. Free the students. Bring CDS back online.",
+      "file": "prologue-5.mp3",
+      "duration": 4.551
+    }
+  ]
+}
