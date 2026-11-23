@@ -8,7 +8,8 @@ Needs a review build (the window.__CAMPUS.prologue hooks) and Python Playwright:
 `vite preview` serves dist-review only with --mode review: the review mode is what
 puts the prologue on __CAMPUS, so a plain preview fails at the first wait.
 
-The seven checks are the Task 3 acceptance list, in order. The BEGIN timing is
+The check groups are the Task 3 acceptance list in order, plus the Task 4
+replay-button step (6b) and the 390x844 phone step (8). The BEGIN timing is
 split in two and both are printed in-page (performance.now marks, so Playwright
 round trips cannot inflate them): BEGIN -> the prologue clock starting must be
 <= 10 s (the story audio pack load; a cold cache within that bound is not a
