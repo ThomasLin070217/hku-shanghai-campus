@@ -10,12 +10,12 @@ puts the prologue on __CAMPUS, so a plain preview fails at the first wait.
 
 The seven checks are the Task 3 acceptance list, in order. The BEGIN timing is
 split in two and both are printed in-page (performance.now marks, so Playwright
-round trips cannot inflate them): BEGIN -> the prologue clock starting (the story
-audio pack load, allowed up to 10 s and never failed as a cold cache) and the
-first subtitle measured from that clock start (1.5 s budget).
+round trips cannot inflate them): BEGIN -> the prologue clock starting must be
+<= 10 s (the story audio pack load; a cold cache within that bound is not a
+failure), and the first subtitle must be within 1.5 s of that clock start.
 
 GL backend: the subtitle appears on the first rendered frame after BEGIN, so the
-3 s budget only means something at a real frame rate. SwiftShader turns one frame
+1.5 s budget only means something at a real frame rate. SwiftShader turns one frame
 of this scene into 1.5-2.6 s on this machine (measured: 5.2-7.4 s from BEGIN to
 subtitle), which would fail every run for reasons that are not the prologue.
 The gate therefore runs on the default GPU backend and prints the renderer it
@@ -44,7 +44,7 @@ ARGS = ['--enable-webgl'] if GL == 'hardware' else [
 ]
 VIEW = {'width': 1280, 'height': 800}
 GAP = 0.35  # PROLOGUE_GAP in src/opening/prologueTimeline.ts
-CLOCK_BUDGET_MS = 10000  # story audio pack load (cold cache); printed, never a cold-cache failure
+CLOCK_BUDGET_MS = 10000  # BEGIN -> t>0 must be <= 10 s; a cold cache within that bound is not a failure
 SUBTITLE_BUDGET_MS = 1500  # first subtitle, measured from the clock start, not from BEGIN
 
 # Instrument the page before any app code runs. The marks are in-page
