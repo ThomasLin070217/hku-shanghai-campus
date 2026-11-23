@@ -225,7 +225,10 @@ Extend `scripts/check-mobile.ts` with:
 Create `scripts/check-campaign-mobile.py` (Playwright, local gate, not CI) that
 runs against a frozen review build:
 
-1. iPhone-sized viewport 390×844, touch, `?experience=opening&checkpoint=b4`.
+1. iPhone-sized viewport 390×844 using a real device descriptor or
+   `isMobile: true` + `hasTouch: true` (Playwright's `hasTouch` alone leaves
+   `(pointer: coarse)` unmatched, and the gate would exercise pointer lock
+   instead of the touch path), `?experience=opening&checkpoint=b4`.
 2. Tap `#enter-game`; assert `body.exploring`, `.touch-controls` visible,
    `__CAMPUS.explorer.state.compat === true` and `game.paused === false`.
 3. Drag the stick up 500 ms; assert position moves > 0.4 m.
