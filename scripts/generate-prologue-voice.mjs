@@ -10,10 +10,13 @@
  * The API key is read from ELEVENLABS_API_KEY, or from the macOS keychain item
  * `elevenlabs-api` (account ELEVENLABS_API_KEY). It is never printed and never
  * written to disk. Run with --check to verify existing clips without calling
- * the API (no key needed).
+ * the API (no key needed). Run with --manifest to rewrite clips.json from the
+ * files already on disk: it records each clip's byte size and sha256 next to
+ * the measured duration and the narration budget, and never records audio.
  */
 import {execFileSync} from 'node:child_process';
-import {existsSync, mkdirSync, readFileSync, writeFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {existsSync, mkdirSync, readFileSync, statSync, writeFileSync} from 'node:fs';
 import {dirname, join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -23,7 +26,9 @@ const outDir = join(root, 'assets/audio/prologue');
 const manifestPath = join(outDir, 'clips.json');
 const MODEL = process.env.PROLOGUE_TTS_MODEL ?? 'eleven_multilingual_v2';
 const OUTPUT_FORMAT = 'mp3_44100_128';
+const BUDGET = 45;
 const checkOnly = process.argv.includes('--check');
+const manifestOnly = process.argv.includes('--manifest');
 
 const source = JSON.parse(readFileSync(sourcePath, 'utf8'));
 const lines = source.lines ?? [];
@@ -57,6 +62,10 @@ function duration(file) {
   return Math.round(seconds * 1000) / 1000;
 }
 
+function sha256(data) {
+  return createHash('sha256').update(data).digest('hex');
+}
+
 function readManifest() {
   if (!existsSync(manifestPath)) return null;
   try {
@@ -66,15 +75,53 @@ function readManifest() {
   }
 }
 
-function verify(clips) {
+function writeManifest(clips) {
+  const total = clips.reduce((sum, clip) => sum + clip.duration, 0);
+  if (total > BUDGET) fail(`total narration is ${total.toFixed(1)}s; the prologue budget is ${BUDGET}s — shorten the lines`);
+  writeFileSync(
+    manifestPath,
+    `${JSON.stringify({version: 1, model: MODEL, outputFormat: OUTPUT_FORMAT, generated: new Date().toISOString().slice(0, 10), budget: BUDGET, total, clips}, null, 2)}\n`,
+  );
+  console.log(`wrote clips.json  ${clips.length} clips  ${total.toFixed(2)}s total  budget ${BUDGET}s`);
+}
+
+/** The manifest entry for a clip already on disk: measured duration plus the
+ * byte size and sha256 that bind the entry to the committed mp3. */
+function clipRecord(line) {
+  const voice = source.voices?.[line.speaker];
+  if (!voice?.id) fail(`${line.id}: no voice for speaker ${line.speaker}`);
+  const file = join(outDir, `${line.id}.mp3`);
+  if (!existsSync(file)) fail(`${line.id}: missing ${file}; record it before rebuilding the manifest`);
+  const data = readFileSync(file);
+  return {
+    id: line.id,
+    speaker: line.speaker,
+    voiceId: voice.id,
+    voiceName: voice.name,
+    text: line.text,
+    file: `${line.id}.mp3`,
+    duration: duration(file),
+    bytes: data.length,
+    sha256: sha256(data),
+  };
+}
+
+function verify(manifest) {
+  const clips = manifest?.clips;
   const problems = [];
   for (const clip of lines) {
     const file = join(outDir, `${clip.id}.mp3`);
     if (!existsSync(file)) problems.push(`${clip.id}: missing ${file}`);
   }
+  if (!Number.isFinite(manifest?.budget)) problems.push('clips.json has no numeric budget');
   for (const entry of clips ?? []) {
     if (!entry.duration || entry.duration <= 0) problems.push(`${entry.id}: no duration`);
     if (!entry.text) problems.push(`${entry.id}: no text`);
+    const file = join(outDir, entry.file ?? `${entry.id}.mp3`);
+    if (!existsSync(file)) continue;
+    const data = readFileSync(file);
+    if (entry.bytes !== data.length) problems.push(`${entry.id}: bytes ${entry.bytes} != ${data.length} on disk`);
+    if (entry.sha256 !== sha256(data)) problems.push(`${entry.id}: sha256 does not match ${entry.file}`);
   }
   if ((clips?.length ?? 0) !== lines.length) problems.push(`manifest has ${clips?.length ?? 0} clips, source has ${lines.length}`);
   const ids = new Set((clips ?? []).map((clip) => clip.id));
@@ -116,31 +163,32 @@ async function generate(clip) {
     text: clip.text,
     file: `${clip.id}.mp3`,
     duration: seconds,
+    bytes: bytes.length,
+    sha256: sha256(bytes),
   };
 }
 
 mkdirSync(outDir, {recursive: true});
 
 if (checkOnly) {
-  const problems = verify(readManifest()?.clips);
+  const manifest = readManifest();
+  const problems = verify(manifest);
   if (problems.length) {
     for (const problem of problems) console.error(`  fail  ${problem}`);
     process.exit(1);
   }
-  const clips = readManifest().clips;
+  const clips = manifest.clips;
   const total = clips.reduce((sum, clip) => sum + clip.duration, 0);
-  console.log(`prologue voice: ${clips.length} clips, ${total.toFixed(2)}s total, all files present`);
+  console.log(`prologue voice: ${clips.length} clips, ${total.toFixed(2)}s total, budget ${manifest.budget}s, files and hashes verified`);
+  process.exit(0);
+}
+
+if (manifestOnly) {
+  writeManifest(lines.map(clipRecord));
   process.exit(0);
 }
 
 const clips = [];
 for (const line of lines) clips.push(await generate(line));
 
-const total = clips.reduce((sum, clip) => sum + clip.duration, 0);
-if (total > 45) fail(`total narration is ${total.toFixed(1)}s; the prologue budget is 45s — shorten the lines`);
-
-writeFileSync(
-  manifestPath,
-  `${JSON.stringify({version: 1, model: MODEL, outputFormat: OUTPUT_FORMAT, generated: new Date().toISOString().slice(0, 10), total, clips}, null, 2)}\n`,
-);
-console.log(`wrote clips.json  ${clips.length} clips  ${total.toFixed(2)}s total`);
+writeManifest(clips);

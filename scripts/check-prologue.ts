@@ -6,6 +6,7 @@
  * cinematic itself.
  */
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
 import {existsSync,readFileSync,statSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {PROLOGUE_GAP,prologueTimeline,type PrologueClip} from '../src/opening/prologueTimeline';
@@ -18,8 +19,8 @@ function check(name:string,fn:()=>void){
 }
 const close=(a:number,b:number,what:string,epsilon=1e-9)=>assert.ok(Math.abs(a-b)<=epsilon,`${what}: ${a} != ${b}`);
 
-interface ManifestClip{id:string;speaker:string;voiceId:string;voiceName?:string;text:string;file:string;duration:number}
-interface Manifest{version:number;model:string;outputFormat:string;generated:string;total:number;clips:ManifestClip[]}
+interface ManifestClip{id:string;speaker:string;voiceId:string;voiceName?:string;text:string;file:string;duration:number;bytes:number;sha256:string}
+interface Manifest{version:number;model:string;outputFormat:string;generated:string;budget:number;total:number;clips:ManifestClip[]}
 interface VoiceSourceLine{id:string;speaker:string;text:string}
 interface VoiceSource{version:number;voices:Record<string,{id:string;name:string;settings:Record<string,unknown>}>;lines:VoiceSourceLine[]}
 
@@ -132,14 +133,32 @@ check('manifest: every clip file exists and is over 1 KB',()=>{
   assert.ok(bytes>1024,`${clip.id}: ${bytes} bytes is not a recorded clip`);
  }
 });
+check('manifest: every clip records its byte size and sha256',()=>{
+ for(const clip of manifest.clips){
+  assert.ok(Number.isInteger(clip.bytes)&&clip.bytes>1024,`${clip.id}: clips.json has no byte size (bytes: ${clip.bytes})`);
+  assert.match(clip.sha256??'',/^[0-9a-f]{64}$/,`${clip.id}: clips.json has no sha256`);
+ }
+});
+check('manifest: bytes and sha256 are the committed mp3 files',()=>{
+ for(const clip of manifest.clips){
+  const path=clipPath(clip.file);
+  assert.ok(existsSync(path),`${clip.id}: missing ${path}`);
+  const data=readFileSync(path);
+  assert.equal(data.byteLength,clip.bytes,`${clip.id}: ${data.byteLength} bytes on disk, clips.json says ${clip.bytes}`);
+  const digest=createHash('sha256').update(data).digest('hex');
+  assert.equal(digest,clip.sha256,`${clip.id}: sha256 ${digest} does not match clips.json`);
+ }
+});
 
 // 3. The manifest total.
 check('manifest: total equals the duration sum within 0.01 s',()=>{
  const sum=manifest.clips.reduce((total,clip)=>total+clip.duration,0);
  close(manifest.total,sum,'manifest.total',0.01);
 });
-check('manifest: narration stays inside the 45 s budget',()=>{
- assert.ok(manifest.total<=45,`${manifest.total}s exceeds 45s`);
+check('manifest: narration stays inside the declared budget',()=>{
+ assert.ok(Number.isFinite(manifest.budget),'clips.json has no numeric budget');
+ assert.ok(manifest.budget<=45,`budget ${manifest.budget}s exceeds the 45 s cap`);
+ assert.ok(manifest.total<=manifest.budget,`${manifest.total}s exceeds the ${manifest.budget}s budget`);
 });
 
 // 4. Voices and URLs.
@@ -158,6 +177,8 @@ check('voices: every clip uses the voice declared for its speaker',()=>{
 check('voices: the player line uses a different voice from the narrator',()=>{
  const player=source.lines.find((line)=>line.speaker==='player');
  assert.ok(player,'no player line');
+ assert.ok(source.voices.player,'content/voice/prologue.json declares no voice for speaker player');
+ assert.ok(source.voices.narrator,'content/voice/prologue.json declares no voice for speaker narrator');
  assert.notEqual(source.voices.player.id,source.voices.narrator.id);
  const clip=manifest.clips.find((entry)=>entry.id===player.id);
  assert.ok(clip);
@@ -227,16 +248,34 @@ check('styles: the overlay uses safe-area insets and hides the HUD',()=>{
   /body\.prologue-active\s+#pause-panel\s*\{[^}]*display:\s*none(?:\s*!important)?/,
   'body.prologue-active does not hide #pause-panel with display:none',
  );
- const hud=prologueStyles.match(/body\.prologue-active\s+:is\(([^)]*)\)/)?.[1]??'';
- assert.ok(hud,'prologue.css has no body.prologue-active :is(...) HUD hide list');
- for(const selector of ['.opening-hud','.opening-mapcard','.opening-prompt','.opening-warning','.opening-hearts','#inventory-hud','.stage-bottom','#crosshair','#control-badge','.touch-controls','#reset'])assert.ok(hud.includes(selector),`HUD hide list is missing ${selector}`);
- assert.match(prologueStyles,/body\.prologue-active\s+\.header\b/,'prologue.css does not hide the review-build header');
- assert.match(prologueStyles,/body\.prologue-active\s+\.sidebar\b/,'prologue.css does not hide the review-build sidebar');
+ const hud=prologueStyles.match(/body\.prologue-active\s+:is\(([^)]*)\)\s*\{([^}]*)\}/);
+ assert.ok(hud,'prologue.css has no body.prologue-active :is(...) { ... } HUD hide rule');
+ const [,selectors,declarations]=hud;
+ for(const selector of ['.opening-hud','.opening-mapcard','.opening-prompt','.opening-warning','.opening-hearts','#inventory-hud','.stage-bottom','#crosshair','#control-badge','.touch-controls','#reset'])assert.ok(selectors.includes(selector),`HUD hide list is missing ${selector}`);
+ assert.match(declarations,/visibility:\s*hidden/,'the HUD hide list does not set visibility: hidden');
+ const ruleFor=(selector:string)=>prologueStyles.match(new RegExp(`body\\.prologue-active\\s+${selector}\\b[^{]*\\{([^}]*)\\}`))?.[1]??'';
+ assert.match(ruleFor('\\.header'),/visibility:\s*hidden/,'body.prologue-active .header does not set visibility: hidden');
+ assert.match(ruleFor('\\.sidebar'),/visibility:\s*hidden/,'body.prologue-active .sidebar does not set visibility: hidden');
  assert.match(prologueStyles,/\.prologue-subtitle\s*\{[^}]*left:\s*50%[^}]*transform:\s*translateX\(-50%\)/,'subtitle is not centred with left:50% + translateX(-50%)');
 });
+// Comments would otherwise satisfy these pins while the live code does not run.
+const stripComments=(source:string)=>source.replace(/\/\*[\s\S]*?\*\//g,'').replace(/(^|[^:])\/\/.*$/gm,'$1');
+const prologueCode=stripComments(prologueSource);
 check('module: registers its camera callback and pauses the explorer',()=>{
- assert.ok(prologueSource.includes('beforeRender.add'),'prologue.ts does not register on beforeRender');
- assert.ok(prologueSource.includes("explorer.pause('prologue')"),"prologue.ts does not call explorer.pause('prologue')");
+ assert.ok(
+  prologueCode.includes('if (!registered) { viewer.beforeRender.add(update); registered = true; }'),
+  'prologue.ts does not register the live beforeRender callback (outside comments)',
+ );
+ assert.ok(prologueCode.includes("explorer.pause('prologue')"),"prologue.ts does not call explorer.pause('prologue')");
+});
+check('main: the pause card offers one replay button',()=>{
+ assert.match(mainSource,/<button id="replay-intro"[^>]*type="button"[^>]*>Replay intro<\/button>/,'the pause card has no Replay intro button');
+ assert.ok(mainSource.includes("sessionStorage.removeItem('hku.campus.prologue.v1')"),'replay does not clear the seen-intro session flag');
+ assert.ok(mainSource.includes("searchParams.set('intro', '1')"),'replay does not reload with intro=1');
+});
+check('styles: the replay button is at least 48 px tall on touch',()=>{
+ const buttonRule=readSource('src/style.css').match(/#replay-intro\s*\{([^}]*)\}/)?.[1]??'';
+ assert.match(buttonRule,/min-height:\s*48px/,'style.css has no #replay-intro { min-height: 48px } rule');
 });
 
 if(failures.length){console.log(`\ncheck-prologue: ${failures.length} failed`);process.exit(1);}

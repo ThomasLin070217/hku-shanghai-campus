@@ -10,6 +10,7 @@
 #pause-panel[hidden],#crosshair[hidden],#control-badge[hidden]{display:none}
 .pause-card{width:360px;max-width:90vw;padding:32px;background:#f1f0e4;border:2px solid #123c31;box-shadow:8px 8px 0 #123c3155;color:#173e31}
 .pause-card h2{font-size:36px;margin:18px 0 8px}.pause-card p{font-size:14px}.pause-card button{width:100%;padding:12px;margin:6px 0;border:1px solid #31564a}.pause-card .primary{background:#0d6245;color:white;font-weight:700}
+#replay-intro{min-height:48px}
 .key-guide{font-size:12px;line-height:2;margin:16px 0;color:#40594d}.sensitivity{font-size:12px;display:flex;align-items:center;gap:12px;margin:12px 0}.sensitivity input{width:170px}
 #crosshair{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:22px monospace;color:#fff9;text-shadow:1px 1px #1237;pointer-events:none}
 #control-badge{position:absolute;right:24px;top:72px;display:flex;gap:10px;align-items:center;padding:8px 10px;background:#132f29dd;color:#fff;z-index:14;font-size:12px}#control-badge button{background:#e9eddc;color:#18392f;border:0;padding:7px 12px}

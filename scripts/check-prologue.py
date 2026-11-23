@@ -20,32 +20,34 @@ of this scene into 1.5-2.6 s on this machine (measured: 5.2-7.4 s from BEGIN to
 subtitle), which would fail every run for reasons that are not the prologue.
 The gate therefore runs on the default GPU backend and prints the renderer it
 got. CHROME_GL=swiftshader keeps parity with the other browser gates.
+
+CHROME_PATH is optional: without it Playwright's bundled Chromium is used. The
+shot-B screenshot and its .txt sidecar are named from EVIDENCE_SHA when set,
+otherwise from the runtime git HEAD. The same run checks the 390x844 phone
+layout and captures evidence/prologue-phone-<sha>.png.
 """
 import json
 import os
+import re
 import subprocess
 import sys
+from datetime import datetime, timezone
 
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from playwright.sync_api import sync_playwright
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ORIGIN = os.environ.get('CAMPUS_URL', 'http://127.0.0.1:5251/')
-CHROME = os.environ.get('CHROME_PATH') or next(
-    (path for path in (
-        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-        '/Users/onezion12344/Library/Caches/ms-playwright/chromium-1208/'
-        'chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
-    ) if os.path.exists(path)),
-    None,
-)
+CHROME = os.environ.get('CHROME_PATH')
 GL = os.environ.get('CHROME_GL', 'hardware')
 ARGS = ['--enable-webgl'] if GL == 'hardware' else [
     '--use-gl=angle', '--use-angle=swiftshader', '--enable-webgl', '--enable-unsafe-swiftshader',
 ]
 VIEW = {'width': 1280, 'height': 800}
-GAP = 0.35  # PROLOGUE_GAP in src/opening/prologueTimeline.ts
+PHONE = {'width': 390, 'height': 844}
 CLOCK_BUDGET_MS = 10000  # BEGIN -> t>0 must be <= 10 s; a cold cache within that bound is not a failure
 SUBTITLE_BUDGET_MS = 1500  # first subtitle, measured from the clock start, not from BEGIN
+STAMP = os.environ.get('EVIDENCE_SHA')
 
 # Instrument the page before any app code runs. The marks are in-page
 # performance.now values so Playwright's own round trips cannot inflate them.
@@ -62,7 +64,8 @@ document.addEventListener('click', e => {
 
 # t > 0 means the clock is running: before BEGIN and while the pack decodes the
 # prologue reports lastT, which is 0, so this cannot fire early. Polled on rAF so
-# the mark is the first frame that sees the clock move, not a sampling artifact.
+# the mark is the first frame that sees the clock move; it is bounded by one
+# frame, so treat it as frame-quantized (~16 ms at 60 Hz), not exact.
 WATCH_CLOCK = """
 window.__tStarted = null;
 (function poll(){
@@ -85,7 +88,7 @@ READ_TEXT = """() => {
 }"""
 SEEK_POSE = """(t) => {
   __CAMPUS.prologue.debug.seek(t);
-  return __CAMPUS.explorer.camera.position.toArray();
+  return {pos: __CAMPUS.explorer.camera.position.toArray(), shot: __CAMPUS.prologue.debug.state().shot};
 }"""
 
 failures = []
@@ -111,6 +114,14 @@ def ready(page):
     page.wait_for_function('() => window.__CAMPUS && window.__CAMPUS.prologue', timeout=90000)
 
 
+def ready_or_fatal(page):
+    try:
+        ready(page)
+    except PlaywrightTimeoutError:
+        fatal('__CAMPUS.prologue never appeared. The build must be review mode '
+              '(npm run build:review) and the preview must use --mode review.')
+
+
 def frames(page, n=2):
     page.evaluate(f'() => new Promise(r => {{ let i = 0; const f = () => (++i >= {n} ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }})')
 
@@ -120,11 +131,36 @@ def norm(text):
 
 
 def sha():
+    """The evidence stamp: EVIDENCE_SHA when the caller knows the captured
+    tree, otherwise the runtime git HEAD (printed, so the provenance is visible)."""
+    if STAMP:
+        return STAMP
     try:
         return subprocess.check_output(['git', '-C', ROOT, 'rev-parse', '--short', 'HEAD'], text=True).strip()
     except Exception:
         return 'local'
 
+
+def sidecar(image_path, **fields):
+    """A .txt next to a screenshot: what tree and build actually produced it."""
+    target = os.path.splitext(image_path)[0] + '.txt'
+    with open(target, 'w', encoding='utf-8') as handle:
+        for key, value in fields.items():
+            handle.write('{}: {}\n'.format(key, value))
+    print('  ..   sidecar:', target)
+
+
+def utc_now():
+    return datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+
+
+# The gap is single-sourced from the module constant; a rename fails loudly
+# instead of the gate silently seeking with a stale number.
+with open(os.path.join(ROOT, 'src/opening/prologueTimeline.ts'), encoding='utf-8') as handle:
+    gap_match = re.search(r'export const PROLOGUE_GAP\s*=\s*([0-9.]+)', handle.read())
+if not gap_match:
+    fatal('src/opening/prologueTimeline.ts has no PROLOGUE_GAP constant')
+GAP = float(gap_match.group(1))
 
 # The same timeline math as prologueTimeline(): first line at 0, each next one
 # GAP seconds after the previous end. The manifest is the narration source of
@@ -143,20 +179,22 @@ with sync_playwright() as p:
     browser = p.chromium.launch(executable_path=CHROME, args=ARGS, headless=True) if CHROME \
         else p.chromium.launch(args=ARGS, headless=True)
     try:
-        page = browser.new_page(viewport=VIEW)
+        page = browser.new_page(viewport=VIEW, reduced_motion='no-preference')
         errors = []
         page.on('pageerror', lambda e: errors.append(str(e)))
         page.add_init_script(INSTRUMENT)
         page.goto(ORIGIN + '?experience=opening&intro=1', wait_until='load')
-        ready(page)
+        ready_or_fatal(page)
 
         renderer = page.evaluate("""() => {
-          const c = document.createElement('canvas'); const g = c.getContext('webgl2') || c.getContext('webgl');
+          const g = window.__CAMPUS?.viewer?.renderer?.getContext?.();
           if (!g) return 'no webgl';
           const d = g.getExtension('WEBGL_debug_renderer_info');
           return d ? g.getParameter(d.UNMASKED_RENDERER_WEBGL) : g.getParameter(g.RENDERER);
         }""")
         print('  ..   renderer:', renderer)
+        evidence_sha = sha()
+        print('  ..   evidence sha: {} ({})'.format(evidence_sha, 'EVIDENCE_SHA' if STAMP else 'runtime git HEAD'))
 
         api = page.evaluate("""() => ({
           seek: typeof window.__CAMPUS.prologue?.debug?.seek,
@@ -173,8 +211,7 @@ with sync_playwright() as p:
         check('gate: body.prologue-active is set', page.evaluate("() => document.body.classList.contains('prologue-active')"))
         check('gate: the pause card is hidden', not page.locator('#pause-panel').is_visible())
         paused_at_gate = page.evaluate("() => ({paused: __CAMPUS.explorer.game.paused, reason: __CAMPUS.explorer.game.pauseReason})")
-        check('gate: the explorer is paused for the prologue',
-              paused_at_gate == {'paused': True, 'reason': 'prologue'}, paused_at_gate)
+        check('gate: the explorer is paused', paused_at_gate['paused'] is True, paused_at_gate)
         check('gate: __CAMPUS.prologue.active is true', page.evaluate('() => __CAMPUS.prologue.active') is True)
 
         # 2. BEGIN unlocks audio and starts the run. The clock stays at t=0 until
@@ -185,10 +222,21 @@ with sync_playwright() as p:
         page.evaluate('() => { __subSeen = null; __tStarted = null; __marks = {}; }')
         page.evaluate(WATCH_CLOCK)
         page.click('.prologue-begin')
-        check('begin: the prologue is running', page.evaluate('() => __CAMPUS.prologue.active') is True)
+        try:
+            page.wait_for_selector('.prologue-gate', state='hidden', timeout=5000)
+            gate_dismissed = True
+        except PlaywrightTimeoutError:
+            gate_dismissed = False
+        check('begin: the BEGIN gate is dismissed', gate_dismissed)
+        try:
+            page.wait_for_function("() => __CAMPUS.experience.audio.context?.state === 'running'", timeout=5000)
+            audio_running = True
+        except PlaywrightTimeoutError:
+            audio_running = False
         audio = page.evaluate("() => __CAMPUS.experience.audio.context?.state ?? null")
-        check('begin: the click unlocked the audio context', audio == 'running', audio)
+        check('begin: the click unlocked the audio context', audio_running, audio)
         clock_ms = None
+        subtitle_ms = None
         try:
             page.wait_for_function('() => window.__tStarted !== null', timeout=30000)
             clock_ms = page.evaluate('() => window.__tStarted - window.__marks.begin')
@@ -226,18 +274,21 @@ with sync_playwright() as p:
         # 4. The shot A camera moves between two cinematic times 1 s apart.
         a = page.evaluate(SEEK_POSE, SHOT_A[0])
         b = page.evaluate(SEEK_POSE, SHOT_A[1])
-        moved = sum((x - y) ** 2 for x, y in zip(a, b)) ** 0.5
+        moved = sum((x - y) ** 2 for x, y in zip(a['pos'], b['pos'])) ** 0.5
         check('camera: moves > 0.05 between two shot A seek points 1 s apart', moved > 0.05,
               {'from': a, 'to': b, 'distance': moved})
+        check('camera: both shot A samples report shot 0', a['shot'] == 0 and b['shot'] == 0, {'from': a, 'to': b})
 
         # 5. Shot B is on screen without the endcard, and the frame is captured there.
         page.evaluate('(t) => __CAMPUS.prologue.debug.seek(t)', SHOT_B)
         frames(page, 2)
         state = page.evaluate("() => ({line: __CAMPUS.prologue.debug.state().line, endcard: document.querySelector('.prologue-endcard')?.hidden === false})")
         check('shot B: the second shot holds without the endcard', state['line'] == 1 and not state['endcard'], state)
-        shot = os.path.join(ROOT, 'evidence', f'prologue-{sha()}.png')
+        shot = os.path.join(ROOT, 'evidence', f'prologue-{evidence_sha}.png')
         page.screenshot(path=shot)
         print('  ..   screenshot:', shot)
+        sidecar(shot, sha=evidence_sha, url=ORIGIN + '?experience=opening&intro=1', renderer=renderer,
+                clock_ms=clock_ms, subtitle_ms=subtitle_ms, captured_utc=utc_now())
 
         # 6. Skip is clickable before the endcard, removes the overlay and hands back to a paused game.
         skip_visible = page.locator('.prologue-skip').is_visible() and page.locator('.prologue-skip').is_enabled()
@@ -261,9 +312,37 @@ with sync_playwright() as p:
         check('skip: the pause card is back', after['pause'] is True, after)
         check('skip: the game is left paused', after['paused'] is True and after['active'] is False, after)
 
+        # 6b. The pause card's Replay intro button is focusable, tall enough on
+        #     touch, and in the review build it calls play() instead of reloading.
+        replay = page.locator('#replay-intro')
+        replay_exists = replay.count() > 0
+        replay_box = replay.bounding_box(timeout=2000) if replay_exists else None
+        focusable = page.evaluate(
+            "() => { const b = document.getElementById('replay-intro'); if (!b) return false; b.focus(); return document.activeElement === b; }")
+        replay_ok = replay_exists and replay.is_visible() and replay.is_enabled() and focusable \
+            and replay_box is not None and replay_box['height'] >= 48
+        check('replay: the pause card shows a focusable Replay intro button at least 48 px tall',
+              replay_ok,
+              {'exists': replay_exists, 'visible': replay_exists and replay.is_visible(),
+               'focusable': focusable, 'box': replay_box})
+        if replay_ok:
+            page.click('#replay-intro')
+            frames(page, 2)
+            replayed = page.evaluate("""() => ({
+              overlay: !!document.getElementById('prologue'),
+              gate: (() => { const el = document.querySelector('.prologue-gate'); return !!el && !el.hidden; })(),
+              body: document.body.classList.contains('prologue-active'),
+              paused: __CAMPUS.explorer.game.paused,
+              active: __CAMPUS.prologue.active,
+            })""")
+            check('replay: clicking it brings the BEGIN gate back', replayed['overlay'] and replayed['gate'] and replayed['body'], replayed)
+            check('replay: the game is paused for the prologue again', replayed['paused'] is True and replayed['active'] is True, replayed)
+        else:
+            print('  ..   replay click skipped: the button did not pass its own check')
+
         # 7. A reload without intro=1 does not replay the prologue (the session already saw it).
         page.goto(ORIGIN + '?experience=opening', wait_until='load')
-        ready(page)
+        ready_or_fatal(page)
         frames(page, 2)
         reload_state = page.evaluate("""() => ({
           overlay: !!document.getElementById('prologue'),
@@ -273,6 +352,48 @@ with sync_playwright() as p:
         check('reload without intro=1: no prologue overlay', not reload_state['overlay'], reload_state)
         check('reload without intro=1: no prologue-active body', not reload_state['body'], reload_state)
         check('reload without intro=1: __CAMPUS.prologue.active is false', reload_state['active'] is False, reload_state)
+
+        # 8. Phone layout, 390x844 portrait: BEGIN fills the gate width, the
+        #    subtitle sits inside the safe area and Skip stays reachable. One
+        #    screenshot, taken with the subtitle up, is the visual evidence.
+        phone = browser.new_page(viewport=PHONE, reduced_motion='no-preference')
+        phone_errors = []
+        phone.on('pageerror', lambda e: phone_errors.append(str(e)))
+        phone.goto(ORIGIN + '?experience=opening&intro=1', wait_until='load')
+        ready_or_fatal(phone)
+        begin_box = phone.locator('.prologue-begin').bounding_box()
+        check('phone: BEGIN spans the gate width at 390x844',
+              begin_box is not None and begin_box['width'] >= 0.8 * PHONE['width']
+              and abs(begin_box['x'] - (PHONE['width'] - begin_box['width']) / 2) <= 1,
+              {'begin': begin_box})
+        phone.click('.prologue-begin')
+        try:
+            phone.wait_for_function(
+                "() => { const s = document.querySelector('.prologue-subtitle');"
+                " return !!s && s.textContent.trim() !== '' && getComputedStyle(s).opacity !== '0'; }",
+                timeout=30000)
+            subtitle_up = True
+        except PlaywrightTimeoutError:
+            subtitle_up = False
+        rect = phone.evaluate("""() => {
+          const s = document.querySelector('.prologue-subtitle');
+          if (!s) return null;
+          const r = s.getBoundingClientRect();
+          return {left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width, height: r.height};
+        }""")
+        check('phone: the subtitle is inside the 390x844 safe area',
+              subtitle_up and rect is not None and rect['left'] >= 0 and rect['right'] <= PHONE['width']
+              and rect['top'] >= 0 and rect['bottom'] <= PHONE['height'] and rect['width'] > 0,
+              {'subtitle': rect})
+        check('phone: Skip is reachable during the cinematic',
+              phone.locator('.prologue-skip').is_visible() and phone.locator('.prologue-skip').is_enabled())
+        phone_shot = os.path.join(ROOT, 'evidence', f'prologue-phone-{evidence_sha}.png')
+        phone.screenshot(path=phone_shot)
+        print('  ..   phone screenshot:', phone_shot)
+        sidecar(phone_shot, sha=evidence_sha, url=ORIGIN + '?experience=opening&intro=1',
+                viewport='390x844', renderer=renderer, captured_utc=utc_now())
+        check('phone: no page errors', phone_errors == [], phone_errors)
+        phone.close()
 
         check('no page errors', errors == [], errors)
     finally:

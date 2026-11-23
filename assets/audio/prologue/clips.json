@@ -3,6 +3,7 @@
   "model": "eleven_multilingual_v2",
   "outputFormat": "mp3_44100_128",
   "generated": "2026-11-23",
+  "budget": 45,
   "total": 29.071999999999996,
   "clips": [
     {
@@ -12,7 +13,9 @@
       "voiceName": "George - Warm, Captivating Storyteller",
       "text": "November 2030. HKU Shanghai. Four towers. One core. An entire campus wired as a single supercomputer.",
       "file": "prologue-1.mp3",
-      "duration": 8.545
+      "duration": 8.545,
+      "bytes": 137969,
+      "sha256": "a53080df4b5976c8d85cd9b12ce92210b033fd84888dd16b30e7d3ef9a685ec1"
     },
     {
       "id": "prologue-2",
@@ -21,7 +24,9 @@
       "voiceName": "George - Warm, Captivating Storyteller",
       "text": "Last night, something else got inside it. The barrier sealed. The guardian lion turned. And the students at the High Table Dinner never came home.",
       "file": "prologue-2.mp3",
-      "duration": 8.824
+      "duration": 8.824,
+      "bytes": 142149,
+      "sha256": "5a7a210c28f8db3545f5c777ecb4f4683059cfa42f60f7565db4070ffc83cf66"
     },
     {
       "id": "prologue-3",
@@ -30,7 +35,9 @@
       "voiceName": "George - Warm, Captivating Storyteller",
       "text": "You are the only Student Ambassador still moving, and your MacBook still has root.",
       "file": "prologue-3.mp3",
-      "duration": 4.644
+      "duration": 4.644,
+      "bytes": 75275,
+      "sha256": "c64e148cb7f6d19e04a6ab54f13e4712a94cd9d550f2268c2c93713a8787b262"
     },
     {
       "id": "prologue-4",
@@ -39,7 +46,9 @@
       "voiceName": "Harry - Fierce Warrior",
       "text": "Okay. Let's reboot this campus.",
       "file": "prologue-4.mp3",
-      "duration": 2.508
+      "duration": 2.508,
+      "bytes": 41003,
+      "sha256": "65e015ca1c5a6134a0df5c768e2c80f516426ff692b044c97f135e09e2ea5578"
     },
     {
       "id": "prologue-5",
@@ -48,7 +57,9 @@
       "voiceName": "George - Warm, Captivating Storyteller",
       "text": "Restore the four towers. Free the students. Bring CDS back online.",
       "file": "prologue-5.mp3",
-      "duration": 4.551
+      "duration": 4.551,
+      "bytes": 74021,
+      "sha256": "18683b7a28f7beefeba9de4793a012ff51058741d9327b55456facff0083b753"
     }
   ]
 }
