@@ -27,7 +27,12 @@ import type {Obstacle} from '../exploration/navigation';
  * height), so no interact key is needed and no other file has to push input in.
  */
 
-export interface LiftState{phase:'idle'|'doors-opening'|'open'|'doors-closing'|'rising'|'arrived';y:number;doors:number;}
+/** `call` is a landing call: a request from one of the two floors, not a passenger. */
+export type LiftCall='ground'|'top';
+export interface LiftState{
+ phase:'idle'|'doors-opening'|'open'|'doors-closing'|'rising'|'descending'|'arrived';
+ y:number;doors:number;call:LiftCall|null;
+}
 export interface LiftBox{name:string;x0:number;x1:number;z0:number;z1:number;bottom:number;top:number}
 
 /** Accel and decel each take a quarter of the travel time; the middle half is cruise. */
@@ -46,21 +51,52 @@ function liftTravelY(seconds:number):number{
  const r=TRAVEL-t;return LIFT_TRAVEL_DISTANCE-.5*(v/a)*r*r;
 }
 
-export function createLift():LiftState{return{phase:'idle',y:L.ground,doors:0};}
+export function createLift():LiftState{return{phase:'idle',y:L.ground,doors:0,call:null};}
 
 /** The declared `LiftState` carries no timers; they live beside it, not in the interface. */
-interface LiftClock{open:number;rise:number;}
+interface LiftClock{
+ /** Seconds the doors have been held open with someone in the car or a call pending. */
+ open:number;
+ /** Seconds into the current trip, in the same accel–cruise–decel shape either way. */
+ rise:number;
+ /**
+  * Set when the car arrives with a passenger aboard. The passenger must leave once before the
+  * car will move again, or a rider who stays put would be carried straight back down (or up)
+  * instead of being given the time to step out.
+  */
+ hold:boolean;
+}
 const clocks=new WeakMap<LiftState,LiftClock>();
 function clock(s:LiftState):LiftClock{
  let c=clocks.get(s);
- if(!c){c={open:0,rise:0};clocks.set(s,c);}
+ if(!c){c={open:0,rise:0,hold:false};clocks.set(s,c);}
  return c;
 }
 
+/** True when the car is standing at the top of its shaft. */
+const atTop=(s:LiftState)=>s.y>L.ground+1;
+/** True when a landing call is asking the car to come to the floor it is not on. */
+function calledElsewhere(s:LiftState):boolean{
+ return s.call==='top'?s.y<L.landing-.3:s.call==='ground'?s.y>L.ground+.3:false;
+}
+
+/** A landing call. Calling the floor the car already stands at does nothing. */
+export function callLift(floor:LiftCall):void{
+ if(LIFT.call===floor)return;
+ const there=floor==='top'?Math.abs(LIFT.y-L.landing)<=.3:Math.abs(LIFT.y-L.ground)<=.3;
+ if(there)return;
+ LIFT.call=floor;
+}
+
 /**
- * One step of the lift. `called` means a passenger is standing in the car and wants the
- * fifth floor. From `idle` the doors open on the first step: an unattended lift waits at the
- * ground lobby with its doors open, so walking in needs no call button.
+ * One step of the lift. `called` means a passenger is standing in the car. From `idle` the
+ * doors open on the first step: an unattended lift waits at the ground lobby with its doors
+ * open, so walking in needs no call button.
+ *
+ * Direction is a property of where the car is, not of where the player wants to go: a car at
+ * the ground only rises and a car at the landing only descends. A landing call (`callLift`)
+ * moves an empty car to the other floor; a passenger does the same, but only after the hold
+ * that gives them time to step out has been released.
  */
 export function stepLift(s:LiftState,dt:number,called:boolean):void{
  if(!Number.isFinite(dt)||dt<=0)return;
@@ -71,25 +107,41 @@ export function stepLift(s:LiftState,dt:number,called:boolean):void{
   if(s.doors>=1){s.doors=1;s.phase='open';c.open=0;}
   return;
  }
- if(s.phase==='open'){
-  // The dwell restarts whenever the car is empty, so the doors never close on someone
+ if(s.phase==='open'||s.phase==='arrived'){
+  s.doors=Math.min(1,s.doors+dt/L.doorSeconds);
+  if(s.doors<1)return;
+  // Stepping out releases the hold the arrival set; only then can the car be sent again.
+  if(!called)c.hold=false;
+  // The dwell restarts whenever nobody is waiting, so the doors never close on someone
   // who is still stepping in.
-  c.open=called?c.open+dt:0;
-  if(c.open>=L.dwellSeconds)s.phase='doors-closing';
+  const wants=(called&&!c.hold)||calledElsewhere(s);
+  c.open=wants?c.open+dt:0;
+  if(c.open>=L.dwellSeconds){c.open=0;s.phase='doors-closing';}
   return;
  }
  if(s.phase==='doors-closing'){
   s.doors=Math.max(0,s.doors-dt/L.doorSeconds);
-  if(s.doors<=0){s.doors=0;s.phase='rising';c.rise=0;}
+  if(s.doors<=0){
+   s.doors=0;c.rise=0;
+   s.phase=atTop(s)?'descending':'rising';
+  }
   return;
  }
  if(s.phase==='rising'){
   c.rise=Math.min(TRAVEL,c.rise+dt);
   s.y=L.ground+liftTravelY(c.rise);
   // The doors stay shut for the whole ride: they open only once the floor has stopped.
-  if(c.rise>=TRAVEL){s.y=L.landing;s.phase='arrived';}
+  if(c.rise>=TRAVEL){s.y=L.landing;s.phase='arrived';s.call=null;c.hold=called;}
   return;
  }
+ if(s.phase==='descending'){
+  c.rise=Math.min(TRAVEL,c.rise+dt);
+  s.y=L.landing-liftTravelY(c.rise);
+  if(c.rise>=TRAVEL){s.y=L.ground;s.phase='arrived';s.call=null;c.hold=called;}
+  return;
+ }
+ // Defensive: an unknown phase parks the car with its doors open rather than moving it.
+ s.phase='arrived';
  s.doors=Math.min(1,s.doors+dt/L.doorSeconds);
 }
 
@@ -304,7 +356,7 @@ export function tickLift(x:number,z:number,y:number):void{advanceLift(nowSeconds
 
 /** Test seam: put the one lift back at the ground lobby, doors closed. */
 export function resetLift():void{
- LIFT.phase='idle';LIFT.y=L.ground;LIFT.doors=0;
+ LIFT.phase='idle';LIFT.y=L.ground;LIFT.doors=0;LIFT.call=null;
  clocks.delete(LIFT);
  // The clock is discarded too: a later query must bootstrap instead of measuring a gap
  // across the reset (which would hand the car up to the 50 ms clamp in one go).

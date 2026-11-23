@@ -5,6 +5,7 @@ import {B4_DOOR_LEAVES,B4_LAYOUT,B4_LOBBY,B4_OBSTACLES} from './b4Layout';
 import {createB4FlipWall} from './b4FlipWall';
 import {B4_LIFT as L} from './spatialLayout';
 import {attachLiftVisual,LIFT_LANDING,liftLandingBoxes} from './lift';
+import {B4_OFFICE,b4OfficeBoxes,attachOfficeVisual} from './b4Office';
 
 /**
  * Static B04 ground-floor shell, built with the opening world so B04 is never
@@ -67,7 +68,15 @@ function buildLiftCar(m:LiftMats){
   leafMesh.userData.slideDirection=direction;
   return leafMesh;
  });
- return{root,leaves};
+ // The car's small screen on the west wall: it carries the lobby feed between floors, and
+ // `b4Office` lifts its emissive intensity from 0 the moment the feed dies.
+ const feed=feedSurface();
+ const screenMat=feed
+  ?new T.MeshStandardMaterial({name:'B4 lift car screen',color:0x05080a,emissive:0xffffff,emissiveMap:feed.texture,emissiveIntensity:0,roughness:.45,metalness:0})
+  :std('B4 lift car screen',0x0a0f12);
+ const carScreen=box(root,'B4_lift_car_screen',.012,.15,.25,L.x0+TH+.008,1.60,cz,screenMat);
+ box(root,'B4_lift_car_screen_frame',.02,.19,.29,L.x0+TH+.004,1.60,cz,m.carDark);
+ return{root,leaves,carScreen};
 }
 
 /** Floor, walls, ceiling, corridor and the closed principal's door — D.3's landing, built
@@ -76,7 +85,9 @@ function buildLiftLanding(m:LiftMats){
  const root=new T.Group();root.name=B4_LIFT_LANDING;root.userData={...SOURCE,authorKey:B4_LIFT_LANDING,sceneLabel:'B04 fifth-floor landing'};
  const boxes=liftLandingBoxes();
  for(const b of boxes){
-  const material=b.name.includes('floor')?m.landingFloor:b.name.includes('ceiling')?m.landingCeiling:b.name.includes('office-door')?m.officeDoor:m.landingWall;
+  // The office leaf is hung on a hinge by `buildOffice`, so it is skipped here.
+  if(b.name==='opening-lift-5f-office-door')continue;
+  const material=b.name.includes('floor')?m.landingFloor:b.name.includes('ceiling')?m.landingCeiling:m.landingWall;
   box(root,b.name,b.x1-b.x0,b.top-b.bottom,b.z1-b.z0,(b.x0+b.x1)/2,(b.top+b.bottom)/2,(b.z0+b.z1)/2,material);
  }
  const top=L.landing+L.clearHeight;
@@ -98,6 +109,119 @@ function buildLiftLanding(m:LiftMats){
  return root;
 }
 
+/** The office and lobby materials, structurally typed so `mats` stays the only colour table. */
+interface OfficeMats{
+ deskWood:T.Material;chairFabric:T.Material;paper:T.Material;coat:T.Material;warmLamp:T.Material;
+ window:T.Material;book:T.Material;bookAlt:T.Material;screenFrame:T.Material;glass:T.Material;
+ callPlate:T.Material;callLamp:T.Material;landingFloor:T.Material;landingWall:T.Material;
+ landingCeiling:T.Material;officeDoor:T.Material;officePlate:T.Material;officeText:T.Material;
+}
+
+/**
+ * A canvas the CCTV feed draws into, or nothing when there is no DOM (the Node gates). One
+ * canvas for the whole shell: the monitor and the car's screen share the texture, so the feed
+ * is drawn once per frame at most and the car carries the same dying picture between floors.
+ */
+let feedCache:{canvas:HTMLCanvasElement;texture:T.CanvasTexture}|null|undefined;
+function feedSurface(){
+ if(feedCache!==undefined)return feedCache;
+ if(typeof document==='undefined')return(feedCache=null);
+ const canvas=document.createElement('canvas');canvas.width=192;canvas.height=112;
+ const texture=new T.CanvasTexture(canvas);texture.colorSpace=T.SRGBColorSpace;texture.magFilter=T.NearestFilter;
+ return(feedCache={canvas,texture});
+}
+
+/**
+ * The principal's office behind the 5F corridor door: shell from `b4OfficeBoxes()` (the same
+ * boxes `navigation.ts` mounts), the hinged door, the desk with the presentation MacBook, and
+ * the read-task dressing. No lights: warm panels are emissive.
+ */
+function buildOffice(m:OfficeMats){
+ const root=new T.Group();root.name='B04_principal_office';root.userData={...SOURCE,authorKey:'B04_principal_office',sceneLabel:"5F principal's office"};
+ const O=B4_OFFICE,F=O.floorTop;
+ for(const b of b4OfficeBoxes()){
+  if(b.name==='opening-office-shaft-guard')continue;          // collision only
+  const material=b.name.includes('floor')?m.landingFloor:b.name.includes('ceiling')?m.landingCeiling
+   :b.name.includes('desk')||b.name.includes('shelf')?m.deskWood:b.name.includes('chair')?m.chairFabric:m.landingWall;
+  box(root,b.name,b.x1-b.x0,b.top-b.bottom,b.z1-b.z0,(b.x0+b.x1)/2,(b.top+b.bottom)/2,(b.z0+b.z1)/2,material);
+ }
+ // The door leaf hangs on a hinge at the north jamb; `b4Office` swings it.
+ const hinge=group(root,'B04_office_door_hinge');
+ hinge.position.set(O.door.x0+.03,F,O.door.z0);
+ const leafW=O.door.z1-O.door.z0-.02;
+ const leaf=box(hinge,'B4_office_door_leaf',.06,O.door.height,leafW,0,O.door.height/2,leafW/2+.01,m.officeDoor);
+ leaf.userData.authorKey='B4_office_door_leaf';
+ // Desk dressing: a blotter, two papers and the MacBook.
+ const D=O.desk,dx=(D.x0+D.x1)/2,dz=(D.z0+D.z1)/2,top=F+D.h;
+ box(root,'B4_office_blotter',.42,.006,1.10,dx,top+.004,dz,m.coat);
+ box(root,'B4_office_paper',.21,.004,.30,dx-.06,top+.009,dz-.58,m.paper);
+ box(root,'B4_office_paper',.21,.004,.30,dx+.04,top+.009,dz+.62,m.paper);
+ const laptop=group(root,'B4_office_macbook');laptop.position.set(O.laptop.x,O.laptop.y,O.laptop.z);
+ box(laptop,'B4_office_macbook_base',.32,.016,.22,0,.008,0,m.officeDoor);
+ const lid=box(laptop,'B4_office_macbook_lid',.32,.21,.012,0,.105,-.104,m.officeDoor);lid.rotation.x=.18;
+ // A chair turned away from the desk, and a coat over its back.
+ const C=O.chair,chair=group(root,'B4_office_chair');
+ chair.position.set(C.x,F,C.z);chair.rotation.y=.62;
+ box(chair,'B4_office_chair_seat',C.size,.06,C.size,0,C.seat-.03,0,m.chairFabric);
+ box(chair,'B4_office_chair_back',C.size,.46,.06,0,C.seat+.23,-C.size/2+.03,m.chairFabric);
+ box(chair,'B4_office_coat',C.size*.8,.34,.10,0,C.seat+.30,-C.size/2-.02,m.coat);
+ // Shelf rows on the room-facing side of the bookcase.
+ const S=O.shelf;
+ for(let i=0;i<3;i++){
+  const y=F+.42+i*.55,books=7;
+  for(let k=0;k<books;k++){
+   const w=(S.x1-S.x0-.12)/books-.012;
+   box(root,'B4_office_book',w,.30,.03,S.x0+.06+w*(k+.5)+k*.012,y,S.z1+.016,k%3?m.book:m.bookAlt);
+  }
+ }
+ // The window: a bright pane on the east wall, and the warm practical light.
+ box(root,'B4_office_window',.02,1.40,3.40,O.interior.x1-.012,F+1.62,O.door.centre,m.window);
+ box(root,'B4_office_ceiling_lamp',1.10,.03,.34,dx,O.ceilBottom-.02,dz,m.warmLamp);
+ box(root,'B4_office_desk_lamp',.16,.02,.16,D.x1-.18,top+.16,D.z0+.20,m.warmLamp);
+ box(root,'B4_office_desk_lamp_stem',.03,.16,.03,D.x1-.18,top+.08,D.z0+.20,m.coat);
+ return{root,hinge};
+}
+
+/**
+ * The lobby CCTV monitor on the west wall between the side door and the lift, and the two
+ * landing call plates. The feed is a canvas texture redrawn by `b4Office.tickOffice` — never a
+ * second render pass.
+ */
+function buildLobbyDevices(m:OfficeMats){
+ const root=new T.Group();root.name='B04_lobby_devices';root.userData={...SOURCE,authorKey:'B04_lobby_devices',sceneLabel:'B04 lobby monitor and lift calls'};
+ const O=B4_OFFICE,C=O.cctv;
+ const monitor=group(root,'B04_lobby_cctv');
+ monitor.position.set(C.x,C.y,C.z);monitor.rotation.y=C.tilt;
+ box(monitor,'B4_cctv_frame',.07,C.h+.06,C.w+.06,0,0,0,m.screenFrame);
+ const feed=feedSurface();
+ const screenMat=feed
+  ?new T.MeshBasicMaterial({name:'B4 CCTV feed',map:feed.texture,toneMapped:false})
+  :m.glass;
+ const screen=new T.Mesh(new T.BoxGeometry(.012,C.h-.04,C.w-.04),screenMat);
+ screen.name='B4_cctv_screen';screen.position.set(.04,0,0);screen.userData={...SOURCE,authorKey:'B4_cctv_screen'};monitor.add(screen);
+ // The two call plates: ground beside the lift doorway, 5F at the corridor's mouth.
+ const g=O.callGround,f=O.call5f;
+ box(root,'B4_call_plate_ground',.02,.16,.11,g.x-.005,g.y,g.z,m.callPlate);
+ const lampGround=box(root,'B4_call_lamp_ground',.012,.055,.055,g.x+.008,g.y,g.z,std('B4 call lamp ground',0xffb347,0xffa02e,.25));
+ box(root,'B4_call_plate_5f',.11,.16,.02,f.x,f.y,LIFT_LANDING.corridorZ1-.012,m.callPlate);
+ const lamp5f=box(root,'B4_call_lamp_5f',.055,.055,.012,f.x,f.y,LIFT_LANDING.corridorZ1-.020,std('B4 call lamp 5f',0xffb347,0xffa02e,.25));
+ // The stairs sign, placed where the lift is the only way up (B04 has no stair of its own).
+ const glyphs=new TextGeometry('5F BY LIFT',{font:campusFont,size:.09,depth:.004,curveSegments:1});
+ glyphs.computeBoundingBox();
+ const bb=glyphs.boundingBox!;
+ glyphs.translate(-(bb.min.x+bb.max.x)/2,-(bb.min.y+bb.max.y)/2,0);
+ const sign=new T.Mesh(glyphs,m.officeText);
+ sign.name='B4_lift_sign_text';sign.position.set(L.x1+.019,2.02,L.door.z1+.55);sign.rotation.y=Math.PI/2;
+ sign.userData={...SOURCE,authorKey:'B4_lift_sign_text'};root.add(sign);
+ box(root,'B4_lift_sign_plate',.02,.20,.78,L.x1+.006,2.02,L.door.z1+.55,m.officePlate);
+ attachOfficeVisual({
+  screen:feed?{canvas:feed.canvas,texture:feed.texture}:undefined,
+  callGround:{material:lampGround.material as T.MeshStandardMaterial},
+  call5f:{material:lamp5f.material as T.MeshStandardMaterial},
+ });
+ return root;
+}
+
 export function buildB4Shell(){
  const root=new T.Group();root.name=B4_SHELL_NAME;root.userData={...SOURCE,authorKey:B4_SHELL_NAME,sceneLabel:'B04 ground floor (Keyboard Wall rooms)'};
  const R=B4_LAYOUT.room,F=R.floor;
@@ -114,6 +238,15 @@ export function buildB4Shell(){
   landingFloor:std('B4 5F floor',0xcfc6b4),landingWall:std('B4 5F wall',0xe3ddcf),
   landingCeiling:std('B4 5F ceiling',0xe9e5da),officeDoor:std('B4 5F office door',0x6b4a2f),
   officePlate:std('B4 5F office plate',0x2a2f31),officeText:std('B4 5F office lettering',0xe7c877,.45,.35),
+  /* Task E: the principal's office and the lobby monitor. Emissive, never a light: the shell
+     must carry zero lights (`check-campaign-b4` asserts it), so "warm practical lighting" is
+     a warm-emitting shade and ceiling panel, not a lit room. */
+  deskWood:std('B4 office desk timber',0x6b4a2f),chairFabric:std('B4 office chair fabric',0x2f3b44),
+  paper:std('B4 office paper',0xe8e3d6),coat:std('B4 office coat',0x3a3f45),
+  warmLamp:std('B4 office warm lamp',0xffe6bd,0xffca82,1.15),window:std('B4 office window light',0xbcd6e4,0x9dc6dd,.55),
+  book:std('B4 office book',0x7d3b34),bookAlt:std('B4 office book spine',0x3d5a6b),
+  screenFrame:std('B4 lobby monitor frame',0x1b2023),glass:std('B4 lobby monitor glass',0x0a0f12,0x33ff88,.35),
+  callPlate:std('B4 lift call plate',0x2b3234),callLamp:std('B4 lift call lamp',0xffb347,0xffa02e,.25),
  };
  const shell=group(root,'B04_room_structure');
  box(shell,'B4_floor',R.x1-R.x0,R.floor,R.z1-R.z0,(R.x0+R.x1)/2,R.floor/2,(R.z0+R.z1)/2,mats.floor).castShadow=false;
@@ -219,6 +352,13 @@ export function buildB4Shell(){
  root.add(lift.root);
  root.add(buildLiftLanding(mats));
  attachLiftVisual({root:lift.root,leaves:lift.leaves});
+ // Task E: the principal's office behind the 5F door, and the lobby's monitor and call plates.
+ // The office door hinge and the car's screen are the two visuals `b4Office` animates; the
+ // monitor canvas and the two call lamps were registered by `buildLobbyDevices`.
+ const office=buildOffice(mats);
+ root.add(office.root);
+ root.add(buildLobbyDevices(mats));
+ attachOfficeVisual({doorHinge:office.hinge,carScreen:{material:lift.carScreen.material as T.MeshStandardMaterial}});
  return root;
 }
 

@@ -3,6 +3,7 @@ import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H,OFFICE_LAYOUT as B6,din
 import type {Obstacle} from '../exploration/navigation';
 import {B4_LAYOUT,B4_OBSTACLES} from './b4Layout';
 import {LIFT,LIFT_LANDING,liftLandingBoxes,liftLandingContains,liftShaftSplit,liftSupport,mountLift,tickLift} from './lift';
+import {b4OfficeBoxes,installOffice,officeFloorContains,tickOffice} from './b4Office';
 
 /** Door clearance is shared by the scenery, collision and the step transition. */
 export function openingBusDoorSpan(){
@@ -100,10 +101,17 @@ export function openingObstacles(obstacles:Obstacle[]){
  // principal's closed door. Its shell is authored here and rendered by `b4Shell.ts` from
  // the same boxes; the car itself is mounted last because its collision moves.
  for(const p of liftLandingBoxes())obstacles.push(box(p.name,p.x0,p.x1,p.z0,p.z1,p.bottom,p.top));
+ // The 5F principal's office behind the corridor door, and the guard that closes the 5F
+ // shaft opening whenever the car is on the other floor.
+ for(const p of b4OfficeBoxes())obstacles.push(box(p.name,p.x0,p.x1,p.z0,p.z1,p.bottom,p.top));
  mountLift(obstacles);
+ installOffice(obstacles);
 }
 
 export function openingSupport(x:number,z:number,y:number,base:number|null){
+ // The office's beats, call points and guard ride the same query as the lift: it is the one
+ // hook that runs at simulation rate, and it already carries the point the player stands at.
+ tickOffice(x,z,y);
  // The lift is the only moving floor in the world. `support()` is the one query the
  // physics makes on every fixed step, so it is also the lift's clock (see `lift.ts`).
  tickLift(x,z,y);
@@ -119,8 +127,10 @@ export function openingSupport(x:number,z:number,y:number,base:number|null){
   if(k.floor<=y+.242)h=Math.max(h??-Infinity,k.floor);
   if(car<=y+.242)h=Math.max(h??-Infinity,car);
  }
- // The 5F plate is a floor like any other once the player has ridden up to it.
+ // The 5F plate is a floor like any other once the player has ridden up to it. So is the
+ // principal's office behind the corridor door: same plane, its own footprint.
  if(liftLandingContains(x,z)&&LIFT_LANDING.floorTop<=y+.242)h=Math.max(h??-Infinity,LIFT_LANDING.floorTop);
+ if(officeFloorContains(x,z)&&LIFT_LANDING.floorTop<=y+.242)h=Math.max(h??-Infinity,LIFT_LANDING.floorTop);
  const r=O.b6;if(x>=r.x0&&x<=r.x1&&z>=r.z0&&z<=r.z1&&r.floor<=y+.242)h=Math.max(h??-Infinity,r.floor);
  const b=O.bus,x0=b.x-b.length/2,x1=b.x+b.length/2,z0=b.z-b.width/2,z1=b.z+b.width/2;
  if(x>=x0&&x<=x1&&z>=z0&&z<=z1&&b.floor<=y+.242)h=Math.max(h??-Infinity,b.floor);
