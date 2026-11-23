@@ -39,10 +39,12 @@ Out of scope:
 
 ### Detection
 
-`useTouchControls({anyCoarse, maxTouchPoints, hoverNone})` returns true when the
-device reports any coarse pointer, or reports touch points and no hover. A touch
-laptop with a mouse therefore keeps the desktop path; a phone and a tablet get
-the touch controls.
+`useTouchControls({coarsePointer, maxTouchPoints, hoverNone})` returns true when
+the primary pointer is coarse, or the device reports touch points and no hover.
+Call sites pass `(pointer: coarse)`, never `(any-pointer: coarse)`: the latter is
+true on every touchscreen laptop even with a trackpad attached, which would take
+pointer lock away from hybrid laptops. A touch laptop with a mouse therefore
+keeps the desktop path; a phone and a tablet get the touch controls.
 
 ### Input mapping
 
@@ -101,7 +103,7 @@ Create `src/opening/touchInput.ts`:
 export interface TouchAxes { forward: number; right: number }
 export const TOUCH_DEAD_ZONE = 0.16;
 export function joystickAxes(dx: number, dy: number, radius: number, deadZone = TOUCH_DEAD_ZONE): TouchAxes
-export function useTouchControls(input: {anyCoarse: boolean; maxTouchPoints: number; hoverNone: boolean}): boolean
+export function useTouchControls(input: {coarsePointer: boolean; maxTouchPoints: number; hoverNone: boolean}): boolean
 ```
 
 `joystickAxes`: screen up (negative `dy`) is forward, screen right (positive
@@ -124,16 +126,19 @@ initial-scale=1.0, viewport-fit=cover`.
 Create `scripts/check-mobile.ts` and wire `check:mobile` in `package.json`.
 Assertions:
 
-1. centre, up, right, diagonal, dead-zone and beyond-radius vectors
-2. detection: coarse → true; touch + no hover → true; touch + hover → false;
-   fine non-touch → false
+1. centre, up, right, diagonal, dead-zone and beyond-radius vectors; the dead
+   zone constant itself is pinned at 0.16
+2. detection: coarse primary pointer → true; touch + no hover → true; touch +
+   hover (hybrid laptop) → false; fine non-touch → false
 3. quality precedence: explicit auto beats touch-low; stored low wins; touch
    small → low; touch large → auto; mouse small → auto
 4. `index.html` contains `viewport-fit=cover`
+5. both call sites (`src/exploration/controller.ts`, `src/viewer/graphicsQuality.ts`)
+   query `(pointer: coarse)` and do not contain `(any-pointer: coarse)`
 
 Run the check first and confirm it fails for the missing module.
 
-Task 3 extends the same check with the source and stylesheet asserts (5 and 6
+Task 3 extends the same check with the source and stylesheet asserts (6 and 7
 below), because those files do not exist yet at Task 1.
 
 ### Task 2 — controller touch API
@@ -191,12 +196,12 @@ whose text lacks one of those tokens.
 
 Mount from `src/main.ts` after `mode(true)`, and cap the renderer there:
 `createSiteViewer(host, () => true, touch ? TOUCH_MAX_PIXEL_RATIO : undefined)`.
+Add `export const TOUCH_MAX_PIXEL_RATIO = 1.15` to
+`src/viewer/graphicsQuality.ts` first; nothing defines it today.
 Add a review-build shell switch so the mobile gate can exercise the real player
 shell while keeping `__CAMPUS`: in `src/entry.ts`, allow `?shell=1` to set
-`gameShell` even when `import.meta.env.MODE === 'review'`.
-
-Change the viewport meta to `width=device-width, initial-scale=1.0,
-viewport-fit=cover`.
+`gameShell` even when `import.meta.env.MODE === 'review'`. The viewport meta was
+already changed in Task 1; do not change it again.
 
 CSS is scoped to the touch build: safe-area padding, the 132 px stick, 56 px
 buttons, HUD at 250 px, prompt above the controls, 32 px hotbar, portrait hotbar
@@ -205,10 +210,11 @@ focus collapsing to USE/MENU, and `body:not(.exploring)` hiding the layer.
 
 Extend `scripts/check-mobile.ts` with:
 
-5. source asserts: controller returns `touchMove` and `touchRun`; the touch
+6. source asserts: controller returns `touchMove` and `touchRun`; the touch
    module contains the five synthetic codes; the CSS contains
-   `env(safe-area-inset` and an orientation media query
-6. the desktop path is untouched: the compat pointermove has the touch
+   `env(safe-area-inset` and an orientation media query; `TOUCH_MAX_PIXEL_RATIO`
+   is 1.15 and main.ts passes it to `createSiteViewer`
+7. the desktop path is untouched: the compat pointermove has the touch
    multiplier behind `pointerType === 'touch'`.
 
 ### Task 4 — mobile browser gate
@@ -229,10 +235,17 @@ runs against a frozen review build:
    hidden, USE reads BACK, and tapping USE leaves focus.
 9. Screenshot `evidence/mobile-<sha>.png`.
 
+### Task 5 — CI wiring
+
+Add `npm run check:mobile` to `check:all` (before `build`) and to the Pages
+workflow's check step, so a later edit that breaks the primitives fails both the
+local chain and CI. The owner approved adding the new checks to CI.
+
 ## Acceptance
 
 - `npm run check:mobile` passes; it failed before Task 1.
-- `npm run typecheck`, `check:opening`, `check:campaign` pass.
+- `npm run typecheck`, `check:opening`, `check:campaign`, `check:prologue`
+  pass, and the Pages workflow runs `check:mobile`.
 - The mobile browser gate passes on a frozen build, with one screenshot each
   from portrait and landscape.
 - Desktop browser smoke: touch layer absent, pointer lock path unchanged.
