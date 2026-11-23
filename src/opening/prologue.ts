@@ -58,7 +58,7 @@ const GAME_CODES = new Set([
   'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
   ...Array.from({length: 9}, (_, index) => `Digit${index + 1}`),
 ]);
-const MARKUP = `<div class="prologue-gate"><h1>BARRIER 2030</h1><p>A CDS campus story</p><button class="prologue-begin" type="button">BEGIN</button></div>
+const MARKUP = `<div class="prologue-gate"><h1>HKU Shanghai at War</h1><p>BARRIER 2030 · A CDS campus story</p><button class="prologue-begin" type="button">BEGIN</button></div>
 <div class="prologue-frame"><div class="prologue-bar top"></div><div class="prologue-bar bottom"></div><p class="prologue-subtitle" aria-live="polite"></p><button class="prologue-skip" type="button">Skip</button></div>
 <div class="prologue-endcard" hidden><p>RESTORE THE TOWERS</p><p>FREE THE STUDENTS</p></div>`;
 

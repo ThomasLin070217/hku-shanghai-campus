@@ -3,18 +3,18 @@ import lawnPhoto from './lawn.webp';
 import {getGraphicsQuality,setGraphicsQuality,type GraphicsQuality} from '../viewer/graphicsQuality';
 import {clearProgress} from './resetProgress';
 
-document.title = 'BARRIER 2030 · HKU Shanghai';
+document.title = 'HKU Shanghai at War · BARRIER 2030';
 
 /** Every chapter and checkpoint is the same one-world page: `?experience=opening`. */
 const at = (checkpoint: string) => `?experience=opening&checkpoint=${checkpoint}`;
 
 document.querySelector('#app')!.innerHTML = `
   <main class="levels">
-    <header class="levels-heading"><span>HKU Shanghai</span><span>Chapters</span></header>
+    <header class="levels-heading"><span>HKU Shanghai at War</span><span>Chapters</span></header>
     <div class="levels-layout">
       <section aria-labelledby="levels-title">
-        <h1 id="levels-title">BARRIER 2030</h1>
-        <p class="levels-hint">HKU Shanghai</p>
+        <h1 id="levels-title">HKU Shanghai at War</h1>
+        <p class="levels-hint">BARRIER 2030 · HKU Shanghai</p>
         <p class="levels-hint">Play with a keyboard and mouse. Press Esc to pause.</p>
         <label class="levels-quality"><input type="checkbox" id="low-graphics"> Low graphics mode (lower 3D resolution, shadows off)</label>
         <nav class="levels-list" aria-label="Playable chapters">

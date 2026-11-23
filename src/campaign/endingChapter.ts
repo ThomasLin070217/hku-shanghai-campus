@@ -51,9 +51,10 @@ export const ENDING_DOME_WAIT_SECONDS=3;
 
 /** The credits card body. Pure, so the headless check reads the exact copy. */
 export function creditsMarkup():string{
- return '<section id="ending-credits-card" role="dialog" aria-modal="true" aria-label="BARRIER 2030 credits">'
+ return '<section id="ending-credits-card" role="dialog" aria-modal="true" aria-label="HKU Shanghai at War credits">'
   +'<p class="ending-kicker">CREDITS</p>'
-  +'<h2>BARRIER 2030</h2>'
+  +'<h2>HKU Shanghai at War</h2>'
+  +'<p class="ending-subtitle">BARRIER 2030</p>'
   +'<p class="ending-team">Thomas · Harry · Frost · WHL</p>'
   +'<p class="ending-place">HKU Shanghai · CDS</p>'
   +'<div class="ending-actions"><button type="button" id="ending-play-again">Play again</button><a id="ending-chapters" href="?experience=levels">Chapters</a></div>'
@@ -114,6 +115,7 @@ body:has(#ending-credits) :is(.opening-hud,.opening-hearts,.opening-mapcard,#inv
 #ending-credits-card{text-align:center;padding:40px 46px;max-width:min(560px,90vw)}
 #ending-credits-card .ending-kicker{margin:0 0 18px;font:600 11px/1.2 ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;letter-spacing:.26em;color:#74e6b4}
 #ending-credits-card h2{margin:0;font:400 clamp(40px,7vw,64px)/1.02 Georgia,"Times New Roman",serif;letter-spacing:.01em}
+#ending-credits-card .ending-subtitle{margin:10px 0 0;font:600 12px/1.2 ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;letter-spacing:.24em;color:#74e6b4;text-transform:uppercase}
 #ending-credits-card .ending-team{margin:26px 0 0;font:400 clamp(17px,2.4vw,21px)/1.4 Georgia,"Times New Roman",serif;color:#e8f4ee}
 #ending-credits-card .ending-place{margin:8px 0 0;font:600 11px/1.2 ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;letter-spacing:.2em;color:#a4bcb1;text-transform:uppercase}
 #ending-credits-card .ending-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:34px 0 0}

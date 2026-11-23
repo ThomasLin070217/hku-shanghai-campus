@@ -1,3 +1,7 @@
+# HKU Shanghai at War — BARRIER 2030
+
+> The game formerly titled “BARRIER 2030”. The subtitle stays; the title card, credits, menu and submission now read **HKU Shanghai at War**.
+
 # HKU Shanghai · 校园数字巡检 v9
 
 **[打开校园试玩](https://hku-l001-lawn-playtest.ctw557923.chatgpt.site/)**，可用电脑浏览器直接选择校园开场、体育馆营救、草坪狮子 L001 或校园巡检。帧率偏低时可在选关页勾选「低画质模式」。
