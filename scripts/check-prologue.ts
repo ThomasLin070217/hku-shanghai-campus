@@ -102,6 +102,9 @@ check('manifest: every source line has a clip with the same id',()=>{
   assert.ok(manifest.clips.some((clip)=>clip.id===line.id),`${line.id}: no clip in clips.json`);
  }
 });
+check('manifest: clips.json and prologue.json list the same lines',()=>{
+ assert.equal(manifest.clips.length,source.lines.length,'clips.json and prologue.json must list the same lines');
+});
 check('manifest: every clip text matches its source line',()=>{
  for(const line of source.lines){
   const clip=manifest.clips.find((entry)=>entry.id===line.id);
@@ -198,6 +201,33 @@ check('PROLOGUE_URLS points at the recorded mp3 files',()=>{
   assert.ok(existsSync(path),`${clip.id}: missing ${path}`);
   assert.ok(statSync(path).size>1024,`${clip.id}: ${path} is not a recorded clip`);
  }
+});
+
+// 5. Task 2: the cinematic module, its overlay styles and the mount.
+const readSource=(path:string)=>readFileSync(fileURLToPath(new URL(`../${path}`,import.meta.url)),'utf8');
+const mainSource=readSource('src/main.ts');
+const prologueSource=readSource('src/opening/prologue.ts');
+const prologueStyles=readSource('src/opening/prologue.css');
+
+check('main: mounts createPrologue and exposes prologue on __CAMPUS',()=>{
+ assert.ok(mainSource.includes('createPrologue'),'main.ts does not call createPrologue');
+ assert.ok(
+  mainSource.split('\n').some((line)=>line.includes('__CAMPUS')&&line.includes('{prologue}')),
+  'main.ts does not expose {prologue} on __CAMPUS',
+ );
+});
+check('styles: the overlay uses safe-area insets and hides the HUD',()=>{
+ assert.ok(prologueStyles.includes('env(safe-area-inset'),'prologue.css has no safe-area insets');
+ assert.ok(prologueStyles.includes('body.prologue-active'),'prologue.css has no body.prologue-active rule');
+ assert.match(
+  prologueStyles,
+  /body\.prologue-active\s+#pause-panel\s*\{[^}]*visibility:\s*hidden/,
+  'body.prologue-active does not hide #pause-panel',
+ );
+});
+check('module: registers its camera callback and pauses the explorer',()=>{
+ assert.ok(prologueSource.includes('beforeRender.add'),'prologue.ts does not register on beforeRender');
+ assert.ok(prologueSource.includes("explorer.pause('prologue')"),"prologue.ts does not call explorer.pause('prologue')");
 });
 
 if(failures.length){console.log(`\ncheck-prologue: ${failures.length} failed`);process.exit(1);}

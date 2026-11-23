@@ -1,4 +1,5 @@
 import {createOpeningExperience} from './opening/experience';
+import {createPrologue} from './opening/prologue';
 import {openingCheckpoint,checkpointCampaign,CHECKPOINT_LABELS,applyCheckpointThreat} from './opening/checkpoint';
 import {createCampaignHost,type CampaignHost} from './campaign/host';
 import {showChapterCard} from './campaign/chapterCard';
@@ -151,6 +152,9 @@ el('night-toggle').onclick=()=>{if(loungeView){notify('The lounge uses indoor li
 function showLounge(){mode(false);loungeView=true;sync();lighting.set(false,asset.root);viewer.view('selected',lounge);el('mode-label').textContent='Building 5 · 4F stepped lounge / standalone section · estimated dimensions';stats();notify('Building and floor confirmed. This is a standalone reference asset; use Return to outdoor exploration to go back to campus.');}
 el('lounge-toggle').onclick=()=>showLounge();
 index();stats();mode(true);if(openingMode){atmosphere=createOpeningAtmosphere(viewer.scene,viewer.renderer,viewer.lights);let threat=loadWorldThreat();if(threat.phase==='clear'&&(experience as {runtime?:{curtain_deployed:boolean}}).runtime?.curtain_deployed)threat=sealWorld();if(threat.phase==='sealed')atmosphere.restoreSealed();document.getElementById('night-toggle')?.style.setProperty('display','none');}if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign(window,{__CAMPUS:{viewer,explorer,experience,door,crowd,openingDebug:(experience as {debug?:unknown}).debug,campaign:campaign&&{state:()=>campaign!.state(),emit:(event:CampaignEvent)=>campaign!.emit(event),start:(deviceId:string)=>campaign!.start(deviceId),chapter:()=>campaign!.chapter(),objective:()=>campaign!.objective(),get debug(){return campaign!.debug;}},mode,showLounge,lighting,atmosphere,lounge,worldThreat:()=>loadWorldThreat(),get asset(){return asset;},get imported(){return imported;},stats,select,setView,rebuild,exportTarget,perf:()=>viewer.perf(),memory:()=>debugMemory(),resources:()=>resourceReport(viewer.scene),deferred:()=>deferredTextureStats(),ready:true}});
+const prologue=openingMode?createPrologue({viewer,explorer,audio:experience.audio,bounds:()=>{const box=new T.Box3();for(const object of asset.byId.values())box.expandByObject(object);return box;}}):undefined;
+if(prologue){const params=new URLSearchParams(location.search),intro=params.get('intro'),seen=(()=>{try{return sessionStorage.getItem('hku.campus.prologue.v1')==='1';}catch{return false;}})();if((experience as {story?:{stage:string}}).story?.stage==='bus'&&openingCheckpoint(params.get('checkpoint'))===null&&(intro==='1'||(intro!=='0'&&!seen)))void prologue.play();}
+if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign((window as unknown as {__CAMPUS:object}).__CAMPUS,{prologue});
 
 el('enter-game').onclick=()=>explorer.enter();
 el('takeover').onclick=()=>explorer.takeover();

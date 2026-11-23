@@ -1,0 +1,162 @@
+/*
+ * BARRIER 2030 prologue: gate, letterbox, subtitles and endcard.
+ * The overlay sits above the HUD (the pause panel is explicitly hidden while
+ * the prologue is active) and is removed entirely on stop.
+ */
+#prologue {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  color: #f3f0e3;
+  font-family: Inter, "PingFang SC", system-ui, sans-serif;
+  pointer-events: none;
+}
+#prologue[hidden] { display: none !important; }
+
+.prologue-gate {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 14px;
+  padding: calc(28px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right)) calc(28px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left));
+  background: radial-gradient(120% 90% at 50% 40%, #0c1a14f5 0%, #050b08fb 62%, #030605 100%);
+  text-align: center;
+  pointer-events: auto;
+}
+.prologue-gate[hidden] { display: none !important; }
+.prologue-gate h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(38px, 8vw, 92px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #f4f0e1;
+}
+.prologue-gate p {
+  margin: 0;
+  font-size: clamp(11px, 1.4vw, 14px);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #c8a85e;
+}
+.prologue-begin {
+  margin-top: 28px;
+  min-width: 168px;
+  min-height: 52px;
+  padding: 14px 34px;
+  border: 1px solid #c8a85e;
+  background: #c8a85e;
+  color: #101a14;
+  font: 600 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.prologue-begin:hover { background: #e0c37a; }
+.prologue-begin:focus-visible { outline: 2px solid #f4f0e1; outline-offset: 4px; }
+
+.prologue-frame { position: fixed; inset: 0; pointer-events: none; }
+.prologue-frame[hidden] { display: none !important; }
+.prologue-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  background: #030605;
+  pointer-events: none;
+}
+.prologue-bar.top { top: 0; height: calc(8.5vh + env(safe-area-inset-top)); }
+.prologue-bar.bottom { bottom: 0; height: calc(8.5vh + env(safe-area-inset-bottom)); }
+
+.prologue-subtitle {
+  position: fixed;
+  left: 50%;
+  bottom: calc(12vh + env(safe-area-inset-bottom));
+  z-index: 3;
+  width: max-content;
+  max-width: min(760px, 88vw);
+  margin: 0;
+  padding: 10px 18px 10px 20px;
+  border-left: 3px solid #c8a85e;
+  background: #06110dcc;
+  box-shadow: 0 8px 30px #0008;
+  color: #f0ead7;
+  font-family: Georgia, "Times New Roman", "PingFang SC", serif;
+  font-size: clamp(14px, 1.6vw, 19px);
+  line-height: 1.55;
+  text-align: left;
+  text-shadow: 0 1px 3px #000;
+  opacity: 0;
+  transition: opacity 0.12s linear;
+  pointer-events: none;
+}
+.prologue-subtitle.is-visible { opacity: 1; }
+.prologue-subtitle.is-player { border-left-color: #7fd0a4; color: #d8f3e2; font-style: italic; }
+
+.prologue-skip {
+  position: fixed;
+  right: calc(18px + env(safe-area-inset-right));
+  bottom: calc(12vh + env(safe-area-inset-bottom));
+  z-index: 3;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 1px solid #9fb3a6;
+  background: #06110dcc;
+  color: #e8eddf;
+  font: 600 11px ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.prologue-skip:hover { background: #12251b; }
+.prologue-skip:focus-visible { outline: 2px solid #f4f0e1; outline-offset: 4px; }
+
+.prologue-endcard {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 10px;
+  padding: 0 8vw;
+  background: #030605e6;
+  text-align: center;
+  pointer-events: none;
+}
+.prologue-endcard[hidden] { display: none !important; }
+.prologue-endcard p {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(22px, 4.6vw, 54px);
+  line-height: 1.15;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #f4f0e1;
+}
+.prologue-endcard p + p { color: #c8a85e; font-size: clamp(16px, 3vw, 34px); }
+
+body.prologue-active #pause-panel { visibility: hidden; }
+body.prologue-active .stage-bottom,
+body.prologue-active #crosshair,
+body.prologue-active .hotbar,
+body.prologue-active .mapcard,
+body.prologue-active .touch-controls { visibility: hidden; }
+body.prologue-active #control-badge { visibility: hidden; }
+
+@media (max-width: 700px) {
+  .prologue-subtitle { max-width: min(760px, 88vw); font-size: 18px; line-height: 1.5; }
+  .prologue-begin { width: 100%; max-width: 420px; }
+  .prologue-skip { bottom: calc(15vh + env(safe-area-inset-bottom)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prologue-subtitle { transition: none; }
+  .prologue-begin { transition: none; }
+}
