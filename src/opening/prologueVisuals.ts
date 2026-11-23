@@ -67,12 +67,18 @@ export function createPrologueVisuals():PrologueVisuals{
 
  /* ---------------------------------------------------------------- */
  /* 1. Mesh die-shot: four equal nodes, tower-to-tower links, no core  */
+ /*                                                                    */
+ /* The overlay is an X-ray on the living campus, not a model on the   */
+ /* ground: the footprints sit at ground level, so without depth-test  */
+ /* off every ring and link is hidden by the tower it belongs to. It   */
+ /* fades out before the camera enters B4 (dieFade below), so it never */
+ /* draws through an interior the player is walking in.                */
  /* ---------------------------------------------------------------- */
  const dieShot=new T.Group();
  dieShot.name='Prologue_die_shot_mesh';
- const nodeMaterial=own(new T.LineBasicMaterial({name:'Prologue_die_shot_node',color:0x9fdcff,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false}));
- const linkMaterial=own(new T.LineBasicMaterial({name:'Prologue_die_shot_link',color:0x5fa9d8,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false}));
- const ringMaterial=own(new T.MeshBasicMaterial({name:'Prologue_die_shot_ring',color:0x9fdcff,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide}));
+ const nodeMaterial=own(new T.LineBasicMaterial({name:'Prologue_die_shot_node',color:0x9fdcff,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,depthTest:false}));
+ const linkMaterial=own(new T.LineBasicMaterial({name:'Prologue_die_shot_link',color:0x5fa9d8,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,depthTest:false}));
+ const ringMaterial=own(new T.MeshBasicMaterial({name:'Prologue_die_shot_ring',color:0x9fdcff,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide,depthTest:false}));
  const nodeLines:number[]=[];
  const centreOf=(t:Tower):[number,number,number]=>[t.x,0.55,t.z];
  for(const tower of towers){
@@ -81,12 +87,13 @@ export function createPrologueVisuals():PrologueVisuals{
   const corners:[[number,number],[number,number]][]=[[[cx-hw,cz-hd],[cx+hw,cz-hd]],[[cx+hw,cz-hd],[cx+hw,cz+hd]],[[cx+hw,cz+hd],[cx-hw,cz+hd]],[[cx-hw,cz+hd],[cx-hw,cz-hd]]];
   for(const [[ax,az],[bx,bz]] of corners)nodeLines.push(ax,y,az,bx,y,bz);
   const ring=new T.Mesh(geo(new T.RingGeometry(5.4,6.6,40)),ringMaterial);
-  ring.rotation.x=-Math.PI/2;ring.position.set(cx,0.52,cz);dieShot.add(ring);
+  ring.rotation.x=-Math.PI/2;ring.position.set(cx,0.52,cz);ring.renderOrder=10;dieShot.add(ring);
   // A slim vertical marker at each node reads from the high aerial, never a centre.
   const pin=new T.Mesh(geo(new T.BoxGeometry(1.1,8.5,1.1)),ringMaterial);
-  pin.position.set(cx,4.6,cz);dieShot.add(pin);
+  pin.position.set(cx,4.6,cz);pin.renderOrder=10;dieShot.add(pin);
  }
  const nodeMesh=new T.LineSegments(geo(new T.BufferGeometry().setAttribute('position',new T.Float32BufferAttribute(nodeLines,3))),nodeMaterial);
+ nodeMesh.renderOrder=10;
  dieShot.add(nodeMesh);
  // Perimeter plus both diagonals, then a spine that leaves each tower for the
  // low north campus: every link is tower-to-tower or tower-to-node, never a star.
@@ -105,6 +112,7 @@ export function createPrologueVisuals():PrologueVisuals{
   link(anchors[id==='B05'?1:0],[building.x,0.55,building.z]);
  }
  const linkMesh=new T.LineSegments(geo(new T.BufferGeometry().setAttribute('position',new T.Float32BufferAttribute(links,3))),linkMaterial);
+ linkMesh.renderOrder=10;
  dieShot.add(linkMesh);
  root.add(dieShot);
 
