@@ -6,7 +6,7 @@ import {
  B4_OFFICE, OFFICE_CUES, installOffice, officeDebug, openOfficeDoor, resetOffice, setOfficeArmed, tickOffice,
 } from '../src/opening/b4Office';
 import {
- LIFT, LIFT_LANDING, LIFT_TRAVEL_DISTANCE, callLift, liftLandingContains, resetLift, stepLift, syncLiftObstacles, tickLift,
+ LIFT, LIFT_LANDING, LIFT_TRAVEL_DISTANCE, callLift, liftDebug, liftLandingContains, resetLift, stepLift, syncLiftObstacles, tickLift,
 } from '../src/opening/lift';
 import {buildB4Shell} from '../src/opening/b4Shell';
 import {STORY_AUDIO_URLS} from '../src/gameplay/storyAudioAssets';
@@ -174,8 +174,20 @@ check(inside(D.evacSign.x, D.evacSign.z, corridorRect) && D.evacSign.y > FLOOR +
  'geometry:dressing-evac', `the evacuation notice must hang on a corridor wall at eye height, read ${JSON.stringify(D.evacSign)}`);
 check(D.evacSign.z <= LIFT_LANDING.corridorZ0 + .05, 'geometry:dressing-evac-wall',
  `the evacuation notice must be on the corridor's north wall ${LIFT_LANDING.corridorZ0}, read z ${D.evacSign.z}`);
-check(inside(D.trolley.x, D.trolley.z, R) && D.trolley.z > L.door.z1 && D.trolley.z < SD.z,
- 'geometry:dressing-trolley', `the trolley must stand in the side lobby between the lift door and the side door, read ${JSON.stringify(D.trolley)}`);
+// E.11: the trolley stands mid-corridor, not against a wall. Its rotated footprint is the
+// deck's .60 × .95 m box at its yaw, so "clear of the walls" is a computed reach, not a centre.
+const trolleyHalfX = .30 * Math.abs(Math.cos(D.trolley.yaw)) + .475 * Math.abs(Math.sin(D.trolley.yaw));
+const trolleyHalfZ = .30 * Math.abs(Math.sin(D.trolley.yaw)) + .475 * Math.abs(Math.cos(D.trolley.yaw));
+check(inside(D.trolley.x, D.trolley.z, corridorRect) && near(D.trolley.y, FLOOR, 1e-9),
+ 'geometry:dressing-trolley', `the trolley must stand on the 5F corridor floor, read ${JSON.stringify(D.trolley)}`);
+check(D.trolley.z - trolleyHalfZ > LIFT_LANDING.corridorZ0 + .28 && D.trolley.z + trolleyHalfZ < LIFT_LANDING.corridorZ1 - .28,
+ 'geometry:dressing-trolley-clear',
+ `the trolley must stand clear of both corridor walls (${LIFT_LANDING.corridorZ0}…${LIFT_LANDING.corridorZ1}), reach ${r4(D.trolley.z - trolleyHalfZ)}…${r4(D.trolley.z + trolleyHalfZ)}`);
+check(D.trolley.x - trolleyHalfX > corridorRect.x0 + .4 && D.trolley.x + trolleyHalfX < corridorRect.x1 - .4,
+ 'geometry:dressing-trolley-mid',
+ `the trolley must stand mid-corridor, not in either mouth, reach ${r4(D.trolley.x - trolleyHalfX)}…${r4(D.trolley.x + trolleyHalfX)}`);
+check(Math.abs(Math.sin(D.trolley.yaw)) > .5, 'geometry:dressing-trolley-angled',
+ `the trolley must be angled across the walk, as if abandoned, read yaw ${D.trolley.yaw}`);
 check(inside(D.flickerPanel.x, D.flickerPanel.z, corridorRect) && near(D.flickerPanel.y, LIFT_LANDING.ceilBottom - .02, 1e-9),
  'geometry:dressing-flicker', `the flickering panel must be a corridor ceiling panel, read ${JSON.stringify(D.flickerPanel)}`);
 check(B4_OFFICE.doorSwingSeconds >= .6 && B4_OFFICE.doorSwingSeconds <= 1.2, 'geometry:door-swing-seconds',
@@ -186,7 +198,7 @@ check(B4_OFFICE.doorSwingSeconds >= .6 && B4_OFFICE.doorSwingSeconds <= 1.2, 'ge
 /* ------------------------------------------------------------------ */
 
 const shell = buildB4Shell();
-const dressingParts = ['B04_lobby_trolley', 'B4_lift_5f_evac_sign', 'B4_lift_5f_flicker'];
+const dressingParts = ['B04_5f_trolley', 'B4_lift_5f_evac_sign', 'B4_lift_5f_flicker'];
 for (const name of dressingParts) {
  check(!!shell.getObjectByName(name), `dressing:${name}`, `${name} is not in the built B04 shell`);
 }
@@ -372,18 +384,28 @@ check(doorClosedBlocked.length > 0, 'route:closed-door-blocks', 'a closed office
 check(nav.blocked(B4_OFFICE.door.x0, CZ, FLOOR), 'route:closed-leaf-solid', 'the closed leaf must be the thing blocking the doorway');
 check(openOfficeDoor(), 'route:door-opens', 'the office door must open on interaction');
 const swingStart = Date.now();
-const duringSwing = blockedAt(samples(doorLeg), FLOOR);
-check(duringSwing.length > 0, 'route:swing-still-solid',
- `the doorway must stay solid while the leaf is moving, blocked at ${JSON.stringify(duringSwing.slice(0, 4))}`);
+const swingTarget = officeDebug().door.target;
+// C.2: sample at ~50 % of the swing, not at t≈0. `tickOffice` drives the leaf on the wall
+// clock; the doorway must still be solid when the leaf is visibly half open. Sampling before
+// the first tick only catches an implementation that clears the doorway instantly.
+let midSwing: {angle: number; blocked: number; swinging: boolean} | null = null;
 // Advance the swing on the wall clock the way `tickOffice` does, and measure how long it takes.
 let swingMs = -1;
 for (let i = 0; i < 400; i++) {
  tickOffice(CX, CZ, FLOOR);
  const d = officeDebug().door;
+ if (midSwing === null && d.swinging && d.angle <= swingTarget * .5) {
+  midSwing = {angle: d.angle, blocked: blockedAt(samples(doorLeg), FLOOR).length, swinging: d.swinging};
+ }
  if (!d.swinging && d.angle <= d.target + 1e-6) { swingMs = Date.now() - swingStart; break; }
  const until = Date.now() + 16;
  while (Date.now() < until) { /* let the wall clock reach the next frame */ }
 }
+check(midSwing !== null && midSwing.swinging && Math.abs(midSwing.angle) >= Math.abs(swingTarget) * .4,
+ 'route:swing-still-solid',
+ `the doorway must be sampled mid-swing, read ${midSwing ? JSON.stringify(midSwing) : 'no mid-swing sample'}`);
+check(midSwing !== null && midSwing.blocked > 0, 'route:swing-blocked-mid',
+ `the doorway must stay solid while the leaf is moving, blocked at ${JSON.stringify(midSwing)}`);
 check(swingMs >= 0, 'route:swing-finishes', 'the office door swing must finish');
 check(swingMs >= (B4_OFFICE.doorSwingSeconds - .15) * 1000 && swingMs <= (B4_OFFICE.doorSwingSeconds + .35) * 1000,
  'route:swing-duration', `the swing must take about ${B4_OFFICE.doorSwingSeconds} s, measured ${swingMs} ms`);
@@ -583,7 +605,119 @@ resetOffice();
 check(blockedAt(samples(doorLeg), FLOOR).length > 0, 'reset:office-door', 'resetOffice must leave the office door solid again');
 
 /* ------------------------------------------------------------------ */
-/* 10. E-F10 — the call lamps                                          */
+/* 10. Addendum 5 B — the passenger grace's three negatives            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * The grace keeps `called` true for .25 s after the last in-car query, so the fleet's
+ * outside queries cannot starve the player's boarding dwell. These gates assert what that
+ * timing rule may NOT do. Each drives the lift on its own wall clock (`tickLift`), the same
+ * clock the browser uses, and reads the latch state through `liftDebug`.
+ */
+const waitMs = (ms: number) => { const until = Date.now() + ms; while (Date.now() < until) { /* wall clock */ } };
+const IN_CAR = () => ({x: CX, z: CZ, y: LIFT.y});
+const OFF_CAR = () => ({x: CX, z: CZ, y: LIFT.y + 3});   // same column, far above the car floor
+
+/** Open the car's doors on the wall clock with whatever query the test wants. */
+function openDoorsWith(ms: number, at: () => {x: number; z: number; y: number}): void {
+ const end = Date.now() + ms;
+ while (Date.now() < end) {
+  const p = at();
+  tickLift(p.x, p.z, p.y);
+  waitMs(20);
+ }
+}
+
+// B.1 — a passenger aboard, with an off-car query flood at >= 4 Hz, still closes the doors
+// after the dwell. Without the grace every outside query resets the dwell and the flood
+// starves the close for ever (the return-ride defect the grace fixes).
+resetLift();
+tickLift(IN_CAR().x, IN_CAR().z, IN_CAR().y);      // bootstrap the clock, no step
+openDoorsWith(1000, IN_CAR);                       // doors open; the passenger's dwell starts
+const b1Start = Date.now();
+let b1ClosedAt = -1, b1Ticks = 0;
+while (Date.now() - b1Start < 4000) {
+ const i = b1Ticks++;
+ const p = i % 8 === 0 ? IN_CAR() : OFF_CAR();
+ tickLift(p.x, p.z, p.y);
+ if (LIFT.phase === 'doors-closing') { b1ClosedAt = Date.now() - b1Start; break; }
+ waitMs(25);
+}
+const b1 = {closedAfterMs: b1ClosedAt, ticks: b1Ticks, latchAtClose: liftDebug()};
+check(b1ClosedAt >= 0, 'grace:flood-closes',
+ `a passenger plus an off-car flood must still close the doors, read ${JSON.stringify(b1)}`);
+check(b1ClosedAt >= L.dwellSeconds * 1000 * .6 && b1ClosedAt <= (L.dwellSeconds + .25 + .6) * 1000,
+ 'grace:flood-within-dwell',
+ `the close must take about one dwell, measured ${b1ClosedAt} ms against dwell ${L.dwellSeconds * 1000} ms + grace 250 ms`);
+
+// B.2 — an empty car's doors must not stay open because a passenger left .2 s ago. Arrive at
+// the ground with a passenger (so the arrival hold is set), open the doors, order the car up,
+// then step out. The hold must clear on the first outside query, not after the grace: the
+// dwell starts at once and the car departs one dwell later, not one dwell + grace.
+resetLift();
+for (let i = 0; i < 3000; i++) {
+ stepLift(LIFT, 1 / 120, true);                    // passenger aboard, car descends to the ground
+ if (LIFT.phase === 'arrived' && Math.abs(LIFT.y - GROUND) <= .005) break;
+}
+tickLift(IN_CAR().x, IN_CAR().z, IN_CAR().y);      // bootstrap the wall clock at the arrived car
+openDoorsWith(1000, IN_CAR);
+const heldAfterArrival = liftDebug();
+callLift('top');                                   // the car must leave; calledElsewhere is true
+// The passenger steps out: one announcing outside query, then a flood.
+tickLift(OFF_CAR().x, OFF_CAR().z, OFF_CAR().y);
+const afterLeave = liftDebug();
+check(heldAfterArrival.hold === true, 'grace:arrival-hold-set',
+ `the arrival hold must be set with a passenger aboard, read ${JSON.stringify(heldAfterArrival)}`);
+check(afterLeave.hold === false, 'grace:hold-clears-on-leaving',
+ `the arrival hold must clear on the first query outside the car, not after the grace, read ${JSON.stringify(afterLeave)}`);
+check(afterLeave.open > 0, 'grace:dwell-starts-on-leaving',
+ `the departure dwell must start on the leaving query, read ${JSON.stringify(afterLeave)}`);
+const b2Start = Date.now();
+let b2ClosedAt = -1;
+while (Date.now() - b2Start < 3000) {
+ const p = OFF_CAR();
+ tickLift(p.x, p.z, p.y);
+ if (LIFT.phase === 'doors-closing') { b2ClosedAt = Date.now() - b2Start; break; }
+ waitMs(20);
+}
+check(b2ClosedAt >= 0 && b2ClosedAt <= (L.dwellSeconds + .6) * 1000, 'grace:empty-car-departs-on-dwell',
+ `an empty car with a pending call must close one dwell after the passenger leaves, measured ${b2ClosedAt} ms`);
+
+// B.3 — an in-car ambient probe's effect is bounded. Even .5 s of probes is shorter than the
+// dwell, so it can never dispatch an empty car; when the probes stop, the dwell resets and
+// the doors stay open. (Stated in full in the report: an in-car probe is a passenger for
+// .25 s; sustained probes for a whole dwell are by design indistinguishable from one.)
+resetLift();
+tickLift(OFF_CAR().x, OFF_CAR().z, OFF_CAR().y);
+openDoorsWith(1000, OFF_CAR);                      // empty car, no call: open, dwell 0
+const ambientStart = liftDebug();
+const ambientBurstEnd = Date.now() + 500;
+while (Date.now() < ambientBurstEnd) {             // 20 in-car probes over 0.5 s
+ const p = IN_CAR();
+ tickLift(p.x, p.z, p.y);
+ waitMs(25);
+}
+const ambientPeak = liftDebug();
+const ambientSettleStart = Date.now();
+while (Date.now() - ambientSettleStart < 2000) {
+ const p = OFF_CAR();
+ tickLift(p.x, p.z, p.y);
+ waitMs(25);
+}
+const ambientEnd = liftDebug();
+check(ambientStart.phase === 'open' && ambientStart.open === 0, 'grace:ambient-starts-clear',
+ `the ambient probe must start from an empty, open car, read ${JSON.stringify(ambientStart)}`);
+check(ambientPeak.open < L.dwellSeconds * .9, 'grace:ambient-bounded',
+ `0.5 s of in-car probes must accumulate less than a dwell, read ${JSON.stringify(ambientPeak)}`);
+check((ambientEnd.phase === 'open' || ambientEnd.phase === 'arrived') && LIFT.doors === 1 && ambientEnd.open === 0,
+ 'grace:ambient-cannot-dispatch',
+ `an empty car must not close or move on probe traffic alone, read ${JSON.stringify(ambientEnd)} doors ${LIFT.doors}`);
+resetLift();
+resetOffice();
+settle();
+
+/* ------------------------------------------------------------------ */
+/* 11. E-F10 — the call lamps                                          */
 /* ------------------------------------------------------------------ */
 
 // A neutral sync point: inside B04, far from every trigger volume.
@@ -608,7 +742,7 @@ resetOffice();
 settle();
 
 /* ------------------------------------------------------------------ */
-/* 11. E-F7 — the stairs, proved structurally                          */
+/* 12. E-F7 — the stairs, proved structurally                          */
 /* ------------------------------------------------------------------ */
 
 const stairReport = (() => {
@@ -623,19 +757,20 @@ const stairReport = (() => {
   }
  }
  /**
-  * The campus's own stair: the auditorium run north of the courtyard, sampled end to end with
-  * the query ceiling **above four storeys**, so a stair that reached 4F could not hide under it.
+  * The auditorium run north of the courtyard: sampled end to end with the query ceiling
+  * **above four storeys**, so a stair in that run that reached 4F could not hide under it.
+  * This is a bounded scan of that run, not a campus-wide one — the check's name says so.
   */
  const queryCeiling = 4 * L.floorToFloor + 1;                     // 19.88
- let campus: Surface = {top: GROUND, at: null};
+ let auditorium: Surface = {top: GROUND, at: null};
  for (let x = -14; x <= 14; x += 1) {
   for (let z = -52; z <= -26; z += .25) {
    const h = nav.support(x, z, queryCeiling);
-   if (h !== null && h > campus.top) campus = {top: r4(h), at: {x: r4(x), z: r4(z)}};
+   if (h !== null && h > auditorium.top) auditorium = {top: r4(h), at: {x: r4(x), z: r4(z)}};
   }
  }
  return {
-  b4HighestSurface, campusHighestSurface: campus, queryCeiling: r4(queryCeiling),
+  b4HighestSurface, auditoriumHighestSurface: auditorium, queryCeiling: r4(queryCeiling),
   fourFloors: r4(4 * L.floorToFloor),
   /** The structural facts, which are the real proof (the scan is evidence, not an assertion). */
   roomClearHeight: R.clearHeight, roomTop: r4(R.floor + R.clearHeight),
@@ -650,11 +785,11 @@ check(stairReport.stairNames.length === 0, 'stairs:b4-no-stair-geometry',
  `B04 must carry no stair geometry, read ${JSON.stringify(stairReport.stairNames)}`);
 check(stairReport.roomTop < LIFT_LANDING.floorTop, 'stairs:b4-one-storey',
  `B04's whole room tops out at ${stairReport.roomTop} m, below the 5F landing ${LIFT_LANDING.floorTop} m`);
-check(stairReport.campusHighestSurface.top < stairReport.fourFloors, 'stairs:below-4f',
- `the campus's highest surface under a ${stairReport.queryCeiling} m ceiling is ${stairReport.campusHighestSurface.top} m, which must stay below 4F (${stairReport.fourFloors} m)`);
+check(stairReport.auditoriumHighestSurface.top < stairReport.fourFloors, 'stairs:auditorium-below-4f',
+ `the auditorium run's highest surface under a ${stairReport.queryCeiling} m ceiling is ${stairReport.auditoriumHighestSurface.top} m, which must stay below 4F (${stairReport.fourFloors} m)`);
 
 /* ------------------------------------------------------------------ */
-/* 12. Every cue the office plays exists in the manifest               */
+/* 13. Every cue the office plays exists in the manifest               */
 /* ------------------------------------------------------------------ */
 
 const cueIds = [...new Set(Object.values(OFFICE_CUES))];
@@ -664,7 +799,7 @@ check(missingCues.length === 0, 'cues:manifest',
  `every cue the office plays must exist in the story audio manifest, missing ${JSON.stringify(missingCues)}`);
 
 /* ------------------------------------------------------------------ */
-/* 13. The triggers on the route                                       */
+/* 14. The triggers on the route                                       */
 /* ------------------------------------------------------------------ */
 
 /**
@@ -718,7 +853,7 @@ const report = {
  reachability: {
   groundBlocked,
   fifthBlocked,
-  officeDoor: {closedBlocked: doorClosedBlocked.length, swingBlocked: duringSwing.length, openBlocked: doorOpenBlocked.length, swingMs},
+  officeDoor: {closedBlocked: doorClosedBlocked.length, swingBlocked: midSwing?.blocked ?? 0, midSwing, openBlocked: doorOpenBlocked.length, swingMs},
  },
  triggers,
  beats: {
@@ -735,6 +870,11 @@ const report = {
   reset: {y: LIFT.y, doors: LIFT.doors, call: LIFT.call, phase: LIFT.phase, groundGuard: guardBox()},
  },
  dispatch: {emptyRideSeconds: r4(upArrive - upAt), arrivedAt: r4(LIFT.y)},
+ grace: {
+  flood: b1, emptyCloseMs: b2ClosedAt,
+  arrivalHold: heldAfterArrival, afterLeave,
+  ambientStart, ambientPeak, ambientEnd,
+ },
  lamps: officeDebug().lamps,
  cues: {ids: cueIds, missing: missingCues},
  failures,

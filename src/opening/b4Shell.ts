@@ -5,7 +5,7 @@ import {B4_DOOR_LEAVES,B4_LAYOUT,B4_LOBBY,B4_OBSTACLES} from './b4Layout';
 import {createB4FlipWall} from './b4FlipWall';
 import {B4_LIFT as L} from './spatialLayout';
 import {attachLiftVisual,LIFT_LANDING,liftLandingBoxes} from './lift';
-import {B4_OFFICE,b4OfficeBoxes,attachOfficeVisual} from './b4Office';
+import {B4_OFFICE,FEED_CANVAS,b4OfficeBoxes,attachOfficeVisual} from './b4Office';
 
 /**
  * Static B04 ground-floor shell, built with the opening world so B04 is never
@@ -128,7 +128,7 @@ let feedCache:{canvas:HTMLCanvasElement;texture:T.CanvasTexture}|null|undefined;
 function feedSurface(){
  if(feedCache!==undefined)return feedCache;
  if(typeof document==='undefined')return(feedCache=null);
- const canvas=document.createElement('canvas');canvas.width=192;canvas.height=112;
+ const canvas=document.createElement('canvas');canvas.width=FEED_CANVAS.width;canvas.height=FEED_CANVAS.height;
  const texture=new T.CanvasTexture(canvas);texture.colorSpace=T.SRGBColorSpace;texture.magFilter=T.NearestFilter;
  return(feedCache={canvas,texture});
 }
@@ -218,16 +218,6 @@ function buildLobbyDevices(m:OfficeMats){
  sign.name='B4_lift_sign_text';sign.position.set(L.x1+.019,2.02,L.door.z1+.55);sign.rotation.y=Math.PI/2;
  sign.userData={...SOURCE,authorKey:'B4_lift_sign_text'};root.add(sign);
  box(root,'B4_lift_sign_plate',.02,.20,.78,L.x1+.006,2.02,L.door.z1+.55,m.officePlate);
- // E.8: a trolley left where someone stopped pushing it — the one object in the beat that
- // says people left in a hurry. Scenery only: no collision, so it can never stop the player.
- const TR=B4_OFFICE.dressing.trolley,F=B4_LAYOUT.room.floor;
- const trolley=group(root,'B04_lobby_trolley');
- trolley.position.set(TR.x,F,TR.z);trolley.rotation.y=TR.yaw;
- box(trolley,'B4_trolley_deck',.60,.04,.95,0,.26,0,m.trolleyDeck);
- for(const sx of [-1,1])for(const sz of [-1,1])box(trolley,'B4_trolley_wheel',.07,.09,.07,sx*.24,.045,sz*.38,m.trolleyFrame);
- for(const sx of [-1,1])box(trolley,'B4_trolley_upright',.03,.95,.03,sx*.27,.475,-.45,m.trolleyFrame);
- box(trolley,'B4_trolley_bar',.60,.03,.03,0,.94,-.45,m.trolleyFrame);
- box(trolley,'B4_trolley_load',.26,.22,.30,.05,.39,.12,m.coat);
  attachOfficeVisual({
   screen:feed?{canvas:feed.canvas,texture:feed.texture}:undefined,
   callGround:{material:lampGround.material as T.MeshStandardMaterial},
@@ -257,6 +247,17 @@ function buildCorridorDressing(m:OfficeMats){
  };
  line('EVACUATION',.058,.040,'B4_lift_5f_evac_text');
  line('ASSEMBLY POINT',.038,-.052,'B4_lift_5f_evac_subtext');
+ // E.8/E.11: a trolley left mid-corridor where someone stopped pushing it — angled across
+ // the walk, clear of both walls, and the one object in the beat that says people left in a
+ // hurry. Scenery only: no collision, so it can never stop the player.
+ const TR=B4_OFFICE.dressing.trolley;
+ const trolley=group(root,'B04_5f_trolley');
+ trolley.position.set(TR.x,TR.y,TR.z);trolley.rotation.y=TR.yaw;
+ box(trolley,'B4_trolley_deck',.60,.04,.95,0,.26,0,m.trolleyDeck);
+ for(const sx of [-1,1])for(const sz of [-1,1])box(trolley,'B4_trolley_wheel',.07,.09,.07,sx*.24,.045,sz*.38,m.trolleyFrame);
+ for(const sx of [-1,1])box(trolley,'B4_trolley_upright',.03,.95,.03,sx*.27,.475,-.45,m.trolleyFrame);
+ box(trolley,'B4_trolley_bar',.60,.03,.03,0,.94,-.45,m.trolleyFrame);
+ box(trolley,'B4_trolley_load',.26,.22,.30,.05,.39,.12,m.coat);
  // The dying panel, on its own material so `b4Office.animateFlicker` owns one panel only.
  const P=B4_OFFICE.dressing.flickerPanel;
  const panel=box(root,'B4_lift_5f_flicker',1.10,.03,.20,P.x,P.y,P.z,m.flicker);

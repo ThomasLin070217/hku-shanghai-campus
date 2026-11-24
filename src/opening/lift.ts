@@ -104,7 +104,7 @@ export function callLift(floor:LiftCall):void{
  * moves an empty car to the other floor; a passenger does the same, but only after the hold
  * that gives them time to step out has been released.
  */
-export function stepLift(s:LiftState,dt:number,called:boolean):void{
+export function stepLift(s:LiftState,dt:number,called:boolean,passenger:boolean=called):void{
  if(!Number.isFinite(dt)||dt<=0)return;
  const c=clock(s);
  if(s.phase==='idle'){s.phase='doors-opening';s.doors=0;}
@@ -116,8 +116,11 @@ export function stepLift(s:LiftState,dt:number,called:boolean):void{
  if(s.phase==='open'||s.phase==='arrived'){
   s.doors=Math.min(1,s.doors+dt/L.doorSeconds);
   if(s.doors<1)return;
-  // Stepping out releases the hold the arrival set; only then can the car be sent again.
-  if(!called)c.hold=false;
+  // Stepping out releases the arrival hold. Keyed on the *passenger* query, not on `called`:
+  // `called` may still be true for the .25 s grace after the last in-car query, and clearing
+  // the hold then would start the dwell .25 s late (Addendum 5 B.2 — the stale grace must not
+  // keep an empty car's doors open).
+  if(!passenger)c.hold=false;
   // The dwell restarts whenever nobody is waiting, so the doors never close on someone
   // who is still stepping in.
   const wants=(called&&!c.hold)||calledElsewhere(s);
@@ -362,7 +365,7 @@ function advanceLift(now:number,x:number,z:number,y:number):void{
  for(let i=0;i<12&&remaining>1e-6;i++){
   const before=LIFT.y;
   const slice=Math.min(remaining,SLICE);
-  stepLift(LIFT,slice,called);
+  stepLift(LIFT,slice,called,inCar);
   remaining-=slice;
   if(LIFT.phase==='rising'&&LIFT.y-before>=MAX_RISE_PER_ADVANCE)break;
  }
@@ -383,4 +386,18 @@ export function resetLift():void{
  lastPassenger=-1;
  syncLiftObstacles();
  syncLiftVisual();
+}
+
+/**
+ * Read-only view of the timing latches behind the grace (Addendum 5 B). No behaviour, no
+ * allocation per frame: a gate calls it, the lift never does.
+ */
+export function liftDebug(){
+ const c=clock(LIFT),now=nowSeconds();
+ return{
+  phase:LIFT.phase,open:+c.open.toFixed(3),rise:+c.rise.toFixed(3),hold:c.hold,
+  lastPassengerAge:lastPassenger<0?null:+(now-lastPassenger).toFixed(3),
+  lastAdvanceAge:lastAdvance<0?null:+(now-lastAdvance).toFixed(3),
+  grace:PASSENGER_GRACE,dwell:L.dwellSeconds,doorSeconds:L.doorSeconds,
+ };
 }

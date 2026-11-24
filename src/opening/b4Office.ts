@@ -96,8 +96,14 @@ export const B4_OFFICE = {
  dressing: {
   /** The building's own evacuation notice, on the corridor's north wall, facing the walker. */
   evacSign: {x: 51.70, y: floorTop + 1.55, z: LIFT_LANDING.corridorZ0 + .012},
-  /** A trolley left where someone stopped pushing it, ground lobby, against the west wall. */
-  trolley: {x: 46.62, z: 18.55, yaw: .38},
+  /**
+   * A trolley left where someone stopped pushing it: across the middle of the 1.8 m corridor,
+   * angled as if abandoned. E.11: in the ground lobby it was a dark shape against a wall that
+   * a 390 px frame never showed; in the corridor's sightline it is the one object that says
+   * people left in a hurry. Scenery only — no collision, so the player passes through it
+   * rather than being stopped by dressing, and it stands clear of both corridor walls.
+   */
+  trolley: {x: 52.35, y: floorTop, z: 12.30, yaw: 1.15},
   /** One corridor ceiling panel that is not quite dead, near the corridor mouth. */
   flickerPanel: {x: 50.55, y: ceilBottom - .02, z: (LIFT_LANDING.corridorZ0 + LIFT_LANDING.corridorZ1) / 2},
  },
@@ -160,6 +166,12 @@ interface OfficeState {
  beats: Record<OfficeBeat, number | null>;
  /** The screen's last drawn frame and when it was drawn, so the feed animates without a frame loop. */
  feedFrame: number;
+ /**
+  * Every completed drawing of the feed, monotonically. A gate samples the figure rects only
+  * when this has advanced, so a read can never be mistaken for a stale frame. A plain
+  * integer increment inside the existing draw: no allocation, no change to what is drawn.
+  */
+ feedDraws: number;
  feedDrawnAt: number;
  feedDead: boolean;
  startedAt: number;
@@ -178,7 +190,7 @@ interface OfficeState {
 const state: OfficeState = {
  doorOpen: false,
  beats: {lobby_feed: null, feed_dies: null, corridor_sound: null},
- feedFrame: 0, feedDrawnAt: -1, feedDead: false, startedAt: nowSeconds(),
+ feedFrame: 0, feedDraws: 0, feedDrawnAt: -1, feedDead: false, startedAt: nowSeconds(),
  armed: false, doorAngle: 0, doorSwing: null, lamps: {ground: .25, top: .25},
 };
 
@@ -199,6 +211,10 @@ export function officeDebug() {
   beatOrder: (Object.entries(state.beats) as [OfficeBeat, number | null][])
    .filter(([, at]) => at !== null).sort((a, b) => a[1]! - b[1]!).map(([name]) => name),
   feed: state.feedDead ? 'dead' : state.beats.lobby_feed === null ? 'idle' : 'playing',
+ /** E.10: what the canvas was last drawn with, and how many draws have completed. */
+ feedFrame: state.feedFrame,
+ feedDraws: state.feedDraws,
+ feedFigures: state.feedDead ? [] : feedLayout(state.feedFrame),
   lift: {phase: LIFT.phase, y: +LIFT.y.toFixed(4), doors: +LIFT.doors.toFixed(3), call: LIFT.call, ground: L.ground, landing: L.landing},
   geometry: {
    door: B4_OFFICE.door, interior: B4_OFFICE.interior, laptop: B4_OFFICE.laptop,
@@ -435,6 +451,105 @@ function animateFlicker(): void {
 /* ------------------------------------------------------------------ */
 
 const FEED_FPS = 8;
+/** The canvas the feed is drawn into, shared with `b4Shell`. */
+export const FEED_CANVAS = {width: 192, height: 112} as const;
+/** Canvas pixels the convoy slides right per drawn frame. */
+const FEED_DRIFT = 2.1;
+/** Canvas pixels kept clear at each end, so the convoy is never cropped by the monitor edge. */
+const FEED_MARGIN = 10;
+/** Canvas pixels between two figures' drawn bounds. */
+const FEED_GAP = 7;
+
+/** One figure in the feed, in canvas-normalised coordinates (origin top-left). */
+export interface FeedFigure {
+ kind: 'student' | 'robot';
+ /** Everything drawn for the figure, arms included. */
+ rect: [number, number, number, number];
+ /** Robots' red eye bar, on its own, so a gate can measure it at screen scale. */
+ eye?: [number, number, number, number];
+ /** The convoy only ever moves right; the field exists so a gate can assert it. */
+ dir: 1;
+}
+
+/**
+ * E.9/E.10: the convoy, front to back. A machine, four students, a machine — an escort, not a
+ * queue: the brief says the robots are *leading people away*, and an escort may flank as
+ * easily as lead, so the gate asserts a bounded group and a shared direction, not an edge.
+ */
+const FEED_ORDER: readonly ('student' | 'robot')[] = ['robot', 'student', 'student', 'robot', 'student', 'student'];
+/** Drawn width of each kind, canvas px. The robot's includes its outstretched arm. */
+const FEED_WIDTH = {student: 9, robot: 17.5} as const;
+/** Drawn height above the row's baseline, canvas px. */
+const FEED_HEIGHT = {student: 33.4, robot: 46} as const;
+
+/**
+ * The convoy's left edge and each figure's anchor, for a given drawn frame. The group slides
+ * right until its leading edge reaches the margin, then the whole group re-enters from the
+ * left — a cut, like a CCTV loop, never a cropped figure.
+ */
+function feedAnchor(frame: number): {xs: number[]; bases: number[]} {
+ const xs: number[] = [], bases: number[] = [];
+ let cursor = 0;
+ for (const [i, kind] of FEED_ORDER.entries()) {
+  xs.push(cursor);
+  bases.push(i % 2 ? 4 : 0);
+  cursor += FEED_WIDTH[kind] + FEED_GAP;
+ }
+ const groupWidth = cursor - FEED_GAP;
+ const span = FEED_CANVAS.width - groupWidth - 2 * FEED_MARGIN;
+ const slide = span > 0 ? (frame * FEED_DRIFT) % span : 0;
+ const left = FEED_MARGIN + slide;
+ return {xs: xs.map(x => left + x), bases};
+}
+
+/** The six figures' normalised rects, computed from the same numbers the canvas is drawn from. */
+function feedLayout(frame: number): FeedFigure[] {
+ const {xs, bases} = feedAnchor(frame);
+ const W = FEED_CANVAS.width, H = FEED_CANVAS.height;
+ return FEED_ORDER.map((kind, i) => {
+  const x = xs[i]!, base = H * .60 + bases[i]!;
+  const rect: [number, number, number, number] = [
+   +(x / W).toFixed(6), +((base - FEED_HEIGHT[kind]) / H).toFixed(6),
+   +((x + FEED_WIDTH[kind]) / W).toFixed(6), +(base / H).toFixed(6),
+  ];
+  if (kind === 'student') return {kind, rect, dir: 1 as const};
+  const eye: [number, number, number, number] = [
+   +((x + 5.5) / W).toFixed(6), +((base - 44) / H).toFixed(6),
+   +((x + 13.5) / W).toFixed(6), +((base - 41) / H).toFixed(6),
+  ];
+  return {kind, rect, eye, dir: 1 as const};
+ });
+}
+/** A student at `x` (left edge) and `base` (feet): head, narrowed neck, visible leg gap. */
+function drawStudent(ctx: CanvasRenderingContext2D, x: number, base: number): void {
+ ctx.fillStyle = '#b9c2c9';
+ ctx.fillRect(x + .75, base - 23, 7.5, 11);                   // torso
+ ctx.fillStyle = '#aab3ba';
+ ctx.fillRect(x + 1, base - 12, 3, 12);                       // left leg
+ ctx.fillRect(x + 5.8, base - 12, 3, 12);                     // right leg: 1.8 px gap at the base
+ ctx.fillStyle = '#c8d0d6';
+ ctx.fillRect(x + 1.75, base - 25, 5.5, 2.4);                 // shoulder line, narrower than the head
+ ctx.fillStyle = '#d3dade';
+ ctx.fillRect(x + 3.5, base - 27.5, 2, 2.5);                  // neck on a narrower stem
+ ctx.beginPath(); ctx.arc(x + 4.5, base - 30.2, 3.2, 0, Math.PI * 2); ctx.fill();  // head
+}
+
+/** A robot at `x` (left edge) and `base` (feet): solid base, heavy shoulders, red eye bar. */
+function drawRobot(ctx: CanvasRenderingContext2D, x: number, base: number): void {
+ const steel = '#66727a', rim = '#b6c2ca';
+ ctx.fillStyle = steel;
+ ctx.fillRect(x + 3.5, base - 14, 12, 14);                    // solid base: no leg gap
+ ctx.fillRect(x + 4.5, base - 36, 10, 22);                    // torso
+ ctx.fillRect(x + 3, base - 38.5, 13, 4.5);                   // heavier shoulder plate
+ ctx.fillRect(x + 7.5, base - 40.5, 3, 2);                    // neck
+ ctx.fillRect(x + 5, base - 46, 9, 6);                        // head unit
+ ctx.strokeStyle = rim; ctx.lineWidth = 1;
+ ctx.strokeRect(x + 4.5, base - 39.5, 10, 21);
+ ctx.strokeRect(x + 5.5, base - 45.5, 8, 5);
+ ctx.fillStyle = '#ff3b30'; ctx.fillRect(x + 5.5, base - 44, 8, 3);  // eye bar
+ ctx.strokeStyle = steel; ctx.lineWidth = 2;
+ ctx.beginPath(); ctx.moveTo(x + 4, base - 31); ctx.lineTo(x + 1, base - 27); ctx.stroke();
+}
 
 /** Redraw the monitor's canvas: robots walking people out of frame, left to right. */
 function drawFeed(force = false): void {
@@ -445,6 +560,7 @@ function drawFeed(force = false): void {
  if (!force && now - state.feedDrawnAt < 1 / FEED_FPS) return;
  state.feedDrawnAt = now;
  state.feedFrame += 1;
+ state.feedDraws += 1;
  const ctx = canvas.getContext('2d');
  if (!ctx) return;
  const w = canvas.width, h = canvas.height, f = state.feedFrame;
@@ -469,33 +585,17 @@ function drawFeed(force = false): void {
  ctx.fillRect(0, 0, w, h * .62);
  ctx.fillStyle = '#151b1e';
  ctx.fillRect(0, h * .25, w, h * .37);
- // Four students, two robots, all drifting right at slightly different speeds.
- const drift = (f * 2.1) % (w + 90);
- for (let i = 0; i < 4; i++) {
-  const x = ((drift + i * 58) % (w + 90)) - 45;
-  const base = h * .60 + (i % 2) * 6;
-  ctx.fillStyle = i % 2 ? '#8e97a0' : '#a8b0b8';
-  ctx.fillRect(x, base - 26, 7, 26);                      // body
-  ctx.beginPath(); ctx.arc(x + 3.5, base - 31, 4, 0, Math.PI * 2); ctx.fill();  // head
-  ctx.strokeStyle = '#8e97a0'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(x + 1, base - 6); ctx.lineTo(x + 1, base); ctx.moveTo(x + 6, base - 6); ctx.lineTo(x + 6, base); ctx.stroke();
- }
- for (let i = 0; i < 2; i++) {
-  const x = ((drift + 40 + i * 120) % (w + 120)) - 60;
-  const base = h * .60 + 2;
-  // Steel, not near-black: the machines have to be visible on the same dark feed as the
-  // people, or the shot reads as three students walking and nothing leading them.
-  const steel = '#5b6870';
-  ctx.fillStyle = steel;
-  ctx.fillRect(x, base - 40, 11, 40);                     // taller, squarer
-  ctx.fillRect(x + 1, base - 46, 9, 7);                   // head unit
-  ctx.strokeStyle = '#aab6bf'; ctx.lineWidth = 1;         // a lit rim on a dark corridor
-  ctx.strokeRect(x + .5, base - 39.5, 10, 39);
-  ctx.strokeRect(x + 1.5, base - 45.5, 8, 6);
-  ctx.fillStyle = '#ff3b30'; ctx.fillRect(x + 3, base - 44, 5, 2);   // eye
-  ctx.strokeStyle = steel; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(x - 4, base - 30); ctx.lineTo(x + 14, base - 34); ctx.stroke();  // arm out
- }
+ // The convoy, drawn from the same anchors `feedFigures` reports: one group, all moving
+ // right, never touching an edge. Students first so a robot can never hide behind one.
+ const {xs, bases} = feedAnchor(f);
+ FEED_ORDER.forEach((kind, i) => {
+  const base = h * .60 + bases[i]!;
+  if (kind === 'student') drawStudent(ctx, xs[i]!, base);
+ });
+ FEED_ORDER.forEach((kind, i) => {
+  const base = h * .60 + bases[i]!;
+  if (kind === 'robot') drawRobot(ctx, xs[i]!, base);
+ });
  // Scanlines and a timestamp, so it reads as CCTV rather than as a poster.
  ctx.fillStyle = 'rgba(0,0,0,.22)';
  for (let y = 0; y < h; y += 3) ctx.fillRect(0, y, w, 1);

@@ -295,9 +295,10 @@ export function createOpeningExperience(
   const nearStaff=story.stage==='to_b6'&&staffTalkDone&&!acceptVoiceBusy&&!story.laptop_acquired&&g.body.position.distanceTo(staffRoot)<3.2;
   const repeat=nearStaff?{id:'opening-staff-repeat',position:[staffRoot.x,staffRoot.y,staffRoot.z] as [number,number,number],label:'Ask the coordinator about the laptop'}:null;
   // Task E: the errand moved to the 5F principal's office. The door is its own interaction
-  // until it is open; the MacBook sits on the desk behind it.
+  // until it is open — but only once the errand has armed it (Addendum 5 C.3): a player who
+  // explores B4/B5 before the hand-off must not spend the one abduction on an empty office.
   const atFifth=g.body.position.y>B4_OFFICE.floorTop-1.5&&g.body.position.y<B4_OFFICE.floorTop+3;
-  const doorItem=atFifth&&!officeDebug().doorOpen
+  const doorItem=atFifth&&officeDebug().armed&&!officeDebug().doorOpen
    ?{id:'opening-office-door',position:[B4_OFFICE.door.x0-.35,B4_OFFICE.floorTop+1.15,B4_OFFICE.door.centre] as [number,number,number],label:"Open the principal's office"}
    :null;
   const laptopItem={id:'opening-laptop',position:[B4_OFFICE.laptop.x,B4_OFFICE.laptop.y,B4_OFFICE.laptop.z] as [number,number,number],label:'Pick up the presentation MacBook'};
