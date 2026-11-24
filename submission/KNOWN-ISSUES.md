@@ -42,6 +42,13 @@ An independent playtest walked the B4/B5 interiors at 1.6 m eye height and recor
 
 Verified in a real browser at 1280×800 (`.scratch/verify-2026-11-25/verify-b4-fixes.json`, `pass: true`, 7 shots, story stage `complete`, version `9.1.0`): the ceiling conduit is gone and the ribbed ceiling reads cleanly, the armchairs read as seating (seat, back, arms, correct heights), the keyboard phrase row is contiguous as eight amber caps spelling “I L O V E C D S”, and the 5F corridor and its housekeeping trolley are dressed. A faint dark planter silhouette above the armchair backrest was noted; it is unlit foliage geometry, not a blocking defect.
 
+## Fixed after the independent QA runs, 2026-11-25
+
+| Defect | Fix | Evidence |
+|---|---|---|
+| The crest over the head table rendered as a torn pixel smear: the 26×31 photo trace at 1.4 m, next to 36×38 crests that read cleanly on the banners | `5ad4d89` — the wall uses the clean crest art, plane matched to its aspect | review build, `.scratch/score-verify-2026-11-25/shots/b5-crest-after.png`: legible shield, lion and scroll at 3.2 m |
+| A campaign beat requested before the first gesture was dropped: checkpoint auto-starts tick the chapters while the mixer has no `AudioContext`, and the chapter had already latched its bed, so `?checkpoint=b4` played the opening's `mus_patrol` instead of `mus_puzzle` | `a83bfeb` — `playScore` holds the request and `start()` applies it; `check:audio-review` pins the sequence | review build: `mus_puzzle` at `b4_flip`, `mus_lawn` looping within 1.0 s of `macbook_connected`, `mus_lion_boss` at the lawn, `mus_lion_victory` one-shot counter 1 |
+
 ## Audio coverage, 2026-11-25
 
 24 music cues ship in `dist/`. Registration is what makes a cue reachable: `CampusAudio.enableStory()` is the only writer of the story URL map, and `loadAudioNames` refuses any name it does not hold.
@@ -58,7 +65,7 @@ The six are cues for scenes this build does not contain (a titled fight variant,
 
 An independent QA run reached the hall, walked to the high table and pressed F (`.scratch/b5-dinner-qa/evidence-b5-dinner-pass2.json`, 14 shots, 0 page errors). The stage went from “Walk to the High Table Dinner” straight to “Collect the presentation MacBook”, the seats are empty, and the F attempt changed nothing (`toastAttempt.attempts[0]` stays on `to_b6`). The 135 console errors in that file are all the local control bridge (`ws://…/game`, `/health`) failing in a static build — not game defects.
 
-So the hall exists as architecture (tables, cloth, lamps — see `b5-20-chandelier` … `b5-27-empty-seats-at-table`) but the seated guests and the toast of the plan's Phase 2 item 10 are not built, and `mus_dinner_toast` has nothing to play for. Closing it is a content decision, not a bug fix: it needs seated figures, a toast trigger and a hand-off line.
+So the hall exists as architecture (tables, cloth, lamps — see `b5-20-chandelier` … `b5-27-empty-seats-at-table`) but the seated guests and the toast of the plan's Phase 2 item 10 are not built, and `mus_dinner_toast` has nothing to play for. A second, wider QA pass (36 frames, `.scratch/b5-dinner-qa/report-b5-dinner.txt`) counted 12 figures in the room and **0 seated**, with ~77 chairs and ~80 covers laid; it also found that walking into the side lobby flips the objective to “Collect the presentation MacBook” about 24 m from the high table, so nothing in the build requires entering the dining hall. Closing either is a content decision, not a bug fix: it needs seated figures, a toast trigger and a hand-off line, and a decision about where the B5 beat ends.
 
 ## Security
 
