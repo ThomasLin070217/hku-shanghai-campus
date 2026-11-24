@@ -4,6 +4,7 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
 import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
 import {UnrealBloomPass} from 'three/addons/postprocessing/UnrealBloomPass.js';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {buildObservedInterior} from './model/observedInteriors';
 import {buildObservedFeatureRoom, keyboardKeycaps, flipWallTiles} from './model/observedFeatureRooms';
 import {disposeAsset} from './model/buildCampus';
@@ -15,7 +16,7 @@ const rooms = {
   lobby: {
     build: () => buildObservedInterior('lobby'),
     note: 'CDS-1 lobby · gates, cool vertical screen and warm white doorframe lights refined against the 16 Nov photo.',
-    overview: [20, 17, 25], front: [0, 1.64, .60], target: [0, 1.2, -4.9],
+    overview: [20, 17, 25], front: [0, 1.60, 2.49], target: [0, 1.60, -4.9],
   },
   floor13: {
     build: () => buildObservedInterior('floor13'),
@@ -24,8 +25,8 @@ const rooms = {
   },
   keyboard: {
     build: () => buildObservedFeatureRoom('keyboard'),
-    note: 'Shot 15–16 Nov · blue round keys, curved sofa, wood steps and slatted corridor. Building and floor still to be confirmed.',
-    overview: [12.6, 10.2, 17.6], front: [.38, 2.57, 6.32], target: [.42, 1.27, 2.78],
+    note: 'Shot 15–16 Nov · cream backlit keyboard, pale blue-grey keys, white curved sofa, grey-blue rug and curved ceiling lights. Front view is the photographed 1.6 m eye-height sightline.',
+    overview: [12.6, 10.2, 17.6], front: [-1.25, 1.60, 6.60], target: [.65, 1.45, -3.70],
   },
   flipWall: {
     build: () => buildObservedFeatureRoom('flipWall'),
@@ -46,12 +47,27 @@ scene.background = new T.Color(0xeae8de);
 const renderer = new T.WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.toneMapping = T.ACESFilmicToneMapping;
+// The preview used to be shadowless, so furniture appeared pasted onto the floor even
+// though the game's site viewer has a shadow path. A tight local sun shadow gives this
+// authoring view contact shadows without copying the game's campus-wide 400 m frustum.
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = T.PCFSoftShadowMap;
 host.append(renderer.domElement);
+let environment:T.WebGLRenderTarget;
+function refreshEnvironment(){const pmrem=new T.PMREMGenerator(renderer),room=new RoomEnvironment();try{const next=pmrem.fromScene(room,.04);scene.environment=next.texture;environment?.dispose();environment=next;}finally{room.dispose();pmrem.dispose();}}
+refreshEnvironment();scene.environmentIntensity=.25;
+renderer.domElement.addEventListener('webglcontextrestored',refreshEnvironment);
 const hemi = new T.HemisphereLight(0xfff6e4, 0x9ca48e, 2.2);
 scene.add(hemi);
 const sun = new T.DirectionalLight(0xfff5df, 2.4);
 sun.position.set(-10, 16, 12);
-scene.add(sun);
+sun.target.position.set(0, 0, 1.25);
+sun.castShadow = true;
+sun.shadow.mapSize.set(1024, 1024);
+Object.assign(sun.shadow.camera, {left: -12, right: 12, top: 12, bottom: -12, near: .5, far: 50});
+sun.shadow.normalBias = .025;
+sun.shadow.bias = -.00025;
+scene.add(sun, sun.target);
 
 const camera = new T.PerspectiveCamera(56, 1, .03, 200);
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -673,6 +689,8 @@ function view(mode:View='overview') {
   // In chapter mode the camera belongs to the player, not the authoring rig.
   if(chapterMode){fittedAspect=camera.aspect;return;}
   const room=rooms[kind];
+  camera.fov=kind==='keyboard'&&mode==='front'?(camera.aspect<1?80:64):56;
+  camera.updateProjectionMatrix();
   if(mode==='stool'){
     camera.position.set(.55, 2.25, 1.55);
     controls.target.set(-.26, 1.18, -1.25);
@@ -690,9 +708,11 @@ function view(mode:View='overview') {
     controls.target.set(-3.34,1.73,-1);
   }else{
     controls.target.fromArray(room.target);
-    if(mode==='front'&&(kind==='lobby'||kind==='floor13'))controls.target.y=1.7;
+    if(mode==='front'&&(kind==='lobby'||kind==='floor13'))controls.target.y=kind==='lobby'?1.6:1.7;
     camera.position.fromArray(mode==='front'?room.front:room.overview);
-    camera.position.sub(controls.target).multiplyScalar(Math.max(1,1.15/camera.aspect)).add(controls.target);
+    // Keep the photographed keyboard viewpoint at a real 1.6 m eye height in both
+    // landscape and portrait; other rooms retain their aspect-fitting dolly.
+    if(!(kind==='keyboard'&&mode==='front'))camera.position.sub(controls.target).multiplyScalar(Math.max(1,1.15/camera.aspect)).add(controls.target);
   }
   fittedAspect=camera.aspect;
   controls.update();
@@ -715,6 +735,13 @@ function select(next: Room) {
     scene.add(asset);
   }
   prepareHinge();
+  // The keyboard lounge's pale surfaces need lower local light levels than the
+  // blockout rooms; otherwise leather and stone clip before their form reads.
+  renderer.toneMappingExposure=kind==='keyboard'?.82:1;
+  hemi.intensity=kind==='keyboard'?1.25:2.2;
+  sun.intensity=kind==='keyboard'?1.35:2.4;
+  bloom.strength=kind==='keyboard'?.12:.30;
+  bloom.threshold=kind==='keyboard'?1.05:.92;
   preparePowerLight();
   prepareBreaker();
   collectCaps();

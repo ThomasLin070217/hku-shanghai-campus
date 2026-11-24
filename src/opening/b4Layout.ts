@@ -98,6 +98,12 @@ export const B4_LOBBY={
  /** Side stool by the wall: decor, not collidable. */
  stool:{x:66.0,z:11.4,r:.21,h:.45},
  table:{x:63.8,z:14.6,r:.45,h:.42},
+ /** Photograph dressing: a low tan bench in front of the sofa, white side tables,
+  * pale stools and white cylindrical planters. Solid furniture gets matching rects below. */
+ bench:{x:66.7,z:15.95,w:1.90,d:.50,h:.46},
+ sideTables:[{x:64.0,z:18.05,r:.25,h:.55},{x:68.35,z:18.30,r:.25,h:.55}],
+ paleStools:[{x:63.55,z:17.15,r:.20,h:.45},{x:68.55,z:17.20,r:.20,h:.45}],
+ plants:[{x:52.2,z:18.85,r:.22,h:1.05},{x:69.40,z:19.10,r:.22,h:1.05},{x:69.40,z:8.20,r:.22,h:1.05}],
 } as const;
 const L=B4_LOBBY;
 /** One axis-aligned box per sofa module (seat footprint plus back), derived from the arc. */
@@ -175,10 +181,14 @@ export const B4_OBSTACLES:B4Rect[]=[
  rect('opening-b4-closet-west',closetBox.x0,closetBox.x0+FW.closet.side,closetOrigin[2]+FW.closet.contentsFront,closetBox.z1,0,closetBox.y1),
  rect('opening-b4-closet-east',closetBox.x1-FW.closet.side,closetBox.x1,closetOrigin[2]+FW.closet.contentsFront,closetBox.z1,0,closetBox.y1),
  ...B4_LAYOUT.rackX.map(([x0,x1],i)=>rect('opening-b4-rack-'+(i+1),x0,x1,B4_LAYOUT.rackZ[0],B4_LAYOUT.rackZ[1],F,F+B4_LAYOUT.rackTop,'rack')),
- // Lobby furniture the player walks into: the sofa modules, the two armchairs and the low table.
+ // Lobby furniture the player walks into: the sofa modules, the two armchairs, the low table,
+ // the photographed front bench, side tables and planters.
  ...B4_SOFA_RECTS.map(([x0,x1,z0,z1],i)=>rect('opening-b4-sofa-'+(i+1),x0,x1,z0,z1,F,F+L.sofa.back)),
  ...L.armchairs.map((c,i)=>rect('opening-b4-armchair-'+(i+1),c.x-arm,c.x+arm,c.z-arm,c.z+arm,F,F+.74)),
  rect('opening-b4-table',L.table.x-L.table.r,L.table.x+L.table.r,L.table.z-L.table.r,L.table.z+L.table.r,F,F+L.table.h),
+ rect('opening-b4-bench',L.bench.x-L.bench.w/2,L.bench.x+L.bench.w/2,L.bench.z-L.bench.d/2,L.bench.z+L.bench.d/2,F,F+L.bench.h),
+ ...L.sideTables.map((t,i)=>rect('opening-b4-side-table-'+(i+1),t.x-t.r,t.x+t.r,t.z-t.r,t.z+t.r,F,F+t.h)),
+ ...L.plants.map((p,i)=>rect('opening-b4-planter-'+(i+1),p.x-p.r,p.x+p.r,p.z-p.r,p.z+p.r,F,F+p.h)),
 ];
 
 export type B4StationId='keyboard'|'breaker'|'port';

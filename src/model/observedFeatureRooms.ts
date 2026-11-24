@@ -1,5 +1,6 @@
 import * as T from 'three';
 import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
+import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
 import {glassMaterial, pane} from './glazing';
 import {compact} from './buildCampus';
 import {campusFont} from './fonts';
@@ -106,19 +107,64 @@ function buildKeyboardRoom() {
   const floor = material('Ivory glossy cream stone floor', 0xe9dbc5, .18);
   const plaster = material('Ivory warm cream plaster', 0xdcd6c9, .78);
   const surround = material('Ivory keyboard cream surround', 0xe2ddcf, .72);
-  const upholstery = material('Ivory warm white leather', 0xded8cc, .55);
-  const sofaFabric = material('Ivory sculpted white sofa leather', 0xe2dcd1, .55);
+  // One authored leather material for the square sofa modules and armchairs. Keeping a
+  // single declaration also prevents the duplicate-sofaFabric build break from recurring.
+  const sofaFabric = material('Ivory warm white leather sofa', 0xded8cc, .55);
   const whiteStone = material('Ivory white stone tables and stools', 0xeee9df, .36);
   const planterMat = material('Ivory white ceramic planter', 0xf2efe7, .42);
   const plinthMat = material('Ivory low white plinth ceramic', 0xf0ede5, .48);
-  const carpet = material('Ivory pale grey-blue woven rug', 0x60798e, .92);
+  const carpet = material('Ivory pale grey-blue woven rug', 0x8f9fac, .92);
+  const rugInset = material('Ivory pale rug woven motif', 0xbcc8d0, .95);
+  const rugAccent = material('Ivory blue-grey rug accent', 0x748896, .95);
   const ceilingMat = material('Ivory warm bronze ceiling', 0xb7a78f, .58);
+  const ceilingSlat = material('Ivory warm bronze ceiling slat', 0x9b8b74, .66);
+  const ceilingHousing = material('Ivory dark bronze fixture channel', 0x49443b, .42);
   ceilingMat.side = T.DoubleSide;
+  ceilingHousing.side = T.DoubleSide;
   const ceilingLight = new T.MeshBasicMaterial({name: 'Lounge warm ceiling light', color: 0xfffcf3, side: T.DoubleSide});
   const floorSheen = new T.MeshBasicMaterial({name: 'Lounge polished stone sheen', color: 0xfff8e8, transparent: true, opacity: .055, depthWrite: false});
   const glass = new T.MeshStandardMaterial({name: 'Lounge clear glazing', color: 0xbcd6e4, transparent: true, opacity: .10, roughness: .12, depthWrite: false});
 
-  box(shell, 'Lounge_floor', floor, wallWidth, .16, roomDepth, 0, -.08, keyboardBackZ+roomDepth/2);
+  const floorCentreZ=keyboardBackZ+roomDepth/2;
+  box(shell, 'Lounge_floor', floor, wallWidth, .158, roomDepth, 0, -.081, floorCentreZ);
+  // The rug is part of the floor's top surface, not a separate coplanar mesh. This
+  // keeps its blue-grey triangles in the same draw pass as the stone and avoids the
+  // preview composer dropping the thin rug against the floor depth buffer.
+  const floorGrid=new T.PlaneGeometry(wallWidth,roomDepth,160,160);
+  floorGrid.rotateX(-Math.PI/2);
+  const flat=floorGrid.toNonIndexed(),fp=flat.attributes.position,fn=flat.attributes.normal,fu=flat.attributes.uv;
+  const buckets=Array.from({length:4},()=>({position:[] as number[],normal:[] as number[],uv:[] as number[]}));
+  for(let tri=0;tri<fp.count;tri+=3){
+    const x=(fp.getX(tri)+fp.getX(tri+1)+fp.getX(tri+2))/3,z=(fp.getZ(tri)+fp.getZ(tri+1)+fp.getZ(tri+2))/3+floorCentreZ;
+    const dx=x-1.20,dz=z-3.22,distance=Math.hypot(dx,dz);
+    let surface=0;
+    if(distance<3.15){
+      surface=1;
+      if(distance>2.76&&distance<3.08)surface=2;
+      else if(Math.abs(distance-1.72)<.075)surface=3;
+    }
+    const bucket=buckets[surface];
+    for(let vertex=tri;vertex<tri+3;vertex++){
+      bucket.position.push(fp.getX(vertex),fp.getY(vertex),fp.getZ(vertex));
+      bucket.normal.push(fn.getX(vertex),fn.getY(vertex),fn.getZ(vertex));
+      bucket.uv.push(fu.getX(vertex),fu.getY(vertex));
+    }
+  }
+  const floorSurfaceGeometry=new T.BufferGeometry();
+  const floorPositions:number[]=[],floorNormals:number[]=[],floorUvs:number[]=[];
+  for(const [index,bucket] of buckets.entries()){
+    const start=floorPositions.length/3;
+    for(const value of bucket.position)floorPositions.push(value);
+    for(const value of bucket.normal)floorNormals.push(value);
+    for(const value of bucket.uv)floorUvs.push(value);
+    floorSurfaceGeometry.addGroup(start,bucket.position.length/3,index);
+  }
+  floorSurfaceGeometry.setAttribute('position',new T.Float32BufferAttribute(floorPositions,3));
+  floorSurfaceGeometry.setAttribute('normal',new T.Float32BufferAttribute(floorNormals,3));
+  floorSurfaceGeometry.setAttribute('uv',new T.Float32BufferAttribute(floorUvs,2));
+  const floorSurface=new T.Mesh(floorSurfaceGeometry,[floor,carpet,rugInset,rugAccent]);
+  floorSurface.name='Lounge_stone_and_rug_surface';floorSurface.position.z=floorCentreZ;floorSurface.receiveShadow=true;floorSurface.userData={...root.userData};shell.add(floorSurface);
+  flat.dispose();floorGrid.dispose();
   const sheen = new T.Mesh(new T.PlaneGeometry(3.1, 7.4), floorSheen);
   sheen.name = 'Lounge_polished_floor_sheen';
   sheen.rotation.x = -Math.PI/2;
@@ -145,27 +191,21 @@ function buildKeyboardRoom() {
   // produced a grey horizontal seam across its front face.
   mesh(steps, 'Keyboard_low_white_plinth', plinthGeometry, plinthMat, 0, .02, 0);
 
-  const rug=mesh(furniture,'Round_lounge_rug',new T.CylinderGeometry(1,1,.013,48),carpet,1.20,.013,3.22);
-  rug.scale.set(3.15,1,3.15);
-  const rugInset=material('Ivory pale rug woven motif',0xc1ccd2,.95);
-  const rugAccent=material('Ivory blue-grey rug accent',0x697985,.95);
-  for(const radius of [.72,.79,.86]){
-    const motif=new T.Mesh(new T.TorusGeometry(radius,.012,4,64),rugInset);
-    motif.name='Rug_woven_ring';motif.rotation.x=Math.PI/2;motif.position.set(1.20,.024,3.22);motif.scale.set(3.15,3.15,1);furniture.add(motif);
-  }
-  for(let index=0;index<24;index++){
-    const angle=index*Math.PI/12,diamond=box(furniture,'Rug_diamond_motif',index%2?rugInset:rugAccent,.12,.006,.12,1.20+2.67*Math.cos(angle),.024,3.22+2.67*Math.sin(angle));
-    diamond.rotation.y=Math.PI/4;
-  }
   const sofa=section(furniture,'Curved_modular_sofa');
-  const sofaTube=(radius:number,start:number,end:number,tube:number,y:number)=>{
-    const points=Array.from({length:13},(_,i)=>{const a=start+(end-start)*i/12;return new T.Vector3(radius*Math.sin(a),y,radius*Math.cos(a));});
-    return new T.TubeGeometry(new T.CatmullRomCurve3(points),20,tube,12,false);
-  };
+  // Square upholstered modules on the photographed arc. TubeGeometry made each seat read
+  // as a horizontal pipe; softly rounded boxes keep the curve while giving it a low back,
+  // a seat cushion and a visible base.
   for(let module=0;module<7;module++){
-    const start=-1.78+module*.49;
-    mesh(sofa,'Curved_seat_module',sofaTube(1.58,start,start+.465,.265,.40),sofaFabric,2.15,0,3.35);
-    mesh(sofa,'Curved_back_module',sofaTube(1.98,start,start+.465,.295,.79),sofaFabric,2.15,0,3.35);
+    const mid=-1.78+(module+.5)*.49,width=2*1.58*Math.sin(.49/2)+.035;
+    const seatX=2.15+1.58*Math.sin(mid),seatZ=3.35+1.58*Math.cos(mid);
+    const backX=2.15+1.98*Math.sin(mid),backZ=3.35+1.98*Math.cos(mid);
+    const base=mesh(sofa,'Curved_sofa_base',new RoundedBoxGeometry(width,.16,.58,3,.045),trim,seatX,.16,seatZ);
+    base.rotation.y=mid;
+    const seat=mesh(sofa,'Curved_seat_module',new RoundedBoxGeometry(width,.42,.72,3,.065),sofaFabric,seatX,.43,seatZ);
+    seat.rotation.y=mid;
+    const back=mesh(sofa,'Curved_back_module',new RoundedBoxGeometry(width,.46,.20,3,.055),sofaFabric,backX,.82,backZ);
+    back.rotation.y=mid;
+    back.rotation.x=-.06;
   }
   // Low tan timber bench in front of the sofa, with splayed legs.
   box(furniture,'Lounge_bench_seat',timber,1.95,.11,.56,3.15,.47,4.98);
@@ -192,11 +232,11 @@ function buildKeyboardRoom() {
     const chair = section(furniture, 'Upholstered_armchair');
     chair.position.set(x, 0, z);
     chair.rotation.y = angle;
-    box(chair, 'Seat', upholstery, .92, .20, .75, 0, .46, 0);
-    const back = box(chair, 'Back', upholstery, .92, .55, .17, 0, .77, -.33);
+    box(chair, 'Seat', sofaFabric, .92, .20, .75, 0, .46, 0);
+    const back = box(chair, 'Back', sofaFabric, .92, .55, .17, 0, .77, -.33);
     back.rotation.x = -.15;
     for (const side of [-1, 1]) {
-      box(chair, 'Armrest', upholstery, .14, .15, .68, side * .46, .62, 0);
+      box(chair, 'Armrest', sofaFabric, .14, .15, .68, side * .46, .62, 0);
       for (const offset of [-.30, .30]) box(chair, 'Chair_leg', trim, .043, .36, .043, side * .36, .19, offset);
     }
   }
@@ -209,10 +249,20 @@ function buildKeyboardRoom() {
     mesh(furniture, 'Pale_lounge_stool_stem', new T.CylinderGeometry(.035, .13, .42, 10), whiteStone, x, .23, z);
   }
 
-  // Warm bronze ceiling with long curved light coves. A ribbon follows the actual
-  // curve (rather than a straight strip laid over it); the wider bronze ribbon below
-  // makes each white line read as an integrated ceiling slot.
+  // Cutaway metal ceiling: a canopy over the keyboard, a dropped perimeter band and
+  // raised longitudinal slats. The slats remain narrow enough for the overview camera
+  // to read through the ceiling while the eye-height view sees real structure overhead.
   box(ceiling, 'Lounge_ceiling_canopy', ceilingMat, wallWidth, .12, 1.95, 0, 3.78, -3.125);
+  for(const side of [-1,1])box(ceiling,'Lounge_dropped_ceiling_perimeter',ceilingSlat,.16,.16,10.45,side*5.31,3.72,1.20);
+  for(const z of [-4.03,6.43])box(ceiling,'Lounge_dropped_ceiling_perimeter',ceilingSlat,wallWidth,.16,.16,0,3.72,z);
+  for(let index=0;index<17;index++){
+    const x=-4.96+index*.62;
+    box(ceiling,'Lounge_ceiling_slat_'+(index+1),ceilingSlat,.055,.055,10.35,x,3.75,1.20);
+  }
+  for(const z of [-3.78,-3.30,-2.82,-2.34])box(ceiling,'Lounge_canopy_cross_slat',ceilingSlat,8.70,.045,.035,0,3.70,z);
+  // Each sweeping LED sits inside a wider dark-metal channel with a bronze inner lip.
+  // The white element is lowest, so from the room it reads as a recessed fixture rather
+  // than a bare illuminated cable.
   const ceilingRibbon=(points:T.Vector3[],width:number,mat:T.Material,name:string,yOffset=0)=>{
     const curve=new T.CatmullRomCurve3(points),segments=56,positions:number[]=[],uvs:number[]=[],indices:number[]=[];
     for(let index=0;index<=segments;index++){
@@ -235,11 +285,13 @@ function buildKeyboardRoom() {
       new T.Vector3(x + .18, 3.51, 2.15),
       new T.Vector3(x - .34, 3.70, 5.78),
     ];
-    ceilingRibbon(points,.25,ceilingMat,'Curved_bronze_LED_cove',.045);
-    ceilingRibbon(points,.105,ceilingLight,'Curved_white_LED_line',-.012);
+    ceilingRibbon(points,.20,ceilingHousing,'Curved_dark_LED_channel',.050);
+    ceilingRibbon(points,.16,ceilingMat,'Curved_bronze_LED_cove',.038);
+    ceilingRibbon(points,.090,ceilingLight,'Curved_white_LED_line',.004);
   }
   for (const z of [-2.72, -2.18]) {
-    box(ceiling, 'Recessed_linear_ceiling_light', ceilingLight, .82, .018, .055, .95, 3.692, z);
+    box(ceiling, 'Recessed_linear_fixture_channel', ceilingHousing, .96, .055, .16, .95, 3.724, z);
+    box(ceiling, 'Recessed_linear_ceiling_light', ceilingLight, .82, .018, .055, .95, 3.686, z);
   }
   // Double-height glazing on the room's right return; tan mullions stay slender so
   // the overview camera can still read through the glass.
@@ -257,7 +309,7 @@ function buildKeyboardRoom() {
   box(corridor,'Approach_floor',floor,corridorWidth+.22,.16,depth,centre,-.08,openingZ+depth/2);
   box(corridor,'Approach_left_wall',plaster,.15,2.95,depth,left,1.475,openingZ+depth/2);
   box(corridor,'Approach_right_wall',plaster,.15,2.95,depth,right,1.475,openingZ+depth/2);
-  for(let z=openingZ+.24;z<corridorEnd;z+=.17)box(corridor,'Left_wall_vertical_rib',upholstery,.075,2.89,.065,left+.095,1.48,z);
+  for(let z=openingZ+.24;z<corridorEnd;z+=.17)box(corridor,'Left_wall_vertical_rib',sofaFabric,.075,2.89,.065,left+.095,1.48,z);
   for(const x of [left,right])box(corridor,'Approach_portal_jamb',plaster,.16,2.91,.24,x,1.455,openingZ);
   box(corridor,'Approach_ceiling_return',plaster,corridorWidth+.19,.16,1.03,centre,3.01,openingZ+.44);
   box(corridor,'Blue_grey_soffit_at_lounge',cool,wallWidth, .48,.54,0,3.52,5.80);

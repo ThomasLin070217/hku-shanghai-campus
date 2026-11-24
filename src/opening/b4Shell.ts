@@ -1,5 +1,6 @@
 import * as T from 'three';
 import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
+import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
 import {campusFont} from '../model/fonts';
 import {B4_DOOR_LEAVES,B4_LAYOUT,B4_LOBBY,B4_OBSTACLES} from './b4Layout';
 import {B4_FLIP_WALL,createB4FlipWall} from './b4FlipWall';
@@ -28,6 +29,9 @@ const SOURCE={sourceFile:'src/opening/b4Shell.ts',source:'B04 campaign rooms (sr
 // unique `name#n` key from tagChildren, or compact() merges traces with duplicate keys.
 function box(parent:T.Object3D,name:string,w:number,h:number,d:number,x:number,y:number,z:number,m:T.Material){
  const mesh=new T.Mesh(new T.BoxGeometry(w,h,d),m);mesh.name=name;mesh.position.set(x,y,z);mesh.castShadow=mesh.receiveShadow=true;mesh.userData={...SOURCE};parent.add(mesh);return mesh;
+}
+function roundedBox(parent:T.Object3D,name:string,w:number,h:number,d:number,x:number,y:number,z:number,m:T.Material,radius=.05){
+ const mesh=new T.Mesh(new RoundedBoxGeometry(w,h,d,3,Math.min(radius,w/3,h/3,d/3)),m);mesh.name=name;mesh.position.set(x,y,z);mesh.castShadow=mesh.receiveShadow=true;mesh.userData={...SOURCE};parent.add(mesh);return mesh;
 }
 function group(parent:T.Object3D,name:string){const g=new T.Group();g.name=name;g.userData={...SOURCE};parent.add(g);return g;}
 function cylinder(parent:T.Object3D,name:string,top:number,bottom:number,h:number,x:number,y:number,z:number,m:T.Material){
@@ -275,10 +279,11 @@ export function buildB4Shell(){
   // Distinct photographed surfaces: warm white leather, pale blue-grey weave, tan
   // timber, glossy cream stone and warm bronze. No environment-map pipeline.
   wall:std('B4 room wall',0xded8c9),ceiling:std(B4_CEILING,0xb7a78f,0,0,.58),floor:std('Ivory B4 polished stone floor',0xe9dbc5,0,0,.18),
+  ceilingSlat:std('Ivory B4 warm bronze ceiling slat',0x9b8b74,0,0,.66),ceilingHousing:std('Ivory B4 dark bronze fixture channel',0x49443b,0,0,.42),
   rack:std(B4_RACK_BODY,0x161b1f),plinth:std('B4 rack plinth',0x3b3f42),led:std(B4_RACK_LED,0x2f7d52,0x47e08a,.12),frame:std('B4 door frame',0x8fabae),
   tierTop:std('B4 timber tier tread',0x9a6f45),tierRiser:std('B4 timber tier riser',0x7c5735),
-  sofa:std('Ivory B4 white leather sofa',0xded8cc,0,0,.55),rug:std('Ivory B4 blue-grey rug',0x60798e,0,0,.94),rugRing:std('Ivory B4 rug border',0xc1ccd2),
-  rugMotif:std('Ivory B4 rug woven motif',0x697985,0,0,.94),
+  sofa:std('Ivory B4 white leather sofa',0xded8cc,0,0,.55),rug:std('Ivory B4 blue-grey rug',0x8f9fac,0,0,.94),rugRing:std('Ivory B4 rug border',0xbcc8d0),
+  rugMotif:std('Ivory B4 rug woven motif',0x748896,0,0,.94),
   stone:std('Ivory B4 table stone',0xeee9df,0,0,.36),timber:std('B4 lobby stool timber',0xa9825d,0,0,.62),
   bench:std('B4 lobby tan bench timber',0xa9825d,0,0,.62),white:std('Ivory B4 white dressing',0xf2efe7,0,0,.42),
   foliage:std('Ivory B4 planter foliage',0x3f654d,0,0,.82),windowGlass:std('B4 lobby glazing',0xbcd6e4,0x9dc6dd,.12,.12),
@@ -307,6 +312,7 @@ export function buildB4Shell(){
   flicker:std('B4 5F corridor flicker panel',0xd9e6ea,0xbfe0ee,.9),
  };
  mats.windowGlass.transparent=true;mats.windowGlass.opacity=.14;mats.windowGlass.depthWrite=false;
+ mats.ceilingHousing.side=T.DoubleSide;
  const shell=group(root,'B04_room_structure');
  box(shell,'B4_floor',R.x1-R.x0,R.floor,R.z1-R.z0,(R.x0+R.x1)/2,R.floor/2,(R.z0+R.z1)/2,mats.floor).castShadow=false;
  // One restrained emissive streak suggests the stone's reflection without a render-target pass.
@@ -340,18 +346,37 @@ export function buildB4Shell(){
   }
   box(shell,r.name,w,r.top-r.bottom,d,x,(r.top+r.bottom)/2,z,mats[r.render]);
  }
- // Long curved white LED lines and recessed linear fixtures under the warm ceiling.
- // Emissive geometry, not lights: the shell's zero-light contract is unchanged.
- const ceilingY=F+R.clearHeight-.115;
+ // Long curved white LED lines and recessed linear fixtures under a structured bronze
+ // ceiling. Emissive geometry, not lights: the shell's zero-light contract is unchanged.
+ const ceilingY=F+R.clearHeight-.115,ceilingMidZ=(R.z0+R.z1)/2;
+ for(const side of [-1,1])box(shell,'B4_dropped_ceiling_perimeter',.16,.16,R.z1-R.z0-.30,R.x0+.15+side*(R.x1-R.x0-.30),ceilingY-.11,ceilingMidZ,mats.ceilingSlat);
+ for(const z of [R.z0+.15,R.z1-.15])box(shell,'B4_dropped_ceiling_perimeter',R.x1-R.x0,.16,.16,(R.x0+R.x1)/2,ceilingY-.11,z,mats.ceilingSlat);
+ for(let x=R.x0+.45;x<R.x1-.30;x+=.78)box(shell,'B4_ceiling_slat',.060,.060,R.z1-R.z0-.55,x,ceilingY-.075,ceilingMidZ,mats.ceilingSlat);
+ const ceilingRibbon=(points:T.Vector3[],width:number,name:string,yOffset:number)=>{
+  const curve=new T.CatmullRomCurve3(points),positions:number[]=[],uvs:number[]=[],indices:number[]=[],segments=56;
+  for(let index=0;index<=segments;index++){
+   const t=index/segments,p=curve.getPoint(t),tangent=curve.getTangent(t).normalize();
+   const side=new T.Vector3(-tangent.z,0,tangent.x).normalize().multiplyScalar(width/2);
+   positions.push(p.x-side.x,p.y+yOffset,p.z-side.z,p.x+side.x,p.y+yOffset,p.z+side.z);uvs.push(0,t,1,t);
+   if(index<segments){const a=index*2;indices.push(a,a+1,a+2,a+1,a+3,a+2);}
+  }
+  const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));
+  geometry.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));geometry.setIndex(indices);geometry.computeVertexNormals();
+  const ribbon=new T.Mesh(geometry,mats.ceilingHousing);ribbon.name=name;ribbon.castShadow=ribbon.receiveShadow=true;ribbon.userData={...SOURCE};shell.add(ribbon);
+ };
  for(const x of [51.5,58.0,64.5]){
-  const curve=new T.CatmullRomCurve3([
+  const points=[
    new T.Vector3(x,ceilingY-.025,R.z0+.55),new T.Vector3(x+.48,ceilingY-.09,11.0),
    new T.Vector3(x+.12,ceilingY-.12,16.3),new T.Vector3(x-.22,ceilingY-.025,R.z1-.55),
-  ]);
-  const led=new T.Mesh(new T.TubeGeometry(curve,48,.026,8,false),mats.ceilingLed);
-  led.name='B4_curved_ceiling_LED';led.userData={...SOURCE};shell.add(led);
+  ];
+  ceilingRibbon(points,.18,'B4_curved_LED_fixture_channel',.038);
+  const curve=new T.CatmullRomCurve3(points),led=new T.Mesh(new T.TubeGeometry(curve,48,.026,8,false),mats.ceilingLed);
+  led.name='B4_curved_ceiling_LED';led.castShadow=led.receiveShadow=true;led.userData={...SOURCE};shell.add(led);
  }
- for(const z of [9.1,13.75,18.4])box(shell,'B4_recessed_linear_light',2.4,.018,.07,58,ceilingY-.045,z,mats.ceilingLed);
+ for(const z of [9.1,13.75,18.4]){
+  box(shell,'B4_recessed_linear_fixture_channel',2.55,.055,.18,58,ceilingY-.030,z,mats.ceilingHousing);
+  box(shell,'B4_recessed_linear_light',2.4,.018,.07,58,ceilingY-.066,z,mats.ceilingLed);
+ }
  // Lobby seating group on the round rug, in front of the Keyboard Wall.
  const lobby=group(root,'B04_lobby_furniture'),L=B4_LOBBY;
  const rug=new T.Mesh(new T.CylinderGeometry(L.rug.r,L.rug.r,.012,44),mats.rug);
@@ -373,8 +398,9 @@ export function buildB4Shell(){
  for(let i=0;i<modules;i++){
   const t=S.from+span*(i+.5)/modules,width=2*S.radius*Math.sin(span/(2*modules))+.03;
   const x=S.cx+S.radius*Math.cos(t),z=S.cz+S.radius*Math.sin(t);
-  const seat=box(lobby,'B4_lobby_sofa_seat',width,S.seat,.72,x,F+S.seat/2,z,mats.sofa);seat.rotation.y=Math.PI/2-t;
-  const back=box(lobby,'B4_lobby_sofa_back',width,.36,.16,S.cx+(S.radius+.28)*Math.cos(t),F+S.seat+.18,S.cz+(S.radius+.28)*Math.sin(t),mats.sofa);back.rotation.y=Math.PI/2-t;
+  const base=roundedBox(lobby,'B4_lobby_sofa_base',width,.12,.58,x,F+.08,z,mats.sofa,.035);base.rotation.y=Math.PI/2-t;
+  const seat=roundedBox(lobby,'B4_lobby_sofa_seat',width,S.seat,.72,x,F+S.seat/2,z,mats.sofa,.060);seat.rotation.y=Math.PI/2-t;
+  const back=roundedBox(lobby,'B4_lobby_sofa_back',width,.36,.16,S.cx+(S.radius+.28)*Math.cos(t),F+S.seat+.18,S.cz+(S.radius+.28)*Math.sin(t),mats.sofa,.050);back.rotation.y=Math.PI/2-t;
  }
  for(const [i,c] of L.armchairs.entries()){
   const a=group(lobby,'B4_lobby_armchair_'+(i+1));a.position.set(c.x,F,c.z);a.rotation.y=i?Math.PI*.62:-Math.PI*.18;
