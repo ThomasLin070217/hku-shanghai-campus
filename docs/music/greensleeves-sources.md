@@ -68,6 +68,15 @@ not from v11 unless a full arrangement is what is wanted:
 1. **Which key the cues should be in.** v7 is C minor, the shipped takes are A minor, and the DSE
    product's version is the one the owner is comparing against. Nothing on this machine says what key
    the DSE product uses.
+   — **Settled 2026-11-24: A minor.** The DSE product ships
+   `dse-agent/platform/frontend/public/greensleeves-fm-loop-light-v7.mp3`; pitch-tracking 14 s of it
+   yields the sustained pitch classes **A C D E F E D B G A B C** — the Greensleeves theme, same 6/8
+   rhythm, in A natural minor (the G is natural, and the phrase starts on A). Two of our own cues
+   agree: `mus_office` tracks A C D E F E D B …, a direct statement of the theme, and
+   `mus_invitation` opens A–C–E. So v7's C minor is a **minor third above** both the DSE product and
+   the rest of this score. A bed rendered from v7 as-is is the odd one out; the cue is re-rendered
+   down 3 semitones. Key is the only thing this changes — v7's intervals and dotted figures survive
+   transposition intact.
 2. **Whether the shipped cues are worth re-cutting at all** rather than re-scoring only the ones with
    a melody line the player hears under dialogue. `mus_prologue` is the one that carries narration, so
    it is the one that must be right first.
