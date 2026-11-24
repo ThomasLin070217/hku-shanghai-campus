@@ -75,7 +75,7 @@ export function createB4Chapter():Chapter{
   const kb=buildObservedFeatureRoom('keyboard'),kbRoot=new T.Group();tag(kbRoot,'B4_keyboard_wall');
   kbRoot.position.fromArray(B4_LAYOUT.keyboardOrigin);kbRoot.rotation.y=B4_LAYOUT.keyboardYaw;g.add(kbRoot);
   for(const name of ['Keyboard_timber_wall','Keyboard_wall']){const o=requirePart(kb,name);o.removeFromParent();kbRoot.add(o);}
-  caps=keyboardKeycaps(kbRoot);if(caps.length!==54)throw new Error(`Keyboard Wall has ${caps.length} caps, expected 54`);
+  caps=keyboardKeycaps(kbRoot);if(caps.length!==52)throw new Error(`Keyboard Wall has ${caps.length} caps, expected 52`);
   for(const cap of caps){
    if(cap.userData.phrase)phraseCaps.push(cap);if(cap.userData.enter)enterCap=cap;
    cap.traverse(o=>{if(o instanceof T.Mesh&&o.name.startsWith('Key_')&&!capGlow.has(cap)){const m=own((o.material as T.MeshStandardMaterial).clone());o.material=m;capGlow.set(cap,m);}});

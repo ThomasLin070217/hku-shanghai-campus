@@ -184,7 +184,7 @@ export const B4_OBSTACLES:B4Rect[]=[
  // Lobby furniture the player walks into: the sofa modules, the two armchairs, the low table,
  // the photographed front bench, side tables and planters.
  ...B4_SOFA_RECTS.map(([x0,x1,z0,z1],i)=>rect('opening-b4-sofa-'+(i+1),x0,x1,z0,z1,F,F+L.sofa.back)),
- ...L.armchairs.map((c,i)=>rect('opening-b4-armchair-'+(i+1),c.x-arm,c.x+arm,c.z-arm,c.z+arm,F,F+.74)),
+ ...L.armchairs.map((c,i)=>rect('opening-b4-armchair-'+(i+1),c.x-arm,c.x+arm,c.z-arm,c.z+arm,F,F+.86)),
  rect('opening-b4-table',L.table.x-L.table.r,L.table.x+L.table.r,L.table.z-L.table.r,L.table.z+L.table.r,F,F+L.table.h),
  rect('opening-b4-bench',L.bench.x-L.bench.w/2,L.bench.x+L.bench.w/2,L.bench.z-L.bench.d/2,L.bench.z+L.bench.d/2,F,F+L.bench.h),
  ...L.sideTables.map((t,i)=>rect('opening-b4-side-table-'+(i+1),t.x-t.r,t.x+t.r,t.z-t.r,t.z+t.r,F,F+t.h)),

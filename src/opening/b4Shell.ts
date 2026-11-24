@@ -371,7 +371,11 @@ export function buildB4Shell(){
   geometry.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));geometry.setIndex(indices);geometry.computeVertexNormals();
   const ribbon=new T.Mesh(geometry,mats.ceilingHousing);ribbon.name=name;ribbon.castShadow=ribbon.receiveShadow=true;ribbon.userData={...SOURCE};shell.add(ribbon);
  };
- for(const x of [51.5,58.0,64.5]){
+ // Two runs, not three. A middle run at x=58 crossed the three straight recessed fixtures at
+ // the same x and dipped up to 9.5 cm below the ceiling plane, so it read as an exposed white
+ // conduit hanging through the light bars (interior QA, 2026-11-25). The outer pair still
+ // frames the room and the centre keeps its clean east–west fixture rhythm.
+ for(const x of [51.5,64.5]){
   const points=[
    new T.Vector3(x,ceilingY-.025,R.z0+.55),new T.Vector3(x+.48,ceilingY-.09,11.0),
    new T.Vector3(x+.12,ceilingY-.12,16.3),new T.Vector3(x-.22,ceilingY-.025,R.z1-.55),
@@ -411,8 +415,12 @@ export function buildB4Shell(){
  }
  for(const [i,c] of L.armchairs.entries()){
   const a=group(lobby,'B4_lobby_armchair_'+(i+1));a.position.set(c.x,F,c.z);a.rotation.y=i?Math.PI*.62:-Math.PI*.18;
-  const seatH=L.armchairSize*.26,backH=L.armchairSize*.42;
+  // A 0.44 m seat and a 0.82 m back: at the old 0.20 m / 0.52 m the pair read as backless
+  // footstools (interior QA, 2026-11-25). Arms complete the silhouette; their outer faces are
+  // flush with the .78 m footprint the collision rect already covers.
+  const seatH=L.armchairSize*.56,backH=L.armchairSize*.50;
   box(a,'B4_lobby_armchair_seat',L.armchairSize,seatH,L.armchairSize*.82,0,seatH/2,0,mats.sofa);
+  for(const side of [-1,1])box(a,'B4_lobby_armchair_arm',.09,.26,L.armchairSize*.70,side*(L.armchairSize/2-.045),.47,0,mats.sofa);
   // The back starts at the seat's top face: the old +0.3 m offset floated it 9.7 cm above the
   // seat. It then tilts -0.12 rad about its own centre, which lifts the front-bottom edge by
   // 10.8 mm; the centre sits 11 mm low so that edge meets the seat instead of leaving a wedge gap.

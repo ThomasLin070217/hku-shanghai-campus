@@ -9,7 +9,11 @@ type RowKey = [label: string, width?: number, tone?: 'navy' | 'amber' | 'silver'
 const keyboardRows: RowKey[][] = [
   [['`', 1, 'navy'], ...Array.from('1234567890', (n): RowKey => [n]), ['-'], ['='], ['Backspace', 2, 'navy']],
   [['Tab', 1.5, 'navy'], ['Q'], ['W'], ['E'], ['R'], ['T'], ['Y'], ['U'], ['I'], ['O'], ['P'], ['['], [']'], ['\\', 1.5, 'navy']],
-  [['Caps Lock', 2, 'navy'], ['I', 1, 'amber'], ['S'], ['L', 1, 'amber'], ['O', 1, 'amber'], ['V', 1, 'amber'], ['E', 1, 'amber'], ['J'], ['C', 1, 'amber'], ['D', 1, 'amber'], ['S', 1, 'amber'], [';'], ["'"], ['Enter', 1, 'blue']],
+  // Row 3 carries the phrase. It held two unlit filler caps (S after I, J after E) so the row
+  // mimicked QWERTY at a glance — but on the lit wall the row read "I S L O V E J C D S" and the
+  // fillers looked like phrase letters (interior QA, 2026-11-25). The eight amber caps now sit
+  // contiguously; the row stays flush because widthPerUnit pins the total to keyboardWidth.
+  [['Caps Lock', 2, 'navy'], ['I', 1, 'amber'], ['L', 1, 'amber'], ['O', 1, 'amber'], ['V', 1, 'amber'], ['E', 1, 'amber'], ['C', 1, 'amber'], ['D', 1, 'amber'], ['S', 1, 'amber'], [';'], ["'"], ['Enter', 1, 'blue']],
   [['Shift', 2.25, 'navy'], ['Z'], ['X'], ['C'], ['V'], ['B'], ['N'], ['M'], [','], ['.'], ['/'], ['Shift', 2.75, 'navy']],
 ];
 
