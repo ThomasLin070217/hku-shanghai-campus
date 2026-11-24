@@ -187,9 +187,16 @@ function buildOffice(m:OfficeMats){
  }
  // The window: a bright pane on the east wall, and the warm practical light.
  box(root,'B4_office_window',.02,1.40,3.40,O.interior.x1-.012,F+1.62,O.door.centre,m.window);
+ // A flat bright pane reads as a lightbox from eye height; two mullions and a transom
+ // give it a frame and a believable glazing rhythm (interior QA, 2026-11-25).
+ for(const z of [O.door.centre-.85,O.door.centre,O.door.centre+.85])box(root,'B4_office_window_mullion',.035,1.40,.05,O.interior.x1-.028,F+1.62,z,m.coat);
+ box(root,'B4_office_window_transom',.035,.05,3.40,O.interior.x1-.028,F+1.62,O.door.centre,m.coat);
  box(root,'B4_office_ceiling_lamp',1.10,.03,.34,dx,O.ceilBottom-.02,dz,m.warmLamp);
  box(root,'B4_office_desk_lamp',.16,.02,.16,D.x1-.18,top+.16,D.z0+.20,m.warmLamp);
  box(root,'B4_office_desk_lamp_stem',.03,.16,.03,D.x1-.18,top+.08,D.z0+.20,m.coat);
+ // The office has no light of its own on purpose (check-b4-office `dressing:no-lights`:
+ // "the room cannot glow by itself in the daytime"). Its night exposure is a world-layer
+ // job, tracked in KNOWN-ISSUES with the interior-QA evidence.
  return{root,hinge};
 }
 
@@ -302,7 +309,7 @@ export function buildB4Shell(){
      a warm-emitting shade and ceiling panel, not a lit room. */
   deskWood:std('B4 office desk timber',0x6b4a2f),chairFabric:std('B4 office chair fabric',0x2f3b44),
   paper:std('B4 office paper',0xe8e3d6),coat:std('B4 office coat',0x3a3f45),
-  warmLamp:std('B4 office warm lamp',0xffe6bd,0xffca82,1.15),window:std('B4 office window light',0xbcd6e4,0x9dc6dd,.55),
+  warmLamp:std('B4 office warm lamp',0xffe6bd,0xffca82,1.15),window:std('B4 office window light',0xbcd6e4,0x9dc6dd,.30),
   book:std('B4 office book',0x7d3b34),bookAlt:std('B4 office book spine',0x3d5a6b),
   screenFrame:std('B4 lobby monitor frame',0x1b2023),glass:std('B4 lobby monitor glass',0x0a0f12,0x33ff88,.35),
   callPlate:std('B4 lift call plate',0x2b3234),callLamp:std('B4 lift call lamp',0xffb347,0xffa02e,.25),
