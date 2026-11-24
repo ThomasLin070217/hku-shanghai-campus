@@ -9,7 +9,7 @@ import {SPORTS_HALL_PUZZLE,checkCode,checkPassword} from './sudokuPuzzle';
  */
 export function rescueBannerMarkup(campaign:boolean):string{
  if(campaign)return '<div role="status" aria-live="polite"><span class="eyebrow">SPORTS HALL · EAST DOOR</span><h2>The students are free.</h2><p>100 students are safe. The east hall door is open.</p><small>Click anywhere to dismiss</small></div>';
- return '<div role="status" aria-live="polite"><span class="eyebrow">SPORTS HALL · EAST DOOR</span><h2>You rescued the students.</h2><p>100 students are safe. The hall is clear.</p><p class="rescue-ending">The End. Thanks for playing HKU Shanghai at War.</p><p class="rescue-links"><a href="?experience=levels">Back to chapters</a></p><small>Click anywhere to dismiss</small></div>';
+ return '<div role="status" aria-live="polite"><span class="eyebrow">SPORTS HALL · EAST DOOR</span><h2>You rescued the students.</h2><p>100 students are safe. The hall is clear.</p><p class="rescue-ending">The End. Thanks for playing HKU: Barrier 2030.</p><p class="rescue-links"><a href="?experience=levels">Back to chapters</a></p><small>Click anywhere to dismiss</small></div>';
 }
 
 /**

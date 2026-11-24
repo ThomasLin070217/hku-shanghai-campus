@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pre-push secret scan for HKU Shanghai at War.
+# Pre-push secret scan for HKU: Barrier 2030.
 #
 # Run before the owner pushes the tag. It looks for credential shapes, not the
 # words "sk-" or "Bearer" in prose, so documentation can mention them safely.

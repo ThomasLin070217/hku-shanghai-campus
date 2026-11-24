@@ -8,11 +8,12 @@
 import {STAFF_DIALOGUE} from '../voice/staff-dialogue';
 
 export const OPENING_UI = {
-  /** Product identity. The game is HKU Shanghai at War; BARRIER 2030 is the subtitle. */
+  /** Product identity. The name is HKU: Barrier 2030 (owner ruling, 2026-11-24) — one name, no
+   * separate subtitle, so `subtitleEn` carries the story line instead of repeating it. */
   game: {
     titleZh: '屏障',
-    titleEn: 'HKU Shanghai at War',
-    subtitleEn: 'BARRIER 2030',
+    titleEn: 'HKU: Barrier 2030',
+    subtitleEn: 'A CDS campus story',
     chapter: 'CHAPTER 1 · HANDOFF',
     chapterShort: 'Chapter 1',
   },

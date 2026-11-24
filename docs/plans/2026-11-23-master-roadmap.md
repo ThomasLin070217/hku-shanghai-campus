@@ -998,7 +998,7 @@ File-conflict notes:
 
 ## Open decisions for the owner
 
-1. **Game name (DECIDED 2026-11-23):** **HKU Shanghai at War**, subtitle “BARRIER 2030”. Title card, credits, README, video title card switch; in-story copy stays.
+1. **Game name (DECIDED 2026-11-23, SUPERSEDED 2026-11-24):** the name is now **HKU: Barrier 2030** — one name, no separate subtitle. Owner’s words: 「然后游戏名就叫HKU:Barrier 2030吧」. Everywhere the earlier ruling wrote “HKU Shanghai at War” with “BARRIER 2030” as a subtitle, read the single new name; the former subtitle slot now carries “A CDS campus story”. Title card, credits, README, menu, pause card, ending line, `content/opening/en.ts`, submission and video title card switch; in-story copy stays.
 2. **B4 side façade:** the plan no longer assumes `(50, 7)`. The pre-flight (Task 2.1 Step 2) lists B04’s real exterior faces; confirm the campus-facing face and the racks 1–3 decision (move or remove) before the cut.
 3. **MacBook errand:** confirm B4 5F via the side-door lift (owner’s Notion note) rather than the current B6 office.
 4. **B6 role:** confirm B6 is the auditorium/**architectural** core (gathering ring, not a compute master core), not the office/flip corridor.

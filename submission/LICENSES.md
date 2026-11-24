@@ -1,4 +1,4 @@
-# Licences — HKU Shanghai at War (“BARRIER 2030”)
+# Licences — HKU: Barrier 2030
 
 A one-page index. The full per-asset record lives in `../THIRD-PARTY-NOTICES.md`,
 `../docs/ASSET-LICENSES-V8.md` and `../assets/audio/SOURCES.md`; this file states what

@@ -1,6 +1,8 @@
-# HKU Shanghai at War — BARRIER 2030
+# HKU: Barrier 2030
 
-> The game formerly titled “BARRIER 2030”. The subtitle stays; the title card, credits, menu and submission now read **HKU Shanghai at War**.
+> The game name, ruled by the owner on 2026-11-24: **HKU: Barrier 2030**. It replaces the earlier
+> “HKU Shanghai at War — BARRIER 2030”, which split the name into a title and a subtitle. The title
+> card, credits, menu, pause card, ending and submission all read the single name.
 
 # HKU Shanghai · 校园数字巡检 v9
 

@@ -51,10 +51,10 @@ export const ENDING_DOME_WAIT_SECONDS=3;
 
 /** The credits card body. Pure, so the headless check reads the exact copy. */
 export function creditsMarkup():string{
- return '<section id="ending-credits-card" role="dialog" aria-modal="true" aria-label="HKU Shanghai at War credits">'
+ return '<section id="ending-credits-card" role="dialog" aria-modal="true" aria-label="HKU: Barrier 2030 credits">'
   +'<p class="ending-kicker">CREDITS</p>'
-  +'<h2>HKU Shanghai at War</h2>'
-  +'<p class="ending-subtitle">BARRIER 2030</p>'
+  +'<h2>HKU: Barrier 2030</h2>'
+  +'<p class="ending-subtitle">A CDS campus story</p>'
   +'<p class="ending-team">Thomas · Harry · Frost · WHL</p>'
   +'<p class="ending-place">HKU Shanghai · CDS</p>'
   +'<div class="ending-actions"><button type="button" id="ending-play-again">Play again</button><a id="ending-chapters" href="?experience=levels">Chapters</a></div>'

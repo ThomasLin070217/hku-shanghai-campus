@@ -1,4 +1,4 @@
-# Submission — HKU Shanghai at War (“BARRIER 2030”)
+# Submission — HKU: Barrier 2030
 
 **Version:** `9.1.0` (see `../VERSION`)
 **Status:** tag-based release. There is no frozen archive, no checksum file and no upload from this repo. The owner pushes the tag to a private GitHub repo, deploys it and sends the link.

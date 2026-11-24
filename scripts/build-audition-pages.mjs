@@ -121,7 +121,7 @@ for (const file of walk(musicRoot, '.mp3').sort()) {
   });
 }
 const musicPage = page(
-  'HKU Shanghai at War — score audition',
+  'HKU: Barrier 2030 — score audition',
   'Two takes per cue where delivered. Tick veto, copy the list, send it back. Files are relative to this page.',
   [...musicGroups.values()],
   'music',
@@ -144,7 +144,7 @@ const voiceGroups = cast.lines.map((line) => ({
     .filter(Boolean),
 }));
 const voicePage = page(
-  'HKU Shanghai at War — voice audition',
+  'HKU: Barrier 2030 — voice audition',
   'Main-story lines first. Tick veto, copy the list, send it back.',
   voiceGroups.filter((g) => g.takes.length),
   'voice',
