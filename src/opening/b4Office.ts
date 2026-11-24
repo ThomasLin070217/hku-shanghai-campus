@@ -1,4 +1,4 @@
-import {B4_LIFT as L} from './spatialLayout';
+import {B4_LIFT as L, OPENING} from './spatialLayout';
 import {LIFT, LIFT_LANDING, callLift, type LiftBox} from './lift';
 
 /**
@@ -13,6 +13,10 @@ import {LIFT, LIFT_LANDING, callLift, type LiftBox} from './lift';
  * `officeDebug()`. Nothing is gated on elapsed time — the 30–45 s traversal is an outcome, not
  * a stopwatch. `tickOffice` is called from `openingSupport` with the queried point, the same
  * one hook the lift uses, so the beats advance at simulation rate with no per-frame owner.
+ *
+ * Two things are gated on *story*, never on time: the beats wait for `setOfficeArmed` (the
+ * errand has been accepted), and both shaft openings are sealed by a guard whenever the car is
+ * on the other floor. Neither is a pause: the lift still answers, the lamps still light.
  */
 
 const WALL = L.wall;
@@ -44,6 +48,8 @@ export const B4_OFFICE = {
  revision: 'opening-2030-v9-office',
  floorTop, ceilBottom, wall: WALL,
  door: {x0: doorX0, x1: doorX1, z0: LIFT_LANDING.officeZ0, z1: LIFT_LANDING.officeZ1, height: L.officeDoor.height, centre: zMid},
+ /** How long the leaf takes to swing open (and back). The doorway stays solid until it has. */
+ doorSwingSeconds: .9,
  interior, desk, shelf, chair, laptop,
  /**
   * Where the player stands to pick the MacBook up: directly south of the desk, facing north
@@ -51,8 +57,14 @@ export const B4_OFFICE = {
   * into a step around it.
   */
  laptopStand: {x: laptop.x, z: desk.z1 + .55},
- /** Wall-mounted CCTV on the lobby's west wall, between the side door and the lift door. */
- cctv: {x: L.x1 + .015, z: 16.00, y: 1.92, w: .90, h: .54, tilt: -.42},
+ /**
+  * Wall-mounted CCTV on the lobby's west wall, between the side door and the lift door.
+  * It hangs on a bracket angled toward the lift, and a .48 m half-width swung .42 rad stands
+  * `.48·sin(.42) ≈ .20 m` off the wall at its north edge — so the centre has to stand that far
+  * out too, or the north third of the screen (and its frame) sinks inside the wall and the
+  * feed reads as a panel that has been sawn off.
+  */
+ cctv: {x: L.x1 + .24, z: 16.00, y: 1.92, w: .90, h: .54, tilt: -.42},
  /** The volume in front of the screen that fires beat 1. */
  cctvTrigger: {x0: L.x1 + .07, x1: L.x1 + 2.2, z0: 14.3, z1: 17.7},
  /** Ground call button, south of the lift doorway. */
@@ -68,6 +80,38 @@ export const B4_OFFICE = {
   * 1 cm west of the plate edge so it never overlaps the landing footprint.
   */
  shaftGuard: {x0: L.x1 - .05, x1: L.x1, z0: L.z0, z1: L.z1},
+ /**
+  * The shaft's ground-side guard (E.5 / A.3.1): the car's own door leaves travel with the car,
+  * so with the car parked at the landing the lobby doorway is an open shaft. Same pattern as
+  * the 5F guard, in the doorway itself. Its top is the **ground lobby's** ceiling, not the
+  * shaft's: a guard tall enough to reach 5F would stand in the car's own 5F doorway and seal
+  * the way out of the lift whenever the car is parked upstairs — the normal state. The ground
+  * room's ceiling is the highest a ground-floor player can be, so sealing to it seals the hole.
+  */
+ groundGuard: {x0: L.x1 - .05, x1: L.x1, z0: L.door.z0, z1: L.door.z1, bottom: L.ground, top: OPENING.b4.floor + OPENING.b4.clearHeight},
+ /**
+  * E.8's secondary dressing. Scenery only: no collision, no trigger, nothing that stops the
+  * player. The trolley is the one object in the beat that says people left in a hurry.
+  */
+ dressing: {
+  /** The building's own evacuation notice, on the corridor's north wall, facing the walker. */
+  evacSign: {x: 51.70, y: floorTop + 1.55, z: LIFT_LANDING.corridorZ0 + .012},
+  /** A trolley left where someone stopped pushing it, ground lobby, against the west wall. */
+  trolley: {x: 46.62, z: 18.55, yaw: .38},
+  /** One corridor ceiling panel that is not quite dead, near the corridor mouth. */
+  flickerPanel: {x: 50.55, y: ceilBottom - .02, z: (LIFT_LANDING.corridorZ0 + LIFT_LANDING.corridorZ1) / 2},
+ },
+} as const;
+
+/** Every cue the office plays, so a gate can prove each one exists in the audio manifest. */
+export const OFFICE_CUES = {
+ feed: 'robot_servo_loop',
+ glitch: 'sfx_glitch_burst',
+ /** Placeholder for E.2 beat 3's muffled shout: the closest shipped cue to a human cry of
+  * being taken. Replaced by the Phase 2 abduction SFX pass (Task 6.7). */
+ shout: 'robot_capture',
+ doorClose: 'ui_cancel',
+ doorOpen: 'ui_confirm',
 } as const;
 
 /* ------------------------------------------------------------------ */
@@ -94,7 +138,10 @@ export function b4OfficeBoxes(): LiftBox[] {
  push('opening-office-desk', desk.x0, desk.x1, desk.z0, desk.z1, floorTop, floorTop + desk.h);
  push('opening-office-shelf', shelf.x0, shelf.x1, shelf.z0, shelf.z1, floorTop, floorTop + shelf.h);
  push('opening-office-chair', chair.x - chair.size / 2, chair.x + chair.size / 2, chair.z - chair.size / 2, chair.z + chair.size / 2, floorTop, floorTop + chair.seat);
+ // Both shaft guards start solid; `installOffice`/`tickOffice` open the one whose floor the
+ // car is standing at (see `syncShaftGuard` / `syncGroundGuard`).
  push('opening-office-shaft-guard', B4_OFFICE.shaftGuard.x0, B4_OFFICE.shaftGuard.x1, B4_OFFICE.shaftGuard.z0, B4_OFFICE.shaftGuard.z1, floorTop, ceilBottom);
+ push('opening-office-ground-guard', B4_OFFICE.groundGuard.x0, B4_OFFICE.groundGuard.x1, B4_OFFICE.groundGuard.z0, B4_OFFICE.groundGuard.z1, B4_OFFICE.groundGuard.bottom, B4_OFFICE.groundGuard.top);
  return out;
 }
 
@@ -116,26 +163,47 @@ interface OfficeState {
  feedDrawnAt: number;
  feedDead: boolean;
  startedAt: number;
+ /**
+  * E-F3: the three beats are armed by the errand, not by walking into the lobby. `false` until
+  * `experience.ts` says the story has reached the errand, so a player who finds the side door
+  * early cannot spend the scene.
+  */
+ armed: boolean;
+ /** The leaf's current hinge angle, and the swing that is moving it there. */
+ doorAngle: number;
+ doorSwing: {from: number; to: number; at: number} | null;
+ /** The last lamp intensities `syncCallLamps` wrote, so a gate can read what the plates got. */
+ lamps: {ground: number; top: number};
 }
 const state: OfficeState = {
  doorOpen: false,
  beats: {lobby_feed: null, feed_dies: null, corridor_sound: null},
  feedFrame: 0, feedDrawnAt: -1, feedDead: false, startedAt: nowSeconds(),
+ armed: false, doorAngle: 0, doorSwing: null, lamps: {ground: .25, top: .25},
 };
+
+/** Arm or disarm the beats (E-F3). Disarming never unlatches a beat that has already fired. */
+export function setOfficeArmed(on: boolean): void {
+ state.armed = on;
+}
 
 /** Everything the gate reads. Plain data: no functions, no class instances. */
 export function officeDebug() {
  return {
   revision: B4_OFFICE.revision,
+  armed: state.armed,
   doorOpen: state.doorOpen,
+  door: {angle: +state.doorAngle.toFixed(4), target: DOOR_SWING, seconds: B4_OFFICE.doorSwingSeconds, swinging: state.doorSwing !== null},
+  lamps: {...state.lamps},
   beats: {...state.beats},
   beatOrder: (Object.entries(state.beats) as [OfficeBeat, number | null][])
    .filter(([, at]) => at !== null).sort((a, b) => a[1]! - b[1]!).map(([name]) => name),
   feed: state.feedDead ? 'dead' : state.beats.lobby_feed === null ? 'idle' : 'playing',
-  lift: {phase: LIFT.phase, y: +LIFT.y.toFixed(4), doors: +LIFT.doors.toFixed(3), call: LIFT.call},
+  lift: {phase: LIFT.phase, y: +LIFT.y.toFixed(4), doors: +LIFT.doors.toFixed(3), call: LIFT.call, ground: L.ground, landing: L.landing},
   geometry: {
    door: B4_OFFICE.door, interior: B4_OFFICE.interior, laptop: B4_OFFICE.laptop,
    cctv: B4_OFFICE.cctv, callGround: B4_OFFICE.callGround, call5f: B4_OFFICE.call5f,
+   dressing: B4_OFFICE.dressing, shaftGuard: B4_OFFICE.shaftGuard, groundGuard: B4_OFFICE.groundGuard,
   },
  };
 }
@@ -154,6 +222,8 @@ export interface OfficeVisual {
  call5f?: {material?: {emissiveIntensity: number}};
  /** The car's small screen, which carries the dying feed between floors. */
  carScreen?: {material?: {emissiveIntensity: number}};
+ /** E.8's dying ceiling panel: one corridor lamp that is not quite out. */
+ flicker?: {material?: {emissiveIntensity: number}};
 }
 let visual: OfficeVisual = {};
 
@@ -161,6 +231,7 @@ export function attachOfficeVisual(next: OfficeVisual): void {
  visual = {...visual, ...next};
  syncCallLamps();
  syncDoorVisual();
+ animateFlicker();
  drawFeed(true);
 }
 
@@ -178,13 +249,16 @@ function fire(beat: OfficeBeat): void {
  if (beat === 'feed_dies') {
   state.feedDead = true;
   drawFeed(true);
-  cue?.('sfx_glitch_burst', [B4_OFFICE.cctv.x, B4_OFFICE.cctv.y, B4_OFFICE.cctv.z]);
+  cue?.(OFFICE_CUES.glitch, [B4_OFFICE.cctv.x, B4_OFFICE.cctv.y, B4_OFFICE.cctv.z]);
  } else if (beat === 'lobby_feed') {
-  cue?.('robot_servo_loop', [B4_OFFICE.cctv.x, B4_OFFICE.cctv.y, B4_OFFICE.cctv.z]);
+  cue?.(OFFICE_CUES.feed, [B4_OFFICE.cctv.x, B4_OFFICE.cctv.y, B4_OFFICE.cctv.z]);
  } else {
-  // Placeholder abduction sound: a distant servo, then a door. Phase 2's SFX pass replaces both.
-  cue?.('robot_servo_loop', [LIFT_LANDING.corridorX1 - .5, floorTop + 1.2, zMid]);
-  cue?.('ui_cancel', [LIFT_LANDING.corridorX1 - .5, floorTop + 1.2, zMid]);
+  // Placeholder abduction sound: a distant servo, a muffled shout, then a door closing.
+  // Phase 2's SFX pass (Task 6.7) replaces all three.
+  const at: [number, number, number] = [LIFT_LANDING.corridorX1 - .5, floorTop + 1.2, zMid];
+  cue?.(OFFICE_CUES.feed, at);
+  cue?.(OFFICE_CUES.shout, at);
+  cue?.(OFFICE_CUES.doorClose, at);
  }
 }
 
@@ -198,12 +272,17 @@ const inside = (x: number, z: number, r: {x0: number; x1: number; z0: number; z1
 export function tickOffice(x: number, z: number, y: number): void {
  const atGround = Math.abs(y - L.ground) <= .30;
  const atFifth = Math.abs(y - floorTop) <= .30;
- // Beat 1: the first clear look at the screen walking in from the side door.
- if (atGround && inside(x, z, B4_OFFICE.cctvTrigger)) fire('lobby_feed');
- // Beat 2: the feed dies the moment the car's doors start to close.
- if (state.beats.lobby_feed !== null && LIFT.phase === 'doors-closing') fire('feed_dies');
- // Beat 3: the corridor carries it by sound, before the office door.
- if (atFifth && inside(x, z, B4_OFFICE.corridorTrigger)) fire('corridor_sound');
+ // E-F3: nothing fires — and nothing latches — until the errand has armed the scene. A player
+ // who walks in at `to_b5`/`to_b4` still gets a working lift, a lit button and a live feed;
+ // they just do not spend the one run of the abduction.
+ if (state.armed) {
+  // Beat 1: the first clear look at the screen walking in from the side door.
+  if (atGround && inside(x, z, B4_OFFICE.cctvTrigger)) fire('lobby_feed');
+  // Beat 2: the feed dies the moment the car's doors start to close.
+  if (state.beats.lobby_feed !== null && LIFT.phase === 'doors-closing') fire('feed_dies');
+  // Beat 3: the corridor carries it by sound, before the office door.
+  if (atFifth && inside(x, z, B4_OFFICE.corridorTrigger)) fire('corridor_sound');
+ }
 
  // Call points. `tickOffice` runs before `tickLift` in `openingSupport`, so a press set here
  // is honoured by the same frame's lift step.
@@ -211,9 +290,11 @@ export function tickOffice(x: number, z: number, y: number): void {
  if (atFifth && Math.hypot(x - B4_OFFICE.call5f.x, z - B4_OFFICE.call5f.z) <= B4_OFFICE.call5f.radius) callLift('top');
 
  syncShaftGuard();
+ syncGroundGuard();
  syncCallLamps();
  syncDoorVisual();
  animateFeed();
+ animateFlicker();
 }
 
 /* ------------------------------------------------------------------ */
@@ -224,7 +305,10 @@ export function tickOffice(x: number, z: number, y: number): void {
 export function openOfficeDoor(): boolean {
  if (state.doorOpen) return false;
  state.doorOpen = true;
- cue?.('ui_confirm', [B4_OFFICE.door.x0, floorTop + 1.1, zMid]);
+ cue?.(OFFICE_CUES.doorOpen, [B4_OFFICE.door.x0, floorTop + 1.1, zMid]);
+ startDoorSwing(DOOR_SWING);
+ // The leaf is still across its doorway: `syncDoorObstacle` only clears it once the swing has
+ // finished (E.6), so the player cannot walk through a door that is visibly moving.
  syncDoorObstacle();
  syncDoorVisual();
  return true;
@@ -232,41 +316,54 @@ export function openOfficeDoor(): boolean {
 
 /** Close it again on a restart, so a fresh run starts at a closed office. */
 export function resetOffice(): void {
+ const wasMoved = state.doorOpen || state.doorAngle > 1e-3;
  state.doorOpen = false;
  state.beats = {lobby_feed: null, feed_dies: null, corridor_sound: null};
  state.feedDead = false;
  state.feedFrame = 0;
  state.feedDrawnAt = -1;
  state.startedAt = nowSeconds();
+ // The reverse swing: the leaf walks back to the jamb over the same duration. The doorway is
+ // solid from the first frame of it, which is the safe direction to be wrong in.
+ if (wasMoved) startDoorSwing(0); else state.doorSwing = null;
  syncDoorObstacle();
  syncDoorVisual();
  syncCallLamps();
  drawFeed(true);
 }
 
-let doorObstacles: {obstacles: {name: string; x: number; z: number; w: number; d: number; bottom: number; top: number}[]; door: unknown; guard: unknown} | null = null;
+type MutableBox = {name: string; x: number; z: number; w: number; d: number; bottom: number; top: number};
+let doorObstacles: {obstacles: MutableBox[]; door: MutableBox | null; guard: MutableBox | null; groundGuard: MutableBox | null} | null = null;
 
 /**
- * Capture the two obstacles the office animates, after `navigation.ts` has mounted them.
- * Both are rewritten in place, exactly like the lift's car, so nothing is rebuilt.
+ * Capture the three obstacles the office animates, after `navigation.ts` has mounted them.
+ * All are rewritten in place, exactly like the lift's car, so nothing is rebuilt.
  */
-export function installOffice(obstacles: {name: string; x: number; z: number; w: number; d: number; bottom: number; top: number}[]): void {
+export function installOffice(obstacles: MutableBox[]): void {
  const door = obstacles.find(o => o.name === 'opening-lift-5f-office-door') ?? null;
  const guard = obstacles.find(o => o.name === 'opening-office-shaft-guard') ?? null;
- doorObstacles = {obstacles, door, guard};
+ const groundGuard = obstacles.find(o => o.name === 'opening-office-ground-guard') ?? null;
+ doorObstacles = {obstacles, door, guard, groundGuard};
  syncDoorObstacle();
  syncShaftGuard();
+ syncGroundGuard();
 }
 
+/**
+ * True once the leaf has cleared its doorway; until then the doorway stays solid (E.6).
+ * `DOOR_SWING` is negative (the leaf swings west), so "cleared" is at or past the target.
+ */
+const doorClear = () => state.doorOpen && state.doorAngle <= DOOR_SWING + 1e-3;
+
 function syncDoorObstacle(): void {
- const o = doorObstacles?.door as {x: number; z: number; w: number; d: number; bottom: number; top: number} | null | undefined;
+ const o = doorObstacles?.door;
  if (!o) return;
- if (state.doorOpen) { o.bottom = floorTop; o.top = floorTop; }     // no height, no collision
+ if (doorClear()) { o.bottom = floorTop; o.top = floorTop; }     // no height, no collision
  else { o.bottom = floorTop; o.top = floorTop + L.officeDoor.height; }
 }
 
 function syncShaftGuard(): void {
- const o = doorObstacles?.guard as {bottom: number; top: number} | null | undefined;
+ const o = doorObstacles?.guard;
  if (!o) return;
  // The car is at 5F: the doorway is a doorway. Anywhere else it is an 18.9 m drop.
  const carAtTop = Math.abs(LIFT.y - floorTop) <= .30;
@@ -274,18 +371,63 @@ function syncShaftGuard(): void {
  o.top = carAtTop ? floorTop : ceilBottom;
 }
 
-/** The leaf swings 1.35 rad into the office; the hinge sits on the north jamb. */
+/**
+ * A.3.1: the ground side of the same hole. The car's door leaves travel with the car, so with
+ * the car parked at the landing the lobby doorway has an 18.9 m shaft behind it. Mirror of
+ * `syncShaftGuard`, one floor down: solid to the ground lobby's ceiling unless the car is here.
+ */
+function syncGroundGuard(): void {
+ const o = doorObstacles?.groundGuard;
+ if (!o) return;
+ const carAtGround = Math.abs(LIFT.y - L.ground) <= .30;
+ o.bottom = L.ground;
+ o.top = carAtGround ? L.ground : B4_OFFICE.groundGuard.top;
+}
+
+/** The leaf swings 1.35 rad into the corridor; the hinge sits on the north jamb. */
 const DOOR_SWING = -1.35;
+function startDoorSwing(to: number): void {
+ state.doorSwing = {from: state.doorAngle, to, at: nowSeconds()};
+}
+
+/**
+ * Advance the swing from the wall clock (the same clock the lift rides on) and write the hinge.
+ * While it runs, the doorway's collision is re-evaluated every tick, so the leaf is solid to
+ * the player until it has cleared and then lets them through — no teleporting leaf.
+ */
 function syncDoorVisual(): void {
- if (visual.doorHinge) visual.doorHinge.rotation.y = state.doorOpen ? DOOR_SWING : 0;
+ const swing = state.doorSwing;
+ if (swing) {
+  const t = Math.min(1, (nowSeconds() - swing.at) / B4_OFFICE.doorSwingSeconds);
+  const eased = t * t * (3 - 2 * t);
+  state.doorAngle = swing.from + (swing.to - swing.from) * eased;
+  if (t >= 1) {
+   state.doorAngle = swing.to;
+   state.doorSwing = null;
+  }
+  syncDoorObstacle();
+ }
+ if (visual.doorHinge && visual.doorHinge.rotation.y !== state.doorAngle) visual.doorHinge.rotation.y = state.doorAngle;
 }
 
 function syncCallLamps(): void {
  const ground = LIFT.call === 'ground' && Math.abs(LIFT.y - L.ground) > .30;
  const top = LIFT.call === 'top' && Math.abs(LIFT.y - floorTop) > .30;
- if (visual.callGround?.material) visual.callGround.material.emissiveIntensity = ground ? 1.4 : .25;
- if (visual.call5f?.material) visual.call5f.material.emissiveIntensity = top ? 1.4 : .25;
+ // The values are kept, not only written: `officeDebug().lamps` reports what the plates got.
+ state.lamps = {ground: ground ? 1.4 : .25, top: top ? 1.4 : .25};
+ if (visual.callGround?.material) visual.callGround.material.emissiveIntensity = state.lamps.ground;
+ if (visual.call5f?.material) visual.call5f.material.emissiveIntensity = state.lamps.top;
  if (visual.carScreen?.material) visual.carScreen.material.emissiveIntensity = state.feedDead ? 1.6 : 0;
+}
+
+/** E.8's dying corridor panel: mostly lit, with an intermittent stutter. No light, no cost. */
+function animateFlicker(): void {
+ const m = visual.flicker?.material;
+ if (!m) return;
+ const t = nowSeconds() - state.startedAt;
+ const stutter = Math.sin(t * 2.1) > .72 ? Math.sin(t * 41) * .5 + .5 : 1;
+ const dip = .94 + Math.sin(t * 13.7) * .06;
+ m.emissiveIntensity = +(1.05 * dip * stutter).toFixed(3);
 }
 
 /* ------------------------------------------------------------------ */
@@ -341,11 +483,17 @@ function drawFeed(force = false): void {
  for (let i = 0; i < 2; i++) {
   const x = ((drift + 40 + i * 120) % (w + 120)) - 60;
   const base = h * .60 + 2;
-  ctx.fillStyle = '#20272b';
+  // Steel, not near-black: the machines have to be visible on the same dark feed as the
+  // people, or the shot reads as three students walking and nothing leading them.
+  const steel = '#5b6870';
+  ctx.fillStyle = steel;
   ctx.fillRect(x, base - 40, 11, 40);                     // taller, squarer
-  ctx.fillStyle = '#20272b'; ctx.fillRect(x + 1, base - 46, 9, 7);   // head unit
+  ctx.fillRect(x + 1, base - 46, 9, 7);                   // head unit
+  ctx.strokeStyle = '#aab6bf'; ctx.lineWidth = 1;         // a lit rim on a dark corridor
+  ctx.strokeRect(x + .5, base - 39.5, 10, 39);
+  ctx.strokeRect(x + 1.5, base - 45.5, 8, 6);
   ctx.fillStyle = '#ff3b30'; ctx.fillRect(x + 3, base - 44, 5, 2);   // eye
-  ctx.strokeStyle = '#20272b'; ctx.lineWidth = 2;
+  ctx.strokeStyle = steel; ctx.lineWidth = 2;
   ctx.beginPath(); ctx.moveTo(x - 4, base - 30); ctx.lineTo(x + 14, base - 34); ctx.stroke();  // arm out
  }
  // Scanlines and a timestamp, so it reads as CCTV rather than as a poster.

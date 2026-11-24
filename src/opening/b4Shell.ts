@@ -115,6 +115,8 @@ interface OfficeMats{
  window:T.Material;book:T.Material;bookAlt:T.Material;screenFrame:T.Material;glass:T.Material;
  callPlate:T.Material;callLamp:T.Material;landingFloor:T.Material;landingWall:T.Material;
  landingCeiling:T.Material;officeDoor:T.Material;officePlate:T.Material;officeText:T.Material;
+ /** E.8's dressing: the trolley's steel, the evacuation notice, the dying corridor panel. */
+ trolleyFrame:T.Material;trolleyDeck:T.Material;evacPlate:T.Material;evacText:T.Material;flicker:T.Material;
 }
 
 /**
@@ -140,7 +142,9 @@ function buildOffice(m:OfficeMats){
  const root=new T.Group();root.name='B04_principal_office';root.userData={...SOURCE,authorKey:'B04_principal_office',sceneLabel:"5F principal's office"};
  const O=B4_OFFICE,F=O.floorTop;
  for(const b of b4OfficeBoxes()){
-  if(b.name==='opening-office-shaft-guard')continue;          // collision only
+  // Both shaft guards are collision only; the shell seals those openings with the lift's own
+  // door leaves (and leaves the 5F doorway open when the car is there).
+  if(b.name==='opening-office-shaft-guard'||b.name==='opening-office-ground-guard')continue;
   const material=b.name.includes('floor')?m.landingFloor:b.name.includes('ceiling')?m.landingCeiling
    :b.name.includes('desk')||b.name.includes('shelf')?m.deskWood:b.name.includes('chair')?m.chairFabric:m.landingWall;
   box(root,b.name,b.x1-b.x0,b.top-b.bottom,b.z1-b.z0,(b.x0+b.x1)/2,(b.top+b.bottom)/2,(b.z0+b.z1)/2,material);
@@ -214,11 +218,49 @@ function buildLobbyDevices(m:OfficeMats){
  sign.name='B4_lift_sign_text';sign.position.set(L.x1+.019,2.02,L.door.z1+.55);sign.rotation.y=Math.PI/2;
  sign.userData={...SOURCE,authorKey:'B4_lift_sign_text'};root.add(sign);
  box(root,'B4_lift_sign_plate',.02,.20,.78,L.x1+.006,2.02,L.door.z1+.55,m.officePlate);
+ // E.8: a trolley left where someone stopped pushing it — the one object in the beat that
+ // says people left in a hurry. Scenery only: no collision, so it can never stop the player.
+ const TR=B4_OFFICE.dressing.trolley,F=B4_LAYOUT.room.floor;
+ const trolley=group(root,'B04_lobby_trolley');
+ trolley.position.set(TR.x,F,TR.z);trolley.rotation.y=TR.yaw;
+ box(trolley,'B4_trolley_deck',.60,.04,.95,0,.26,0,m.trolleyDeck);
+ for(const sx of [-1,1])for(const sz of [-1,1])box(trolley,'B4_trolley_wheel',.07,.09,.07,sx*.24,.045,sz*.38,m.trolleyFrame);
+ for(const sx of [-1,1])box(trolley,'B4_trolley_upright',.03,.95,.03,sx*.27,.475,-.45,m.trolleyFrame);
+ box(trolley,'B4_trolley_bar',.60,.03,.03,0,.94,-.45,m.trolleyFrame);
+ box(trolley,'B4_trolley_load',.26,.22,.30,.05,.39,.12,m.coat);
  attachOfficeVisual({
   screen:feed?{canvas:feed.canvas,texture:feed.texture}:undefined,
   callGround:{material:lampGround.material as T.MeshStandardMaterial},
   call5f:{material:lamp5f.material as T.MeshStandardMaterial},
  });
+ return root;
+}
+
+/**
+ * E.8's 5F dressing: the building's own evacuation notice on the corridor wall, and one
+ * ceiling panel that is not quite dead. Scenery only — no collision, no trigger. They exist so
+ * the corridor is worth a look, which is where the errand's extra seconds come from.
+ */
+function buildCorridorDressing(m:OfficeMats){
+ const root=new T.Group();root.name='B04_5f_dressing';root.userData={...SOURCE,authorKey:'B04_5f_dressing',sceneLabel:'B04 5F corridor dressing'};
+ const S=B4_OFFICE.dressing.evacSign;
+ box(root,'B4_lift_5f_evac_sign',.52,.26,.02,S.x,S.y,S.z,m.evacPlate);
+ const line=(text:string,size:number,dy:number,name:string)=>{
+  const glyphs=new TextGeometry(text,{font:campusFont,size,depth:.004,curveSegments:1});
+  glyphs.computeBoundingBox();
+  const bb=glyphs.boundingBox!;
+  glyphs.translate(-(bb.min.x+bb.max.x)/2,-(bb.min.y+bb.max.y)/2,0);
+  const mesh=new T.Mesh(glyphs,m.evacText);
+  mesh.name=name;mesh.position.set(S.x,S.y+dy,S.z+.012);
+  mesh.userData={...SOURCE,authorKey:name};
+  root.add(mesh);
+ };
+ line('EVACUATION',.058,.040,'B4_lift_5f_evac_text');
+ line('ASSEMBLY POINT',.038,-.052,'B4_lift_5f_evac_subtext');
+ // The dying panel, on its own material so `b4Office.animateFlicker` owns one panel only.
+ const P=B4_OFFICE.dressing.flickerPanel;
+ const panel=box(root,'B4_lift_5f_flicker',1.10,.03,.20,P.x,P.y,P.z,m.flicker);
+ attachOfficeVisual({flicker:{material:panel.material as T.MeshStandardMaterial}});
  return root;
 }
 
@@ -247,6 +289,10 @@ export function buildB4Shell(){
   book:std('B4 office book',0x7d3b34),bookAlt:std('B4 office book spine',0x3d5a6b),
   screenFrame:std('B4 lobby monitor frame',0x1b2023),glass:std('B4 lobby monitor glass',0x0a0f12,0x33ff88,.35),
   callPlate:std('B4 lift call plate',0x2b3234),callLamp:std('B4 lift call lamp',0xffb347,0xffa02e,.25),
+  /* E.8's dressing: the trolley's steel and deck, the green evacuation notice, the dying panel. */
+  trolleyFrame:std('B4 lobby trolley frame',0x59646a),trolleyDeck:std('B4 lobby trolley deck',0x8a8f91),
+  evacPlate:std('B4 5F evacuation plate',0x1c5e35),evacText:std('B4 5F evacuation lettering',0xe8f4ec,0x6fe0a0,.8),
+  flicker:std('B4 5F corridor flicker panel',0xd9e6ea,0xbfe0ee,.9),
  };
  const shell=group(root,'B04_room_structure');
  box(shell,'B4_floor',R.x1-R.x0,R.floor,R.z1-R.z0,(R.x0+R.x1)/2,R.floor/2,(R.z0+R.z1)/2,mats.floor).castShadow=false;
@@ -358,6 +404,7 @@ export function buildB4Shell(){
  const office=buildOffice(mats);
  root.add(office.root);
  root.add(buildLobbyDevices(mats));
+ root.add(buildCorridorDressing(mats));
  attachOfficeVisual({doorHinge:office.hinge,carScreen:{material:lift.carScreen.material as T.MeshStandardMaterial}});
  return root;
 }

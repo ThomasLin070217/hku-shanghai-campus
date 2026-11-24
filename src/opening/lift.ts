@@ -38,7 +38,7 @@ export interface LiftBox{name:string;x0:number;x1:number;z0:number;z1:number;bot
 /** Accel and decel each take a quarter of the travel time; the middle half is cruise. */
 const ACCEL=.25;
 const TRAVEL=L.travelSeconds;
-/** The car floor starts on the lobby floor, so the ride is 18.88 m, not the 18.90 m landing. */
+/** The car floor rests on the lobby floor when it is down, so the ride is 18.88 m, not the 18.90 m landing. */
 export const LIFT_TRAVEL_DISTANCE=L.landing-L.ground;
 
 /** Height above the ground floor after `seconds` of the accel–cruise–decel ride. */
@@ -51,7 +51,12 @@ function liftTravelY(seconds:number):number{
  const r=TRAVEL-t;return LIFT_TRAVEL_DISTANCE-.5*(v/a)*r*r;
 }
 
-export function createLift():LiftState{return{phase:'idle',y:L.ground,doors:0,call:null};}
+/**
+ * A lift's home floor is the **landing**: the people who went up used it, so it is up there
+ * (Task E fix round, E.5). Every ground call therefore costs a real 6.000 s descent before
+ * the doors open, and a chapter reset parks the car upstairs, not in the lobby.
+ */
+export function createLift():LiftState{return{phase:'idle',y:L.landing,doors:0,call:null};}
 
 /** The declared `LiftState` carries no timers; they live beside it, not in the interface. */
 interface LiftClock{
@@ -90,8 +95,9 @@ export function callLift(floor:LiftCall):void{
 
 /**
  * One step of the lift. `called` means a passenger is standing in the car. From `idle` the
- * doors open on the first step: an unattended lift waits at the ground lobby with its doors
- * open, so walking in needs no call button.
+ * doors open on the first step: wherever the car is parked it stands with its doors open, so
+ * boarding needs no call button. The car is parked at the landing at world start (E.5), so
+ * the first thing a ground-floor player does is call it down.
  *
  * Direction is a property of where the car is, not of where the player wants to go: a car at
  * the ground only rises and a car at the landing only descends. A landing call (`callLift`)
@@ -324,9 +330,20 @@ function nowSeconds():number{
  return (typeof performance!=='undefined'?performance.now():Date.now())/1000;
 }
 let lastAdvance=-1;
+/** When a passenger last queried the world from inside the car (Task E fix round, E-F5). */
+let lastPassenger=-1;
 /** A rider can never be outrun: one query moves the car at most 5 cm. */
 const MAX_RISE_PER_ADVANCE=.05;
 const SLICE=1/240;
+/**
+ * How long a passenger's query keeps counting after it was made. The lift only sees the query
+ * point, not who asked: the camera, the path finder and the robot fleet all call
+ * `world.support` too, and every one of their queries used to reset the boarding dwell. Once
+ * the fleet wakes (the `return_b5` incident floods the world with thousands of probes a
+ * second) a passenger standing in the car could never make the doors close. The grace is
+ * shorter than the 1.4 s dwell, so a car still never leaves without someone aboard.
+ */
+const PASSENGER_GRACE=.25;
 
 /**
  * Advance the lift from a world query. `x,z,y` are the queried point: a passenger is a
@@ -338,7 +355,9 @@ function advanceLift(now:number,x:number,z:number,y:number):void{
  const dt=Math.min(.05,Math.max(0,now-lastAdvance));
  if(dt<=0)return;
  lastAdvance=now;
- const called=x>=L.x0&&x<=L.x1&&z>=L.z0&&z<=L.z1&&Math.abs(y-LIFT.y)<=.30;
+ const inCar=x>=L.x0&&x<=L.x1&&z>=L.z0&&z<=L.z1&&Math.abs(y-LIFT.y)<=.30;
+ if(inCar)lastPassenger=now;
+ const called=inCar||now-lastPassenger<=PASSENGER_GRACE;
  let remaining=dt;
  for(let i=0;i<12&&remaining>1e-6;i++){
   const before=LIFT.y;
@@ -354,13 +373,14 @@ function advanceLift(now:number,x:number,z:number,y:number):void{
 /** Advance the lift from a world query, using the wall clock. */
 export function tickLift(x:number,z:number,y:number):void{advanceLift(nowSeconds(),x,z,y);}
 
-/** Test seam: put the one lift back at the ground lobby, doors closed. */
+/** Test seam: put the one lift back at its home floor (the landing), doors closed. */
 export function resetLift():void{
- LIFT.phase='idle';LIFT.y=L.ground;LIFT.doors=0;LIFT.call=null;
+ LIFT.phase='idle';LIFT.y=L.landing;LIFT.doors=0;LIFT.call=null;
  clocks.delete(LIFT);
  // The clock is discarded too: a later query must bootstrap instead of measuring a gap
  // across the reset (which would hand the car up to the 50 ms clamp in one go).
  lastAdvance=-1;
+ lastPassenger=-1;
  syncLiftObstacles();
  syncLiftVisual();
 }

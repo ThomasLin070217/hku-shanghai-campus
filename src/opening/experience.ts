@@ -13,7 +13,7 @@ import {createOpeningRuntime,damageOpeningHearts,healOpeningHearts,syncRuntimeWi
 import {loadWorldThreat,sealWorld,resetWorldThreat,tryPurgeWorld,markLionDefeated,markPowerCut,markLocalModelCleared,cloneWorldThreat,type WorldThreat} from '../gameplay/worldThreat';
 import {createThreatRefresh} from './threatRefresh';
 import {OPENING as O,OPENING_WORLD_REVISION} from './spatialLayout';
-import {B4_OFFICE,officeDebug,openOfficeDoor,resetOffice,setOfficeCue} from './b4Office';
+import {B4_OFFICE,officeDebug,openOfficeDoor,resetOffice,setOfficeArmed,setOfficeCue} from './b4Office';
 import {resetLift} from './lift';
 import {createStudentCrowd,crowdVariants} from '../gameplay/studentCrowd';
 import {getGraphicsQuality} from '../viewer/graphicsQuality';
@@ -444,6 +444,10 @@ export function createOpeningExperience(
  }
  function tick(dt:number){
   story.elapsedSeconds+=dt;
+  // Task E (E-F3): the abduction is armed by the errand, never by walking in. `accept_errand`
+  // is the only event that leaves `to_b5`, so every later stage means the hand-off happened; a
+  // checkpoint start at `b6` lands directly on `to_b6` and is armed on its first tick.
+  setOfficeArmed(story.stage!=='crowd'&&story.stage!=='to_b5');
   if(modal!=='caught'&&failed)failed=false;
   if(story.stage==='to_b5'&&!staffTalkStarted&&!staffTalkDone&&!g.panel&&!g.inventoryOpen&&!g.paused&&g.body.position.distanceTo(new T.Vector3(...O.staff))<6.5){
    startStaffIntro();

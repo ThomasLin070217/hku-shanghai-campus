@@ -8,9 +8,12 @@ import {createNavigation} from '../src/exploration/navigation';
 import {B4_LAYOUT} from '../src/opening/b4Layout';
 import {B4_LIFT as L, OPENING, OPENING_WORLD_REVISION} from '../src/opening/spatialLayout';
 import {
- LIFT, LIFT_LANDING, LIFT_TRAVEL_DISTANCE, createLift, liftLandingBoxes, liftObstacleBoxes, liftObstacles, liftSupport,
- resetLift, stepLift, syncLiftObstacles,
+ LIFT, LIFT_LANDING, LIFT_TRAVEL_DISTANCE, callLift, createLift, liftLandingBoxes, liftObstacleBoxes, liftObstacles,
+ liftSupport, resetLift, stepLift, syncLiftObstacles,
 } from '../src/opening/lift';
+/** Only the ground call point and the guards' install hook: the gate must wire the office
+ *  the way `opening/navigation.ts` does, or the ground guard stays at its built-solid pose. */
+import {B4_OFFICE, installOffice} from '../src/opening/b4Office';
 
 /**
  * B04 core lift + 5F landing gate (Task D, 2026-11-24).
@@ -19,14 +22,16 @@ import {
  *      `spatialLayout.ts` rather than restated here;
  *   2. `liftSupport` answers the car floor inside the car and `null` outside it, at every
  *      height the car can occupy;
- *   3. the state machine, stepped at a fixed 1/120 s, reaches `arrived` at the landing
- *      inside 12 s, never opens the doors while the car is moving, and takes 6.0 s to travel;
+ *   3. the state machine, stepped at a fixed 1/120 s, starts parked at the **landing** (E.5):
+ *      a landing call brings the empty car down in 6.0 s, a passenger then rides it back up in
+ *      6.0 s, and the doors never open while the car is moving;
  *   4. the built navigation agrees: the shaft is hollow, the doorway is open once the car's
  *      doors are, the car is not buried, the 5F plate is a floor and its walls are solid;
  *   5. the 5F plate sits above the room's clear height and no obstacle other than the lift's
  *      own car reaches it;
- *   6. a headless browser walks the player in through the side door, rides, and walks the 5F
- *      corridor without the URL changing.
+ *   6. a headless browser walks the player in through the side door, is blocked by the
+ *      guarded doorway, calls the car and waits out the descent, then rides up and walks the
+ *      5F corridor without the URL changing. The wait is measured, never skipped.
  *
  * The browser leg needs a review/dev build. When `CAMPUS_URL` is set the check uses that
  * server; otherwise it starts a Vite dev server itself. `CHROME_PATH` overrides the browser.
@@ -121,42 +126,86 @@ function assertConstants(constants: ReturnType<typeof constantReport>) {
 
 interface ProfileSample { t: number; phase: string; y: number; doors: number }
 
+/**
+ * The machine on a private car, in the order the world now presents it (E.5): the car is
+ * parked at the landing, so the first thing that happens is an **empty descent** answering a
+ * landing call, and only then does a passenger ride it back up. `callLift` targets the one
+ * world car, so this private state has the call written straight onto `call`, exactly what
+ * `callLift` writes on the world's car.
+ */
 function machineReport() {
  const s = createLift();
  const cx = (L.x0 + L.x1) / 2, cz = (L.z0 + L.z1) / 2;
- const support: Record<string, unknown> = {
+ const home = { phase: s.phase, y: s.y, doors: s.doors, call: s.call };
+ const supportAtHome: Record<string, number | null> = {
   inside: liftSupport(s, cx, cz),
   west: liftSupport(s, L.x0 - .01, cz),
   east: liftSupport(s, L.x1 + .01, cz),
   north: liftSupport(s, L.z0 - .01, cz),
   south: liftSupport(s, L.z1 + .01, cz),
  };
- const dt = 1 / 120, seconds = 12, samples: ProfileSample[] = [];
+ const dt = 1 / 120;
  const timeline: { t: number; phase: string }[] = [];
- let previous = s.phase, risingStart = -1, arrivedAt = -1, doorsOpenAt = -1, maxRise = 0;
- const beforeY = s.y;
- for (let step = 0; step * dt <= seconds + EPS; step++) {
-  const t = +(step * dt).toFixed(6);
-  if (s.phase !== previous) { timeline.push({ t, phase: s.phase }); previous = s.phase; }
-  if (s.phase === 'rising' && risingStart < 0) risingStart = t;
-  if (s.phase === 'arrived' && arrivedAt < 0) arrivedAt = t;
-  if (s.phase === 'arrived' && s.doors > 0 && doorsOpenAt < 0) doorsOpenAt = t;
-  // Record the rise *before* stepping: the car moves during the step, and this is the
-  // distance the physics then has to carry the rider.
+ let t = 0, previous = s.phase;
+ const mark = () => { if (s.phase !== previous) { timeline.push({ t: +t.toFixed(6), phase: s.phase }); previous = s.phase; } };
+
+ // Leg 1 — the landing call, nobody aboard. The descent answer is still 6.000 s.
+ s.call = 'ground';
+ let descendStart = -1, groundAt = -1, descentDoorsAt = -1, maxDrop = 0, dropFrom = s.y;
+ for (let i = 1; i <= 16 * 120 && groundAt < 0; i++) {
+  stepLift(s, dt, false);
+  t = i * dt;
+  if (s.phase === 'descending' && descendStart < 0) descendStart = (i - 1) * dt;
+  maxDrop = Math.max(maxDrop, Math.abs(s.y - dropFrom));
+  dropFrom = s.y;
+  if (s.phase === 'descending' && s.doors !== 0) check(false, 'machine:descent-doors', `the doors were ${s.doors} at t=${r4(t)} while the car was descending`);
+  if (s.phase === 'arrived' && s.y === L.ground) groundAt = t;
+  mark();
+ }
+ const groundSupport = liftSupport(s, cx, cz);
+ for (let i = 0; i < 2 * 120 && descentDoorsAt < 0; i++) {
+  stepLift(s, dt, false);
+  t += dt;
+  if (s.doors >= 1) descentDoorsAt = t;
+  mark();
+ }
+
+ // Leg 2 — a passenger boards at the ground and rides back to the landing.
+ let riseStart = -1, arrivedAt = -1, doorsOpenAt = -1, maxRise = 0;
+ let midSupport: number | null = null, midY = NaN;
+ const samples: ProfileSample[] = [];
+ for (let i = 1; i <= 16 * 120 && arrivedAt < 0; i++) {
   const yBefore = s.y;
   stepLift(s, dt, true);
+  t += dt;
+  if (s.phase === 'rising' && riseStart < 0) riseStart = t - dt;
   maxRise = Math.max(maxRise, Math.abs(s.y - yBefore));
-  if (step % 30 === 0) samples.push({ t, phase: s.phase, y: r4(s.y), doors: r4(s.doors) });
-  if (s.phase === 'rising' && s.doors !== 0) check(false, 'machine:doors-while-rising', `the doors were ${s.doors} at t=${t} while the car was rising`);
+  if (s.phase === 'rising' && s.doors !== 0) check(false, 'machine:doors-while-rising', `the doors were ${s.doors} at t=${r4(t)} while the car was rising`);
+  if (s.phase === 'rising' && midSupport === null && s.y > 6) { midSupport = liftSupport(s, cx, cz); midY = s.y; }
+  // The y-profile below is the ascent, on its own clock so it reads as one 6 s curve.
+  if (s.phase === 'rising' && i % 30 === 0) samples.push({ t: r4(t - riseStart), phase: s.phase, y: r4(s.y), doors: r4(s.doors) });
+  if (s.phase === 'arrived' && s.y === L.landing) arrivedAt = t;
+  mark();
  }
- samples.push({ t: 12, phase: s.phase, y: r4(s.y), doors: r4(s.doors) });
+ for (let i = 0; i < 2 * 120 && doorsOpenAt < 0; i++) {
+  stepLift(s, dt, true);
+  t += dt;
+  if (s.doors >= 1) doorsOpenAt = t;
+  mark();
+ }
+ samples.push({ t: r4(arrivedAt - riseStart), phase: s.phase, y: r4(s.y), doors: r4(s.doors) });
  const final = { phase: s.phase, y: s.y, doors: s.doors };
  /** The accel–cruise–decel profile's peak speed and peak acceleration, for the report. */
  const peakSpeed = LIFT_TRAVEL_DISTANCE / (L.travelSeconds * (1 - .25));
  return {
-  support, beforeY, final, timeline, samples,
+  home, supportAtHome, groundSupport, midSupport, midY: r4(midY), final, timeline, samples,
   measured: {
-   travelled: r4(final.y - beforeY), travelSeconds: +(arrivedAt - risingStart).toFixed(4),
+   descentSeconds: +((groundAt - descendStart)).toFixed(4),
+   descentArrivedAt: +groundAt.toFixed(4),
+   descentDistance: r4(L.ground - L.landing),
+   descentDoorsOpenedAt: +descentDoorsAt.toFixed(4),
+   maxDropPerStep: +maxDrop.toFixed(5),
+   travelSeconds: +(arrivedAt - riseStart).toFixed(4), travelled: r4(final.y - L.ground),
    doorsOpenedAt: +doorsOpenAt.toFixed(4), arrivedAt: +arrivedAt.toFixed(4),
    maxRisePerStep: +maxRise.toFixed(5), peakSpeed: +peakSpeed.toFixed(4),
    peakAcceleration: +(peakSpeed / (.25 * L.travelSeconds)).toFixed(4),
@@ -166,37 +215,44 @@ function machineReport() {
 
 function assertMachine(report: ReturnType<typeof machineReport>) {
  const s = createLift(), cx = (L.x0 + L.x1) / 2, cz = (L.z0 + L.z1) / 2;
- check(report.support.inside === L.ground, 'support:inside', `liftSupport inside the car at rest must be ${L.ground}, read ${report.support.inside}`);
+ // E.5: the home floor is the landing, so a reset world starts with the car upstairs.
+ check(report.home.y === L.landing, 'machine:home-landing', `a new lift must park at the landing ${L.landing}, read ${report.home.y}`);
+ check(report.home.doors === 0 && report.home.call === null && report.home.phase === 'idle', 'machine:home-parked',
+  `a new lift must be idle, doors closed, no call, read ${JSON.stringify(report.home)}`);
+ check(report.supportAtHome.inside === L.landing, 'support:inside', `liftSupport inside the car at rest must be ${L.landing}, read ${report.supportAtHome.inside}`);
  for (const side of ['west', 'east', 'north', 'south'] as const) {
-  check(report.support[side] === null, `support:${side}`, `liftSupport ${side} of the car must be null, read ${report.support[side]}`);
+  check(report.supportAtHome[side] === null, `support:${side}`, `liftSupport ${side} of the car must be null, read ${report.supportAtHome[side]}`);
  }
- stepLift(s, 6, true);
- check(Math.abs(liftSupport(s, cx, cz)! - s.y) < EPS, 'support:follows', 'liftSupport must follow the car floor');
- // One 6 s call only opens the doors, so the line above sees the car at the ground. Drive two
- // fresh cars to prove the answer tracks the floor at height and leaves the lobby behind.
- const mid = createLift();
- for (let i = 0; i < 12 * 120 && !(mid.phase === 'rising' && mid.y > 6); i++) stepLift(mid, 1 / 120, true);
- const midSupport = liftSupport(mid, cx, cz);
- check(mid.y > 6 && midSupport === mid.y, 'support:follows-mid-rise',
-  `liftSupport must return the car's own height mid-rise, read ${midSupport} against ${mid.y} in phase '${mid.phase}'`);
- const top = createLift();
- for (let i = 0; i < 12 * 120; i++) stepLift(top, 1 / 120, true);
- const topSupport = liftSupport(top, cx, cz);
- check(topSupport === L.landing, 'support:follows-landing',
-  `liftSupport must return the landing ${L.landing} once the car is up, read ${topSupport}`);
- check(topSupport !== L.ground, 'support:left-ground',
-  `liftSupport still reports the lobby floor ${L.ground} after the car has left it`);
- check(report.final.phase === 'arrived', 'machine:arrived', `12 s of travel must end in 'arrived', read '${report.final.phase}'`);
+ check(report.groundSupport === L.ground, 'support:follows-ground',
+  `liftSupport must return the ground ${L.ground} once the car is down, read ${report.groundSupport}`);
+ check(report.groundSupport !== L.landing, 'support:left-landing',
+  `liftSupport still reports the landing ${L.landing} after the car has left it`);
+ check(report.midSupport !== null && Math.abs(report.midSupport - report.midY) < 1e-3 && report.midY > 6, 'support:follows-mid-rise',
+  `liftSupport must return the car's own height mid-rise, read ${report.midSupport} against ${report.midY}`);
+ check(report.final.phase === 'arrived', 'machine:arrived', `the ride must end in 'arrived', read '${report.final.phase}'`);
  check(report.final.y === L.landing, 'machine:landing', `the car must stop exactly on the landing ${L.landing}, read ${report.final.y}`);
  check(report.final.doors === 1, 'machine:doors-open', `the doors must be open on arrival, read ${report.final.doors}`);
- check(report.measured.travelSeconds >= L.travelSeconds - 1e-3 && report.measured.travelSeconds <= L.travelSeconds + 1e-3, 'machine:travel-time',
+ check(Math.abs(report.measured.descentSeconds - L.travelSeconds) <= 1 / 120 + 1e-9,
+  'machine:descent-time', `the empty descent must take ${L.travelSeconds} s, measured ${report.measured.descentSeconds} s`);
+ check(Math.abs(report.measured.descentDistance + LIFT_TRAVEL_DISTANCE) < 1e-6, 'machine:descent-distance',
+  `the descent covered ${report.measured.descentDistance} m, expected ${-LIFT_TRAVEL_DISTANCE}`);
+ check(report.measured.descentDoorsOpenedAt >= report.measured.descentArrivedAt, 'machine:descent-doors-after-stop',
+  `the doors opened at ${report.measured.descentDoorsOpenedAt} s but the car only stopped at ${report.measured.descentArrivedAt} s`);
+ check(Math.abs(report.measured.travelSeconds - L.travelSeconds) <= 1 / 120 + 1e-9, 'machine:travel-time',
   `the ride must take ${L.travelSeconds} s, measured ${report.measured.travelSeconds} s`);
  check(report.measured.doorsOpenedAt >= report.measured.arrivedAt - EPS, 'machine:doors-after-stop',
   `the doors opened at ${report.measured.doorsOpenedAt} s but the car only stopped at ${report.measured.arrivedAt} s`);
  check(report.measured.maxRisePerStep <= .24, 'machine:step-rise',
   `one fixed step lifted the car ${report.measured.maxRisePerStep} m, more than the physics' 0.24 m step`);
+ check(report.measured.maxDropPerStep <= .24, 'machine:step-drop',
+  `one fixed step dropped the car ${report.measured.maxDropPerStep} m, more than the physics' 0.24 m step`);
  check(Math.abs(report.measured.travelled - LIFT_TRAVEL_DISTANCE) < 1e-6, 'machine:distance',
   `the ride covered ${report.measured.travelled} m, expected ${LIFT_TRAVEL_DISTANCE}`);
+ // The support plumbing itself, on a fresh car: one long step only opens the doors, so the
+ // floor must still be the car's own y wherever it stands.
+ stepLift(s, 6, true);
+ check(Math.abs(liftSupport(s, cx, cz)! - s.y) < EPS, 'support:follows', 'liftSupport must follow the car floor');
+ check(s.y === L.landing, 'machine:long-step-parks', `a 6 s step must not move the car off its floor, read ${s.y}`);
 }
 
 /* ------------------------------------------------------------------ */
@@ -206,11 +262,17 @@ function assertMachine(report: ReturnType<typeof machineReport>) {
 function worldReport() {
  resetLift();
  const nav = createNavigation(BUILDINGS, SITE, true);
+ // `opening/navigation.ts` mounts the office's guards into the same array; without this the
+ // ground guard would sit at its built-solid pose for the whole gate.
+ installOffice(nav.obstacles);
  const cx = (L.x0 + L.x1) / 2, cz = (L.z0 + L.z1) / 2, doorX = L.x1 - L.wall / 2;
  const at = (name: string, x: number, z: number, y: number) => ({ name, x: r4(x), z: r4(z), y: r4(y), blocked: nav.blocked(x, z, y) });
+ // E.5 parks the car at the landing, so a fresh world has a *closed car up there* and an
+ // empty shaft at the ground. Probe the closed car where it actually is, then call it down.
  const closed = {
-  carInterior: at('car interior', cx, cz, L.ground),
-  threshold: at('closed threshold', doorX, cz, L.ground),
+  carInterior: at('car interior at the landing', cx, cz, L.landing),
+  threshold: at('closed threshold at the landing', doorX, cz, L.landing),
+  groundDoorway: at('ground doorway with the car up', doorX, cz, L.ground),
   sideDoor: at('side door', 47.75, 20.5, .5),
   shaftMid: at('shaft at 10 m', cx, cz, 10),
   massWest: at('mass west of the shaft', L.x0 - .45, cz, 10),
@@ -221,13 +283,10 @@ function worldReport() {
   corridor: at('5F corridor', 52.0, cz, L.landing),
   officeDoor: at('office door', LIFT_LANDING.corridorX1 + .06, cz, L.landing),
  };
- // Open the car's doors on the same objects the navigation holds, then re-test.
- stepLift(LIFT, 1, false);
- syncLiftObstacles();
- const open = { threshold: at('open threshold', doorX, cz, L.ground) };
  const plateSupport = nav.support(47.0, cz, L.landing);
  // Every obstacle that can reach the plate, and every one that intersects the landing
- // footprint at any height, so the report carries the evidence for the D.3 assertion.
+ // footprint at any height, so the report carries the evidence for the D.3 assertion. Taken
+ // with the car at its home landing, the pose the plate claim is about.
  const landingRects = [
   { x0: L.x1, x1: LIFT_LANDING.lobbyX1, z0: L.z0, z1: L.z1 },
   { x0: LIFT_LANDING.lobbyX1, x1: LIFT_LANDING.corridorX1, z0: LIFT_LANDING.corridorZ0, z1: LIFT_LANDING.corridorZ1 },
@@ -246,6 +305,30 @@ function worldReport() {
  const missing = [...carBoxes, ...landingBoxes].filter(name => !nav.obstacles.some(o => o.name === name));
  const duplicated = [...carBoxes, ...landingBoxes].filter(name => nav.obstacles.filter(o => o.name === name).length > 1);
  const obstacleCount = nav.obstacles.length;
+
+ // E.5 in the built world: the errand's first lift event is a landing call and a real wait.
+ // `callLift` + `stepLift` + `syncLiftObstacles` is what `tickOffice`/`tickLift` do on a
+ // player's query, with the wall clock replaced by a fixed 1/120 s step.
+ callLift('ground');
+ const called = LIFT.call;
+ let descendAt = -1, arriveAt = -1, doorsAt = -1;
+ const dt = 1 / 120;
+ for (let i = 1; i <= 16 * 120 && doorsAt < 0; i++) {
+  stepLift(LIFT, dt, false);
+  if (LIFT.phase === 'descending' && descendAt < 0) descendAt = (i - 1) * dt;
+  if (LIFT.phase === 'arrived' && arriveAt < 0) arriveAt = i * dt;
+  if (arriveAt > 0 && LIFT.doors >= 1) doorsAt = i * dt;
+ }
+ syncLiftObstacles();
+ // The office's guards are rewritten by its own sync, which `tickOffice` calls every query.
+ installOffice(nav.obstacles);
+ const open = { threshold: at('open threshold at the ground', doorX, cz, L.ground) };
+ const call = {
+  called, callAfterArrival: LIFT.call,
+  descendAt: +descendAt.toFixed(4), arriveAt: +arriveAt.toFixed(4), doorsAt: +doorsAt.toFixed(4),
+  descentSeconds: +(arriveAt - descendAt).toFixed(4), waitSeconds: +doorsAt.toFixed(4),
+  y: r4(LIFT.y), doors: r4(LIFT.doors), phase: LIFT.phase,
+ };
  /**
   * What the mounted car costs per query, against the cost of rebuilding the obstacle list.
   * `syncLiftObstacles` returns immediately when nothing is mounted, so this has to run after
@@ -277,12 +360,15 @@ function worldReport() {
  const syncMicroseconds = +median(runs.sync).toFixed(3);
  const rebuildMicroseconds = +median(runs.rebuild).toFixed(3);
  // The timing above runs with the car parked, where a sync that did nothing would still look
- // right. Drive it to the landing and sync once: the mounted box can only reach 18.9 by being
- // rewritten in place, so this is the proof that the loop above measured the live objects.
- for (let i = 0; i < 12 * 120; i++) stepLift(LIFT, 1 / 120, true);
+ // right. Send it down and sync once: the mounted box starts at the landing 18.90 and can
+ // only reach the ground by being rewritten in place, so this is the proof that the loop
+ // above measured the live objects.
+ resetLift();
+ LIFT.call = 'ground';
+ for (let i = 0; i < 16 * 120 && !(LIFT.phase === 'arrived' && LIFT.y === L.ground); i++) stepLift(LIFT, 1 / 120, false);
  syncLiftObstacles();
  const carBoxStillMounted = !!carFloor && nav.obstacles.includes(carFloor);
- const carFloorFollows = !!carFloor && LIFT.y === L.landing && Math.abs(carFloor.top - LIFT.y) < 1e-12;
+ const carFloorFollows = !!carFloor && LIFT.y === L.ground && Math.abs(carFloor.top - LIFT.y) < 1e-12;
  const carFloorTop = carFloor ? r4(carFloor.top) : NaN;
  const liftBoxesAfter = nav.obstacles.filter(o => o.name.startsWith('opening-lift-')).length;
  const cost = {
@@ -293,14 +379,26 @@ function worldReport() {
  resetLift();
  syncLiftObstacles();
  nav.dispose();
- return { closed, open, plateSupport: r4(plateSupport ?? NaN), reaching, underPlate, shaftColumn, carBoxes, landingBoxes, missing, duplicated, obstacleCount, cost };
+ return { closed, open, call, plateSupport: r4(plateSupport ?? NaN), reaching, underPlate, shaftColumn, carBoxes, landingBoxes, missing, duplicated, obstacleCount, cost };
 }
 
 function assertWorld(report: ReturnType<typeof worldReport>) {
  const b = (name: string) => report.closed[name as keyof typeof report.closed] as { blocked: boolean; x: number; y: number; z: number };
  check(!b('carInterior').blocked, 'world:car-interior', `the car interior at (${b('carInterior').x}, ${b('carInterior').z}) is solid at the car floor`);
  check(b('threshold').blocked, 'world:closed-door', 'the closed car doors must block the threshold');
+ check(b('groundDoorway').blocked, 'world:ground-guarded',
+  'with the car at the landing the ground doorway must be solid — behind it is an 18.9 m shaft');
  check(!report.open.threshold.blocked, 'world:open-door', 'the open car doors must clear the threshold');
+ // E.5 in the built world: a landing call is answered, it takes a real ride, and the doors
+ // that were shut upstairs open only at the ground.
+ check(report.call.called === 'ground', 'world:call-registered', `the ground call must be recorded, read ${JSON.stringify(report.call.called)}`);
+ check(Math.abs(report.call.descentSeconds - L.travelSeconds) <= 1 / 120 + 1e-9,
+  'world:descent-time', `the built world's descent must take ${L.travelSeconds} s, measured ${report.call.descentSeconds} s`);
+ check(report.call.y === L.ground && report.call.doors === 1 && report.call.phase === 'arrived', 'world:descent-arrived',
+  `the called car must stand at the ground with its doors open, read ${JSON.stringify(report.call)}`);
+ check(report.call.callAfterArrival === null, 'world:call-cleared', `arrival must clear the landing call, read ${JSON.stringify(report.call.callAfterArrival)}`);
+ check(report.call.waitSeconds >= L.dwellSeconds + L.doorSeconds + L.travelSeconds, 'world:wait-is-real',
+  `the call-to-open-doors wait must include the dwell, the close, the ride and the open, read ${report.call.waitSeconds} s`);
  check(!b('sideDoor').blocked, 'world:side-door', 'the Task C side entrance must stay open');
  check(!b('shaftMid').blocked, 'world:shaft', `the shaft is still solid at 10 m: the band-tower mass was not carved`);
  check(b('massWest').blocked, 'world:shaft-west', 'the mass west of the shaft must stay solid');
@@ -454,13 +552,35 @@ async function browserWalk(baseUrl: string, chromePath: string) {
   await key('keyup', 'KeyW');
   check(held.includes('KeyW'), 'browser:input', `a KeyW keydown did not reach the controller: ${JSON.stringify(held)}`);
 
-  // The car opens its doors on the first query after load; give it its 0.8 s.
+  // The car opens its doors on the first query after load; give it its 0.8 s. At world start
+  // that happens up at the landing (E.5), which is also what boots the lift's clock.
   const warm = await stepLoop(2);
   debug(`warm-up ${warm.steps} steps in ${Math.round(warm.ms)} ms`);
   const porch = await walk('porch', 47.75, 21.0);
   const inside = await walk('side-door', 47.75, 12.9);
   check(Math.abs(inside.position[2] - 12.9) < .9 && Math.abs(inside.position[1] - L.ground) < .05, 'browser:side-door',
    `the player did not get through the side door: ${JSON.stringify(inside)}`);
+
+  // E.5 in the browser. The car is parked at the landing, so the doorway must be blocked
+  // *before* anyone calls it: walk up to it from outside the call point's radius and try.
+  const approach = await walk('doorway-approach', 47.2, 12.4);
+  check(approach.ok, 'browser:doorway-approach', `the player could not stand in front of the lift: ${JSON.stringify(approach)}`);
+  const beforeCall = await walk('doorway-before-call', 45.05, 12.4, .14, 600);
+  check(!beforeCall.ok, 'browser:doorway-guarded',
+   `the doorway let the player in with the car parked at the landing: ${JSON.stringify(beforeCall.position)}`);
+  debug(`guarded doorway stopped the player at ${JSON.stringify(beforeCall.position)}`);
+
+  // Call it the way a player does — by standing at the ground call point — then wait the
+  // real descent out. Nothing here writes the car's position; the wait is measured.
+  const atCall = await walk('call-point', B4_OFFICE.callGround.x + .45, B4_OFFICE.callGround.z, .18);
+  check(atCall.ok, 'browser:call-point', `the player could not reach the ground call point: ${JSON.stringify(atCall)}`);
+  const wait = await stepLoop(20, `__CAMPUS.openingDebug.office().lift.doors>0.99&&Math.abs(__CAMPUS.openingDebug.office().lift.y-${L.ground})<0.005`);
+  debug(`called car ${wait.ok ? 'arrived' : 'TIMED OUT'} y=${wait.y} in ${wait.steps} steps / ${Math.round(wait.ms)} ms`);
+  trace.push({ mark: 'car-called', ms: Math.round(wait.ms), position: [wait.x, wait.y, wait.z] });
+  check(wait.ok, 'browser:call-answered', `the called car never reached the ground with its doors open: ${JSON.stringify(wait)}`);
+  check(wait.ms >= 8500, 'browser:call-wait',
+   `the descent was answered in ${Math.round(wait.ms)} ms — the 1.4 s dwell + 0.8 s close + 6.0 s ride + 0.8 s open cannot be shorter`);
+
   const aboard = await walk('car', 45.05, 12.4);
   check(aboard.ok && aboard.position[0] < L.x1 - .12, 'browser:aboard', `the player never reached the car: ${JSON.stringify(aboard)}`);
 
@@ -514,7 +634,7 @@ async function main() {
 
  console.log('== check-lift: B04 core lift and the 5F landing (Task D) ==');
  console.log('constants:', JSON.stringify(constants, null, 1));
- console.log('machine:', JSON.stringify({ support: machine.support, final: machine.final, timeline: machine.timeline, measured: machine.measured }, null, 1));
+ console.log('machine:', JSON.stringify({ home: machine.home, supportAtHome: machine.supportAtHome, groundSupport: machine.groundSupport, midSupport: machine.midSupport, midY: machine.midY, final: machine.final, timeline: machine.timeline, measured: machine.measured }, null, 1));
  console.log('y-profile JSON:');
  console.log(JSON.stringify({ travelSeconds: L.travelSeconds, distance: LIFT_TRAVEL_DISTANCE, samples: machine.samples }, null, 1));
  console.log('world:', JSON.stringify(world, null, 1));
