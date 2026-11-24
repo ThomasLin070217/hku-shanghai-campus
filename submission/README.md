@@ -27,7 +27,7 @@ Every later playable version gets its own tag (`v9.1.1`, `v9.2.0`, …). The vid
 
 - [ ] `VERSION`, `package.json` and `package-lock.json` agree on `9.1.0`.
 - [ ] `node_modules/.bin/tsc --noEmit` and `node_modules/.bin/vite build` are green.
-- [ ] The pause card/credits show `v9.1.0`, the git SHA and the build date.
+- [ ] The pause card/credits show `v9.1.0 · <12-char commit>` with no `-dirty` suffix. The suffix is real provenance: a build over uncommitted work says so, and the filmed build must come from the tag, not a dirty tree.
 - [ ] `scripts/pre-push-secret-scan.sh` is clean (no `sk-`, `ntn_`, `ghp_`, `Bearer `, no `.env`, no keychain dumps).
 - [ ] The two exposed `sk-` keys have been rotated.
 - [ ] `git tag -a v9.1.0` points at the playable commit.

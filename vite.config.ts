@@ -1,5 +1,6 @@
 import { defineConfig, type Plugin } from 'vite';
 import { cpSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { resolve, basename, dirname } from 'node:path';
 import { compressAudioFile } from './scripts/compress-audio.mjs';
@@ -41,13 +42,25 @@ function audioCompressionPlugin():Plugin{
 /** The one version label: the repo's VERSION file, injected into every build. */
 const BUILD_VERSION=(()=>{try{return readFileSync(resolve('VERSION'),'utf8').trim();}catch{return '0.0.0';}})();
 
+/**
+ * The commit the build came from, so a filmed or submitted build can always be traced.
+ * A dirty tree is marked `-dirty`: the number must never claim a commit the build is not.
+ */
+const BUILD_SHA=(()=>{
+ try{
+  const sha=execFileSync('git',['rev-parse','--short=12','HEAD'],{encoding:'utf8'}).trim();
+  const dirty=execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim().length>0;
+  return dirty?`${sha}-dirty`:sha;
+ }catch{return 'unknown';}
+})();
+
 export default defineConfig(({mode})=>{
  const review=mode==='review';
  const out=review?'dist-review':mode==='playtest'?'dist-playtest':'dist';
  const input:Record<string,string>={main:resolve('index.html'),interiors:resolve('interiors.html'),characters:resolve('characters.html')};if(review){input.assessment=resolve('assessment.html');input.aiStudy=resolve('ai-study.html');}
  return {
   base:'./',
-  define:{__BUILD_VERSION__:JSON.stringify(BUILD_VERSION)},
+  define:{__BUILD_VERSION__:JSON.stringify(BUILD_VERSION),__BUILD_SHA__:JSON.stringify(BUILD_SHA)},
   server:{port:5184,strictPort:true,watch:{usePolling:true,interval:500}},
   build:{outDir:out,assetsInlineLimit:(path)=>/\.(wav|mp3)$/i.test(path)?false:undefined,chunkSizeWarningLimit:850,rollupOptions:{
    input,

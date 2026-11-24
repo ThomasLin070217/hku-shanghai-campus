@@ -10,7 +10,7 @@ import {markRelayRestored,relayRestored} from './opening/backupRelay';
 import {recordCorePowerCut} from './lionBoss/mission';
 import {createOpeningAtmosphere,type OpeningAtmosphere} from './opening/atmosphere';
 import {loadWorldThreat,sealWorld} from './gameplay/worldThreat';
-import {BUILD_VERSION,BUILD_LABEL} from './version';
+import {BUILD_VERSION,BUILD_STAMP} from './version';
 const route=new URLSearchParams(location.search).get('experience');
 const sportsMode=route==='sports-hall';
 const openingMode=route!=='survey'&&!sportsMode;
@@ -183,7 +183,7 @@ toolsMenu.addEventListener('toggle',()=>{if(toolsMenu.open&&exploring)explorer.p
 toolsMenu.querySelector('.tools-content')!.addEventListener('click',e=>{if((e.target as HTMLElement).closest('button,a'))toolsMenu.open=false;});
 const help=document.createElement('button');help.textContent='Help';help.onclick=()=>experience.openSettings();document.querySelector('.header-right')!.prepend(help);
 const advanced=document.createElement('details');advanced.className='pause-options';advanced.innerHTML='<summary>Restart / AI control</summary>';el('session-save').after(advanced);advanced.append(el('new-game'),el('enable-ai'),el('bridge-status'));
-{const buildVersion=document.getElementById('build-version');if(buildVersion)buildVersion.textContent=`HKU: Barrier 2030 · ${BUILD_LABEL}`;}
+{const buildVersion=document.getElementById('build-version');if(buildVersion)buildVersion.textContent=`HKU: Barrier 2030 · ${BUILD_STAMP}`;}
 if(publicPlaytest){el('enable-ai').hidden=true;el('bridge-status').hidden=true;}
 const levelsLink=document.createElement('a');levelsLink.href='?experience=levels';levelsLink.textContent=openingMode?'Chapters':'Chapters';document.querySelector('.header-right')!.prepend(levelsLink);
 const desktopNote=document.createElement('p');desktopNote.className='desktop-note';desktopNote.textContent='Keyboard and mouse are supported. On phones you can browse the model.';el('enter-game').before(desktopNote);

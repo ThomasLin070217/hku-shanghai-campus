@@ -1,6 +1,6 @@
 import {markLocalModelCleared,resetWorldThreat,tryPurgeWorld,type WorldThreatStorage} from '../gameplay/worldThreat';
 import {clearProgress,type ProgressStorage} from '../levels/resetProgress';
-import {BUILD_LABEL} from '../version';
+import {BUILD_STAMP} from '../version';
 import type {Chapter,ChapterContext} from './types';
 
 /** The ending has no walking leg: radius 0, the host never emits its entry event. */
@@ -58,7 +58,7 @@ export function creditsMarkup():string{
   +'<p class="ending-subtitle">A CDS campus story</p>'
   +'<p class="ending-team">Thomas · Harry · Frost · WHL</p>'
   +'<p class="ending-place">HKU Shanghai · CDS</p>'
-  +'<p class="ending-build">'+BUILD_LABEL+'</p>'
+  +'<p class="ending-build">'+BUILD_STAMP+'</p>'
   +'<div class="ending-actions"><button type="button" id="ending-play-again">Play again</button><a id="ending-chapters" href="?experience=levels">Chapters</a></div>'
   +'</section>';
 }
