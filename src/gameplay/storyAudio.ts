@@ -41,7 +41,6 @@ export const CHAPTER_SCORE_NAMES=[
  'mus_lion_victory',  // L001 shut down, one shot
  'mus_puzzle',        // the B4 flip wall and breaker
  'mus_sports',        // the sports hall rescue
- 'mus_finale',        // the barrier coming down
 ] as const;
 
 /** Current chapter plus one chapter of prefetch. Conditional score cues are added from each live frame. */

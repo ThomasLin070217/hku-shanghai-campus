@@ -36,7 +36,23 @@ An independent playtest walked the B4/B5 interiors at 1.6 m eye height and recor
 | The standalone 4F lounge view rendered as a black shell | **Fixed — `0ad8e0b`** | the sealed AI curtain composited over the room and the opening atmosphere repainted the scene to night every frame; the view now suppresses the atmosphere, hides the curtain and restores the day exposure |
 | The 5F office is underexposed while its window blew out | Partly fixed | the pane now has mullions and a transom and its emissive dropped .55 → .30 (`86dedfe`); a real interior lamp is a world-layer job — the shell gate asserts zero lights so the room cannot glow by day |
 | The B4 plaza entrance has no gate bank from the cds-lobby preview | Open | the running entrance is a broad glazed doorway; a runtime scene query found no turnstile/reader family |
-| Furniture reads as placeholder massing (lounge, office, corridor trolley) | Open | recorded for the pre-filming review pass |
+| Furniture reads as placeholder massing (lounge, office) | Open | the B4 lobby and the 5F corridor were re-dressed and verified on 2026-11-25 (see below) |
+
+## B4 lobby and 5F corridor, 2026-11-25
+
+Verified in a real browser at 1280×800 (`.scratch/verify-2026-11-25/verify-b4-fixes.json`, `pass: true`, 7 shots, story stage `complete`, version `9.1.0`): the ceiling conduit is gone and the ribbed ceiling reads cleanly, the armchairs read as seating (seat, back, arms, correct heights), the keyboard phrase row is contiguous as eight amber caps spelling “I L O V E C D S”, and the 5F corridor and its housekeeping trolley are dressed. A faint dark planter silhouette above the armchair backrest was noted; it is unlit foliage geometry, not a blocking defect.
+
+## Audio coverage, 2026-11-25
+
+24 music cues ship in `dist/`. Registration is what makes a cue reachable: `CampusAudio.enableStory()` is the only writer of the story URL map, and `loadAudioNames` refuses any name it does not hold.
+
+| State | Cues |
+|---|---|
+| Reachable | 18 — the opening's own set, the credits theme, and the campaign beats (`mus_lawn`, `mus_lion_boss`, `mus_lion_victory`, `mus_puzzle`, `mus_sports`) |
+| Reachable but never requested | none |
+| Not registered | 6 — `mus_boss`, `mus_title`, `mus_dinner_toast`, `mus_abduction`, `mus_abduction_stinger`, `mus_march_alt` |
+
+The six are cues for scenes this build does not contain (a titled fight variant, a title screen, the dinner toast, two abduction stingers and an alternate march). They still ship inside `dist/assets` because every music file is emitted regardless of registration; they cost load time only if something asks for them, and nothing does. The four-tower finale cue, `mus_finale`, is deliberately **not** wired: the ending has no light show yet, and playing it over the dome lift would fight the story bus's own bed. Wiring it belongs with that scene.
 
 ## Security
 
