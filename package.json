@@ -6,6 +6,7 @@
  "scripts": {
   "dev": "vite --host 127.0.0.1",
   "build": "tsc --noEmit && vite build",
+  "build:strict": "tsc --noEmit && AUDIO_COMPRESS_STRICT=1 vite build",
   "build:playtest": "tsc --noEmit && vite build --mode playtest",
   "preview": "vite preview --host 127.0.0.1",
   "export:glb": "tsx scripts/export-model.ts",
@@ -54,6 +55,7 @@
   "check:review": "tsx scripts/check-workbuddy.ts",
   "typecheck": "tsc --noEmit",
   "check:audio-review": "tsx scripts/check-audio-review.ts && tsx scripts/check-story-audio.ts",
+  "check:payload": "tsx scripts/check-payload.ts .scratch/payload-dist",
   "check:remaining": "tsx scripts/check-remaining.ts",
   "check:sign-roads": "tsx scripts/check-sign-roads.ts",
   "ai:depth": "tsx scripts/export-atlas-depth.ts",
