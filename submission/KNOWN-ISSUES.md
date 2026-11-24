@@ -23,7 +23,7 @@ Source: WeChat group “Vibe Coding Hackathon CDS SH”, 2026-11-23 19:33–20:0
 | Opening framing pitched 22° down | Fixed — `fd621aa` | camera distance chosen after rendering three candidates (z=246) |
 | Prologue music missing | Fixed — `1ad2a9d` | the prologue is no longer treated as an audio pause |
 | Disliked cue on the walk to the ceremony | Fixed — `dc6a335` | the shipped waltz was replaced with the same family's processional take |
-| MacBook no longer obtainable | Partly fixed | the errand gate was green (70/0/0) on the review build at `9f4339a`; it has not been re-run since the door-offer rule changed in `e3d8ede`, so this one is re-run before the tag |
+| MacBook no longer obtainable | **Fixed** | `check:b4-errand` is green on the current tree — 70 passed, 0 failed, 0 findings at `00bc0eb` (code `86dedfe`), including `b5: the office door is not offered before the errand`, `the office door is the offered interaction` and `real F takes the presentation MacBook`, on one page with no reload in both viewports |
 
 **Still open after that round:** the pre-errand dead end at the B4 5F office is fixed — a player who walks up before speaking to the coordinator is offered the door as a locked notice that names the coordinator, and the office still cannot be entered until the errand arms it (commit `794f2bc`).
 
