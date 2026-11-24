@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {CampusAudio} from '../src/gameplay/audio';
 import {DEFAULT_SETTINGS,readSettings} from '../src/gameplay/save';
-import {OPENING_AUDIO_NAMES,type StoryAudioFrame} from '../src/gameplay/storyAudio';
+import {type StoryAudioFrame} from '../src/gameplay/storyAudio';
 
 // Routing/lifecycle checks; real decoding and rendered signal are verified in the browser report.
 const listeners=new Map<string,()=>void>();
@@ -19,17 +19,36 @@ const context={state:'running',currentTime:0,destination:{},listener:Object.from
  resume:async()=>{},suspend:async()=>{context.state='suspended';},close:async()=>{context.state='closed';},
 };
 Object.assign(globalThis,{AudioContext:class {constructor(){return context;}},fetch:async(url:URL)=>{requests.push(url.pathname);const failure=failScan&&url.pathname.endsWith('/robot_scan.wav');if(failure)failScan=false;return{ok:!failure,status:failure?503:200,arrayBuffer:async()=>new ArrayBuffer(0)};}});
+const initialNames=['select','equip','bag','collect','complete','view','campus-breeze','mus_prologue','mus_invitation','mus_dinner'];
+const initialFiles=['select.wav','equip.wav','bag.wav','collect.wav','complete.wav','view.wav','campus-breeze.wav','mus_prologue.mp3','mus_invitation.mp3','mus_dinner.mp3'];
 const audio=new CampusAudio({...DEFAULT_SETTINGS,music:.2});audio.enableStory();
 await Promise.all([audio.start(),audio.start()]);
-assert.equal(requests.length,27+OPENING_AUDIO_NAMES.length);
-assert.ok(!requests.some(p=>p.endsWith('/invitation-open.wav')),'the hurried opening paper cue must not load');
-assert.equal(requests.filter(p=>p.includes('/run-')).length,10,'all five surface variants must load once');
-assert.deepEqual(audio.failedFiles,['robot_scan']);assert.ok(!requests.some(p=>p.includes('boss')));
-await audio.start(true);assert.equal(requests.length,28+OPENING_AUDIO_NAMES.length);assert.deepEqual(audio.failedFiles,[]);
+assert.equal(requests.length,initialNames.length,'the first click loads only the immediate cinematic/UI set');
+assert.deepEqual(new Set(requests.map(path=>path.slice(path.lastIndexOf('/')+1))),new Set(initialFiles));
+assert.ok(!requests.some(p=>p.includes('/run-')),'gameplay foley must not load on the first click');
+assert.ok(!requests.some(p=>p.includes('boss')));
+const beforePreview=requests.length;await audio.preview('steps');assert.equal(requests.length,beforePreview+1,'story preview fetches one deferred footstep on demand');assert.ok(requests.at(-1)?.endsWith('/step-paving-0.wav'));
 audio.setActive(true);
 const player={x:0,y:0,z:0};
-const frame:StoryAudioFrame={stage:'bus',dark:false,chasing:false,player,dt:.1,robots:[]};
+const frame:StoryAudioFrame={stage:'crowd',dark:false,chasing:false,player,dt:.1,robots:[]};
+const flush=()=>new Promise<void>(resolve=>setTimeout(resolve,0));
 const tick=(count=1)=>{for(let i=0;i<count;i++){context.currentTime+=.1;audio.story!.update(frame);assert.ok(audio.voiceCount<=16);}};
+audio.story!.update(frame);await flush();
+assert.equal(requests.filter(p=>p.includes('/run-')).length,10,'the first active story frame loads all gameplay foley once');
+assert.ok(requests.some(p=>p.endsWith('/robot_scan.wav')),'the first active story frame loads gameplay SFX');
+assert.ok(requests.some(p=>p.endsWith('/mus_dinner.mp3')),'crowd entry prefetches the dinner chapter');
+for(const mood of ['safe','unease','tension','hope'])assert.ok(requests.some(p=>p.endsWith(`/mus_${mood}.wav`)),`the first active frame loads the ${mood} score variant`);
+assert.ok(!requests.some(p=>p.endsWith('/mus_office.mp3')),'office music waits for the dinner chapter');
+assert.ok(!requests.some(p=>p.endsWith('/mus_sports.mp3')),'sports music waits for the final approach');
+assert.deepEqual(audio.failedFiles,['robot_scan']);
+const beforeRetry=requests.length;await audio.start(true);assert.equal(requests.length,beforeRetry+1,'retry fetches only the failed deferred cue');assert.deepEqual(audio.failedFiles,[]);
+frame.stage='to_b5';audio.story!.update(frame);await flush();assert.ok(requests.some(p=>p.endsWith('/mus_office.mp3')),'dinner entry prefetches the office chapter');
+assert.ok(!requests.some(p=>p.endsWith('/mus_alert.mp3')),'incident music is not prefetched two chapters early');
+frame.stage='to_b6';audio.story!.update(frame);await flush();
+frame.stage='return_b5';audio.story!.update(frame);await flush();assert.ok(requests.some(p=>p.endsWith('/mus_alert.mp3')),'return entry prefetches the incident chapter');assert.ok(requests.some(p=>p.endsWith('/mus_chase.mp3')),'return entry prefetches chase music');
+frame.stage='incident';audio.story!.update(frame);await flush();
+frame.stage='to_b4';audio.story!.update(frame);await flush();assert.ok(requests.some(p=>p.endsWith('/mus_sports.mp3')),'the final approach prefetches completion music');
+frame.stage='bus';frame.dark=false;frame.chasing=false;frame.robots=[];
 tick(20);assert.equal(audio.story!.diagnostics.loopStarts['music:mus_safe'],1);assert.equal(audio.story!.diagnostics.loopStarts['ambient:cc0_bus_engine_idle'],1);
 frame.stage='to_b5';tick(20);assert.ok(!audio.story!.diagnostics.loops.includes('ambient:cc0_bus_engine_idle'));assert.ok(audio.story!.diagnostics.loops.includes('ambient:campus-breeze'));
 frame.dark=true;frame.robots=[{id:'near',position:{x:3,y:0,z:0},state:'scanning'},{id:'far',position:{x:80,y:0,z:0},state:'chase'}];
@@ -55,4 +74,12 @@ doc.hidden=true;listeners.get('visibilitychange')!();assert.equal(audio.story!.v
 doc.hidden=false;audio.setActive(true);tick();audio.story!.reset();assert.equal(audio.story!.voices,0);assert.equal(audio.story!.diagnostics.timeline,null);
 audio.dispose();assert.equal(audio.voiceCount,0);assert.ok(stopped>0);assert.equal(listeners.size,0);
 assert.equal(readSettings({sfx:9}).sfx,1);assert.equal(readSettings({}).sfx,DEFAULT_SETTINGS.sfx);
-console.log('PASS opening asset retry, synchronized singleton music, chase fades, positional robot transitions, curtain pause/resume, capture feedback, jump/landing dedup, shared 16-voice budget, mute/hidden/dispose and old settings');
+const pausedRequests=requests.length;
+const pausedAudio=new CampusAudio(DEFAULT_SETTINGS);pausedAudio.enableStory();await pausedAudio.start();
+pausedAudio.story!.update({stage:'return_b5',dark:true,chasing:true,player,dt:.1,robots:[]});await flush();
+const pausedFetches=requests.slice(pausedRequests);
+assert.ok(pausedFetches.some(p=>p.endsWith('/mus_alert.mp3')),'stage entry prefetches incident music even while a modal pauses playback');
+assert.ok(pausedFetches.some(p=>p.endsWith('/mus_chase.mp3')),'stage entry prefetches chase music even while a modal pauses playback');
+assert.ok(!pausedFetches.some(p=>p.includes('/run-')),'gameplay foley still waits for the first active frame');
+pausedAudio.dispose();
+console.log('PASS 10-cue first click, first-frame gameplay/score load, paused stage-entry prefetch, one-chapter prefetch, deferred retry, synchronized singleton music, chase fades, positional robot transitions, curtain pause/resume, capture feedback, jump/landing dedup, shared 16-voice budget, mute/hidden/dispose and old settings');

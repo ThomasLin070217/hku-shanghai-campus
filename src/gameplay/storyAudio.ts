@@ -25,6 +25,16 @@ export const OPENING_AUDIO_NAMES=[
  'mus_prologue','mus_invitation','mus_dinner','mus_office','mus_alert','mus_patrol','mus_sports',
 ];
 
+/** Current chapter plus one chapter of prefetch. Conditional score cues are added from each live frame. */
+const CHAPTER_AUDIO_NAMES:Readonly<Record<string,readonly string[]>>={
+ crowd:['mus_prologue','mus_invitation','mus_dinner','mus_safe','mus_unease','mus_tension','mus_hope'],
+ to_b5:['mus_dinner','mus_office'],
+ to_b6:['mus_office','mus_unease','mus_patrol'],
+ return_b5:['mus_office','mus_unease','mus_patrol','mus_alert','mus_chase'],
+ incident:['mus_patrol','mus_alert','mus_chase','mus_hope'],
+ to_b4:['mus_patrol','mus_alert','mus_chase','mus_sports'],
+ complete:['mus_sports','mus_hope'],
+};
 /** Uses the CampusAudio context/mixer; never owns a second AudioContext or movement clock. */
 export class StoryAudio {
  private loops=new Map<string,Loop>();
@@ -37,6 +47,8 @@ export class StoryAudio {
  private paused=true;
  private duckUntil=0;
  private starts:Record<string,number>={};
+ private gameplayRequested=false;
+ private requestedChapterKey:string|null=null;
  constructor(private owner:CampusAudio){}
  get voices(){return this.loops.size;}
  get diagnostics(){return{music:this.music,loops:[...this.loops.keys()],loopStarts:{...this.starts},timeline:this.timeline?{elapsed:this.timeline.elapsed,pending:this.timeline.events.map(e=>e.id)}:null,paused:this.paused,duckUntil:this.duckUntil};}
@@ -100,7 +112,15 @@ export class StoryAudio {
  }
  private retire(key:string,seconds=.4){const l=this.loops.get(key),c=this.owner.context;if(!l||!c||l.retireAt!==undefined)return;const t=c.currentTime;l.gain.gain.cancelScheduledValues(t);l.gain.gain.setValueAtTime(l.gain.gain.value,t);l.gain.gain.setTargetAtTime(0,t,seconds/4);l.retireAt=t+seconds;}
  update(frame:StoryAudioFrame){
-  if(!this.owner.context||!this.owner.active){this.pause();return;}
+  if(!this.owner.context){this.pause();return;}
+  const chapterKey=[frame.stage,frame.music??'',frame.dark,frame.chasing].join('|');
+  if(chapterKey!==this.requestedChapterKey){
+   this.requestedChapterKey=chapterKey;
+   const chapter=CHAPTER_AUDIO_NAMES[frame.stage]??CHAPTER_AUDIO_NAMES.crowd;
+   void this.owner.loadAudioNames(frame.music?[...chapter,frame.music]:chapter);
+  }
+  if(!this.owner.active){this.pause();return;}
+  if(!this.gameplayRequested){this.gameplayRequested=true;void this.owner.loadGameplayAudio();}
   this.paused=false;const dt=Math.min(.1,Math.max(0,frame.dt));
   if(this.timeline){this.timeline.elapsed+=dt;while(this.timeline.events[0]?.at<=this.timeline.elapsed)this.cue(this.timeline.events.shift()!.id);if(!this.timeline.events.length)this.timeline=null;}
   const fallback:Music=frame.stage==='complete'?'hope':frame.chasing?'chase':frame.dark?'tension':frame.stage==='return_b5'?'unease':'safe';

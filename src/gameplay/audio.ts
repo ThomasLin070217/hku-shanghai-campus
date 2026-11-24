@@ -23,11 +23,23 @@ const audioUrls:Record<string,URL>={
  'step-grass-4':new URL('../../assets/audio/campus/step-grass-4.wav',import.meta.url),
  'campus-breeze':new URL('../../assets/audio/campus/campus-breeze.wav',import.meta.url),
 };
+/** The only story/core cues fetched by the first click. Gameplay and chapter cues follow on demand. */
+export const INITIAL_AUDIO_NAMES=[
+ 'select','equip','bag','collect','complete','view','campus-breeze',
+ 'mus_prologue','mus_invitation','mus_dinner',
+] as const;
+const initialAudioNames=new Set<string>(INITIAL_AUDIO_NAMES);
+/** Loaded by the first active story frame, before movement can emit these cues. */
+export const GAMEPLAY_AUDIO_NAMES=Array.from(new Set([
+ ...Object.keys(audioUrls).filter(name=>!initialAudioNames.has(name)),
+ ...OPENING_AUDIO_NAMES.filter(name=>!name.startsWith('mus_')),
+ ...Object.keys(OPENING_FOLEY),
+]));
 /** One owner per experience. Gait emits events even when avatar is hidden; audio only consumes them. */
 export class CampusAudio {
  context:AudioContext|null=null;buffers=new Map<string,AudioBuffer>();ambient:AudioBufferSourceNode|null=null;master:GainNode|null=null;groups:Record<string,GainNode>={};loading:Promise<void>|null=null;
  settings:Settings;counts:Record<string,number>={};failed=false;failedFiles:string[]=[];active=false;ambientStarts=0;events:{kind:string;surface:string;serial:number;time:number;position:number[]}[]=[];
- private disposed=false;private pending=new Map<string,AbortController>();private previewEpoch=0;private resumeError='';private listenerPose:number[]=[];private stepGate:GainNode|null=null;private ambientGate:GainNode|null=null;private seenSteps=0;private seenLand=0;private previousGait:Gait|null=null;private variant=0;private capture:MediaStreamAudioDestinationNode|null=null;
+ private disposed=false;private pending=new Map<string,{abort:AbortController;promise:Promise<void>}>();private previewEpoch=0;private resumeError='';private listenerPose:number[]=[];private stepGate:GainNode|null=null;private ambientGate:GainNode|null=null;private seenSteps=0;private seenLand=0;private previousGait:Gait|null=null;private variant=0;private capture:MediaStreamAudioDestinationNode|null=null;
  private openingAmbienceGain:GainNode|null=null;
  private openingAmbienceNodes:{osc:OscillatorNode[];noise:AudioBufferSourceNode|null;filter:BiquadFilterNode|null}|null=null;
  private openingAmbienceMode:'off'|'day'|'dark'='off';
@@ -54,32 +66,46 @@ export class CampusAudio {
    // Invoke resume synchronously within the click, before fetching/decoding.
    const resume=document.hidden?Promise.resolve():this.context.resume().then(()=>{this.resumeError='';},()=>{this.resumeError='The browser has not enabled sound yet. Click to retry.';});
    if(!this.loading){
-    const names=Object.keys(this.urls).filter(n=>!this.buffers.has(n)&&(retryFailed||!this.failedFiles.includes(n)));
-    this.loading=Promise.all(names.map(n=>this.load(n))).then(()=>{}).finally(()=>{this.loading=null;});
+    const names=!this.story?Object.keys(audioUrls):retryFailed?[...INITIAL_AUDIO_NAMES,...this.failedFiles]:INITIAL_AUDIO_NAMES;
+    this.loading=this.loadAudioNames(names,retryFailed).finally(()=>{this.loading=null;});
    }
    await Promise.all([resume,this.loading]);
    this.setActive(this.active,true);
    if(this.openingAmbienceMode!=='off')this.openingAmbience(this.openingAmbienceMode);
   }catch{this.resumeError='Sound failed to start. Click to retry.';}
  }
- private async load(name:string){
-  const context=this.context!,abort=new AbortController();this.pending.set(name,abort);
+ /** Shared by startup, chapter prefetch and previews; concurrent requests decode a cue only once. */
+ async loadAudioNames(names:readonly string[],retryFailed=false){
+  if(!this.context||this.disposed)return;
+  const missing=[...new Set(names)].filter(name=>this.urls[name]&&!this.buffers.has(name)&&(retryFailed||!this.failedFiles.includes(name)));
+  await Promise.all(missing.map(name=>this.load(name)));
+ }
+ loadGameplayAudio(){return this.loadAudioNames(GAMEPLAY_AUDIO_NAMES);}
+ private load(name:string){
+  const existing=this.pending.get(name);if(existing)return existing.promise;
+  const context=this.context!,abort=new AbortController();
   let timer:ReturnType<typeof setTimeout>|undefined;
-  try{
-   const buffer=await Promise.race([
-    (async()=>{const response=await fetch(this.urls[name],{signal:abort.signal});if(!response.ok)throw Error('HTTP '+response.status);return context.decodeAudioData(await response.arrayBuffer());})(),
-    new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('audio_timeout'));},10000);})
-   ]);
-   if(this.disposed)return;
-   this.buffers.set(name,buffer);this.failedFiles=this.failedFiles.filter(n=>n!==name);
-   if(name==='campus-breeze'&&!this.ambient&&!this.story){const a=context.createBufferSource();a.buffer=buffer;a.loop=true;a.connect(this.ambientGate!);a.start();this.ambient=a;this.ambientStarts++;this.setActive(this.active,true);}
-  }catch{if(!this.disposed&&!this.failedFiles.includes(name))this.failedFiles.push(name);}
-  finally{clearTimeout(timer);this.pending.delete(name);this.failed=this.failedFiles.length>0;}
+  const promise=(async()=>{
+   try{
+    const buffer=await Promise.race([
+     (async()=>{const response=await fetch(this.urls[name],{signal:abort.signal});if(!response.ok)throw Error('HTTP '+response.status);return context.decodeAudioData(await response.arrayBuffer());})(),
+     new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('audio_timeout'));},10000);})
+    ]);
+    if(this.disposed)return;
+    this.buffers.set(name,buffer);this.failedFiles=this.failedFiles.filter(n=>n!==name);
+    if(name==='campus-breeze'&&!this.ambient&&!this.story){const a=context.createBufferSource();a.buffer=buffer;a.loop=true;a.connect(this.ambientGate!);a.start();this.ambient=a;this.ambientStarts++;this.setActive(this.active,true);}
+   }catch{if(!this.disposed&&!this.failedFiles.includes(name))this.failedFiles.push(name);}
+   finally{clearTimeout(timer);this.pending.delete(name);this.failed=this.failedFiles.length>0;}
+  })();
+  this.pending.set(name,{abort,promise});return promise;
  }
  async preview(group:'ambient'|'steps'|'ui'|'music'|'sfx'){
   this.stopPreviews();const epoch=this.previewEpoch;
+  const name=group==='ambient'?'campus-breeze':group==='steps'?'step-paving-0':group==='music'?'mus_safe':group==='sfx'?'robot_scan':'collect';
   await this.start();if(epoch!==this.previewEpoch||this.disposed||document.hidden)return;
-  this.play(group==='ambient'?'campus-breeze':group==='steps'?'step-paving-0':group==='music'?'mus_safe':group==='sfx'?'robot_scan':'collect',group,undefined,group==='ambient'?.48:group==='steps'?.82:group==='music'?.5:1,1,true);
+  if(!this.buffers.has(name))await this.loadAudioNames([name],true);
+  if(epoch!==this.previewEpoch||this.disposed||document.hidden)return;
+  this.play(name,group,undefined,group==='ambient'?.48:group==='steps'?.82:group==='music'?.5:1,1,true);
  }
  stopPreviews(){this.previewEpoch++;for(const [source,node]of this.shots)if(node.preview)this.releaseShot(source);}
  private releaseShot(source:AudioBufferSourceNode){
@@ -214,6 +240,6 @@ export class CampusAudio {
    counts:{...this.counts},failed:this.failed,failedFiles:[...this.failedFiles],loading:[...this.pending.keys()],loaded:this.buffers.size,total:Object.keys(this.urls).length,voiceCount:this.voiceCount,story:this.story?.diagnostics??null,
    buffers:[...this.buffers].map(([name,b])=>({name,duration:b.duration,channels:b.numberOfChannels,sampleRate:b.sampleRate,decodedBytes:b.length*b.numberOfChannels*4})),gains};
  }
- dispose(){if(this.disposed)return;this.disposed=true;this.dialogueDuck=1;document.removeEventListener('visibilitychange',this.visibility);this.stopPreviews();this.stopShots(undefined,true);this.story?.dispose();for(const abort of this.pending.values())abort.abort();try{this.ambient?.stop();}catch{}this.ambient?.disconnect();this.ambient=null;if(this.openingAmbienceNodes){for(const o of this.openingAmbienceNodes.osc){try{o.stop();}catch{}o.disconnect();}try{this.openingAmbienceNodes.noise?.stop();}catch{}this.openingAmbienceNodes.noise?.disconnect();this.openingAmbienceNodes.filter?.disconnect();this.openingAmbienceNodes=null;}this.openingAmbienceGain?.disconnect();this.openingAmbienceGain=null;this.capture?.stream.getTracks().forEach(t=>t.stop());this.capture?.disconnect();this.master?.disconnect();this.stepGate?.disconnect();this.ambientGate?.disconnect();Object.values(this.groups).forEach(g=>g.disconnect());this.buffers.clear();void this.context?.close();}
+ dispose(){if(this.disposed)return;this.disposed=true;this.dialogueDuck=1;document.removeEventListener('visibilitychange',this.visibility);this.stopPreviews();this.stopShots(undefined,true);this.story?.dispose();for(const {abort}of this.pending.values())abort.abort();try{this.ambient?.stop();}catch{}this.ambient?.disconnect();this.ambient=null;if(this.openingAmbienceNodes){for(const o of this.openingAmbienceNodes.osc){try{o.stop();}catch{}o.disconnect();}try{this.openingAmbienceNodes.noise?.stop();}catch{}this.openingAmbienceNodes.noise?.disconnect();this.openingAmbienceNodes.filter?.disconnect();this.openingAmbienceNodes=null;}this.openingAmbienceGain?.disconnect();this.openingAmbienceGain=null;this.capture?.stream.getTracks().forEach(t=>t.stop());this.capture?.disconnect();this.master?.disconnect();this.stepGate?.disconnect();this.ambientGate?.disconnect();Object.values(this.groups).forEach(g=>g.disconnect());this.buffers.clear();void this.context?.close();}
 
 }
