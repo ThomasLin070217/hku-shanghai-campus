@@ -262,8 +262,26 @@ from you settles it.
 Two things deliberately *not* changed by this list: `staff-line5--matilda-warm` was not named, so
 both of that line's takes stay; and no music take was named, so the whole score table stands.
 
-Every take is ≤ 23.7 s and none clips. Nothing is wired into the game yet — integration
-comes after your veto pass, with subtitles matched to these exact files.
+Every take is ≤ 23.7 s and none clips.
+
+**All twelve cast lines are wired into the game as of 2026-11-24**, with subtitles taken from the
+clip manifests. This paragraph said the opposite until the same day, when I checked it against the
+code rather than against the earlier plan:
+
+| binding | lines | file |
+|---|---|---|
+| `STAFF_VOICE_URLS` | `staff-line1` … `staff-line5` | `src/opening/voice.ts:37-43` → `assets/audio/npc/staff/staff-lineN.wav` |
+| `PLAYER_ACCEPT_URL` | `player-accept` | `src/opening/voice.ts:45` → `assets/audio/npc/player/player-accept-harry.wav` |
+| `AI_VOICE_URLS` | `external-ai`, `local-ai` | `src/opening/voice.ts:47-50` → `assets/audio/npc/ai/*.wav` |
+| prologue narrator | `prologue-1` … `prologue-4` | `src/opening/prologueVoice.ts:25-28` → `assets/audio/prologue/prologue-N.mp3` |
+
+Eight plus four is the twelve in `cast.json`, so every line in the cast has a shipped, referenced
+file — not a take sitting in `.scratch/voice-2026-11-23/`. What is **not** wired is the next tier:
+the 31 NPC lines in `content/voice/planned-dialogue.json` (8 + 11 + 12 across three NPCs) have no
+takes at all. They are planned, not generated.
+
+`assets/audio/prologue/prologue-5.mp3` is a thirteenth shipped clip that is not in the cast; it is
+not part of this count.
 
 ## Rights
 
