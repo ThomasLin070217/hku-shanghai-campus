@@ -54,6 +54,12 @@ Verified in a real browser at 1280×800 (`.scratch/verify-2026-11-25/verify-b4-f
 
 The six are cues for scenes this build does not contain (a titled fight variant, a title screen, the dinner toast, two abduction stingers and an alternate march). They still ship inside `dist/assets` because every music file is emitted regardless of registration; they cost load time only if something asks for them, and nothing does. The four-tower finale cue, `mus_finale`, is deliberately **not** wired: the ending has no light show yet, and playing it over the dome lift would fight the story bus's own bed. Wiring it belongs with that scene.
 
+## B5 High Table Dinner has no beat, 2026-11-25
+
+An independent QA run reached the hall, walked to the high table and pressed F (`.scratch/b5-dinner-qa/evidence-b5-dinner-pass2.json`, 14 shots, 0 page errors). The stage went from “Walk to the High Table Dinner” straight to “Collect the presentation MacBook”, the seats are empty, and the F attempt changed nothing (`toastAttempt.attempts[0]` stays on `to_b6`). The 135 console errors in that file are all the local control bridge (`ws://…/game`, `/health`) failing in a static build — not game defects.
+
+So the hall exists as architecture (tables, cloth, lamps — see `b5-20-chandelier` … `b5-27-empty-seats-at-table`) but the seated guests and the toast of the plan's Phase 2 item 10 are not built, and `mus_dinner_toast` has nothing to play for. Closing it is a content decision, not a bug fix: it needs seated figures, a toast trigger and a hand-off line.
+
 ## Security
 
 Two `sk-` API keys were posted in the group chat on 2026-11-23 19:51/19:54. Treat them as compromised and rotate them; do not put them in the repo, the build or the tagged release. `scripts/pre-push-secret-scan.sh` passes on the current tree (no `sk-`, `ntn_`, `ghp_`, `Bearer ` shapes; no `.env`; `dist/` clean). Rotation is the owner's action.
