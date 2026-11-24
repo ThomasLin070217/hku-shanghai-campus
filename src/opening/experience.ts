@@ -569,12 +569,7 @@ export function createOpeningExperience(
   atmo()?.update(dt,{incident:sealed,curtain:sealed,paused:g.paused});
   if(g.paused&&!wasPaused&&modal!=='staff')audio.stopOpeningCues();wasPaused=g.paused;
   const surface=explorer.world.surface(g.body.position.x,g.body.position.z,g.body.position.y);
-  // The prologue holds the game paused while it owns the screen. Handing that pause to the
-  // mixer calls story.pause(), which drops every music loop — so the cinematic ran with no
-  // bed under the narration (owner, 2026-11-24: "音乐呢"). A pause by anything else still
-  // silences it, and the opening cues still stop below.
-  const audioPaused=(g.paused&&g.pauseReason!=='prologue')||!active;
-  audio.update(explorer.student.gait,audioPaused,surface,g.body.position,explorer.camera.position,g.yaw);
+  audio.update(explorer.student.gait,g.paused||!active,surface,g.body.position,explorer.camera.position,g.yaw);
   audio.story?.update({stage:story.stage,dark:alert,chasing:r.chasing,music:openingScore(story.stage,alert,r.chasing),player:g.body.position,dt,
    robots:active&&alert&&hunting?fleet.units.map((unit,index)=>({id:'opening-robot-'+index,state:unit.state,position:unit.position})):[]});
   const item=target();
