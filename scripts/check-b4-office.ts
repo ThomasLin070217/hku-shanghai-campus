@@ -1,9 +1,10 @@
+import fs from 'node:fs';
 import {BUILDINGS, SITE} from '../src/model/campusParameters';
 import {createNavigation} from '../src/exploration/navigation';
 import {B4_LAYOUT, B4_OBSTACLES, B4_TIERS} from '../src/opening/b4Layout';
 import {B4_LIFT as L, OPENING} from '../src/opening/spatialLayout';
 import {
- B4_OFFICE, OFFICE_CUES, installOffice, officeDebug, openOfficeDoor, resetOffice, setOfficeArmed, tickOffice,
+ B4_OFFICE, OFFICE_CUES, installOffice, officeDebug, officeDoorOffered, openOfficeDoor, resetOffice, setOfficeArmed, tickOffice,
 } from '../src/opening/b4Office';
 import {
  LIFT, LIFT_LANDING, LIFT_TRAVEL_DISTANCE, callLift, liftDebug, liftLandingContains, resetLift, stepLift, syncLiftObstacles, tickLift,
@@ -460,6 +461,38 @@ resetLift();
 resetOffice();
 settle();
 check(officeDebug().armed, 'beats:armed', 'setOfficeArmed must be readable through officeDebug');
+
+/* ------------------------------------------------------------------ */
+/* 7b. The door offer (Addendum 5 C.3) — each term of the rule         */
+/* ------------------------------------------------------------------ */
+// This rule used to live inline in `experience.ts`, where mutation-testing the `armed`
+// term left every gate green: the stage ternary short-circuits before the door item is
+// ever evaluated. It is now `officeDoorOffered` in b4Office.ts, and every term below has
+// a state that fails if that term is dropped.
+check(officeDoorOffered({stage: 'to_b6', atFifth: true, hasRepeat: false}), 'offer:armed-floor',
+ 'an armed errand on the fifth floor must offer the office door');
+setOfficeArmed(false);
+check(!officeDoorOffered({stage: 'to_b6', atFifth: true, hasRepeat: false}), 'offer:unarmed',
+ 'C.3: before the hand-off accepts the errand the door must not be offered, or the abduction is spent on an empty office');
+setOfficeArmed(true);
+check(!officeDoorOffered({stage: 'to_b5', atFifth: true, hasRepeat: false}), 'offer:handoff-stage',
+ 'on the walk in to dinner the coordinator owns the interaction slot, not the office door');
+check(!officeDoorOffered({stage: 'to_b6', atFifth: true, hasRepeat: true}), 'offer:repeat-owns-slot',
+ 'while the coordinator repeats their line the door must not take the slot from them');
+check(!officeDoorOffered({stage: 'to_b6', atFifth: false, hasRepeat: false}), 'offer:off-floor',
+ 'the door is not reachable from any other floor');
+check(openOfficeDoor(), 'offer:open-door-first', 'opening the door must succeed from the closed state');
+check(!officeDoorOffered({stage: 'to_b6', atFifth: true, hasRepeat: false}), 'offer:already-open',
+ 'a door that is already open is not an interaction target');
+resetOffice();
+// The rule must be the one `target()` actually calls — a parallel copy would drift.
+{
+ const experience = fs.readFileSync(new URL('../src/opening/experience.ts', import.meta.url), 'utf8');
+ check(/officeDoorOffered\(\{stage:story\.stage,atFifth,hasRepeat:/.test(experience), 'offer:wired',
+  'experience.ts must decide the door offer through officeDoorOffered, not an inline copy');
+}
+check(officeDebug().armed && !officeDebug().doorOpen, 'offer:state-restored',
+ 'the offer checks must leave the office armed, shut and beat-clear for the beats section');
 
 // Beat 1: the first look at the monitor on the way in.
 const lookAt = groundSamples.findIndex(q => Math.hypot(q.x - 47.35, q.z - B4_OFFICE.cctv.z) < .06);

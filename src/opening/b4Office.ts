@@ -1,5 +1,6 @@
 import {B4_LIFT as L, OPENING} from './spatialLayout';
 import {LIFT, LIFT_LANDING, callLift, type LiftBox} from './lift';
+import type {OpeningStage} from './contracts';
 
 /**
  * The fifth-floor principal's office and the three abduction beats (Task E).
@@ -222,6 +223,24 @@ export function officeDebug() {
    dressing: B4_OFFICE.dressing, shaftGuard: B4_OFFICE.shaftGuard, groundGuard: B4_OFFICE.groundGuard,
   },
  };
+}
+
+/**
+ * Addendum 5 C.3 — may the office door be offered as an interaction right now?
+ *
+ * This used to live inline in `experience.ts`'s `target()`, where no gate could reach it:
+ * mutation-testing the `armed` term left every check green because the stage ternary
+ * short-circuits before the door item is evaluated. Extracted here, the rule has one
+ * home and the gate can hold each term:
+ *  - `stage !== 'to_b5'`: the dinner hand-off owns the interaction slot on the walk in;
+ *  - `!hasRepeat`: the coordinator's repeat line owns the slot on the walk back;
+ *  - `atFifth`: the door is only reachable from the fifth floor;
+ *  - `armed` / `!doorOpen`: a player exploring before the hand-off must not spend the
+ *    one abduction on an empty office (C.3), and a door already open is not a target.
+ */
+export function officeDoorOffered(where:{stage:OpeningStage;atFifth:boolean;hasRepeat:boolean}):boolean {
+ const now = officeDebug();
+ return where.stage !== 'to_b5' && !where.hasRepeat && where.atFifth && now.armed && !now.doorOpen;
 }
 
 /* ------------------------------------------------------------------ */

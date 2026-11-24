@@ -13,7 +13,7 @@ import {createOpeningRuntime,damageOpeningHearts,healOpeningHearts,syncRuntimeWi
 import {loadWorldThreat,sealWorld,resetWorldThreat,tryPurgeWorld,markLionDefeated,markPowerCut,markLocalModelCleared,cloneWorldThreat,type WorldThreat} from '../gameplay/worldThreat';
 import {createThreatRefresh} from './threatRefresh';
 import {OPENING as O,OPENING_WORLD_REVISION} from './spatialLayout';
-import {B4_OFFICE,officeDebug,openOfficeDoor,resetOffice,setOfficeArmed,setOfficeCue} from './b4Office';
+import {B4_OFFICE,officeDebug,officeDoorOffered,openOfficeDoor,resetOffice,setOfficeArmed,setOfficeCue} from './b4Office';
 import {resetLift} from './lift';
 import {createStudentCrowd,crowdVariants} from '../gameplay/studentCrowd';
 import {getGraphicsQuality} from '../viewer/graphicsQuality';
@@ -298,7 +298,7 @@ export function createOpeningExperience(
   // until it is open — but only once the errand has armed it (Addendum 5 C.3): a player who
   // explores B4/B5 before the hand-off must not spend the one abduction on an empty office.
   const atFifth=g.body.position.y>B4_OFFICE.floorTop-1.5&&g.body.position.y<B4_OFFICE.floorTop+3;
-  const doorItem=atFifth&&officeDebug().armed&&!officeDebug().doorOpen
+  const doorItem=officeDoorOffered({stage:story.stage,atFifth,hasRepeat:repeat!==null})
    ?{id:'opening-office-door',position:[B4_OFFICE.door.x0-.35,B4_OFFICE.floorTop+1.15,B4_OFFICE.door.centre] as [number,number,number],label:"Open the principal's office"}
    :null;
   const laptopItem={id:'opening-laptop',position:[B4_OFFICE.laptop.x,B4_OFFICE.laptop.y,B4_OFFICE.laptop.z] as [number,number,number],label:'Pick up the presentation MacBook'};
