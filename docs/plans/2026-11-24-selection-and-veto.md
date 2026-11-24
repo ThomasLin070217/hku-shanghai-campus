@@ -46,7 +46,7 @@ builder. `family-b2` is still on disk if you prefer any of it; nothing has been 
 | 15 | `mus_lion_victory` | Lion defeated | `family-c/take-a` victory_brass | 32.1 s | `take-b` victory_brass_b (33.5 s) |
 | 16 | `mus_sports` | Sports hall rescue | `family-d/take-a` strings_piano_hope | 83.9 s | `take-b` piano_strings_intimate (87.0 s) |
 | 17 | `mus_finale` | Four-tower mesh light show | `family-d/take-a` symphony_mesh | 54.9 s | `take-b` strings_organ_mesh (55.4 s) |
-| 18 | `mus_credits` | Credits, Greensleeves processional | `family-a2/take-a` credits_strings_harp | 58.2 s | `a/take-a` symphony full (48.2 s) |
+| 18 | `mus_credits` | Credits, Greensleeves processional | `mus_credits-rebuild` (16-bar theme + 4-bar coda) | 60.9 s | `family-a2/take-a` credits_strings_harp (58.2 s, superseded) |
 
 Tell me only the numbers you want swapped. Everything else stays as listed.
 
@@ -282,6 +282,37 @@ takes at all. They are planned, not generated.
 
 `assets/audio/prologue/prologue-5.mp3` is a thirteenth shipped clip that is not in the cast; it is
 not part of this count.
+
+## Cue 18 rebuilt — the credits must be the DSE product's Greensleeves (2026-11-25)
+
+The 58.2 s `family-a2/take-a` credits cue did not match the Greensleeves the DSE product ships,
+and the owner's standing requirement is that it must. Rebuilt at
+`.scratch/music-2026-11-24/mus_credits-rebuild/` to the brief
+(`-rebuild-brief.md`): a **16-bar theme statement plus a 4-bar coda**, 6/8, 20 bars, 60.9 s —
+72 pitched notes, 97 eighths in the theme span, 11 dotted `1.5 + 0.5` pairs, one-eighth
+anacrusis, four-bar phrases, B section degrees 7 7 6 5, A Aeolian except the raised degrees the
+DSE reference demonstrably carries. Raised degrees are not asserted: each one is a recorded
+position in `reference-evidence.json` (`raised_degree_positions`, `notes_raised_from_v11`), and
+the checker requires that file to be present before it accepts a non-Aeolian pitch class.
+
+**The first verdict against the cue was wrong, and it was my checker's fault.** It counted the
+mandated 4-bar coda into the theme span (73 notes / 121 eighths), and it looked for raised degrees
+in `score.json.provenance` instead of `reference-evidence.json`. Rewritten to delimit the theme
+from the score's own `bars`/`meter` and to read the evidence file, all ten checks pass — and they
+pass against the **shipped MP3**, not just the render: 60.9 s, −16.9 LUFS integrated, true peak
+−5.4 dBFS, 72 theme notes, 97 theme eighths, a 24-eighth coda, 11 dotted pairs, the degrees 7 7 6 5
+at note indices 38–41, and the two raised pitch classes (F♯, G♯) present only at the ten positions
+the evidence records. Full table in `mus_credits-rebuild/independent-check.json`; the checker is
+`.scratch/verify-2026-11-25/check-credits.py`, and it is independent of the worker's own
+`verification.json`.
+
+Installed 2026-11-25: `assets/audio/story/music/mus_credits.mp3` is now the rebuilt render,
+encoded **160 kbps from the master WAV** (1,219,441 bytes, sha256 `71f528c6…`) — the same tier as
+twelve of the other fifteen music cues. It is a first-generation encode from the `.scratch/`
+master, not a re-encode of a previous MP3, so no generation loss. At 192 kbps it pushed `dist` to
+31.12 MB and tripped the 31 MB payload ceiling; 160 kbps puts it back under without moving the
+ceiling. The `mus_credits` entry in `assets/audio/story/music/picks.json` points at it. The old
+take is superseded, not deleted — its `.scratch/` source is untouched.
 
 ## Rights
 

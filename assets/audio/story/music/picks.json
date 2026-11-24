@@ -108,9 +108,9 @@
     "bytes": 1099277
   },
   "mus_credits": {
-    "source": ".scratch/music-2026-11-23/family-a2/mus_credits/take-a/credits_strings_harp.wav",
+    "source": ".scratch/music-2026-11-24/mus_credits-rebuild/mus_credits.wav",
     "file": "assets/audio/story/music/mus_credits.mp3",
-    "duration": 58.18,
-    "bytes": 1165106
+    "duration": 60.9,
+    "bytes": 1219441
   }
 }
