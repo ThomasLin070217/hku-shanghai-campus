@@ -26,10 +26,12 @@ const outDir = join(root, 'assets/audio/prologue');
 const manifestPath = join(outDir, 'clips.json');
 const MODEL = process.env.PROLOGUE_TTS_MODEL ?? 'eleven_multilingual_v2';
 const OUTPUT_FORMAT = 'mp3_44100_128';
-// The owner-approved four-line script is kept verbatim (2026-11-23 ruling), and
-// the measured read is 56.00 s — over the plan's 48 s ceiling. The cap records
-// what the approved text actually costs; trimming the script is an owner call.
-const BUDGET = 60;
+// The owner-approved four-line script is kept verbatim (2026-11-23 ruling) and
+// the owner vetoed the fast read in favour of the meditative narrator, which
+// costs 73.514 s — over both the plan's 48 s ceiling and the 60 s cap the fast
+// read needed. The cap records what the approved text actually costs at the
+// chosen voice; trimming the script is an owner call. Mirrors check-prologue.ts.
+const BUDGET = 75;
 const checkOnly = process.argv.includes('--check');
 const manifestOnly = process.argv.includes('--manifest');
 

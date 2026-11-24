@@ -2,12 +2,12 @@
   "version": 1,
   "voices": {
     "narrator": {
-      "id": "JBFqnCBsd6RMkjVDRZzb",
-      "name": "George - Warm, Captivating Storyteller",
+      "id": "NFG5qt843uXKj4pFvR7C",
+      "name": "Adam Stone - Smooth, Deep and Relaxed",
       "settings": {
-        "stability": 0.55,
-        "similarity_boost": 0.75,
-        "style": 0.35,
+        "stability": 0.42,
+        "similarity_boost": 0.8,
+        "style": 0.55,
         "use_speaker_boost": true
       }
     },

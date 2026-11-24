@@ -160,9 +160,11 @@ check('manifest: total equals the duration sum within 0.01 s',()=>{
 check('manifest: narration stays inside the declared budget',()=>{
  assert.ok(Number.isFinite(manifest.budget),'clips.json has no numeric budget');
  // The four approved lines are longer than the 48 s plan ceiling when read
- // verbatim (56.006 s measured); the budget records the approved overrun and
- // trimming is an owner decision, never a silent edit of the script.
- assert.ok(manifest.budget<=60,`budget ${manifest.budget}s exceeds the 60 s approved cap`);
+ // verbatim, and the owner picked the meditative read, which is slower again:
+ // 73.514 s of audio. The budget records the approved overrun; trimming the
+ // script or speeding the voice up is an owner decision, never a silent edit.
+ // 75 is 73.514 plus 1.5 s of headroom, not a round number chosen for comfort.
+ assert.ok(manifest.budget<=75,`budget ${manifest.budget}s exceeds the 75 s approved cap`);
  assert.ok(manifest.total<=manifest.budget,`${manifest.total}s exceeds the ${manifest.budget}s budget`);
  assert.ok(manifest.total>48,'the approved verbatim script should measure past the old 48 s plan ceiling');
 });

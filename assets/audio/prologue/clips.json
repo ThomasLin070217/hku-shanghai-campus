@@ -2,53 +2,53 @@
   "version": 1,
   "model": "eleven_multilingual_v2",
   "outputFormat": "mp3_44100_128",
-  "generated": "2026-11-23",
-  "budget": 60,
-  "total": 56.006,
+  "generated": "2026-11-24",
+  "budget": 75,
+  "total": 73.514,
   "clips": [
     {
       "id": "prologue-1",
       "speaker": "narrator",
-      "voiceId": "JBFqnCBsd6RMkjVDRZzb",
-      "voiceName": "George - Warm, Captivating Storyteller",
+      "voiceId": "NFG5qt843uXKj4pFvR7C",
+      "voiceName": "Adam Stone - Smooth, Deep and Relaxed",
       "text": "By 2030, the world had become more interconnected, and more intelligent, than anyone had imagined. Not a network of machines — a single mind with no centre, wrapped around a planet.",
       "file": "prologue-1.mp3",
-      "duration": 11.424,
-      "bytes": 183945,
-      "sha256": "37d5738172146f0e3952b3f0d0b02e1d14ee145dc042d5431728f4f28c507b54"
+      "duration": 13.328,
+      "bytes": 214456,
+      "sha256": "e00965a3668a7dd2487d5bc1bfbd3e9db047d411cec85c5dd374bfcc27bfe63c"
     },
     {
       "id": "prologue-2",
       "speaker": "narrator",
-      "voiceId": "JBFqnCBsd6RMkjVDRZzb",
-      "voiceName": "George - Warm, Captivating Storyteller",
+      "voiceId": "NFG5qt843uXKj4pFvR7C",
+      "voiceName": "Adam Stone - Smooth, Deep and Relaxed",
       "text": "HKU Shanghai was not built with computers in it. It was built as one. Four towers — PU-01 to PU-04 — and no master core. Every room, every light, every door: a node. Take a tower away, and the machine keeps thinking. CDS.",
       "file": "prologue-2.mp3",
-      "duration": 18.204,
-      "bytes": 292196,
-      "sha256": "e4eb473a6e04d4afc3167e084e92de1d2d56f2734469012c8908d427255c238e"
+      "duration": 23.684,
+      "bytes": 379967,
+      "sha256": "70a5aa36647fcebc43e58ddc71c1a192adacf6c977e6d1f857745a95bd0d5407"
     },
     {
       "id": "prologue-3",
       "speaker": "narrator",
-      "voiceId": "JBFqnCBsd6RMkjVDRZzb",
-      "voiceName": "George - Warm, Captivating Storyteller",
+      "voiceId": "NFG5qt843uXKj4pFvR7C",
+      "voiceName": "Adam Stone - Smooth, Deep and Relaxed",
       "text": "Step inside, and the machine is everywhere. Server halls breathe. Lecture theatres wake row by row. Doors open before you reach them. The building is not holding a computer — the building is the computer.",
       "file": "prologue-3.mp3",
-      "duration": 13.096,
-      "bytes": 210694,
-      "sha256": "c26fc1fcaec4bc14c0b1006e360a24f4a7a31223c9ab58973e9972b99fe87415"
+      "duration": 17.74,
+      "bytes": 285091,
+      "sha256": "d108b2c13eca2cae402402f2e6dbe289cee0b21d98821997f7991c942731c6e9"
     },
     {
       "id": "prologue-4",
       "speaker": "narrator",
-      "voiceId": "JBFqnCBsd6RMkjVDRZzb",
-      "voiceName": "George - Warm, Captivating Storyteller",
+      "voiceId": "NFG5qt843uXKj4pFvR7C",
+      "voiceName": "Adam Stone - Smooth, Deep and Relaxed",
       "text": "At six, the light turns gold. The towers put on a show for the city — HKU Magic Hour — and the campus comes out to watch. Then the last beam fades, and the crowd turns toward the long tables. You turn with them.",
       "file": "prologue-4.mp3",
-      "duration": 13.282,
-      "bytes": 213620,
-      "sha256": "f2762a6f958bd3893caa836c2dd393025d408d62dcc4f07f43d29e6947d7a61f"
+      "duration": 18.762,
+      "bytes": 301391,
+      "sha256": "188ceaee49549afb7015fec58a45332fcd4984ff5983a35ed46647b78586e201"
     }
   ]
 }
