@@ -4,7 +4,6 @@ import {campusFont} from '../model/fonts';
 import {glassMaterial} from '../model/glazing';
 import {compact} from '../model/buildCampus';
 import {emblemMaterial} from '../model/heraldry';
-import dinnerArms from '../model/dinner-arms.json';
 import shield from '../model/hall-crest.json';
 import {createMacBook} from '../items/macbook';
 import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H,OFFICE_LAYOUT as B6} from './spatialLayout';
@@ -314,11 +313,13 @@ function buildDinner(root:T.Group){
  for(const x of [56.35,59.65])box(group,'opening-b5-access-pedestal-'+x,.24,.92,.42,x,.46,-56.1,materials.frame);
  box(group,'opening-b5-end-wall',D.crossWidth,4.45,.14,D.crossCenter,2.225,D.endZ,timber);
  // phase2-02: full armorial achievement on the timber wall; shield on the lectern.
- const armorial=emblemMaterial(dinnerArms,'Dinner wall arms');
+ // The wall crest uses the same clean heraldic art as the flanking banners. The
+ // photo-derived 26x31 trace is illegible once it is blown up to 1.4 m: at that size
+ // it read as a torn pixel smear above the head table (QA 2026-11-25).
  const shieldMaterial=emblemMaterial(shield,'Dinner shield');
- const crest=tag(new T.Mesh(new T.PlaneGeometry(1.36*26/31,1.36),armorial),'opening-b5-reference-crest','Opening_b5_reference_crest');
+ const crest=tag(new T.Mesh(new T.PlaneGeometry(1.36*36/38,1.36),shieldMaterial),'opening-b5-reference-crest','Opening_b5_reference_crest');
  crest.position.set(D.crossCenter,2.58,D.endZ+.09);
- crest.userData.source='HKU phase2-02; IMG_4380 00:24';
+ crest.userData.source='HKU phase2-02; heraldic crest art, src/model/hall-crest.json';
  group.add(crest);
  // Simplified pendant chandeliers; two real lights, the other bulbs emissive only.
  for(const [j,z] of [-65,-73].entries())for(const [i,x]of D.archCenters.entries()){
