@@ -162,6 +162,17 @@ So the opening gets **16.3 s longer than george would have made it, and 17.5 s l
 ships today.** That is a change to the prologue's pace, not only to its voice, and it is recorded
 here so nobody later calls it a regression.
 
+Three consequences, none of them silent:
+
+1. **The gate will fail until the budget moves.** `check-prologue` caps the narration at 60 s and the
+   meditative read is 73.51 s. The cap goes to 75 with the reason written next to the assertion.
+   Nothing is trimmed and the four paragraphs are byte-identical to what is on screen today — the
+   only thing that changed is who reads them, and that was your call.
+2. **The music bed has to grow with it.** `mus_prologue` is 55.8 s. Left alone it would leave the last
+   17.5 s of narration over silence, so the cue is rebuilt in the same commit as the voice.
+3. **It is 1 min 14 s before the player moves.** If that is too long for the demo video, the lever is
+   cutting one of the four paragraphs — your decision, not mine, and not a speed-up of the voice.
+
 **What is in `assets/` today is not any of the audition takes — but it is George.** The four shipped
 files total 56.00 s and match no column above; `clips.json` records `voiceId: JBFqnCBsd6RMkjVDRZzb`
 on all four, which is the George voice, in a different take from the audition set. So the prologue
