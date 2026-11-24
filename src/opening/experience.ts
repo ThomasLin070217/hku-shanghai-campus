@@ -302,7 +302,14 @@ export function createOpeningExperience(
    ?{id:'opening-office-door',position:[B4_OFFICE.door.x0-.35,B4_OFFICE.floorTop+1.15,B4_OFFICE.door.centre] as [number,number,number],label:"Open the principal's office"}
    :null;
   const laptopItem={id:'opening-laptop',position:[B4_OFFICE.laptop.x,B4_OFFICE.laptop.y,B4_OFFICE.laptop.z] as [number,number,number],label:'Pick up the presentation MacBook'};
-  const item=story.stage==='to_b5'?{id:'opening-staff',position:O.staff,label:'Speak to the coordinator'}:repeat??doorItem??(story.stage==='to_b6'?laptopItem:null);
+  // A player who walks to B4 5F before the errand used to find nothing interactable at
+  // the door: `to_b5` offered only the coordinator, wherever the player stood. The
+  // notice below keeps the office unenterable — the abduction stays armed by the errand,
+  // never by walking in (Addendum 5 C.3) — but says why, so the room is not a dead end.
+  const earlyDoor=!story.laptop_acquired&&story.stage!=='to_b6'&&atFifth
+   ?{id:'opening-office-locked',position:[B4_OFFICE.door.x0-.35,B4_OFFICE.floorTop+1.15,B4_OFFICE.door.centre] as [number,number,number],label:"The principal's office is locked"}
+   :null;
+  const item=story.stage==='to_b5'?earlyDoor??{id:'opening-staff',position:O.staff,label:'Speak to the coordinator'}:earlyDoor??repeat??doorItem??(story.stage==='to_b6'?laptopItem:null);
   if(!item)return null;
   const origin=g.body.position.clone().add(new T.Vector3(0,1.64,0)),point=new T.Vector3(...item.position).add(new T.Vector3(0,item.id.startsWith('opening-staff')?1.3:.1,0)),offset=point.clone().sub(origin),distance=offset.length();
   if(distance>2.7)return null;
@@ -330,6 +337,10 @@ export function createOpeningExperience(
    return outcome(true,'door_opened',"The principal's office.");
   }
   if(t.id==='opening-laptop')return collectLaptop();
+  if(t.id==='opening-office-locked'){
+   notify("The office is locked. The coordinator at the High Table asked to see you first.");
+   return outcome(true,'door_locked',"The principal's office.");
+  }
   return outcome(false,'invalid_target','No interaction available.');
  }
  function collectLaptop():Outcome{
