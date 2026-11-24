@@ -42,6 +42,22 @@ assert.ok(tiledExterior.length>200,
  `only ${tiledExterior.length} exterior meshes carry the tile — the walk may be skipping everything`);
 for(const kind of ['wall','paving'])assert.ok(tiledExterior.some(o=>tileKind(o)===kind),`the exterior ${kind} tile disappeared`);
 
+// The opt-out must not mean "flat". Interiors get the finish-scale grain instead, and a
+// render with neither is the untextured-CG look this pass exists to remove.
+const grainName=(o:T.Mesh)=>{
+ const mats=(Array.isArray(o.material)?o.material:[o.material]) as T.Material[];
+ for(const m of mats){
+  if(!(m instanceof T.MeshStandardMaterial))continue;
+  const name=m.map?.name??'';
+  if(/^Interior_grain_/.test(name))return name.slice('Interior_grain_'.length);
+ }
+ return '';
+};
+const grainedInterior=interior.filter(o=>grainName(o)!='');
+assert.ok(grainedInterior.length>200,
+ `only ${grainedInterior.length} interior meshes carry the finish grain - interiors read as flat CG`);
+console.log(`PASS ${grainedInterior.length} of ${interior.length} interior meshes carry the finish grain (${[...new Set(grainedInterior.map(grainName))].sort().join(', ')})`);
+
 console.log(`PASS ${interior.length} interior meshes carry no exterior tile; ${tiledExterior.length} of ${exterior.length} exterior meshes still do (${[...new Set(tiledExterior.map(tileKind))].sort().join(', ')})`);
 console.log(`PASS ${exemptRoots.size} interior roots opt out: ${[...exemptRoots].sort().join(', ')}`);
 disposeAsset(site.root);
