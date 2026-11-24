@@ -1,5 +1,5 @@
 /**
- * Prologue narration timeline: the five recorded lines play back to back with
+ * Prologue narration timeline: the four recorded lines play back to back with
  * a short gap between them. Pure data math so the cinematic and the check
  * script agree on exactly when each line starts and the narration ends.
  */
