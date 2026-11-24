@@ -71,3 +71,12 @@ for(const room of [O.b5,O.b6]){const origin=new T.Vector3(room.door,room.floor+1
 results.push({name:'Visual doorway rays match collision openings',passed:true});
 fs.mkdirSync('evidence/opening-implementation',{recursive:true});fs.writeFileSync('evidence/opening-implementation/routes.json',JSON.stringify(results,null,2));fs.writeFileSync('evidence/opening-implementation/scene-id-migration.json',JSON.stringify({scope:'opening asset mode only',baselineRevision:baseIndex.revision,openingRevision:index.revision,migrations},null,2));
 disposeAsset(baseline.root);disposeAsset(opening.root);w.dispose();console.log('PASS',results.length,'opening integration checks; explicit removed-part migrations:',migrations.length);
+// A fresh game stands beside the gathering, not eighty metres from it: the crowd-stage
+// objective text says "join the crowd", so its marker has to be where the students are.
+{
+ const d=Math.hypot(O.crowdStart[0]-O.handoff[0],O.crowdStart[2]-O.handoff[2]);
+ assert.ok(d<15,`the crowd gathering is ${d.toFixed(1)} m from the fresh spawn; the objective says "join the crowd"`);
+ const map=fs.readFileSync('src/opening/map.ts','utf8');
+ assert.match(map,/story\.stage==='crowd'\?O\.crowdStart/, 'the crowd-stage objective marker must target the gathering');
+ console.log(`PASS crowd-stage objective marker sits ${d.toFixed(1)} m from the fresh spawn`);
+}

@@ -34,6 +34,9 @@ export const OPENING={
  returnPoint:[62,.02,-60] as [number,number,number],
  encounterSafe:[58,0,-53.8] as [number,number,number],
  handoff:[58,.08,25] as [number,number,number],
+ /** Where the students gather after the light show — the `crowd` objective points here and
+  * the crowd walk starts here, so the marker and the people agree. */
+ crowdStart:[52,0,33.5] as [number,number,number],
  patrol:[[63,0,-48],[58,0,-48],[58,0,-59],[63,0,-59]] as [number,number,number][],
  /** Stage checkpoints. The story keeps its progress; capture only moves the body. */
  checkpoints:{

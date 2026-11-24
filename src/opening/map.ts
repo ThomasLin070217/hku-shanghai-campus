@@ -8,7 +8,7 @@ export function drawOpeningMap(canvas:HTMLCanvasElement,g:CampusGame,story:Openi
   const t=campaign.target;drawCampusMap(canvas,g,{route:campaign.route??[],target:t?{x:t[0],z:t[2]}:null,theme:'dark'},large);return;
  }
  const route=story.stage==='to_b6'?O.routeB6:story.stage==='return_b5'?[...O.routeB6].reverse():story.stage==='to_b4'||story.stage==='complete'?O.routeB4:O.routeB5;
- const target=story.stage==='to_b6'?O.laptop:story.stage==='to_b4'||story.stage==='complete'?O.handoff:O.staff;
+ const target=story.stage==='crowd'?O.crowdStart:story.stage==='to_b6'?O.laptop:story.stage==='to_b4'||story.stage==='complete'?O.handoff:O.staff;
  drawCampusMap(canvas,g,{route,target:{x:target[0],z:target[2]},theme:'dark'},large);
 }
 interface CampusMapOverlay {

@@ -97,7 +97,7 @@ export function createOpeningExperience(
  /** Walk route around the west side of Building 4 to the B5 doorway, then into
   * the lobby where the students leave the stage. It follows the same walkable
   * gap as `OPENING.routeB5` (x 24), never a building. */
- const crowdPath:{x:number;z:number}[]=[{x:52,z:33.5},{x:40,z:33.5},{x:24,z:33.5},{x:24,z:18},{x:24,z:-8},{x:24,z:-30},{x:24,z:-46},{x:40,z:-48},{x:53,z:-51},{x:58,z:-54.5},{x:58,z:-58},{x:58,z:-62}];
+ const crowdPath:{x:number;z:number}[]=[{x:O.crowdStart[0],z:O.crowdStart[2]},{x:40,z:33.5},{x:24,z:33.5},{x:24,z:18},{x:24,z:-8},{x:24,z:-30},{x:24,z:-46},{x:40,z:-48},{x:53,z:-51},{x:58,z:-54.5},{x:58,z:-58},{x:58,z:-62}];
  type CrowdStudent={x:number;y:number;z:number;target:number;speed:number;phase:number;scale:number;yaw:number;done:boolean};
  const crowdY=(x:number,z:number)=>{const h=explorer.world.support(x,z,4);return h===null?.08:h;};
  const crowdStudents:CrowdStudent[]=crowdSeats.map((seat,index)=>{
