@@ -1,75 +1,218 @@
-# Selection and veto list — 2026-11-24
+# Selection & veto list — 2026-11-24
 
-Owner ruling: I choose the takes, the owner vetoes by name. No per-item questions.
+Owner ruling (2026-11-23): **I pick the takes, you veto.** Nothing here needs an answer
+line by line — strike anything you dislike and it is replaced. Everything below is a
+default, not a decision taken out of your hands.
 
-**How to veto:** reply with the cue or line ids you want changed (e.g. “swap mus_dinner to take-b”, “narrator: use meditative”). Anything not named ships as listed.
+Play them: `.scratch/music-2026-11-23/audition.html` (all 58 takes, every family including
+both B sets).
+Voice: `.scratch/voice-2026-11-23/audition.html`.
 
-Audition pages (local files, open in a browser):
+Objective checks re-run on **all 58** music takes on 2026-11-24: **no clipping** (loudest peak
+**−1.2 dBFS**, `family-b/mus_chase/take-b`), mean loudness **−15.1 … −23.9 dB**, no take at or
+over 0 dBFS, and every take has both a `score.json` and a `style.json` (`MuseScore_General.sf3`
+render, `vibe-compose-onezion`). **No take samples or reuses any existing recording.**
 
-- Music: `.scratch/music-2026-11-23/audition.html` — 18 cues × 2 takes
-- Voice: `.scratch/voice-2026-11-23/audition.html` — 12 lines, every generated take
+*(The figures previously printed here — loudest peak −1.3 dBFS, mean −16.3 … −23.0 dB — were
+correct for the **original 48**, i.e. everything except the 10 `family-b` takes. The 10 new
+takes include the loudest file on disk (`chase_drive_b`, −1.2 dBFS) — 1.2 dB under full
+scale, and still no clipping. Re-measured, not assumed.)*
 
----
+**Family B was re-rendered at 02:52 and supersedes the earlier `family-b2` set** (rendered
+00:17). The invasion cues below therefore cite `family-b`. Reason: the re-dispatch fixed the
+`field_drum` buzz-roll trap — the shared march card's two continuous subdivision voices are
+replaced by a written articulated snare part, which is what the card's own research (2–5
+attacks/bar) and the brief both call for — and it ships a rendered gate plus a reproducible
+builder. `family-b2` is still on disk if you prefer any of it; nothing has been deleted.
 
-## Voice cast
+## Score — 18 cues, chosen take
 
-| Role | Selected take | Voice | Status |
-|---|---|---|---|
-| Prologue narrator | `george-expressive` | George — expressive storyteller | Generated; integration pending |
-| B5 staff coordinator | `Alice` | Alice — clear educator | **Shipped** in all five Staff lines |
-| Player reply | `harry-fierce` | Harry — fierce warrior | **Shipped** (`player-accept-harry.wav`) |
-| Local AI on the MacBook | `river-neutral` | River — neutral, calm | **Shipped** (`assets/audio/npc/ai/local-ai.wav`) |
-| Invader / external AI | `steadfast-cold` | Steadfast — cold broadcaster | **Shipped** (`assets/audio/npc/ai/external-ai.wav`) |
+| # | Cue | Where it plays | Chosen take | Length | Alternative |
+|---|---|---|---|---|---|
+| 1 | `mus_title` | Title / menu, before the prologue | `family-d/take-a` symphony_processional | 117.8 s | `take-b` strings_harp_processional (118.6 s) |
+| 2 | `mus_prologue` | Magic Hour cinematic, camera over the campus | `family-a/take-a` symphony_warm | 55.8 s | `take-b` strings_harp (55.8 s) |
+| 3 | `mus_invitation` | Phone invitation, crowd on the plaza | `family-a2/take-a` invitation_music_box | 16.0 s | `take-b` invitation_piano (21.8 s) |
+| 4 | `mus_dinner` | High Table Dinner bed, B5 | `family-a/take-b` viennese_waltz_dinner | 57.9 s | `a2/take-a` dinner_waltz (36.9 s) |
+| 5 | `mus_dinner_toast` | The toast moment | `family-a2/take-a` toast_brass | 7.5 s | `take-b` toast_strings_brass (8.2 s) |
+| 6 | `mus_office` | B4 side lobby, lift, 5F corridor | `family-a2/take-a` office_piano_sparse | 43.6 s | `take-b` office_piano_rolling (45.7 s) |
+| 7 | `mus_abduction` | Lobby CCTV → feed cut → 5F servo/shout/door | `family-b/take-a` abduction_slowmarch | 32.7 s | `take-b` slowmarch_b (38.1 s) |
+| 8 | `mus_alert` | MacBook security alert | `family-b/take-a` alert_coldpulse | 19.2 s | `take-b` coldpulse_b (15.0 s) |
+| 9 | `mus_patrol` | Humanoid robots, stealth | `family-b/take-a` patrol_quietmarch | 62.6 s | `take-b` quietmarch_b (68.6 s) |
+| 10 | `mus_chase` | Being chased | `family-b/take-a` chase_drive | 12.6 s | `take-b` chase_drive_b (12.0 s) |
+| 11 | `mus_march_alt` | Occupation march, exterior B4 | `family-b/take-a` march_invader | 51.4 s | `take-b` march_invader_b (55.4 s) |
+| 12 | `mus_puzzle` | Flip-wall / breaker puzzle | `family-c/take-a` puzzle_clockwork | 64.0 s | `take-b` puzzle_clockwork_b (62.6 s) |
+| 13 | `mus_lawn` | Lawn approach | `family-c/take-a` lawn_drone | 128.0 s | `take-b` lawn_drone_b (137.1 s) |
+| 14 | `mus_lion_boss` | Lion boss | `family-c/take-a` boss_symphonic | 54.9 s | `take-b` boss_symphonic_b (55.7 s) |
+| 15 | `mus_lion_victory` | Lion defeated | `family-c/take-a` victory_brass | 32.1 s | `take-b` victory_brass_b (33.5 s) |
+| 16 | `mus_sports` | Sports hall rescue | `family-d/take-a` strings_piano_hope | 83.9 s | `take-b` piano_strings_intimate (87.0 s) |
+| 17 | `mus_finale` | Four-tower mesh light show | `family-d/take-a` symphony_mesh | 54.9 s | `take-b` strings_organ_mesh (55.4 s) |
+| 18 | `mus_credits` | Credits, Greensleeves processional | `family-a2/take-a` credits_strings_harp | 58.2 s | `a/take-a` symphony full (48.2 s) |
 
-Rejected by default: `meditative-narrator`, `steadfast-broadcaster` (prologue); `matilda-warm` (Staff); `sarah-reassuring` (local AI); `adam-firm` (invader).
+Tell me only the numbers you want swapped. Everything else stays as listed.
 
-**Why George for the narrator:** the owner's note was that the old read was monotone. George carries the highest style setting in the cast (0.68) and is the only take written as a storyteller rather than a news reader.
+### Measured tail audit
 
-**Why River for the local AI:** the local AI must sound separate from both the invader and the human staff. River is neutral and quiet, with no broadcast colour; Steadfast is the only cold, formal voice, used for the invader.
+Two measurements on all 48 takes (`sseof -0.4` mean volume, then per-second windows and
+`silencedetect`), plus a cross-check of every MIDI's musical end against its audio's content
+end:
 
-All five shipped Staff lines and the player line were regenerated from the B4 5F script, not the old Building 6 copy. `npm run check:voice` checks every WAV hash, duration, sample rate and the shared dialogue text.
+- **One-shot cues end in a fade to silence** — family-a and family-d end below −70 dB in
+  their last 400 ms. Correct for title/credits/finale; crossfades overlap it.
+- **Looping cues run music to the last sample** — every `mus_patrol`, `mus_chase`,
+  `mus_lawn`, `mus_puzzle`, `mus_alert`, `mus_march_alt` take ends between −17 and −24 dB.
+  No loop gap. This is the set where a silent tail would have been a real defect.
+- **No take is missing content:** across all 48, the audio always extends *past* the MIDI's
+  last note-on (by 0.2–4.3 s of release and reverb). Zero takes end before their score does.
+- **Family B re-measured (the 10 new takes).** The four looping cues end with music present,
+  not silence, so there is no seam gap: `mus_chase` −14.8/−13.9 dB, `mus_march_alt`
+  −23.7/−24.6 dB, `mus_patrol` −25.4/−30.8 dB, `mus_alert` −26.7/−32.9 dB over their last
+  400 ms. `mus_abduction` is deliberately not loopable and stops hard at its final hit.
 
----
+**One thing to know, not to fix:** the chosen `mus_abduction` is **16 bars of 6/8 at 84 BPM**
+and opens sparsely on purpose — bars 1–6 carry only 2–6 notes each, then bar 7 jumps to 10 and
+the cue builds to 13–15 notes a bar. Measured, it has four short silences in the first 11 s
+(longest 1.4 s at 7.2 s, and the feed-cut hole in bar 5 at −36 dB) before the climax. That is
+the composition — the quiet *is* the lobby feed before the picture dies. Do not "fix" it with a
+loop, and do not mistake it for a failed render. It also ends on a hard stop at the final hit,
+which is what the cue brief asks for, so it is not a looping bed.
 
-## Music
+*(The superseded `family-b2` abduction is a different piece — 45.0 s in 4/4 with one 5.7 s hole
+at bars 6–7. If you prefer that shape, it is still on the audition page and nothing is
+deleted. An earlier revision of this note described only the b2 timing and called that hole a
+dropped render; that was wrong — my script had read a bare `silence_end` as a trailing gap.)*
 
-All 18 cues now have two rendered takes. Families A2 and B2 were re-dispatched after the first A/B families stalled; they delivered the full set.
+## 明我以德 — HKU anthem arrangement
 
-| Cue | Pick | File | Why | Alternative if vetoed |
+Owner authorised on 2026-11-24: use the **melody** of 明我以德 as a source for an
+original arrangement. It is copyrighted: the score we transcribed is headed
+**曲：許冠傑　詞：林夕** and its footer reads **© 2018 Development & Alumni Affairs
+Office, HKU. All Rights Reserved.** That is the line the credits carry. We never sample the
+official recording.
+
+*(An earlier version of this note also credited an arranger and a 2011 date. Neither appears
+anywhere on the score — I had carried them from memory of the work's release rather than from
+the page in front of me — so neither is asserted here. If the credits need the arranger, that
+needs a source first. What is verifiable is the pair of lines above, read off `q-1.png`
+(header) and `q-4.png` (footer) on 2026-11-24.)*
+
+Status: melody transcribed from the official published score
+(`.scratch/anthem-2026-11-24/scores/`, from `100.hku.hk/galadinner/song/`), arrangement
+and render pending. Planned use: **title motif** and a **finale reprise**, not the
+whole soundtrack — the four-peer theme stays original.
+
+**How accurate the transcription is — the short answer: the pitches, yes; the rhythm, no.**
+202 noteheads were read off the printed score by deterministic image processing (no ML). Every
+one lands within 0.19 of a diatonic step of an exact staff position, where a note on the wrong
+line or space would be ≥ 0.5 — so a misread would have shown up. The key is B♭ major, and the
+only two accidentals in the melody (A♭4, at bars 18 and 33) were confirmed by eye. Six blobs
+that fell outside the staff were **abstained on** rather than guessed.
+
+The rhythm is **not** verified: reading beams, flags and dots off this engraving failed, so
+every duration is derived from the note's horizontal position and is marked uncertain. Ties
+are not modelled, so a tied note appears twice. The arrangement therefore takes the **pitches**
+from the transcription and authors the rhythm by ear against the page — it will not claim the
+derived durations are the score's.
+
+*(An earlier note said the transcription might be an inner choir voice because it started below
+where the melody "should" begin. That was my misreading — I had taken the piano's treble staff
+for the vocal line. The sung line genuinely starts on D4, in the space below the staff, and it
+cannot be an inner voice: it is the only staff on the page carrying lyrics.)*
+
+## Voice — main story first
+
+Generated from `.scratch/voice-2026-11-23/cast.json` with ElevenLabs
+(`eleven_multilingual_v2`, mp3 44.1 kHz/128). 28 takes across 12 main-story lines,
+regenerated 2026-11-24; the audition page has every take.
+
+| Line | Speaker | Chosen | Length | Alternative |
 |---|---|---|---|---|
-| `mus_title` | take-a | `family-d/mus_title/take-a/symphony_processional.wav` | Symphony processional matches the 2/5 ceremonial title card; 117.8 s loop. | take-b strings-harp |
-| `mus_prologue` | take-a | `family-a2/mus_prologue/take-a/prologue_symphony.wav` | Cue map asks for warm symphony, 6/8; this is the fuller of the two. | take-b strings-harp |
-| `mus_invitation` | take-a | `family-a2/mus_invitation/take-a/invitation_music_box.wav` | Phone notification reads as a music box, not a piano cue; 16 s one-shot. | take-b solo piano |
-| `mus_dinner` | take-a | `family-a2/mus_dinner/take-a/dinner_waltz.wav` | Dinner is a seated waltz scene; the processional is kept for the entrance if wanted. | take-b processional |
-| `mus_dinner_toast` | take-a | `family-a2/mus_dinner_toast/take-a/toast_brass.wav` | 7.5 s brass sting lands the toast without overstaying. | take-b strings+brass |
-| `mus_office` | take-a | `family-a2/mus_office/take-a/office_piano_sparse.wav` | Cue map says sparse; this leaves room for servo/shout SFX. | take-b rolling piano |
-| `mus_abduction` | take-b | `family-b2/mus_abduction/take-b/inv_abduction_b.wav` | The full 16-bar arc: CCTV → feed cut → 5F servos → shout/door. Take-a (4.5 s) is kept as the feed-cut stinger. | take-a as the whole cue (too short) |
-| `mus_alert` | take-a | `family-b2/mus_alert/take-a/inv_alert_a.wav` | Tighter cold pulse; loops under the alert modal without crowding the new voice lines. | take-b |
-| `mus_patrol` | take-a | `family-b2/mus_patrol/take-a/inv_patrol_a.wav` | Quiet march, 80 s loop; take-b is longer and slightly busier. | take-b |
-| `mus_chase` | take-a | `family-b2/mus_chase/take-a/inv_chase_a.wav` | 25.6 s at the top of the 140–160 BPM band; the shorter loop restarts less noticeably. | take-b |
-| `mus_march_alt` | take-a | `family-b2/mus_march_alt/take-a/inv_march_a.wav` | Full-band Soviet-march texture for the teaser/menu alternate; tighter 66 s read. | take-b |
-| `mus_puzzle` | take-a | `family-c/mus_puzzle/take-a/puzzle_clockwork.wav` | Clockwork waltz; 64 s loop, the mechanical pulse fits the flip wall. | take-b |
-| `mus_lawn` | take-a | `family-c/mus_lawn/take-a/lawn_drone.wav` | Ambient unease, 128 s; leaves the lion approach audible. | take-b |
-| `mus_lion_boss` | take-a | `family-c/mus_lion_boss/take-a/boss_symphonic.wav` | Symphonic boss take; 54.9 s loop. | take-b |
-| `mus_lion_victory` | take-a | `family-c/mus_lion_victory/take-a/victory_brass.wav` | Brass + strings one-shot, 32 s. | take-b |
-| `mus_sports` | take-a | `family-d/mus_sports/take-a/strings_piano_hope.wav` | Hope cue with strings leading; matches the student-rescue beat. | take-b intimate piano |
-| `mus_finale` | take-a | `family-d/mus_finale/take-a/symphony_mesh.wav` | Symphony over the four-tower mesh light show; no single central impact. | take-b strings+organ |
-| `mus_credits` | take-a | `family-a2/mus_credits/take-a/credits_strings_harp.wav` | Warm strings-harp processional after the finale; the organ take is grander but colder. | take-b organ |
+| `prologue-1` | narrator | **meditative-narrator** | 13.3 s | george (11.2 s) and broadcaster (15.9 s) — **both vetoed 2026-11-24** |
+| `prologue-2` | narrator | **meditative-narrator** | 23.7 s | george (18.9 s) and broadcaster (21.7 s) — **both vetoed** |
+| `prologue-3` | narrator | **meditative-narrator** | 17.7 s | george (13.4 s) and broadcaster (15.1 s) — **both vetoed** |
+| `prologue-4` | narrator | **meditative-narrator** | 18.8 s | george (13.8 s) and broadcaster (17.4 s) — **both vetoed** |
+| `staff-line1` | staff, B5 | alice-warm | 3.2 s | matilda-warm (3.1 s) — **vetoed** |
+| `staff-line2` | staff, B5 | alice-warm | 10.2 s | matilda-warm (10.6 s) — **vetoed** |
+| `staff-line3` | staff, lift | alice-warm — **being replaced, see below** | 3.4 s | matilda-warm (3.3 s) — **vetoed** |
+| `staff-line4` | staff, hand-over | alice-warm | 3.0 s | matilda-warm (3.1 s) — **vetoed** |
+| `staff-line5` | staff, callback | alice-warm | 2.1 s | matilda-warm (2.2 s) — not in the veto list |
+| `external-ai` | invader | adam-firm | 5.8 s | steadfast-cold (6.6 s) — **vetoed** |
+| `local-ai` | MacBook | sarah-reassuring | 5.9 s | river-neutral (6.3 s) |
+| `player-accept` | player | harry-fierce | 1.5 s | harry-fierce-alt (same voice, flatter settings) |
 
-**Default:** take-a for every cue except `mus_abduction`, where take-b is the full arc.
+**`staff-line3` is the one line you should skip for now.** Two independent local ASR passes agree
+that the shipped Alice take says *"turn right to the left, fifth floor"*; the authored line is
+*"turn right to the lift."* The Matilda take says "lift" correctly — but swapping voices for one
+line inside a five-line conversation trades a wrong word for a wrong person. A replacement is being
+generated in **Alice's** voice now; when it passes its ASR check, this row is the only one that
+changes, and you will get the new file before the veto pass closes.
 
----
+**Why meditative for the narrator — changed by your veto on 2026-11-24.** George was picked for
+expressiveness. You struck george *and* the broadcaster on all four paragraphs, which leaves
+meditative as the only surviving read. It is the slowest of the three, and the difference is not
+cosmetic:
 
-## Rights and provenance
+| Set | prologue-1 | -2 | -3 | -4 | Total |
+|---|---:|---:|---:|---:|---:|
+| george (vetoed) | 11.15 s | 18.90 s | 13.37 s | 13.79 s | **57.21 s** |
+| broadcaster (vetoed) | 15.93 s | 21.69 s | 15.09 s | 17.37 s | 70.08 s |
+| **meditative (now chosen)** | 13.33 s | 23.68 s | 17.74 s | 18.76 s | **73.51 s** |
+| currently in `assets/audio/prologue/` | 11.42 s | 18.20 s | 13.10 s | 13.28 s | 56.00 s |
 
-- Greensleeves melody: public domain; all arrangements are original.
-- No Decca/UMG 1981 recording is sampled or reproduced.
-- No official HKU anthem is used.
-- Soundfont: `MuseScore_General.sf3` (MIT); licence note ships in `LICENSES.md`.
-- Each cue folder carries `NOTES.md` / `style.json` provenance.
+So the opening gets **16.3 s longer than george would have made it, and 17.5 s longer than what
+ships today.** That is a change to the prologue's pace, not only to its voice, and it is recorded
+here so nobody later calls it a regression.
 
-## Checks run
+**What is in `assets/` today is not any of the audition takes — but it is George.** The four shipped
+files total 56.00 s and match no column above; `clips.json` records `voiceId: JBFqnCBsd6RMkjVDRZzb`
+on all four, which is the George voice, in a different take from the audition set. So the prologue
+that ships today is a George read, and you have now vetoed George. Integration replaces all four with
+the meditative takes, so nothing currently wired is a vetoed take — and nothing currently wired is
+a vetted one either.
 
-- `npm run check:voice` — PASS (5 Staff clips, 2 AI alert clips, hashes, durations, derived intro timing).
-- `node_modules/.bin/tsc --noEmit` — PASS.
-- `npm run check:opening` — PASS (all opening state/world/NPC/integration checks).
+**Your veto also settled the `staff-line3` fix.** You struck the one clean take (matilda), which
+confirms the rule the replacement is being built to: the new reading stays in **Alice's** voice, so
+the NPC never changes speaker inside a five-line conversation.
+
+## Vetoes received — 2026-11-24
+
+Recorded verbatim, in the order given. Thirteen of the fourteen resolve to an audition file; the
+fourteenth is garbled in transit and is listed as given rather than guessed at.
+
+| # | As given | Resolves to | Effect |
+|---|---|---|---|
+| 1 | `prologue-1--george-expressive` | same | narrator take removed |
+| 2 | `prologue-1--steadfast-broadcaster` | same | narrator take removed |
+| 3 | `prologue-2--george-expressive` | same | narrator take removed |
+| 4 | `prologue-2--steadfast-broadcaster` | same | narrator take removed |
+| 5 | `prologue-3--george-expressive` | same | narrator take removed |
+| 6 | `prologue-3--steadfast-broadcaster` | same | narrator take removed |
+| 7 | `prologue-4--george-expressive` | same | narrator take removed |
+| 8 | `prologue-4--steadfast-broadcaster` | same | narrator take removed |
+| 9 | `staff-line1--matilda-warm` | same | alternative removed; alice stands |
+| 10 | `staff-line2--matilda-warm` | same | alternative removed; alice stands |
+| 11 | `staff-line3--matilda-warm` | same | alternative removed; alice stands |
+| 12 | `staff-line4--matilda-warm` | same | alternative removed; alice stands |
+| 13 | `local-ai--sarah-reassuring` | **unresolved — see note** | none applied |
+| 14 | `external-ai--steadfast-cold` | same | alternative removed; adam-firm stands |
+
+**Note on #13.** The string does not match any file on the audition page in that form. The line id
+is 8 characters, and `local-ai` is the only 8-character line id in the cast, so it most likely
+begins `local-ai--`. The voice half does not match `sarah-reassuring` (16) or `river-neutral` (13)
+in length either, so I am not guessing: **no take has been removed on the strength of #13.**
+`local-ai` still ships as chosen (chosen `sarah-reassuring`, alternative `river-neutral`). One word
+from you settles it.
+
+Two things deliberately *not* changed by this list: `staff-line5--matilda-warm` was not named, so
+both of that line's takes stay; and no music take was named, so the whole score table stands.
+
+Every take is ≤ 23.7 s and none clips. Nothing is wired into the game yet — integration
+comes after your veto pass, with subtitles matched to these exact files.
+
+## Rights
+
+- Greensleeves: public domain melody, **our** arrangement. Never the 1981 Decca/UMG
+  recording.
+- 明我以德: melody used with the owner's authorisation for this hackathon, original
+  arrangement, credited as **曲：許冠傑　詞：林夕　© 2018 Development & Alumni Affairs
+  Office, HKU. All Rights Reserved.**; no sampling of the official recording.
+- Everything else is original to this project.
