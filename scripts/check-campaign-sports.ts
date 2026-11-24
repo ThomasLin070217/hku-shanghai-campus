@@ -213,7 +213,12 @@ group('(e) an already-open door still advances the campaign and the ending finis
 
 group('(f) credits and the campaign rescue banner read correctly',()=>{
  const credits=creditsMarkup();
- for(const text of ['BARRIER 2030','Thomas · Harry · Frost · WHL','HKU Shanghai · CDS'])assert.ok(credits.includes(text),`credits show ${text}`);
+ // The owner's naming ruling (2026-11-23): one name, "HKU: Barrier 2030", no subtitle; the
+ // subtitle slot carries "A CDS campus story". Assert that, not the retired all-caps form.
+ for(const text of ['HKU: Barrier 2030','A CDS campus story','Thomas · Harry · Frost · WHL','HKU Shanghai · CDS'])assert.ok(credits.includes(text),`credits show ${text}`);
+ assert.doesNotMatch(credits,/BARRIER 2030/,'the credits never carry the retired all-caps title');
+ const heading=credits.match(/<h2>([^<]*)<\/h2>/);
+ assert.equal(heading?.[1],'HKU: Barrier 2030','the credits heading is exactly the ruled name');
  assert.ok(credits.includes('>Play again<'),'credits offer Play again');
  assert.ok(credits.includes('>Chapters<'),'credits offer Chapters');
  assert.doesNotMatch(credits,/The End/i,'the credits do not pretend the story ends at the sports hall');
