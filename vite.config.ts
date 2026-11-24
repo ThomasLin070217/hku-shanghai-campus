@@ -38,12 +38,16 @@ function audioCompressionPlugin():Plugin{
  };
 }
 
+/** The one version label: the repo's VERSION file, injected into every build. */
+const BUILD_VERSION=(()=>{try{return readFileSync(resolve('VERSION'),'utf8').trim();}catch{return '0.0.0';}})();
+
 export default defineConfig(({mode})=>{
  const review=mode==='review';
  const out=review?'dist-review':mode==='playtest'?'dist-playtest':'dist';
  const input:Record<string,string>={main:resolve('index.html'),interiors:resolve('interiors.html'),characters:resolve('characters.html')};if(review){input.assessment=resolve('assessment.html');input.aiStudy=resolve('ai-study.html');}
  return {
   base:'./',
+  define:{__BUILD_VERSION__:JSON.stringify(BUILD_VERSION)},
   server:{port:5184,strictPort:true,watch:{usePolling:true,interval:500}},
   build:{outDir:out,assetsInlineLimit:(path)=>/\.(wav|mp3)$/i.test(path)?false:undefined,chunkSizeWarningLimit:850,rollupOptions:{
    input,

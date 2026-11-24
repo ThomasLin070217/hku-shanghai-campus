@@ -1,5 +1,6 @@
 import {markLocalModelCleared,resetWorldThreat,tryPurgeWorld,type WorldThreatStorage} from '../gameplay/worldThreat';
 import {clearProgress,type ProgressStorage} from '../levels/resetProgress';
+import {BUILD_LABEL} from '../version';
 import type {Chapter,ChapterContext} from './types';
 
 /** The ending has no walking leg: radius 0, the host never emits its entry event. */
@@ -57,6 +58,7 @@ export function creditsMarkup():string{
   +'<p class="ending-subtitle">A CDS campus story</p>'
   +'<p class="ending-team">Thomas · Harry · Frost · WHL</p>'
   +'<p class="ending-place">HKU Shanghai · CDS</p>'
+  +'<p class="ending-build">'+BUILD_LABEL+'</p>'
   +'<div class="ending-actions"><button type="button" id="ending-play-again">Play again</button><a id="ending-chapters" href="?experience=levels">Chapters</a></div>'
   +'</section>';
 }
@@ -118,6 +120,7 @@ body:has(#ending-credits) :is(.opening-hud,.opening-hearts,.opening-mapcard,#inv
 #ending-credits-card .ending-subtitle{margin:10px 0 0;font:600 12px/1.2 ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;letter-spacing:.24em;color:#74e6b4;text-transform:uppercase}
 #ending-credits-card .ending-team{margin:26px 0 0;font:400 clamp(17px,2.4vw,21px)/1.4 Georgia,"Times New Roman",serif;color:#e8f4ee}
 #ending-credits-card .ending-place{margin:8px 0 0;font:600 11px/1.2 ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;letter-spacing:.2em;color:#a4bcb1;text-transform:uppercase}
+#ending-credits-card .ending-build{margin:6px 0 0;font:500 10px/1.2 ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;letter-spacing:.16em;color:#5f7a6e}
 #ending-credits-card .ending-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:34px 0 0}
 #ending-credits-card .ending-actions button,#ending-credits-card .ending-actions a{display:inline-block;padding:11px 20px;border:1px solid rgba(116,230,180,.46);border-radius:2px;background:transparent;color:#e8f4ee;font:600 11px/1 ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;cursor:pointer}
 #ending-credits-card .ending-actions #ending-play-again{background:#74e6b4;border-color:#74e6b4;color:#04120c;box-shadow:0 0 30px rgba(116,230,180,.24)}
