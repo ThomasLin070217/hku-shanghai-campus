@@ -39,6 +39,22 @@ recovery.stopPreviews();assert.equal(recovery.diagnostics.previewShots,0);
 const pendingPreview=recovery.preview('ui');recovery.stopPreviews();await pendingPreview;assert.equal(recovery.diagnostics.previewShots,0,'closing settings must cancel late preview');
 recovery.apply({...DEFAULT_SETTINGS,muted:true});assert.equal(recovery.diagnostics.masterGain,0);assert.equal(recovery.diagnostics.ambientEligible,false);
 recovery.dispose();assert.equal(recovery.buffers.size,0);
+/* A checkpoint auto-start ticks the chapters before the first gesture, when the mixer
+   still has no context. The bed must be held, not dropped, or the whole run stays on the
+   opening's stage mapping (observed on ?checkpoint=b4-inside, 2026-11-25). */
+{
+ const queued=new CampusAudio(DEFAULT_SETTINGS),scores:(string|null)[]=[];
+ Object.assign(queued,{story:{setScore:(id:string|null)=>{scores.push(id);},suspended:true,voices:0,pause(){},dispose(){}}});
+ queued.playScore('mus_puzzle',true);
+ assert.deepEqual(scores,[],'a bed requested before the mixer runs is held, not dropped');
+ await queued.start();
+ assert.deepEqual(scores,['mus_puzzle'],'the first start applies the held bed to the story bus');
+ queued.stopScore();
+ assert.deepEqual(scores,['mus_puzzle',null],'stopScore hands the bed back and clears the held one');
+ queued.playScore('mus_lawn',true);queued.stopScore();await queued.start();
+ assert.deepEqual(scores,['mus_puzzle',null,null],'a bed stopped before the start is not applied later');
+ queued.dispose();
+}
 Object.assign(globalThis,{fetch:(_url:URL,{signal}:{signal:AbortSignal})=>new Promise((_resolve,reject)=>{signal.addEventListener('abort',()=>{aborted++;reject(Error('aborted'));},{once:true});})});
 const unloading=new CampusAudio(DEFAULT_SETTINGS),pendingLoad=unloading.start();unloading.dispose();await pendingLoad;assert.equal(aborted,17);assert.equal(unloading.buffers.size,0);assert.equal(unloading.diagnostics.ambientStarts,0);
 console.log('PASS complete non-story core startup, failed-only retry, concurrent loading, singleton ambience, paused previews, late preview cancellation, mute and in-flight abort');
