@@ -46,7 +46,10 @@ def score_events(path):
         'anacrusis': (j.get('anacrusis') or {}).get('eighths', j.get('anacrusis_eighths')),
         'tempo': j.get('tempo_map'),
         'spans': [s['bar_zero_based'] for s in (j.get('meter_spans') or [])],
-        'keynote': next((p for p, _ in out if p is not None), None),
+        # The first sounded pitch, NOT the key. v11 opens on F and later
+        # modulates to A minor, so calling this "keynote" read a local fact as a
+        # global one; the earlier table did exactly that.
+        'first_pitch': next((p for p, _ in out if p is not None), None),
     }
     return out, meta
 
@@ -56,11 +59,17 @@ def analyse(label, events, meta):
     hits = [i for i in range(len(pcs) - len(MOTIF) + 1) if pcs[i:i + len(MOTIF)] == MOTIF]
     # transposition-invariant: search every offset, report the best
     best = (99, None, None)
+    near = []
     for off in range(12):
         m = [(x + off) % 12 for x in MOTIF]
         for i in range(len(pcs) - len(m) + 1):
             d = sum(1 for a, b in zip(pcs[i:i + len(m)], m) if a != b)
             if d < best[0]: best = (d, i, off)
+            # Report the near matches too, not only the single best one. An
+            # earlier draft of the analysis read "nearest 1 of 8 wrong" as "the
+            # tune is absent", when three separate windows are within one note:
+            # a florid arrangement quoting the theme, not a piece that lacks it.
+            if d <= 1: near.append((i, off, d))
     dotted = sum(1 for i in range(len(pitched) - 1)
                  if (round(pitched[i][1] * 2), round(pitched[i + 1][1] * 2)) in DOTTED)
     print('%-6s %d notes, %d eighths' % (label, len(pitched), sum(d for _, d in pitched)))
@@ -68,10 +77,12 @@ def analyse(label, events, meta):
     print('       first 12 durs   ', ' '.join('%g' % d for _, d in pitched[:12]))
     print('       exact motif at  ', hits or 'not present')
     print('       nearest match    %d of 8 notes differ (index %d, offset %+d)' % best)
+    print('       within 1 of 8    %d windows %s' % (
+        len(near), [(i, '%+d' % off) for i, off, _ in near[:4]] or ''))
     print('       dotted 1.5+0.5   %d occurrences' % dotted)
     if meta:
-        print('       bars %s, anacrusis %s, keynote pc %s' % (
-            meta['bars'], meta['anacrusis'], None if meta['keynote'] is None else meta['keynote'] % 12))
+        print('       bars %s, anacrusis %s, first-pitch pc %s' % (
+            meta['bars'], meta['anacrusis'], None if meta['first_pitch'] is None else meta['first_pitch'] % 12))
         if meta['spans']: print('       metre spans at  ', meta['spans'])
     print()
 
