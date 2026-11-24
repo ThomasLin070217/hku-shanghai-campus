@@ -582,7 +582,11 @@ export function createOpeningExperience(
    robots:active&&alert&&hunting?fleet.units.map((unit,index)=>({id:'opening-robot-'+index,state:unit.state,position:unit.position})):[]});
   const item=target();
   const campaignGoal=campaign()?.objective()??null;
-  const goal:readonly number[]|null=campaignGoal?campaignGoal.target:story.stage==='to_b6'?[B4_OFFICE.laptop.x,B4_OFFICE.laptop.y,B4_OFFICE.laptop.z]:story.stage==='return_b5'?O.returnPoint:story.stage==='to_b4'||story.stage==='complete'?O.handoff:O.staff;
+  // The crowd stage's goal is the gathering, not the B5 staff: the students are what the
+  // player can see from the spawn, and pointing the arrow and the readout at the staff put
+  // an 86 m objective next to a 10 m crowd (playtest, 2026-11-24). `map.ts` reads the same
+  // `O.crowdStart` anchor, so the minimap and the HUD agree.
+  const goal:readonly number[]|null=campaignGoal?campaignGoal.target:story.stage==='crowd'?O.crowdStart:story.stage==='to_b6'?[B4_OFFICE.laptop.x,B4_OFFICE.laptop.y,B4_OFFICE.laptop.z]:story.stage==='return_b5'?O.returnPoint:story.stage==='to_b4'||story.stage==='complete'?O.handoff:O.staff;
   const prompt=active&&!g.paused?(item?'F · '+item.label:story.laptop_acquired&&story.stage!=='complete'?'C · Open the MacBook':''):'';
   const sound=audio.diagnostics;
   let cinema:OpeningCinema;

@@ -78,5 +78,9 @@ disposeAsset(baseline.root);disposeAsset(opening.root);w.dispose();console.log('
  assert.ok(d<15,`the crowd gathering is ${d.toFixed(1)} m from the fresh spawn; the objective says "join the crowd"`);
  const map=fs.readFileSync('src/opening/map.ts','utf8');
  assert.match(map,/story\.stage==='crowd'\?O\.crowdStart/, 'the crowd-stage objective marker must target the gathering');
+ // The minimap and the HUD read different files, and fixing only one is exactly the defect
+ // the playtest found: a correct minimap beside an 86 m "m to objective" readout.
+ const hud=fs.readFileSync('src/opening/experience.ts','utf8');
+ assert.match(hud,/story\.stage==='crowd'\?O\.crowdStart/, 'the HUD objective distance must target the gathering too');
  console.log(`PASS crowd-stage objective marker sits ${d.toFixed(1)} m from the fresh spawn`);
 }
