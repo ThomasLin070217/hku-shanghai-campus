@@ -12,7 +12,9 @@ set -uo pipefail
 cd "$(dirname "$0")/.." || exit 2
 
 patterns=(
-  'sk-[A-Za-z0-9_-]{20,}'
+  # The lookbehind is load-bearing: without it, our own screenshot names
+  # ("task-E-fix2-…") match, because "ta|sk-E-f|ix2" contains the shape.
+  '(^|[^A-Za-z0-9_])sk-[A-Za-z0-9_-]{20,}'
   'ntn_[A-Za-z0-9]{20,}'
   'ghp_[A-Za-z0-9]{20,}'
   'github_pat_[A-Za-z0-9_]{20,}'
@@ -37,7 +39,11 @@ for pattern in "${patterns[@]}"; do
     esac
     hits=$((hits + 1))
     printf '%s\n' "$line" | mask
-  done < <(git grep -nEI "$pattern" -- . ':!docs' ':!*.md' 2>/dev/null || true)
+  # No path is excluded. An earlier version skipped docs/ and *.md on the
+  # theory that prose can mention "sk-" safely — but a key pasted into a
+  # markdown file is exactly the leak this exists to catch, and the pattern
+  # already requires 20+ credential characters, so prose cannot trip it.
+  done < <(git grep -nEI "$pattern" -- . 2>/dev/null || true)
 done
 
 if [ -d dist ]; then
