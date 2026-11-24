@@ -32,7 +32,7 @@ builder. `family-b2` is still on disk if you prefer any of it; nothing has been 
 | 1 | `mus_title` | Title / menu, before the prologue | `family-d/take-a` symphony_processional | 117.8 s | `take-b` strings_harp_processional (118.6 s) |
 | 2 | `mus_prologue` | Magic Hour cinematic, camera over the campus | `family-a/take-a` symphony_warm | 55.8 s | `take-b` strings_harp (55.8 s) |
 | 3 | `mus_invitation` | Phone invitation, crowd on the plaza | `family-a2/take-a` invitation_music_box | 16.0 s | `take-b` invitation_piano (21.8 s) |
-| 4 | `mus_dinner` | High Table Dinner bed, B5 | `family-a/take-b` viennese_waltz_dinner | 57.9 s | `a2/take-a` dinner_waltz (36.9 s) |
+| 4 | `mus_dinner` | High Table Dinner bed, B5 | `family-a2/take-b` dinner_processional (**replaced 2026-11-24 — see below**) | 53.3 s | `a/take-a` symphony_processional (60.7 s) |
 | 5 | `mus_dinner_toast` | The toast moment | `family-a2/take-a` toast_brass | 7.5 s | `take-b` toast_strings_brass (8.2 s) |
 | 6 | `mus_office` | B4 side lobby, lift, 5F corridor | `family-a2/take-a` office_piano_sparse | 43.6 s | `take-b` office_piano_rolling (45.7 s) |
 | 7 | `mus_abduction` | Lobby CCTV → feed cut → 5F servo/shout/door | `family-b/take-a` abduction_slowmarch | 32.7 s | `take-b` slowmarch_b (38.1 s) |
@@ -49,6 +49,24 @@ builder. `family-b2` is still on disk if you prefer any of it; nothing has been 
 | 18 | `mus_credits` | Credits, Greensleeves processional | `family-a2/take-a` credits_strings_harp | 58.2 s | `a/take-a` symphony full (48.2 s) |
 
 Tell me only the numbers you want swapped. Everything else stays as listed.
+
+### Cue 4 replaced — the owner vetoed the walk-to-ceremony music (2026-11-24)
+
+The owner: 「其实有点不太喜欢，就是学生走到开台步典礼那一段的音乐」. That segment is story stage
+`to_b5`, and `openingScore()` (`src/opening/experience.ts:441`) maps it to `mus_dinner`. Measured,
+not assumed: the binary that shipped in `assets/audio/story/music/mus_dinner.mp3` is **37.0 s**,
+which is `family-a2/mus_dinner/take-a/dinner_waltz` to the tenth of a second — a **Viennese waltz**
+in 3/4 at 156 quarter/min, `oom-pah-pah` under the violin. That is a ballroom idiom, and it was
+looping under students walking into a High Table ceremony, which is what reads as 莫名其妙.
+
+The same family already holds the take written for this: `take-b` **dinner_processional** — 6/8 at
+72 dotted-quarter, horn-call intro, timpani downbeat, low strings. It is now the shipped
+`mus_dinner`. Rights are unchanged (Greensleeves PD, arrangement ours, MuseScore_General.sf3).
+
+This row also caught a real inconsistency: the table used to say the chosen take was
+`family-a/take-b` viennese_waltz_dinner at 57.9 s, but the shipped binary was 37.0 s — the
+*alternative* on that row. The list and the asset disagreed, and the asset was the waltz either
+way. Both waltz candidates are out now, so the disagreement cannot recur through this row.
 
 ### Measured tail audit
 
