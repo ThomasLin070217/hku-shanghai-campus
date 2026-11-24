@@ -17,7 +17,7 @@
 | Playable build | `git checkout v9.1.0 && npm ci && npm run build` → `dist/` |
 | Source of that build | the `v9.1.0` git tag |
 | Demo video | `demo/` (recorded from the `v9.1.0` build after a full playtest) |
-| Slides | `submission/slides/` |
+| Slides | `submission/slides/` — built from the audited outline (`.scratch/slides-2026-11-24/outline.md`) after the video is recorded, so the deck and the film show the same build |
 | Known issues | `submission/KNOWN-ISSUES.md` |
 | Licences | `submission/LICENSES.md` |
 

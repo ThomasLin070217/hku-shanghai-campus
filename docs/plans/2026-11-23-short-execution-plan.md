@@ -1,4 +1,4 @@
-# HKU Shanghai at War — short execution plan
+# HKU: Barrier 2030 — short execution plan
 
 **Date:** 2026-11-23
 **Goal:** finish the game, tag `v9.1.0`, play it end to end, then record the submission video. Owner approves the plan before execution.
@@ -81,7 +81,7 @@
 
 ## Owner decisions — settled
 
-1. Game name: **HKU Shanghai at War**, subtitle “BARRIER 2030”.
+1. Game name: **HKU: Barrier 2030** — one name, no separate subtitle; the former subtitle slot carries “A CDS campus story” (superseding ruling, 2026-11-24).
 2. Audition scope: I choose takes and hand the owner a veto list; no per-item questions.
 3. Upload: none from this repo. Owner pushes the tag, deploys, sends the link.
 4. Voice provider: ElevenLabs, quota free; main-story lines first.
