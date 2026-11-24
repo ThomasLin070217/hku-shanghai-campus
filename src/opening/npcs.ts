@@ -1,7 +1,7 @@
 import * as T from 'three';
 import {createCharacter} from '../characters/character';
 import {NPC_APPEARANCES,type Appearance} from '../characters/config';
-import {OPENING} from './spatialLayout';
+import {DINNER_LAYOUT,OPENING,dinnerHallPoint} from './spatialLayout';
 
 /** Opening-only cast. Keep the coordinator and original student IDs stable. */
 export const OPENING_CAST:{position:readonly [number,number,number];appearance:Appearance;yaw:number}[]=[
@@ -35,15 +35,40 @@ export function createOpeningNPCs(){
  // nobody is hidden while still inside the doorway or still in the hall.
  const DOOR={x:OPENING.b5.door,z:OPENING.b5.z1+2.6,speed:1.9,reach:.8};
  let leaving=false;
- const leaveTargets:readonly T.Vector3[]=OPENING_CAST.map((_,index)=>new T.Vector3(
-  DOOR.x+((index%5)-2)*.62+((index%2)?.18:-.18),
-  OPENING_CAST[index].position[1],
-  DOOR.z+(index%3)*.9,
- ));
+ // Nobody walks through a table. The first version of this walk-out sent every guest in a
+ // straight line to the door, and the lines that start east of the rows cut across them. They
+ // walk out down the aisles instead: sideways to the nearest free lane, north along it, west to
+ // the door. The lanes are derived from the tables themselves, so moving the tables moves the
+ // routes.
+ // `DINNER_LAYOUT.tables` are in authored hall coordinates, and the 1.2 x 5.4 footprint swaps
+ // axes when `dinnerHallPoint` rotates them into the world — the same transform and the same
+ // width/length usage as the collision boxes in `navigation.ts:58`.
+ const tableRects=DINNER_LAYOUT.tables.map(([a,b])=>{
+  const [x,z]=dinnerHallPoint(a,b);
+  return{x0:x-DINNER_LAYOUT.tableLength/2,x1:x+DINNER_LAYOUT.tableLength/2,
+   z0:z-DINNER_LAYOUT.tableWidth/2,z1:z+DINNER_LAYOUT.tableWidth/2};
+ });
+ const spans=tableRects.map(r=>[r.x0,r.x1] as [number,number]).sort((a,b)=>a[0]-b[0]);
+ const occupied:[number,number][]=[];
+ for(const s of spans){const last=occupied[occupied.length-1];
+  if(last&&s[0]<=last[1]+.05)last[1]=Math.max(last[1],s[1]);else occupied.push([s[0],s[1]]);}
+ const NORTH_LANE_Z=Math.max(...tableRects.map(r=>r.z1))+1.5;
+ const aisles:number[]=[OPENING.b5.x0+2.5];
+ for(let i=0;i<occupied.length-1;i++)aisles.push((occupied[i][1]+occupied[i+1][0])/2);
+ aisles.push(OPENING.b5.x1-1.5);
+ const nearestAisle=(x:number)=>aisles.reduce((best,a)=>Math.abs(a-x)<Math.abs(best-x)?a:best,aisles[0]);
+ const leavePaths:readonly T.Vector3[][]=OPENING_CAST.map((spec,index)=>{
+  const [x,y,z]=spec.position,aisleX=nearestAisle(x);
+  // `max` because z grows northward: a guest already north of the lane must not walk back in.
+  const exitZ=Math.max(z,NORTH_LANE_Z),spread=DOOR.x+((index%5)-2)*.62+((index%2)?.18:-.18);
+  return [new T.Vector3(aisleX,y,z),new T.Vector3(aisleX,y,exitZ),new T.Vector3(DOOR.x,y,exitZ),
+   new T.Vector3(spread,y,DOOR.z+(index%3)*.9)];
+ });
+ const pathIndex=OPENING_CAST.map(()=>0);
  const startStaffTalk=()=>{staffTarget=new T.Vector3(61.5,.02,-59.0);};
  const beginLeaving=()=>{leaving=true;staffTarget=null;};
  const reset=()=>{
-  staffTarget=null;leaving=false;
+  staffTarget=null;leaving=false;pathIndex.fill(0);
   actors.forEach((actor,index)=>{
    actor.root.position.fromArray([...OPENING_CAST[index].position]);actor.root.rotation.y=OPENING_CAST[index].yaw;
    actor.root.visible=true;
@@ -56,10 +81,16 @@ export function createOpeningNPCs(){
    let anyVisible=false;
    actors.forEach((actor,index)=>{
     if(!actor.root.visible)return;
-    const target=leaveTargets[index];
-    const dx=target.x-actor.root.position.x,dz=target.z-actor.root.position.z;
-    const distance=Math.hypot(dx,dz);
-    if(distance<=DOOR.reach){actor.root.visible=false;return;}
+    const path=leavePaths[index];
+    let waypoint=path[Math.min(pathIndex[index],path.length-1)];
+    let dx=waypoint.x-actor.root.position.x,dz=waypoint.z-actor.root.position.z;
+    let distance=Math.hypot(dx,dz);
+    while(distance<=DOOR.reach){
+     if(pathIndex[index]>=path.length-1){actor.root.visible=false;return;}
+     pathIndex[index]++;waypoint=path[pathIndex[index]];
+     dx=waypoint.x-actor.root.position.x;dz=waypoint.z-actor.root.position.z;
+     distance=Math.hypot(dx,dz);
+    }
     const step=Math.min(distance,DOOR.speed*dt);
     actor.root.position.x+=dx/distance*step;actor.root.position.z+=dz/distance*step;
     actor.root.rotation.y=Math.atan2(-dx,-dz);
