@@ -298,7 +298,7 @@ export function createOpeningExperience(
   // until it is open — but only once the errand has armed it (Addendum 5 C.3): a player who
   // explores B4/B5 before the hand-off must not spend the one abduction on an empty office.
   const atFifth=g.body.position.y>B4_OFFICE.floorTop-1.5&&g.body.position.y<B4_OFFICE.floorTop+3;
-  const doorItem=atFifth&&officeDebug().armed&&!officeDebug().doorOpen
+  const doorItem=atFifth&&!officeDebug().doorOpen
    ?{id:'opening-office-door',position:[B4_OFFICE.door.x0-.35,B4_OFFICE.floorTop+1.15,B4_OFFICE.door.centre] as [number,number,number],label:"Open the principal's office"}
    :null;
   const laptopItem={id:'opening-laptop',position:[B4_OFFICE.laptop.x,B4_OFFICE.laptop.y,B4_OFFICE.laptop.z] as [number,number,number],label:'Pick up the presentation MacBook'};
@@ -569,7 +569,12 @@ export function createOpeningExperience(
   atmo()?.update(dt,{incident:sealed,curtain:sealed,paused:g.paused});
   if(g.paused&&!wasPaused&&modal!=='staff')audio.stopOpeningCues();wasPaused=g.paused;
   const surface=explorer.world.surface(g.body.position.x,g.body.position.z,g.body.position.y);
-  audio.update(explorer.student.gait,g.paused||!active,surface,g.body.position,explorer.camera.position,g.yaw);
+  // The prologue holds the game paused while it owns the screen. Handing that pause to the
+  // mixer calls story.pause(), which drops every music loop — so the cinematic ran with no
+  // bed under the narration (owner, 2026-11-24: "音乐呢"). A pause by anything else still
+  // silences it, and the opening cues still stop below.
+  const audioPaused=(g.paused&&g.pauseReason!=='prologue')||!active;
+  audio.update(explorer.student.gait,audioPaused,surface,g.body.position,explorer.camera.position,g.yaw);
   audio.story?.update({stage:story.stage,dark:alert,chasing:r.chasing,music:openingScore(story.stage,alert,r.chasing),player:g.body.position,dt,
    robots:active&&alert&&hunting?fleet.units.map((unit,index)=>({id:'opening-robot-'+index,state:unit.state,position:unit.position})):[]});
   const item=target();
