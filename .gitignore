@@ -20,3 +20,6 @@ dist-review/
 
 # Local design review cache; deliverable captures live in evidence/
 .impeccable/
+
+# Local audition pages, experiment output and SDD scratch (996 MB)
+.scratch/

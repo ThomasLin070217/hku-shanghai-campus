@@ -29,15 +29,15 @@
     },
     {
       "id": "staff-line3",
-      "text": "Take the side door, turn right to the lift. Fifth floor.",
+      "text": "Take the side door, turn right. The lift is ahead, fifth floor.",
       "file": "assets/audio/npc/staff/staff-line3.wav",
       "sourceStart": 0.0,
-      "sourceEnd": 3.622,
-      "duration": 3.622,
+      "sourceEnd": 3.808,
+      "duration": 3.808,
       "sampleRate": 44100,
-      "sha256": "da54ac09300358d639de9d26551f2b93205d349091cef96d22894e23b8d27e7b",
-      "rmsDb": -21.2,
-      "peakDb": -2.7
+      "sha256": "d9a2a8ef67cf24c450b54e8a4c221f850d96e4a30cbebc5691f54ceba39ff9ef",
+      "rmsDb": -21.0,
+      "peakDb": -3.5
     },
     {
       "id": "staff-line4",

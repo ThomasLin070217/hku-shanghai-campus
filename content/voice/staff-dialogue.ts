@@ -11,7 +11,7 @@ export const STAFF_DIALOGUE = {
   intro: [
     "Hey — you're one of the Student Ambassadors, right?",
     "Could you do me a quick favour? We need the presentation MacBook from Building 4 — the 5F principal's office. It's on the desk. Mind picking it up? We're running a bit behind.",
-    'Take the side door, turn right to the lift. Fifth floor.',
+    'Take the side door, turn right. The lift is ahead, fifth floor.',
   ],
   thanks: "Perfect, thanks! Just bring it back here when you've got it.",
   repeat: 'Hey — any luck with that laptop?',
