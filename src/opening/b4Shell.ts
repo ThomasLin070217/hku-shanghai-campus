@@ -123,7 +123,7 @@ interface OfficeMats{
  callPlate:T.Material;callLamp:T.Material;landingFloor:T.Material;landingWall:T.Material;
  landingCeiling:T.Material;officeDoor:T.Material;officePlate:T.Material;officeText:T.Material;
  /** E.8's dressing: the trolley's steel, the evacuation notice, the dying corridor panel. */
- trolleyFrame:T.Material;trolleyDeck:T.Material;evacPlate:T.Material;evacText:T.Material;flicker:T.Material;
+ trolleyFrame:T.Material;trolleyDeck:T.Material;trolleyLinen:T.Material;evacPlate:T.Material;evacText:T.Material;flicker:T.Material;
 }
 
 /**
@@ -272,6 +272,15 @@ function buildCorridorDressing(m:OfficeMats){
  for(const sx of [-1,1])box(trolley,'B4_trolley_upright',.03,.95,.03,sx*.27,.475,-.45,m.trolleyFrame);
  box(trolley,'B4_trolley_bar',.60,.03,.03,0,.94,-.45,m.trolleyFrame);
  box(trolley,'B4_trolley_load',.26,.22,.30,.05,.39,.12,m.coat);
+ // Housekeeping, not a bare frame with a black box on it (interior QA, 2026-11-25). Every part
+ // stays inside the .60 × .95 m deck footprint and below the 0.955 m bar, so the footprint the
+ // corridor gates pin and the screen extent `trolley:extent` measures cannot grow.
+ box(trolley,'B4_trolley_deck_upper',.51,.035,.56,0,.60,.02,m.trolleyDeck);
+ for(let i=0;i<3;i++){
+  const fold=box(trolley,'B4_trolley_linen',.42,.055,.30,(i%2?.016:-.012),.6175+.055*(i+.5),.02+(i===1?.016:-.010),m.trolleyLinen);
+  fold.rotation.y=i===1?.09:-.04;
+ }
+ box(trolley,'B4_trolley_linen_folded',.20,.05,.20,-.18,.355,-.15,m.trolleyLinen);
  // The dying panel, on its own material so `b4Office.animateFlicker` owns one panel only.
  const P=B4_OFFICE.dressing.flickerPanel;
  const panel=box(root,'B4_lift_5f_flicker',1.10,.03,.20,P.x,P.y,P.z,m.flicker);
@@ -315,6 +324,7 @@ export function buildB4Shell(){
   callPlate:std('B4 lift call plate',0x2b3234),callLamp:std('B4 lift call lamp',0xffb347,0xffa02e,.25),
   /* E.8's dressing: the trolley's steel and deck, the green evacuation notice, the dying panel. */
   trolleyFrame:std('B4 lobby trolley frame',0x59646a),trolleyDeck:std('B4 lobby trolley deck',0x8a8f91),
+  trolleyLinen:std('B4 trolley linen',0xece7db),
   evacPlate:std('B4 5F evacuation plate',0x1c5e35),evacText:std('B4 5F evacuation lettering',0xe8f4ec,0x6fe0a0,.8),
   flicker:std('B4 5F corridor flicker panel',0xd9e6ea,0xbfe0ee,.9),
  };
