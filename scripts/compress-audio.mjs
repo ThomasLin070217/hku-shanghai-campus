@@ -35,6 +35,7 @@ export function encodingRole(sourcePath){
  const normalized=sourcePath.replaceAll('\\','/');
  const name=basename(normalized);
  if(normalized.includes('/music/')||name.startsWith('mus_'))return 'music';
+ if(/line|prologue|voice|dialogue/i.test(name))return 'voice';
  if(name.startsWith('campus-breeze')||name.startsWith('amb_')||name.replace(/\.wav$/i,'').endsWith('_loop'))return 'ambience';
  return 'effects';
 }
@@ -50,8 +51,8 @@ async function probe(sourcePath,ffprobe){
 export async function compressionPlan(sourcePath){
  const source=resolve(sourcePath),role=encodingRole(source),tools=await resolveTools();
  const media=await probe(source,tools.ffprobe);
- const bitrate=role==='music'?160:role==='ambience'?128:96;
- const channels=role==='ambience'?1:media.channels;
+ const bitrate=role==='music'?160:role==='voice'?128:role==='ambience'?128:96;
+ const channels=role==='ambience'||role==='voice'?1:media.channels;
  // A dual-mono stereo bed measures 3 LU louder than one channel under EBU R128.
  // Summing both channels preserves that program loudness; the default matrix loses 6 dB.
  const downmix=channels===1&&media.channels===2?'pan=mono|c0=c0+c1,alimiter=limit=0.707945:level=false:attack=5:release=50':null;

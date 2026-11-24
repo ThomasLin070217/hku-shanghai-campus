@@ -54,7 +54,7 @@
   "build:review": "tsc --noEmit && vite build --mode review",
   "check:review": "tsx scripts/check-workbuddy.ts",
   "typecheck": "tsc --noEmit",
-  "check:audio-review": "tsx scripts/check-audio-review.ts && tsx scripts/check-story-audio.ts",
+  "check:audio-review": "tsx scripts/check-audio-compression.ts && tsx scripts/check-audio-review.ts && tsx scripts/check-story-audio.ts",
   "check:payload": "tsx scripts/check-payload.ts .scratch/payload-dist",
   "check:remaining": "tsx scripts/check-remaining.ts",
   "check:sign-roads": "tsx scripts/check-sign-roads.ts",
