@@ -207,6 +207,18 @@ measurement-method difference, not a threshold disagreement. Full table in
 `.scratch/music-2026-11-24/mus_prologue-v2/report.md`, whose "Not verified" section is the
 honest limit: nobody has judged the cue by ear yet, and that verdict is yours.
 
+**And it sat a minor third high.** v7 is in C minor; the DSE product's own loop
+(`dse-agent/platform/frontend/public/greensleeves-fm-loop-light-v7.mp3`) pitch-tracks to
+A C D E F E D B G A B C — the tune in A natural minor, and the same key as `mus_office` and
+`mus_invitation` here. So the cue was re-rendered down 3 semitones: every sounding midi in all
+four parts and in `harmony.voicings`, with the chord names following (`Ab→F`, `Cm→Am`, `Bb→G`,
+`G→E`, `G7→E7`). Transposing the melody alone would have left the style-generated harmony in
+C minor; the worker caught that before rendering. Verified afterwards: the new file is the old
+one shifted by exactly 3 semitones (chroma correlation 0.917), top chroma moves from G/D/C/D♯ to
+E/A/C/B, all six level gates still pass (peak −5.35 dBFS, quietest window −39.97 dBFS, tail
+−44.76 dBFS), and the four arrivals are unmoved with an attack at each (+5.19 / +2.05 / +2.92 /
++3.55 dB).
+
 **What is in `assets/` today is not any of the audition takes — but it is George.** The four shipped
 files total 56.00 s and match no column above; `clips.json` records `voiceId: JBFqnCBsd6RMkjVDRZzb`
 on all four, which is the George voice, in a different take from the audition set. So the prologue
