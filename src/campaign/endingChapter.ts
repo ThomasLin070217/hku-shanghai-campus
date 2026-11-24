@@ -145,7 +145,7 @@ export function createEndingChapter():Chapter{
  let ctx:ChapterContext|null=null;
  let hold=0,cardWait=0,clock=0,next=0;
  let started=false,cleared=false,finished=false,released=false;
- let cardResolved=false,cardWatched=false;
+ let cardResolved=false,cardWatched=false,creditsStarted=false;
  let overlay:HTMLElement|null=null,lines:HTMLElement|null=null,barrier:HTMLElement|null=null,credits:HTMLElement|null=null;
 
  function dom(){
@@ -183,13 +183,19 @@ export function createEndingChapter():Chapter{
  }
 
  function showCredits(){
-  if(typeof document==='undefined'||credits)return;
-  credits=document.createElement('div');credits.id='ending-credits';credits.innerHTML=creditsMarkup();
-  document.body.append(credits);
-  requestAnimationFrame(()=>credits?.classList.add('show'));
-  credits.querySelector('#ending-play-again')?.addEventListener('click',()=>playAgain(localStorage,location));
-  // The story is over: pause and release pointer lock so the two buttons are clickable.
-  try{ctx?.explorer.pause('ending');}catch(error){console.error('ending: could not pause the explorer for the credits',error);}
+  if(creditsStarted)return;
+  creditsStarted=true;
+  if(typeof document!=='undefined'&&!credits){
+   credits=document.createElement('div');credits.id='ending-credits';credits.innerHTML=creditsMarkup();
+   document.body.append(credits);
+   requestAnimationFrame(()=>credits?.classList.add('show'));
+   credits.querySelector('#ending-play-again')?.addEventListener('click',()=>playAgain(localStorage,location));
+   // The story is over: pause and release pointer lock so the two buttons are clickable.
+   try{ctx?.explorer.pause('ending');}catch(error){console.error('ending: could not pause the explorer for the credits',error);}
+  }
+  // Deliberately after the pause: the pause drops every story-bus loop, so this
+  // cue goes out on the shared music bus, which the pause does not touch.
+  try{ctx?.music?.('mus_credits');}catch(error){console.error('ending: could not start the credits music',error);}
  }
 
  function attach(c:ChapterContext){

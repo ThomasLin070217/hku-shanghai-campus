@@ -76,6 +76,9 @@ if(openingMode){
   openPanel:id=>{dragControls=document.pointerLockElement!==viewer.renderer.domElement;explorer.openPanel(id==='computer'||id==='settings'?id:'door');},
   closePanel:()=>explorer.closePanel(),resume:()=>dragControls?explorer.enterCompat():explorer.enter(),
   card:showChapterCard,hearts:(experience as {hearts?:HeartsChannel}).hearts,
+  // The credits theme rides the shared music bus, not the story bus: the ending
+  // pauses the explorer, and a story-bus loop is dropped on that same frame.
+  music:name=>(experience as {audio?:{playMusicCue(name:string):void}}).audio?.playMusicCue(name),
  },chapters:CAMPAIGN_CHAPTERS,
  // The save toast belongs to chapter boundaries, not to every save (Ruling 33).
  onChapterBoundary:()=>(experience as {announceSave?:()=>void}).announceSave?.()});

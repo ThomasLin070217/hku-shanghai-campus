@@ -24,6 +24,12 @@ export const OPENING_AUDIO_NAMES=[
  'mus_safe','mus_unease','mus_tension','mus_chase','mus_hope',
  'mus_prologue','mus_invitation','mus_dinner','mus_office','mus_alert','mus_patrol','mus_sports',
 ];
+/**
+ * The ending's closing theme. Registered with the story URL map (so the credits can
+ * load it) but deliberately not in `OPENING_AUDIO_NAMES`: the first click must not
+ * fetch it. The credits ask for it on demand, once, at the moment they appear.
+ */
+export const ENDING_AUDIO_NAMES=['mus_credits'] as const;
 
 /** Current chapter plus one chapter of prefetch. Conditional score cues are added from each live frame. */
 const CHAPTER_AUDIO_NAMES:Readonly<Record<string,readonly string[]>>={

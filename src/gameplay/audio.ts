@@ -2,7 +2,7 @@ import {OPENING_FOLEY} from '../opening/audioAssets';
 import type {Settings} from './save';
 import type {Gait} from '../characters/gait';
 import {STORY_AUDIO_URLS} from './storyAudioAssets';
-import {StoryAudio,OPENING_AUDIO_NAMES} from './storyAudio';
+import {StoryAudio,OPENING_AUDIO_NAMES,ENDING_AUDIO_NAMES} from './storyAudio';
 type Point={x:number;y:number;z:number};
 const audioUrls:Record<string,URL>={
  'select':new URL('../../assets/audio/select.wav',import.meta.url),
@@ -50,7 +50,11 @@ export class CampusAudio {
  private shots=new Map<AudioBufferSourceNode,{group:string;gain:GainNode;panner?:PannerNode;preview:boolean}>();
  private visibility=()=>{if(document.hidden){this.setActive(false);this.stopPreviews();this.stopShots(undefined,true);void this.context?.suspend().catch(()=>{});}};
  constructor(settings:Settings){this.settings={...settings};document.addEventListener('visibilitychange',this.visibility);}
- enableStory(){if(this.story)return;this.story=new StoryAudio(this);for(const name of OPENING_AUDIO_NAMES)this.urls[name]=STORY_AUDIO_URLS[name];Object.assign(this.urls,OPENING_FOLEY);}
+ enableStory(){if(this.story)return;this.story=new StoryAudio(this);for(const name of [...OPENING_AUDIO_NAMES,...ENDING_AUDIO_NAMES])this.urls[name]=STORY_AUDIO_URLS[name];Object.assign(this.urls,OPENING_FOLEY);}
+ /** One-shot score on the shared music bus, so the player's music volume and mute still apply. */
+ playMusicCue(name:string,play=true){
+  this.loadAudioNames([name]).then(()=>{if(play)this.play(name,'music',undefined,.5);});
+ }
  get voiceCount(){return this.shots.size+(this.story?.voices??0);}
  /** Call from a user gesture. Loading failure never blocks movement or throws an unhandled rejection. */
  async start(retryFailed=false){

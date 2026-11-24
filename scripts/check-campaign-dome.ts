@@ -21,6 +21,8 @@ Object.defineProperty(globalThis,'localStorage',{value:storage,configurable:true
 const {WORLD_THREAT_KEY,loadWorldThreat,sealWorld,markLionDefeated,markPowerCut}=await import('../src/gameplay/worldThreat');
 const {createThreatRefresh}=await import('../src/opening/threatRefresh');
 const {createEndingChapter,ENDING_SECONDS}=await import('../src/campaign/endingChapter');
+const {ENDING_AUDIO_NAMES,OPENING_AUDIO_NAMES}=await import('../src/gameplay/storyAudio');
+const {STORY_AUDIO_URLS}=await import('../src/gameplay/storyAudioAssets');
 type ChapterContext=import('../src/campaign/types').ChapterContext;
 type CampaignStage=import('../src/campaign/state').CampaignStage;
 
@@ -34,7 +36,7 @@ const dt=1/60;
 /** The ending chapter headless, with a recording atmosphere whose lift takes `liftSeconds` after release(). */
 function ending(liftSeconds:number|null){
  let stage:CampaignStage='ending',releasedAt:number|null=null,time=0;
- const emitted:string[]=[];
+ const emitted:string[]=[],music:string[]=[];
  const atmosphere={
   release(){releasedAt=time;},restoreSealed(){},reset(){},startIncident(){},update(){},
   snapshot(){const up=liftSeconds!==null&&releasedAt!==null&&time-releasedAt>=liftSeconds;
@@ -42,10 +44,10 @@ function ending(liftSeconds:number|null){
  };
  const settled={then(ok?:()=>void){ok?.();return settled;},catch(){return settled;}} as unknown as Promise<void>;
  const ctx={stage:()=>stage,emit:(e:string)=>{emitted.push(e);if(e==='ending_finished')stage='done';return true;},deviceId:()=>'mac',
-  notify(){},atmosphere:()=>atmosphere,cardSettled:()=>settled,explorer:{pause(){}},
+  notify(){},atmosphere:()=>atmosphere,cardSettled:()=>settled,explorer:{pause(){}},music:(name:string)=>{music.push(name);},
   scene:null,root:()=>null,openPanel(){},closePanel(){},resume(){},card:()=>settled} as unknown as ChapterContext;
  const chapter=createEndingChapter();chapter.attach(ctx);
- return{chapter,emitted,step(seconds:number){for(let i=0;i<Math.round(seconds/dt);i++){time+=dt;chapter.update(dt);}},get time(){return time;},get releasedAt(){return releasedAt;}};
+ return{chapter,emitted,music,step(seconds:number){for(let i=0;i<Math.round(seconds/dt);i++){time+=dt;chapter.update(dt);}},get time(){return time;},get releasedAt(){return releasedAt;}};
 }
 
 group('(a) a purge written in this page is adopted on the next frame, even right after a periodic read',()=>{
@@ -85,6 +87,21 @@ group('(b) a dome that never reports released still gets credits, about 3 s late
  assert.deepEqual(e.emitted,[],'still waiting inside the cap');
  e.step(.7);
  assert.deepEqual(e.emitted,['ending_finished'],'the cap releases the credits');
+});
+
+group('(c) the credits ask for the ending theme, exactly once',()=>{
+ data.clear();sealWorld();markLionDefeated();markPowerCut();
+ const e=ending(5.2);e.step(3.2+dt);e.step(ENDING_SECONDS+.1);
+ assert.deepEqual(e.music,['mus_credits'],'the credits request the ending theme');
+ e.step(30);
+ assert.deepEqual(e.music,['mus_credits'],'and only once, however long the credits stay up');
+});
+
+group('(c) every ending cue has a shipped URL and is not in the opening fetches',()=>{
+ for(const name of ENDING_AUDIO_NAMES){
+  assert.ok(STORY_AUDIO_URLS[name],`the ending cue has no URL: ${name}`);
+  assert.ok(!OPENING_AUDIO_NAMES.includes(name),`the ending cue must not be fetched on the first click: ${name}`);
+ }
 });
 
 if(failures){console.log(`\ncheck-campaign-dome: ${failures} failed`);process.exit(1);}
