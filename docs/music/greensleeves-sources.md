@@ -34,11 +34,13 @@ motif exact at offset +3. So the stub is v7 transposed to A minor *with the rhyt
 declares `anacrusis: {"eighths": 1}` and says in its own words that v6's 2-eighth anacrusis "came
 from the ABC's own barring" — an independent confirmation that the ABC's barring is the bad input.
 
-**v11 does state the tune — three times — and an earlier version of this page was wrong to say it
-never does.** Its melody has exactly three eight-note windows within one note of the opening motif,
+**v11 does state the tune — eleven times, across four parts — and an earlier version of this page was
+wrong to say it never does.** Its melody alone has three eight-note windows within one note of the
+opening motif,
 at pitched indices **18, 37 and 300**, all at the same offset **+8**; each is the same figure
 `5 8 10 0 2 0 10 7` against the motif's `5 8 10 0 1 0 10 7` — one note altered, the fifth (D for
-D♭). `vln2a` carries two more near-exact statements, at its own indices 0 and 19. What v11 is *not*
+D♭). Three other parts carry it as well — `vln2a` at 0 and 19, `vlaa` at 0, 19, 215 and 234, `vca`
+at 169 and 188 — so v11 states the theme **eleven times across four parts**. What v11 is *not*
 is a plain statement of the tune: 397 melody notes against 75, 92 bars against 16, the theme quoted
 inside a florid arrangement rather than presented. Calling that "never states the tune" read a
 one-number summary — "nearest 1 of 8 wrong" — as a categorical fact about the whole piece. It is the
@@ -46,8 +48,8 @@ same error as generalising from a prefix, one level up.
 
 **So v7 against v11 is a real choice, and it is about texture, not about which file holds the tune.**
 v7 states it plainly in 75 notes with its dotted figures and its pickup intact, which is what a cue
-carrying narration wants. v11 offers a full arrangement that quotes the theme three times in a
-quarter of an hour of music. Both are legitimate; this page recommends **v7**, because the prologue
+carrying narration wants. v11 offers a full arrangement that quotes the theme eleven times inside 92
+bars. Both are legitimate; this page recommends **v7**, because the prologue
 bed has to let the melody be heard under a voice rather than compete with it.
 
 ## The remedy this implies
