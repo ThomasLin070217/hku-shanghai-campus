@@ -90,13 +90,21 @@ export function prologuePath(
   // not a silently wrong camera.
   if (lines.length !== 4) throw new Error(`prologue path expects 4 narration lines, got ${lines.length}`);
   return [
-    // Line 1 — high sunset aerial over the campus and the light show. The
-    // descent stays above the B3 roof (66.15 m) until it is south of the tower.
-    {t: 0, position: [30, 82, 118], look: [12, 26, -18]},
-    {t: at(0, 0.22), position: [34, 78, 106], look: [8, 24, -18]},
-    {t: at(0, 0.5), position: [40, 76, 95], look: [6, 20, -16]},
-    {t: at(0, 0.78), position: [48, 74, 78], look: [18, 15, -4]},
-    {t: at(0, 1), position: [54, 72, 56], look: [30, 10, 8]},
+    // Line 1 — the aerial. It sits in the central gap between the two tower
+    // columns (the columns are centred on x = ±58, so the gap is x −28…28) and
+    // looks north down it: B2/B3 bracket the right, B1/B4 the left, and the plaza
+    // sits at the far end under the mesh. The first version stood south of B3 at
+    // (30, 82, 118) looking at (12, 26, −18); from there B3's roof filled the
+    // right half of the frame and the look pitched 22° down, which left 4° of
+    // sky — the owner's "开场有问题", and the rooftop terrace in his screenshot.
+    // The sight line stays inside the gap for its whole length, so no south
+    // tower's roof can occlude the plaza. The descent stays above the B3 roof
+    // (66.15 m) until it is south of the tower.
+    {t: 0, position: [-16, 132, 246], look: [26, 32, -46]},
+    {t: at(0, 0.22), position: [-6, 126, 216], look: [28, 30, -44]},
+    {t: at(0, 0.5), position: [14, 108, 164], look: [30, 26, -42]},
+    {t: at(0, 0.78), position: [38, 87, 106], look: [30, 17, -20]},
+    {t: at(0, 1), position: [52, 73, 60], look: [34, 11, 10]},
 
     // Line 2 — mesh die-shot, then the dive into B4, the server racks, the
     // volumetric shaft and the Keyboard Wall. The dive stays above the B3 roof
