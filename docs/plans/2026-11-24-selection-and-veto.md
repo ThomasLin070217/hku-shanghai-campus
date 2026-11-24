@@ -30,7 +30,7 @@ builder. `family-b2` is still on disk if you prefer any of it; nothing has been 
 | # | Cue | Where it plays | Chosen take | Length | Alternative |
 |---|---|---|---|---|---|
 | 1 | `mus_title` | Title / menu, before the prologue | `family-d/take-a` symphony_processional | 117.8 s | `take-b` strings_harp_processional (118.6 s) |
-| 2 | `mus_prologue` | Magic Hour cinematic, camera over the campus | `family-a/take-a` symphony_warm | 55.8 s | `take-b` strings_harp (55.8 s) |
+| 2 | `mus_prologue` | Magic Hour cinematic, camera over the campus | `family-a/take-a` symphony_warm, **rebuilt 2026-11-24 to 78.3 s to span the narration — see below** | 78.3 s | `take-b` strings_harp (55.8 s) |
 | 3 | `mus_invitation` | Phone invitation, crowd on the plaza | `family-a2/take-a` invitation_music_box | 16.0 s | `take-b` invitation_piano (21.8 s) |
 | 4 | `mus_dinner` | High Table Dinner bed, B5 | `family-a2/take-b` dinner_processional (**replaced 2026-11-24 — see below**) | 53.3 s | `a/take-a` symphony_processional (60.7 s) |
 | 5 | `mus_dinner_toast` | The toast moment | `family-a2/take-a` toast_brass | 7.5 s | `take-b` toast_strings_brass (8.2 s) |
@@ -190,6 +190,22 @@ Three consequences, none of them silent:
    17.5 s of narration over silence, so the cue is rebuilt in the same commit as the voice.
 3. **It is 1 min 14 s before the player moves.** If that is too long for the demo video, the lever is
    cutting one of the four paragraphs — your decision, not mine, and not a speed-up of the voice.
+
+### The bed grew to 78.25 s (done 2026-11-24)
+
+Consequence 2 above is closed. `symphony_warm` was rebuilt at v7's melody, verbatim
+(75 notes / 97 eighths, sha256 `78498571…e49c`), to 78.25 s so it outlasts the 74.564 s of
+narration with a 3.7 s tail. The four section arrivals sit at **13.3283 / 37.3626 / 55.4527 /
+74.5644 s**, which are the four narration end times to within 0.4 ms — computed from the clip
+durations, not guessed. First brass enters at 55.4527 s, on arrival 3.
+
+Measured independently of the worker's own `verification.json`: duration 78.250 s; peak
+−3.98 dBFS; quietest 0.5 s window −39.91 dBFS at 77.50 s; last 400 ms −45.36 dBFS; no
+clipped samples; −19.89 dBFS in the first second. Every gate passes on my numbers; the
+worker's reported peak and quiet window differ by 1.3 dB and 3.1 dB, which is a
+measurement-method difference, not a threshold disagreement. Full table in
+`.scratch/music-2026-11-24/mus_prologue-v2/report.md`, whose "Not verified" section is the
+honest limit: nobody has judged the cue by ear yet, and that verdict is yours.
 
 **What is in `assets/` today is not any of the audition takes — but it is George.** The four shipped
 files total 56.00 s and match no column above; `clips.json` records `voiceId: JBFqnCBsd6RMkjVDRZzb`
