@@ -675,5 +675,12 @@ async function main() {
 
 const invokedDirectly = typeof process.argv[1] === 'string' && import.meta.url === pathToFileURL(process.argv[1]).href;
 if (invokedDirectly) {
- main().catch(error => { console.error('check-lift: FAIL —', error); process.exitCode = 1; });
+ // Exit deliberately instead of waiting for the event loop to drain. On 2026-11-25 a taken
+ // port made this gate print FAIL and then sit alive for half an hour with the port still
+ // held: a gate that never exits is indistinguishable from one that is still working, and
+ // every orchestrator reads it as "running". The short delay lets the queued stderr land.
+ const finish = (code: number) => setTimeout(() => process.exit(code), 50);
+ main().then(
+  () => finish(process.exitCode ?? 0),
+  error => { console.error('check-lift: FAIL —', error); finish(1); });
 }
