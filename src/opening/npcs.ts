@@ -26,12 +26,49 @@ export function createOpeningNPCs(){
  const actors=OPENING_CAST.map(a=>{const model=createCharacter(a.appearance);model.root.position.fromArray([...a.position]);model.root.rotation.y=a.yaw;root.add(model.root);return model;});
  const staff=actors[0];
  let staffTarget:T.Vector3|null=null;
+ /* The incident empties the hall. The cast used to be hidden by one assignment the frame the
+    alert flipped — everyone vanished where they stood, which reads as a rendering fault rather
+    than as a story beat (owner, 2026-11-24: 「他让我们去拿 MacBook 之后，那个任务做完，学生就会
+    突然消失」). They now walk out through the B5 door and are hidden one at a time as each one
+    passes it, which is the same beat the deck describes: robots escorting people away. */
+ // Targets sit outside the B5 north door (the hall is z0 -80 to z1 -54.7), staggered outward so
+ // nobody is hidden while still inside the doorway or still in the hall.
+ const DOOR={x:OPENING.b5.door,z:OPENING.b5.z1+2.6,speed:1.9,reach:.8};
+ let leaving=false;
+ const leaveTargets:readonly T.Vector3[]=OPENING_CAST.map((_,index)=>new T.Vector3(
+  DOOR.x+((index%5)-2)*.62+((index%2)?.18:-.18),
+  OPENING_CAST[index].position[1],
+  DOOR.z+(index%3)*.9,
+ ));
  const startStaffTalk=()=>{staffTarget=new T.Vector3(61.5,.02,-59.0);};
+ const beginLeaving=()=>{leaving=true;staffTarget=null;};
  const reset=()=>{
-  staffTarget=null;
-  actors.forEach((actor,index)=>{actor.root.position.fromArray([...OPENING_CAST[index].position]);actor.root.rotation.y=OPENING_CAST[index].yaw;});
+  staffTarget=null;leaving=false;
+  actors.forEach((actor,index)=>{
+   actor.root.position.fromArray([...OPENING_CAST[index].position]);actor.root.rotation.y=OPENING_CAST[index].yaw;
+   actor.root.visible=true;
+  });
+  root.visible=true;
  };
  return{root,startStaffTalk,staffPosition:()=>new T.Vector3(staff.root.position.x,staff.root.position.y+1.55,staff.root.position.z),staffRootPosition:()=>staff.root.position,reset,update(dt:number,incident:boolean,paused:boolean,player:T.Vector3){
+  if(incident&&!leaving)beginLeaving();
+  if(leaving&&!paused&&dt>0){
+   let anyVisible=false;
+   actors.forEach((actor,index)=>{
+    if(!actor.root.visible)return;
+    const target=leaveTargets[index];
+    const dx=target.x-actor.root.position.x,dz=target.z-actor.root.position.z;
+    const distance=Math.hypot(dx,dz);
+    if(distance<=DOOR.reach){actor.root.visible=false;return;}
+    const step=Math.min(distance,DOOR.speed*dt);
+    actor.root.position.x+=dx/distance*step;actor.root.position.z+=dz/distance*step;
+    actor.root.rotation.y=Math.atan2(-dx,-dz);
+    actor.animate(dt,step,true,0,DOOR.speed);
+    anyVisible=true;
+   });
+   root.visible=anyVisible;
+  }
+  if(leaving)return;
   root.visible=!incident;if(incident||paused||dt<=0)return;
   for(const actor of actors){
    if(actor===staff&&staffTarget){

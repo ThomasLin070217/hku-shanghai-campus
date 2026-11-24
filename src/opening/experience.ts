@@ -547,7 +547,10 @@ export function createOpeningExperience(
   const alert=story.campus_alert_triggered||runtime.curtain_deployed;
   const hunting=fleetHunts(),fleetShown=story.stage!=='complete'||!!campaign();
   fleet.root.visible=active&&fleetShown;
-  npcs.root.visible=active&&!alert;npcs.update(dt,alert,g.paused,g.body.position);if(!active)npcs.root.visible=false;
+  // The cast owns its own visibility now: during the incident it walks out through the B5
+  // door and hides per actor as each one clears it, instead of vanishing on the alert frame.
+  if(!active)npcs.root.visible=false;
+  npcs.update(active?dt:0,alert,g.paused,g.body.position);
   updateCrowd(active?g.paused?0:dt:0);
   flipWall.update(g.paused?0:dt,g.body.position);
   // Fixed-step actor simulation happens in tick(); this read never advances it.

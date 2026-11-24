@@ -22,6 +22,20 @@ const player=new T.Vector3(OPENING.staff[0],OPENING.staff[1],OPENING.staff[2]+2)
 for(let i=0;i<180;i++)npcs.update(1/60,false,false,player);
 const forward=new T.Vector3(0,0,-1).applyAxisAngle(new T.Vector3(0,1,0),coordinator.rotation.y);
 assert.ok(forward.dot(player.clone().sub(coordinator.position).normalize())>.999,'textured face must point toward player, not away');
-const yaw=coordinator.rotation.y;npcs.update(1,true,true,new T.Vector3(0,0,0));assert.equal(npcs.root.visible,false);assert.equal(coordinator.rotation.y,yaw);
-npcs.update(1,false,true,player);assert.equal(npcs.root.visible,true);assert.equal(coordinator.rotation.y,yaw);
-npcs.dispose();world.dispose();console.log('PASS 12 opening NPCs: unique IDs, clear placements, existing eye pixels, face-toward-player, pause freeze and incident disappearance');
+// Incident. This used to assert that the cast vanished on the alert frame. The owner reported
+// that as a defect (2026-11-24: 「那个任务做完，学生就会突然消失」), so the requirement is now the
+// opposite: nobody disappears where they stand. The cast keeps rendering while the alert flips,
+// walks out through the B5 door, and only then is each actor hidden.
+const yaw=coordinator.rotation.y;
+const startZ=coordinator.position.z;
+npcs.update(1,true,true,new T.Vector3(0,0,0));
+assert.equal(npcs.root.visible,true,'incident must not hide the cast on the alert frame');
+assert.equal(coordinator.rotation.y,yaw,'a paused incident must not turn anyone');
+for(let i=0;i<60*40;i++)npcs.update(1/60,true,false,new T.Vector3(0,0,0));
+assert.equal(npcs.root.visible,false,'everyone must have left the hall within 40 s');
+assert.ok(Math.abs(coordinator.position.z-startZ)>1,'the coordinator must walk toward the door, not stand still');
+npcs.reset();
+assert.equal(npcs.root.visible,true,'reset must bring the cast back');
+assert.equal(coordinator.visible,true,'reset must restore every actor, not only the group');
+npcs.update(1,false,true,player);assert.equal(npcs.root.visible,true);assert.equal(coordinator.rotation.y,OPENING_CAST[0].yaw);
+npcs.dispose();world.dispose();console.log('PASS 12 opening NPCs: unique IDs, clear placements, existing eye pixels, face-toward-player, pause freeze, and an incident that walks the cast out instead of deleting it');
