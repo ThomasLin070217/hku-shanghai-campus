@@ -54,7 +54,7 @@
 17. Version stamp `v9.1.0 · <12-char commit>` visible in the pause card and credits (`__CAMPUS.version` keeps the bare version). A build over uncommitted work prints `-dirty`; the tagged build must not.
 18. Group bug triage; P0/P1 fixed, P2 listed in `KNOWN-ISSUES.md`.
 19. Run `scripts/pre-push-secret-scan.sh` (fails on `sk-`, `ntn_`, `ghp_`, `Bearer `); rotate the two exposed `sk-` keys before any push.
-20. `git tag -a v9.1.0` on the playable commit. No freeze package, no SHA256SUMS, no upload from this repo.
+20. `git tag -a v9.1.0` on the playable commit. No freeze package, no SHA256SUMS. Every push to `main` deploys the playable link (GitHub Pages, `.github/workflows/deploy-pages.yml`); the tag is what the video and the slides quote.
 
 ### Phase 5 — Owner-ordered finish (last)
 
@@ -62,7 +62,7 @@
 22. Fix only P0/P1; if the build changes, cut a new patch tag.
 23. **Re-play the fixed build** on the same route.
 24. **Record the video from that run.** The teaser and the 60–90 s lab demo are cut from this footage. No “video done” before the playtest.
-25. Owner pushes the tag to the private repo, deploys, and sends the link. This repo uploads nothing.
+25. Push `feat/one-world`, fast-forward `main`, confirm the Pages run is green and hand over the link — https://thomaslin070217.github.io/hku-shanghai-campus/ (ruling of 2026-11-25; the repo is public).
 
 ## Music and voice — the owner’s two asks
 
@@ -91,6 +91,6 @@
 - One page, one first-person run, no reload: opening → dinner → B4 5F → incident → Keyboard Wall → B4 side flip wall → MacBook → lawn/lion → sports hall → finale → credits.
 - Full score and expressive voice cast integrated; owner has heard the takes and holds the veto list.
 - `v9.1.0` consistent across `VERSION`, `package.json`, build and UI; `v9.1.0` tag cut.
-- Secret scan clean; two exposed `sk-` keys rotated; no upload from this repo.
+- Secret scan clean; two exposed `sk-` keys rotated; the public Pages link builds from `main` on every push.
 - **A full playtest happened, then the video was recorded from the replay** — in that order.
 - Local fallback tested with the network off.
