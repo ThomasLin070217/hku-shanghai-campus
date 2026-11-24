@@ -1,6 +1,5 @@
 import * as T from 'three';
 import {compact} from './buildCampus';
-import {voxelizeMaterials} from '../voxel/materials';
 import {LOUNGE_PARAMETERS as P} from './videoDetailsParameters';
 /** Isolated cutaway: user confirms B05 / 4F. No assumed placement inside the tower. */
 export function buildLounge(){
@@ -38,5 +37,5 @@ export function buildLounge(){
  const ceiling=group('Ceiling_Baffles_Cutaway');ceiling.userData.note='Only rear strip retained to reveal the lounge in cutaway.';
  for(let z=-D/2;z<-D/2+2;z+=.3)box(ceiling,W,.16,.05,0,P.ceilingHeight,z,timber);
  for(const x of [-3.4,3.4])box(ceiling,2.2,.04,.10,x,P.ceilingHeight-.1,-D/2+1,lamp);
- compact(root);voxelizeMaterials(root);return root;
+ compact(root); return root; // Interior: authored finishes only — the pixel tile is for exteriors.
 }

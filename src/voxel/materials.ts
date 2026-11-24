@@ -18,12 +18,24 @@ export function pixelUV(geo:T.BufferGeometry,tileMeters=4){
  const p=geo.getAttribute('position'),n=geo.getAttribute('normal');if(!p||!n)return;const uv=new Float32Array(p.count*2);
  for(let i=0;i<p.count;i++){const x=Math.abs(n.getX(i)),y=Math.abs(n.getY(i)),z=Math.abs(n.getZ(i));uv[i*2]=(x>y&&x>z?p.getZ(i):p.getX(i))/tileMeters;uv[i*2+1]=(y>x&&y>z?p.getZ(i):p.getY(i))/tileMeters;}geo.setAttribute('uv',new T.BufferAttribute(uv,2));
 }
+/** Interiors opt out of the tile pass. The tile spreads 16 texels over 4 m, so a wall seen
+ * from a metre away is a 25 cm light/dark checkerboard — it reads as cheap masonry, not a
+ * finish. A builder tags its interior root (or any group inside it) with
+ * `userData.noVoxelTile = true`; the walk then leaves that whole subtree's authored
+ * materials, roughness and UVs alone. Exteriors keep the tile. */
 export function voxelizeMaterials(root:T.Object3D){
  const maps=new Map<string,T.DataTexture>(),done=new Set<T.Material>();
- root.traverse(o=>{if(!(o instanceof T.Mesh))return;const mats=Array.isArray(o.material)?o.material:[o.material];let textured=false,paving=false;
+ const walk=(o:T.Object3D)=>{
+  if(o.userData.noVoxelTile)return;
+  if(o instanceof T.Mesh)textureMesh(o,maps,done);
+  for(const child of o.children)walk(child);
+ };
+ walk(root);
+}
+function textureMesh(o:T.Mesh,maps:Map<string,T.DataTexture>,done:Set<T.Material>){
+ const mats=Array.isArray(o.material)?o.material:[o.material];let textured=false,paving=false;
   for(const m of mats){if(!(m instanceof T.MeshStandardMaterial))continue;if(m.userData.surfaceRole==='glass'){o.castShadow=false;o.receiveShadow=false;continue;}const name=m.name.toLowerCase();if(/^night_|sign|letter|marking|ivory/.test(name))continue;
    const kind=/glass|glaz/.test(name)?'glass':/frame|aluminium|silver|mullion|anodised|fins|steel/.test(name)?'metal':/grass|lawn|turf/.test(name)?'grass':/leaf|foliage/.test(name)?'leaf':/bark/.test(name)?'bark':/pav|concrete|limestone/.test(name)?'paving':/road|asphalt|track|jogging/.test(name)?'road':'wall';
    if(!done.has(m)){if(!maps.has(kind))maps.set(kind,pixelTile(kind));m.map=maps.get(kind)!;m.roughness=kind==='glass'?.38:kind==='metal'?.34:.90;m.metalness=kind==='glass'?.22:kind==='metal'?.55:.05;if(kind==='grass'&&!m.userData.keepColor)m.color.setHex(0x638448);if(kind==='leaf'&&!m.userData.keepColor)m.color.setHex(0x42764a);m.needsUpdate=true;done.add(m);}textured=true;if(/pav|concrete|limestone/.test(name))paving=true;
   }if(textured){pixelUV(o.geometry,paving?.6:4);if(paving){const uv=o.geometry.getAttribute('uv'),n=o.geometry.getAttribute('normal');for(let i=0;i<uv.count;i++)if(Math.abs(n.getY(i))>.8)uv.setY(i,uv.getY(i)*2);}}
- });
 }

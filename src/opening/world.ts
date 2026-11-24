@@ -232,6 +232,7 @@ const TIPPING_CHAIRS:[number,number,number][]=[[62.15,-68,Math.PI/2],[67.15,-68,
 function buildDinner(root:T.Group){
  const room=O.b5;
  const group=tag(new T.Group(),'opening-b5-dinner','Opening_b5_dinner');
+ group.userData.noVoxelTile=true; // seen from arm's length: authored finishes, not a 25 cm tile
  root.add(group);
  const floorTop=room.floor;
  const hallFrame=tag(new T.Group(),'opening-b5-horizontal-frame','Opening_b5_horizontal_frame');group.add(hallFrame);
@@ -439,6 +440,7 @@ function buildDinner(root:T.Group){
 function buildOffice(root:T.Group){
  const room=O.b6;
  const group=tag(new T.Group(),'opening-b6-office','Opening_b6_office');
+ group.userData.noVoxelTile=true; // ditto: the office is a close-up room
  root.add(group);
  const floorTop=room.floor;
  const materials={

@@ -2,7 +2,7 @@ import * as T from 'three';
 import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
 import {campusFont} from '../model/fonts';
 import {B4_DOOR_LEAVES,B4_LAYOUT,B4_LOBBY,B4_OBSTACLES} from './b4Layout';
-import {createB4FlipWall} from './b4FlipWall';
+import {B4_FLIP_WALL,createB4FlipWall} from './b4FlipWall';
 import {B4_LIFT as L} from './spatialLayout';
 import {attachLiftVisual,LIFT_LANDING,liftLandingBoxes} from './lift';
 import {B4_OFFICE,FEED_CANVAS,b4OfficeBoxes,attachOfficeVisual} from './b4Office';
@@ -22,7 +22,7 @@ export const B4_RACK_BODY='B4 rack body';
 export const B4_CEILING='B4 room ceiling';
 export const B4_LIFT_CAR='B04_lift_car';
 export const B4_LIFT_LANDING='B04_lift_landing';
-const std=(name:string,color:number,emissive=0,intensity=0)=>{const m=new T.MeshStandardMaterial({name,color,roughness:.85,metalness:.05});if(emissive){m.emissive.setHex(emissive);m.emissiveIntensity=intensity;}return m;};
+const std=(name:string,color:number,emissive=0,intensity=0,roughness=.85)=>{const m=new T.MeshStandardMaterial({name,color,roughness,metalness:.05});if(emissive){m.emissive.setHex(emissive);m.emissiveIntensity=intensity;}return m;};
 const SOURCE={sourceFile:'src/opening/b4Shell.ts',source:'B04 campaign rooms (src/opening/b4Layout.ts)',confidence:'provisional 2030 scenery; not a surveyed interior'};
 // No authorKey here: repeated boxes (the rack status strips, the sofa modules) must get a
 // unique `name#n` key from tagChildren, or compact() merges traces with duplicate keys.
@@ -30,6 +30,9 @@ function box(parent:T.Object3D,name:string,w:number,h:number,d:number,x:number,y
  const mesh=new T.Mesh(new T.BoxGeometry(w,h,d),m);mesh.name=name;mesh.position.set(x,y,z);mesh.castShadow=mesh.receiveShadow=true;mesh.userData={...SOURCE};parent.add(mesh);return mesh;
 }
 function group(parent:T.Object3D,name:string){const g=new T.Group();g.name=name;g.userData={...SOURCE};parent.add(g);return g;}
+function cylinder(parent:T.Object3D,name:string,top:number,bottom:number,h:number,x:number,y:number,z:number,m:T.Material){
+ const object=new T.Mesh(new T.CylinderGeometry(top,bottom,h,16),m);object.name=name;object.position.set(x,y,z);object.castShadow=object.receiveShadow=true;object.userData={...SOURCE};parent.add(object);return object;
+}
 
 /** The lift materials `buildLiftCar`/`buildLiftLanding` need, structurally typed so the
  * shell's one material table stays the only place a colour is chosen. */
@@ -47,7 +50,7 @@ interface LiftMats{
  * leaves are the collision, so they must match `liftObstacleBoxes` exactly.
  */
 function buildLiftCar(m:LiftMats){
- const root=new T.Group();root.name=B4_LIFT_CAR;root.userData={...SOURCE,authorKey:B4_LIFT_CAR,sceneLabel:'B04 core lift car'};
+ const root=new T.Group();root.name=B4_LIFT_CAR;root.userData={...SOURCE,authorKey:B4_LIFT_CAR,sceneLabel:'B04 core lift car'};root.userData.noVoxelTile=true;
  const W=L.x1-L.x0,D=L.z1-L.z0,H=L.clearHeight,TH=L.wall,cx=(L.x0+L.x1)/2,cz=(L.z0+L.z1)/2;
  const mid=(L.door.z0+L.door.z1)/2,half=(L.door.z1-L.door.z0)/2;
  box(root,'B4_lift_car_floor',W,TH,D,cx,-TH/2,cz,m.carFloor);
@@ -82,7 +85,7 @@ function buildLiftCar(m:LiftMats){
 /** Floor, walls, ceiling, corridor and the closed principal's door — D.3's landing, built
  * from `liftLandingBoxes()` so the scenery and the collision are one set of numbers. */
 function buildLiftLanding(m:LiftMats){
- const root=new T.Group();root.name=B4_LIFT_LANDING;root.userData={...SOURCE,authorKey:B4_LIFT_LANDING,sceneLabel:'B04 fifth-floor landing'};
+ const root=new T.Group();root.name=B4_LIFT_LANDING;root.userData={...SOURCE,authorKey:B4_LIFT_LANDING,sceneLabel:'B04 fifth-floor landing'};root.userData.noVoxelTile=true;
  const boxes=liftLandingBoxes();
  for(const b of boxes){
   // The office leaf is hung on a hinge by `buildOffice`, so it is skipped here.
@@ -139,7 +142,7 @@ function feedSurface(){
  * the read-task dressing. No lights: warm panels are emissive.
  */
 function buildOffice(m:OfficeMats){
- const root=new T.Group();root.name='B04_principal_office';root.userData={...SOURCE,authorKey:'B04_principal_office',sceneLabel:"5F principal's office"};
+ const root=new T.Group();root.name='B04_principal_office';root.userData={...SOURCE,authorKey:'B04_principal_office',sceneLabel:"5F principal's office"};root.userData.noVoxelTile=true;
  const O=B4_OFFICE,F=O.floorTop;
  for(const b of b4OfficeBoxes()){
   // Both shaft guards are collision only; the shell seals those openings with the lift's own
@@ -192,7 +195,7 @@ function buildOffice(m:OfficeMats){
  * second render pass.
  */
 function buildLobbyDevices(m:OfficeMats){
- const root=new T.Group();root.name='B04_lobby_devices';root.userData={...SOURCE,authorKey:'B04_lobby_devices',sceneLabel:'B04 lobby monitor and lift calls'};
+ const root=new T.Group();root.name='B04_lobby_devices';root.userData={...SOURCE,authorKey:'B04_lobby_devices',sceneLabel:'B04 lobby monitor and lift calls'};root.userData.noVoxelTile=true;
  const O=B4_OFFICE,C=O.cctv;
  const monitor=group(root,'B04_lobby_cctv');
  monitor.position.set(C.x,C.y,C.z);monitor.rotation.y=C.tilt;
@@ -232,7 +235,7 @@ function buildLobbyDevices(m:OfficeMats){
  * the corridor is worth a look, which is where the errand's extra seconds come from.
  */
 function buildCorridorDressing(m:OfficeMats){
- const root=new T.Group();root.name='B04_5f_dressing';root.userData={...SOURCE,authorKey:'B04_5f_dressing',sceneLabel:'B04 5F corridor dressing'};
+ const root=new T.Group();root.name='B04_5f_dressing';root.userData={...SOURCE,authorKey:'B04_5f_dressing',sceneLabel:'B04 5F corridor dressing'};root.userData.noVoxelTile=true;
  const S=B4_OFFICE.dressing.evacSign;
  box(root,'B4_lift_5f_evac_sign',.52,.26,.02,S.x,S.y,S.z,m.evacPlate);
  const line=(text:string,size:number,dy:number,name:string)=>{
@@ -266,14 +269,22 @@ function buildCorridorDressing(m:OfficeMats){
 }
 
 export function buildB4Shell(){
- const root=new T.Group();root.name=B4_SHELL_NAME;root.userData={...SOURCE,authorKey:B4_SHELL_NAME,sceneLabel:'B04 ground floor (Keyboard Wall rooms)'};
+ const root=new T.Group();root.name=B4_SHELL_NAME;root.userData={...SOURCE,authorKey:B4_SHELL_NAME,sceneLabel:'B04 ground floor (Keyboard Wall rooms)'};root.userData.noVoxelTile=true;
  const R=B4_LAYOUT.room,F=R.floor;
  const mats={
-  wall:std('B4 room wall',0xded8c9),ceiling:std(B4_CEILING,0xe6e2d8),floor:std('B4 room floor',0xcfc9bd),
+  // Distinct photographed surfaces: warm white leather, pale blue-grey weave, tan
+  // timber, glossy cream stone and warm bronze. No environment-map pipeline.
+  wall:std('B4 room wall',0xded8c9),ceiling:std(B4_CEILING,0xb7a78f,0,0,.58),floor:std('Ivory B4 polished stone floor',0xe9dbc5,0,0,.18),
   rack:std(B4_RACK_BODY,0x161b1f),plinth:std('B4 rack plinth',0x3b3f42),led:std(B4_RACK_LED,0x2f7d52,0x47e08a,.12),frame:std('B4 door frame',0x8fabae),
   tierTop:std('B4 timber tier tread',0x9a6f45),tierRiser:std('B4 timber tier riser',0x7c5735),
-  sofa:std('B4 lobby sofa upholstery',0xe8e4da),rug:std('B4 lobby rug',0x2f5d52),rugRing:std('B4 lobby rug border',0xece5d4),
-  stone:std('B4 lobby table stone',0xe9e2d2),timber:std('B4 lobby stool timber',0xb59167),
+  sofa:std('Ivory B4 white leather sofa',0xded8cc,0,0,.55),rug:std('Ivory B4 blue-grey rug',0x60798e,0,0,.94),rugRing:std('Ivory B4 rug border',0xc1ccd2),
+  rugMotif:std('Ivory B4 rug woven motif',0x697985,0,0,.94),
+  stone:std('Ivory B4 table stone',0xeee9df,0,0,.36),timber:std('B4 lobby stool timber',0xa9825d,0,0,.62),
+  bench:std('B4 lobby tan bench timber',0xa9825d,0,0,.62),white:std('Ivory B4 white dressing',0xf2efe7,0,0,.42),
+  foliage:std('Ivory B4 planter foliage',0x3f654d,0,0,.82),windowGlass:std('B4 lobby glazing',0xbcd6e4,0x9dc6dd,.12,.12),
+  ceilingLed:new T.MeshBasicMaterial({name:'B4 curved white ceiling LED',color:0xfff9ec}),
+  floorSheen:new T.MeshBasicMaterial({name:'B4 polished floor sheen',color:0xfff8e8,transparent:true,opacity:.07,depthWrite:false}),
+  exit:new T.MeshBasicMaterial({name:'B4 green exit sign',color:0x2ca45f}),
   /* Lift: brushed steel car, a lit ceiling, a dark door and the 5F finishes. */
   car:std('B4 lift car steel',0xb9c2c4),carDark:std('B4 lift car trim',0x3c4649),
   carFloor:std('B4 lift car floor',0x2b3234),lamp:std('B4 lift car lamp',0xfff4d8,0xffe9b8,.85),
@@ -295,8 +306,12 @@ export function buildB4Shell(){
   evacPlate:std('B4 5F evacuation plate',0x1c5e35),evacText:std('B4 5F evacuation lettering',0xe8f4ec,0x6fe0a0,.8),
   flicker:std('B4 5F corridor flicker panel',0xd9e6ea,0xbfe0ee,.9),
  };
+ mats.windowGlass.transparent=true;mats.windowGlass.opacity=.14;mats.windowGlass.depthWrite=false;
  const shell=group(root,'B04_room_structure');
  box(shell,'B4_floor',R.x1-R.x0,R.floor,R.z1-R.z0,(R.x0+R.x1)/2,R.floor/2,(R.z0+R.z1)/2,mats.floor).castShadow=false;
+ // One restrained emissive streak suggests the stone's reflection without a render-target pass.
+ const sheen=new T.Mesh(new T.PlaneGeometry(2.2,8.5),mats.floorSheen);
+ sheen.name='B4_polished_floor_sheen';sheen.rotation.x=-Math.PI/2;sheen.position.set(64.4,F+.001,13.4);sheen.userData={...SOURCE};shell.add(sheen);
  // Racks on a low plinth along the north wall. The plinth is inset 1 cm on the faces the room
  // can see (its south face and its two outer x faces): the rack bodies share those planes
  // otherwise, and the coplanar faces flicker in a 12 cm band at the base of the racks. The
@@ -325,6 +340,18 @@ export function buildB4Shell(){
   }
   box(shell,r.name,w,r.top-r.bottom,d,x,(r.top+r.bottom)/2,z,mats[r.render]);
  }
+ // Long curved white LED lines and recessed linear fixtures under the warm ceiling.
+ // Emissive geometry, not lights: the shell's zero-light contract is unchanged.
+ const ceilingY=F+R.clearHeight-.115;
+ for(const x of [51.5,58.0,64.5]){
+  const curve=new T.CatmullRomCurve3([
+   new T.Vector3(x,ceilingY-.025,R.z0+.55),new T.Vector3(x+.48,ceilingY-.09,11.0),
+   new T.Vector3(x+.12,ceilingY-.12,16.3),new T.Vector3(x-.22,ceilingY-.025,R.z1-.55),
+  ]);
+  const led=new T.Mesh(new T.TubeGeometry(curve,48,.026,8,false),mats.ceilingLed);
+  led.name='B4_curved_ceiling_LED';led.userData={...SOURCE};shell.add(led);
+ }
+ for(const z of [9.1,13.75,18.4])box(shell,'B4_recessed_linear_light',2.4,.018,.07,58,ceilingY-.045,z,mats.ceilingLed);
  // Lobby seating group on the round rug, in front of the Keyboard Wall.
  const lobby=group(root,'B04_lobby_furniture'),L=B4_LOBBY;
  const rug=new T.Mesh(new T.CylinderGeometry(L.rug.r,L.rug.r,.012,44),mats.rug);
@@ -333,6 +360,13 @@ export function buildB4Shell(){
  // One millimetre above the rug's top face so the two surfaces do not share a plane.
  const ring=new T.Mesh(new T.RingGeometry(L.rug.r-.22,L.rug.r,48),mats.rugRing);
  ring.name='B4_lobby_rug_border';ring.rotation.x=-Math.PI/2;ring.position.set(L.rug.x,F+.013,L.rug.z);ring.receiveShadow=true;ring.userData={...SOURCE,authorKey:'B4_lobby_rug_border'};lobby.add(ring);
+ for(const radius of [.70,1.30,1.88]){
+  const motif=new T.Mesh(new T.RingGeometry(radius,radius+.018,48),mats.rugMotif);
+  motif.name='B4_rug_woven_ring';motif.rotation.x=-Math.PI/2;motif.position.set(L.rug.x,F+.015,L.rug.z);motif.userData={...SOURCE};lobby.add(motif);
+ }
+ for(let i=0;i<20;i++){
+  const a=i*Math.PI/10,diamond=box(lobby,'B4_rug_diamond_motif',.11,.004,.11,L.rug.x+2.12*Math.cos(a),F+.016,L.rug.z+2.12*Math.sin(a),mats.rugMotif);diamond.rotation.y=Math.PI/4;
+ }
  // The curved sofa: modules on a circle, backs outward, the gap facing the room's north-west.
  // The module count comes from the layout object, the same one the collision rects use.
  const S=L.sofa,modules=S.modules,span=S.to-S.from;
@@ -359,6 +393,41 @@ export function buildB4Shell(){
  stool.name='B4_lobby_stool_seat';stool.position.set(L.stool.x,F+L.stool.h*.92,L.stool.z);stool.castShadow=true;stool.userData={...SOURCE,authorKey:'B4_lobby_stool_seat'};lobby.add(stool);
  const stem=new T.Mesh(new T.CylinderGeometry(L.stool.r*.34,L.stool.r*.5,L.stool.h*.8,14),mats.timber);
  stem.name='B4_lobby_stool_stem';stem.position.set(L.stool.x,F+L.stool.h*.4,L.stool.z);stem.userData={...SOURCE,authorKey:'B4_lobby_stool_stem'};lobby.add(stem);
+ // Low tan bench in front of the sofa. Its collision rectangle is authored from B4_LOBBY.
+ const B=L.bench;
+ box(lobby,'B4_lobby_bench_seat',B.w,.11,B.d,B.x,F+B.h-.055,B.z,mats.bench);
+ for(const sx of [-1,1])for(const sz of [-1,1]){
+  const leg=box(lobby,'B4_lobby_bench_leg',.07,B.h-.11,.07,B.x+sx*(B.w/2-.16),F+(B.h-.11)/2,B.z+sz*(B.d/2-.09),mats.bench);
+  leg.rotation.z=-sx*.10;leg.rotation.x=sz*.10;
+ }
+ for(const [i,t] of L.sideTables.entries()){
+  cylinder(lobby,'B4_lobby_side_table_top_'+(i+1),t.r,t.r,.055,t.x,F+t.h-.0275,t.z,mats.white);
+  cylinder(lobby,'B4_lobby_side_table_pedestal_'+(i+1),t.r*.28,t.r*.62,t.h-.055,t.x,F+(t.h-.055)/2,t.z,mats.white);
+ }
+ for(const [i,s] of L.paleStools.entries()){
+  cylinder(lobby,'B4_lobby_pale_stool_seat_'+(i+1),s.r,s.r,.065,s.x,F+s.h-.0325,s.z,mats.white);
+  cylinder(lobby,'B4_lobby_pale_stool_stem_'+(i+1),s.r*.25,s.r*.55,s.h-.065,s.x,F+(s.h-.065)/2,s.z,mats.white);
+ }
+ for(const [i,p] of L.plants.entries()){
+  cylinder(lobby,'B4_lobby_white_planter_'+(i+1),p.r,p.r*.84,.60,p.x,F+.30,p.z,mats.white);
+  for(let spray=0;spray<7;spray++){
+   const a=spray*Math.PI*2/7,leaf=new T.Mesh(new T.SphereGeometry(.19,12,8),mats.foliage);
+   leaf.name='B4_lobby_planter_leaf_'+(i+1)+'_'+spray;leaf.position.set(p.x+.18*Math.cos(a),F+.78+.08*(spray%3),p.z+.18*Math.sin(a));
+   leaf.scale.set(.58,1.55,.30);leaf.rotation.set(.25,a,.40);leaf.castShadow=true;leaf.userData={...SOURCE};lobby.add(leaf);
+  }
+ }
+ // Green exit sign above the side entrance, with actual lettering rather than a blank green tile.
+ box(shell,'B4_exit_sign_plate',.56,.20,.035,B4_LAYOUT.sideDoor.x0+(B4_LAYOUT.sideDoor.x1-B4_LAYOUT.sideDoor.x0)/2,F+2.82,B4_LAYOUT.sideDoor.z-.045,mats.exit);
+ const exitGeometry=new TextGeometry('EXIT',{font:campusFont,size:.10,depth:.004,curveSegments:1});
+ exitGeometry.computeBoundingBox();const exitBounds=exitGeometry.boundingBox!;
+ exitGeometry.translate(-(exitBounds.min.x+exitBounds.max.x)/2,-(exitBounds.min.y+exitBounds.max.y)/2,0);
+ const exitLettering=new T.Mesh(exitGeometry,mats.white);exitLettering.name='B4_exit_sign_lettering';
+ exitLettering.position.set(B4_LAYOUT.sideDoor.x0+(B4_LAYOUT.sideDoor.x1-B4_LAYOUT.sideDoor.x0)/2,F+2.82,B4_LAYOUT.sideDoor.z-.067);exitLettering.userData={...SOURCE};shell.add(exitLettering);
+ // Double-height glazed panel in the remaining south-wall bay, with tan mullions.
+ const windowX=(B4_FLIP_WALL.x1+R.x1-.13)/2,windowW=R.x1-.13-B4_FLIP_WALL.x1-.16;
+ box(shell,'B4_double_height_glazing',windowW,4.05,.018,windowX,F+2.025,R.z1-.15,mats.windowGlass);
+ for(const dx of [-windowW/2,0,windowW/2])box(shell,'B4_tan_window_mullion',.065,4.10,.055,windowX+dx,F+2.05,R.z1-.17,mats.bench);
+ for(const y of [1.65,3.35])box(shell,'B4_tan_window_transom',windowW,.06,.055,windowX,F+y,R.z1-.17,mats.bench);
  // Entrance: a slim frame and two frosted sliding leaves, closed until the campaign opens them.
  const D=B4_LAYOUT.door,door=group(root,'B04_entrance_door'),mid=(D.x0+D.x1)/2,leaf=(D.x1-D.x0)/2;
  // Opaque frosted panels: a closed door must read as closed, not as a window into the dark room.

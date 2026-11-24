@@ -3,7 +3,6 @@ import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
 import {glassMaterial, pane} from './glazing';
 import {compact} from './buildCampus';
 import {campusFont} from './fonts';
-import {voxelizeMaterials} from '../voxel/materials';
 
 type RowKey = [label: string, width?: number, tone?: 'navy' | 'amber' | 'silver' | 'blue'];
 const keyboardRows: RowKey[][] = [
@@ -99,74 +98,94 @@ function buildKeyboardRoom() {
     source: '2026-11-15 WeChat keyboard-wall photo; 2026-11-16 team evidence',
   };
 
-  const timber = material('Lounge warm timber', 0xb59167);
-  const trim = material('Lounge dark nosing', 0x49392c);
-  const floor = material('Lounge ivory limestone', 0xe3dcc9);
-  const plaster = material('Lounge plaster', 0xc6beab);
-  const upholstery = material('Lounge ivory upholstery', 0xd7d3c3);
-  const carpet = material('Lounge olive rug', 0x77785e);
-  const ceilingLight = new T.MeshBasicMaterial({name: 'Lounge warm ceiling light', color: 0xffedca});
+  // Five distinct photographed surfaces. The Ivory prefix deliberately bypasses the
+  // shared voxel pass: leather, woven rug, stone, timber and bronze must not collapse
+  // into the same 0.90-roughness pixel material.
+  const timber = material('Ivory warm tan bench timber', 0xa9825d, .62);
+  const trim = material('Lounge warm bronze frame', 0x7c7062, .68);
+  const floor = material('Ivory glossy cream stone floor', 0xe9dbc5, .18);
+  const plaster = material('Ivory warm cream plaster', 0xdcd6c9, .78);
+  const surround = material('Ivory keyboard cream surround', 0xe2ddcf, .72);
+  const upholstery = material('Ivory warm white leather', 0xded8cc, .55);
+  const sofaFabric = material('Ivory sculpted white sofa leather', 0xe2dcd1, .55);
+  const whiteStone = material('Ivory white stone tables and stools', 0xeee9df, .36);
+  const planterMat = material('Ivory white ceramic planter', 0xf2efe7, .42);
+  const plinthMat = material('Ivory low white plinth ceramic', 0xf0ede5, .48);
+  const carpet = material('Ivory pale grey-blue woven rug', 0x60798e, .92);
+  const ceilingMat = material('Ivory warm bronze ceiling', 0xb7a78f, .58);
+  ceilingMat.side = T.DoubleSide;
+  const ceilingLight = new T.MeshBasicMaterial({name: 'Lounge warm ceiling light', color: 0xfffcf3, side: T.DoubleSide});
+  const floorSheen = new T.MeshBasicMaterial({name: 'Lounge polished stone sheen', color: 0xfff8e8, transparent: true, opacity: .055, depthWrite: false});
+  const glass = new T.MeshStandardMaterial({name: 'Lounge clear glazing', color: 0xbcd6e4, transparent: true, opacity: .10, roughness: .12, depthWrite: false});
 
   box(shell, 'Lounge_floor', floor, wallWidth, .16, roomDepth, 0, -.08, keyboardBackZ+roomDepth/2);
-  box(shell, 'Keyboard_timber_wall', timber, 8.7, 3.02, .20, .48, 2.23, -3.91);
+  const sheen = new T.Mesh(new T.PlaneGeometry(3.1, 7.4), floorSheen);
+  sheen.name = 'Lounge_polished_floor_sheen';
+  sheen.rotation.x = -Math.PI/2;
+  sheen.position.set(-1.15, .002, 1.45);
+  shell.add(sheen);
+  // The load-bearing part name stays, but the photographed surround is cream and the
+  // platform is low; this preview is not governed by the in-game B4_TIERS gate.
+  box(shell, 'Keyboard_timber_wall', surround, 8.7, 2.90, .20, .48, 1.62, -3.91);
   box(shell, 'Left_return', plaster, .18, 3.7, 4.3, -5.31, 1.85, -1.96);
   box(shell, 'Right_jamb', plaster, .38, 3.7, .30, 5.2, 1.85, -3.92);
 
-  // Each tier is a solid platform with the curved edge seen in the wide photo.
-  for (let tier = 0; tier < 3; tier++) {
-    const front = (x: number) => -.52 - tier * .65 + .022 * (x - .7) ** 2;
-    const outline = new T.Shape();
-    outline.moveTo(-3.51, 4.06);
-    outline.lineTo(5.39, 4.06);
-    for (let index = 16; index >= 0; index--) {
-      const x = -3.51 + 8.90 * index / 16;
-      outline.lineTo(x, -front(x));
-    }
-    outline.closePath();
-    const height = (tier + 1) * .245;
-    const geometry = new T.ExtrudeGeometry(outline, {depth: .245, bevelEnabled: false});
-    geometry.rotateX(-Math.PI / 2);
-    mesh(steps, 'Curved_tier_' + (tier + 1), geometry, timber, 0, tier * .245, 0);
-    for (let index = 0; index < 16; index++) {
-      const x1 = -3.51 + 8.90 * index / 16;
-      const x2 = x1 + 8.90 / 16;
-      const z1 = front(x1);
-      const z2 = front(x2);
-      const edge = box(steps, 'Dark_tread_edge', trim, Math.hypot(x2 - x1, z2 - z1) + .005, .027, .029, (x1 + x2) / 2, height - .015, (z1 + z2) / 2 + .014);
-      edge.rotation.y = -Math.atan2(z2 - z1, x2 - x1);
-    }
+  // One shallow curved white plinth replaces the old three-storey timber staircase.
+  const plinthOutline = new T.Shape();
+  plinthOutline.moveTo(-3.51, -3.95);
+  plinthOutline.lineTo(5.39, -3.95);
+  for (let index = 16; index >= 0; index--) {
+    const x = -3.51 + 8.90 * index / 16;
+    plinthOutline.lineTo(x, -(-1.18 + .035 * (x - .7) ** 2));
   }
-  for (let step = 0; step < 6; step++) {
-    const height = (step + 1) * .1225;
-    const depth = 4.05 + .03 - step * .34;
-    const front = -4.05 + depth;
-    box(steps, 'Side_stair_tread', timber, 1.77, .1225, depth, -4.405, height - .06125, -4.05 + depth / 2);
-    box(steps, 'Side_stair_nosing', trim, 1.77, .025, .028, -4.405, height - .013, front + .014);
-  }
-  for (const [y, z] of [[.44, .05], [1.18, -1.91]]) {
-    box(steps, 'Side_stair_rail_post', upholstery, .044, .88, .044, -3.58, y, z);
-  }
-  const rail = box(steps, 'Side_stair_handrail', upholstery, .055, .051, 2.1, -3.58, 1.25, -.93);
-  rail.rotation.x = .36;
+  plinthOutline.closePath();
+  const plinthGeometry = new T.ExtrudeGeometry(plinthOutline, {depth: .22, bevelEnabled: false});
+  plinthGeometry.rotateX(-Math.PI / 2);
+  // A single curved plinth: the old rectangular slab overlapped this mesh and
+  // produced a grey horizontal seam across its front face.
+  mesh(steps, 'Keyboard_low_white_plinth', plinthGeometry, plinthMat, 0, .02, 0);
 
-  const rug=mesh(furniture,'Oval_lounge_rug',new T.CylinderGeometry(1,1,.013,24),carpet,1.20,.013,3.22);
-  rug.scale.set(3.65,1,2.45);
+  const rug=mesh(furniture,'Round_lounge_rug',new T.CylinderGeometry(1,1,.013,48),carpet,1.20,.013,3.22);
+  rug.scale.set(3.15,1,3.15);
+  const rugInset=material('Ivory pale rug woven motif',0xc1ccd2,.95);
+  const rugAccent=material('Ivory blue-grey rug accent',0x697985,.95);
+  for(const radius of [.72,.79,.86]){
+    const motif=new T.Mesh(new T.TorusGeometry(radius,.012,4,64),rugInset);
+    motif.name='Rug_woven_ring';motif.rotation.x=Math.PI/2;motif.position.set(1.20,.024,3.22);motif.scale.set(3.15,3.15,1);furniture.add(motif);
+  }
+  for(let index=0;index<24;index++){
+    const angle=index*Math.PI/12,diamond=box(furniture,'Rug_diamond_motif',index%2?rugInset:rugAccent,.12,.006,.12,1.20+2.67*Math.cos(angle),.024,3.22+2.67*Math.sin(angle));
+    diamond.rotation.y=Math.PI/4;
+  }
   const sofa=section(furniture,'Curved_modular_sofa');
-  const sofaFabric=material('Lounge grey sofa textile',0x9ca5a8);
+  const sofaTube=(radius:number,start:number,end:number,tube:number,y:number)=>{
+    const points=Array.from({length:13},(_,i)=>{const a=start+(end-start)*i/12;return new T.Vector3(radius*Math.sin(a),y,radius*Math.cos(a));});
+    return new T.TubeGeometry(new T.CatmullRomCurve3(points),20,tube,12,false);
+  };
   for(let module=0;module<7;module++){
     const start=-1.78+module*.49;
-    mesh(sofa,'Curved_seat_module',arcSlab(1.49,2.19,start,start+.465,.37),sofaFabric,2.15,.085,3.35);
-    mesh(sofa,'Curved_back_module',arcSlab(1.93,2.22,start,start+.465,.42),sofaFabric,2.15,.46,3.35);
+    mesh(sofa,'Curved_seat_module',sofaTube(1.58,start,start+.465,.265,.40),sofaFabric,2.15,0,3.35);
+    mesh(sofa,'Curved_back_module',sofaTube(1.98,start,start+.465,.295,.79),sofaFabric,2.15,0,3.35);
   }
-  mesh(furniture,'Sofa_side_table_top',new T.CylinderGeometry(.29,.29,.045,12),timber,4.35,.57,4.59);
-  mesh(furniture,'Sofa_side_table_pedestal',new T.CylinderGeometry(.065,.19,.54,10),trim,4.35,.28,4.59);
-  const leaf=material('Lounge foliage',0x3e6048);
-  for(const [x,z] of [[-4.98,3.77],[-4.87,4.62],[-4.96,5.39]]){
-    mesh(furniture,'White_planter',new T.CylinderGeometry(.25,.21,.56,10),upholstery,x,.28,z);
-    for(let spray=0;spray<5;spray++){
-      const angle=spray*Math.PI*2/5;
-      const foliage=mesh(furniture,'Planter_faceted_leaf',new T.IcosahedronGeometry(.22,0),leaf,x+.22*Math.cos(angle),.96+.11*spray,z+.22*Math.sin(angle));
-      foliage.scale.set(.60,1.75,.36);foliage.rotation.set(.30,angle,.36);
+  // Low tan timber bench in front of the sofa, with splayed legs.
+  box(furniture,'Lounge_bench_seat',timber,1.95,.11,.56,3.15,.47,4.98);
+  for(const sx of [-1,1])for(const sz of [-1,1]){
+    const leg=box(furniture,'Lounge_bench_leg',timber,.075,.43,.075,3.15+sx*.76,.215,4.98+sz*.19);
+    leg.rotation.z=-sx*.13;leg.rotation.x=sz*.13;
+  }
+  mesh(furniture,'Sofa_side_table_top',new T.CylinderGeometry(.29,.29,.045,16),whiteStone,4.35,.57,4.59);
+  mesh(furniture,'Sofa_side_table_pedestal',new T.CylinderGeometry(.065,.19,.54,12),whiteStone,4.35,.28,4.59);
+  const leaf=material('Ivory deep green planter foliage',0x3f654d,.82);
+  const sageLeaf=material('Ivory sage planter foliage',0x708466,.82);
+  // Move the plants into the photographed sightline: one at the seating edge and
+  // two beside the glazing, with a smaller foreground accent.
+  for(const [x,z,height] of [[4.72,2.05,1.02],[4.80,4.72,.88],[-4.72,3.52,.80],[-3.92,5.34,.96]] as const){
+    mesh(furniture,'White_planter',new T.CylinderGeometry(.25,.21,.60,20),planterMat,x,.30,z);
+    mesh(furniture,'Planter_stem',new T.CylinderGeometry(.022,.032,height,8),leaf,x,.34+height/2,z);
+    for(let spray=0;spray<9;spray++){
+      const angle=spray*Math.PI*2/9,reach=.16+.055*(spray%3);
+      const foliage=mesh(furniture,'Planter_smooth_leaf',new T.SphereGeometry(.24,12,8),spray%3?leaf:sageLeaf,x+reach*Math.cos(angle),.70+height*(spray/10),z+reach*Math.sin(angle));
+      foliage.scale.set(.58,1.55,.26);foliage.rotation.set(.32,angle,.48);
     }
   }
   for (const [x, z, angle] of [[-1.35, 1.9, .4], [2.1, 1.7, -.55], [-.9, 3.55, 2.45]]) {
@@ -182,47 +201,90 @@ function buildKeyboardRoom() {
     }
   }
   for (const [x, z, radius] of [[.4, 2.48, .37], [-1.1, .6, .27], [3.8, .72, .27]]) {
-    mesh(furniture, 'Round_marble_top', new T.CylinderGeometry(radius, radius, .055, 12), floor, x, .65, z);
-    mesh(furniture, 'Tapered_table_pedestal', new T.CylinderGeometry(radius * .37, radius * .7, .62, 10), plaster, x, .31, z);
+    mesh(furniture, 'Round_marble_top', new T.CylinderGeometry(radius, radius, .055, 16), whiteStone, x, .65, z);
+    mesh(furniture, 'Tapered_table_pedestal', new T.CylinderGeometry(radius * .37, radius * .7, .62, 12), whiteStone, x, .31, z);
+  }
+  for (const [x, z] of [[-1.65, 4.8], [.10, 5.35], [4.70, 2.60]]) {
+    mesh(furniture, 'Pale_lounge_stool_seat', new T.CylinderGeometry(.22, .22, .07, 16), whiteStone, x, .46, z);
+    mesh(furniture, 'Pale_lounge_stool_stem', new T.CylinderGeometry(.035, .13, .42, 10), whiteStone, x, .23, z);
   }
 
-  box(ceiling, 'Rear_ceiling_strip', plaster, 10.8, .12, 1.42, 0, 3.78, -3.38);
-  for (const x of [-3.9, -1.45, 1.4, 4]) {
-    box(ceiling, 'Dark_ceiling_channel', trim, .13, .035, 1.4, x, 3.704, -3.38);
-    box(ceiling, 'Recessed_ceiling_light', ceilingLight, .046, .012, .38, x, 3.68, -2.9);
+  // Warm bronze ceiling with long curved light coves. A ribbon follows the actual
+  // curve (rather than a straight strip laid over it); the wider bronze ribbon below
+  // makes each white line read as an integrated ceiling slot.
+  box(ceiling, 'Lounge_ceiling_canopy', ceilingMat, wallWidth, .12, 1.95, 0, 3.78, -3.125);
+  const ceilingRibbon=(points:T.Vector3[],width:number,mat:T.Material,name:string,yOffset=0)=>{
+    const curve=new T.CatmullRomCurve3(points),segments=56,positions:number[]=[],uvs:number[]=[],indices:number[]=[];
+    for(let index=0;index<=segments;index++){
+      const t=index/segments,p=curve.getPoint(t),tangent=curve.getTangent(t).normalize();
+      const side=new T.Vector3(-tangent.z,0,tangent.x).normalize().multiplyScalar(width/2);
+      positions.push(p.x-side.x,p.y+yOffset,p.z-side.z,p.x+side.x,p.y+yOffset,p.z+side.z);
+      uvs.push(0,t,1,t);
+      if(index<segments){const a=index*2;indices.push(a,a+1,a+2,a+1,a+3,a+2);}
+    }
+    const geometry=new T.BufferGeometry();
+    geometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));
+    geometry.setAttribute('uv',new T.Float32BufferAttribute(uvs,2));
+    geometry.setIndex(indices);geometry.computeVertexNormals();
+    return mesh(ceiling,name,geometry,mat,0,0,0);
+  };
+  for (const x of [-3.55, -.55, 2.45]) {
+    const points = [
+      new T.Vector3(x, 3.72, -3.85),
+      new T.Vector3(x + .42, 3.57, -1.35),
+      new T.Vector3(x + .18, 3.51, 2.15),
+      new T.Vector3(x - .34, 3.70, 5.78),
+    ];
+    ceilingRibbon(points,.25,ceilingMat,'Curved_bronze_LED_cove',.045);
+    ceilingRibbon(points,.105,ceilingLight,'Curved_white_LED_line',-.012);
   }
+  for (const z of [-2.72, -2.18]) {
+    box(ceiling, 'Recessed_linear_ceiling_light', ceilingLight, .82, .018, .055, .95, 3.692, z);
+  }
+  // Double-height glazing on the room's right return; tan mullions stay slender so
+  // the overview camera can still read through the glass.
+  box(shell, 'Double_height_glazing', glass, .025, 3.65, 8.9, 5.40, 1.825, 1.00);
+  for (const z of [-3.45, -1.15, 1.15, 3.45, 5.45]) {
+    box(shell, 'Tan_window_mullion', timber, .075, 3.70, .065, 5.37, 1.85, z);
+  }
+  for (const y of [1.65, 3.45]) box(shell, 'Tan_window_transom', timber, .075, .065, 8.9, 5.37, y, 1.00);
 
   const corridor=section(root,'Keyboard_approach_corridor');
   corridor.userData.source='20261116-P06, sightline from the ribbed corridor to the left side of the keyboard wall';
-  const cool=material('Corridor upper blue grey cladding',0x7b8c9f);
+  const cool=material('Ivory blue-grey soffit',0xb8c4cc);
   const corridorEnd=12.5, openingZ=6.6, corridorWidth=2.48, centre=-3.65;
   const left=centre-corridorWidth/2,right=centre+corridorWidth/2, depth=corridorEnd-openingZ;
   box(corridor,'Approach_floor',floor,corridorWidth+.22,.16,depth,centre,-.08,openingZ+depth/2);
   box(corridor,'Approach_left_wall',plaster,.15,2.95,depth,left,1.475,openingZ+depth/2);
-  box(corridor,'Approach_right_wall',timber,.15,2.95,depth,right,1.475,openingZ+depth/2);
+  box(corridor,'Approach_right_wall',plaster,.15,2.95,depth,right,1.475,openingZ+depth/2);
   for(let z=openingZ+.24;z<corridorEnd;z+=.17)box(corridor,'Left_wall_vertical_rib',upholstery,.075,2.89,.065,left+.095,1.48,z);
   for(const x of [left,right])box(corridor,'Approach_portal_jamb',plaster,.16,2.91,.24,x,1.455,openingZ);
   box(corridor,'Approach_ceiling_return',plaster,corridorWidth+.19,.16,1.03,centre,3.01,openingZ+.44);
   box(corridor,'Blue_grey_soffit_at_lounge',cool,wallWidth, .48,.54,0,3.52,5.80);
   for(let x=-4.8;x<5;x+=1.2)box(corridor,'Soffit_vertical_joint',plaster,.018,.42,.018,x,3.53,6.078);
-  box(corridor,'Backlit_exit_marker',new T.MeshBasicMaterial({name:'Exit sign emerald',color:0x61e894}),.33,.105,.047,centre,2.72,openingZ+.14);
+  const exitMat=new T.MeshBasicMaterial({name:'Exit sign emerald',color:0x2ca45f});
+  box(corridor,'Backlit_exit_marker',exitMat,.52,.18,.047,centre,2.72,openingZ+.14);
+  const exitText=new TextGeometry('EXIT',{font:campusFont,size:.085,depth:.004,curveSegments:1});
+  exitText.computeBoundingBox();const exitBounds=exitText.boundingBox!;
+  exitText.translate(-(exitBounds.min.x+exitBounds.max.x)/2,-(exitBounds.min.y+exitBounds.max.y)/2,0);
+  mesh(corridor,'Exit_sign_lettering',exitText,ceilingLight,centre,2.72,openingZ+.168);
 
-  const navy = material('Ivory-series navy keycaps', 0x254062);
+  const navy = material('Ivory-series pale blue-grey modifier keycaps', 0xb8c4cc);
   const amber = material('Ivory-series warm gold keycaps', 0xd2ab73);
-  const silver = material('Ivory-series silver keycaps', 0x8b9bae);
-  const ivory = material('Ivory round keycaps', 0xe9dfc8);
-  const blue = new T.MeshStandardMaterial({name: 'CDS-1 blue Enter keycap', color: 0x2f6fbf, emissive: 0x000000, emissiveIntensity: 0, roughness: .55});
+  const silver = material('Ivory-series silver keycaps', 0xc3ccd0);
+  const ivory = material('Ivory pale blue-grey round keycaps', 0xb8c4cc);
+  const blue = new T.MeshStandardMaterial({name: 'CDS-1 blue Enter keycap', color: 0x9cafc2, emissive: 0x000000, emissiveIntensity: 0, roughness: .48});
   const ink = material('Sign keyboard ink', 0x222631);
-  const paleInk = material('Sign secondary keyboard ink', 0xe3e9df);
-  const panel = material('Ivory-series blue keyboard backing', 0x657eaa);
-  const frame = material('Keyboard frame', 0x4c515d);
-  const underside = new T.MeshStandardMaterial({name: 'Keycap metal underside', color: 0xbfc4c9, metalness: .9, roughness: .28});
+  const paleInk = material('Sign secondary keyboard ink', 0x33414c);
+  const panel = new T.MeshStandardMaterial({name: 'Ivory backlit cream keyboard backing', color: 0xeee1c5, emissive: 0xffe8bd, emissiveIntensity: .18, roughness: .62});
+  const frame = material('Keyboard cream reveal', 0xd8cdb8);
+  const underside = new T.MeshStandardMaterial({name: 'Keycap metal underside', color: 0xbfc4c9, metalness: .55, roughness: .38});
   const pedestalIvory = material('Keycap pedestal ivory', 0xe4dfd2);
-  const pedestalOlive = material('Keycap pedestal olive', 0x8b8b76);
+  const pedestalOlive = material('Keycap pedestal pale grey', 0xaeb9bd);
   const usbMetal = new T.MeshStandardMaterial({name: 'USB connector metal', color: 0xc9ced5, metalness: .55, roughness: .30, emissive: 0x2a2f36, emissiveIntensity: .35});
   const socketRim = new T.MeshStandardMaterial({name: 'Socket metal rim', color: 0x9aa3ad, metalness: .60, roughness: .35, emissive: 0x1f242a, emissiveIntensity: .30});
   const usbDark = material('USB connector slot', 0x1a1e25);
-  const socket = material('Key switch socket', 0x14181f);
+  const socket = material('Key switch socket', 0x7c8588);
   box(wall, 'Recessed_outer_frame', frame, keyboardWidth + .16, 2.15, .10, 0, 0, 0);
   box(wall, 'Blue_keyboard_backing', panel, keyboardWidth, 2.0, .045, 0, 0, .049);
   for (const [rowIndex, row] of keyboardRows.entries()) {
@@ -245,7 +307,7 @@ function buildKeyboardRoom() {
       cap.userData = {label, row: rowIndex, col: keyIndex, units, tone: tone ?? 'ivory', phrase, enter, marked: label === 'V', rest: [x, y, .073]};
       wall.add(cap);
       mesh(cap, 'Key_' + label, keycap(width, height), materialForCap, 0, 0, 0);
-      keyLabel(cap, label, tone === 'navy' || tone === 'blue' ? paleInk : ink, width, 0, -(digitSymbol ? .034 : 0), label.length > 1 ? .064 : .15, .045);
+      keyLabel(cap, label, tone === 'blue' ? paleInk : ink, width, 0, -(digitSymbol ? .034 : 0), label.length > 1 ? .064 : .15, .045);
       if (digitSymbol) keyLabel(cap, digitSymbol, ink, width, .078, .088, .080, .045);
       const seat = mesh(cap, 'Keycap_metal_underside', new T.CylinderGeometry(height * .42, height * .42, .014, 20), underside, 0, 0, -.014);
       seat.rotation.x = Math.PI / 2;
@@ -542,6 +604,6 @@ export function buildObservedFeatureRoom(kind: FeatureRoom, options: {parts?: re
   };
   const root = builders[kind]();
   compact(root);
-  voxelizeMaterials(root);
+ // Interior: authored finishes only — the 25 cm pixel tile is for exteriors (see voxelizeMaterials).
   return root;
 }
