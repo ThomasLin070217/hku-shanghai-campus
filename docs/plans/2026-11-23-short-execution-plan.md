@@ -51,7 +51,7 @@
 
 ### Phase 4 — Release (tag-based)
 
-17. Version label `v9.1.0` visible in the pause card, credits and `__CAMPUS.version`.
+17. Version stamp `v9.1.0 · <12-char commit>` visible in the pause card and credits (`__CAMPUS.version` keeps the bare version). A build over uncommitted work prints `-dirty`; the tagged build must not.
 18. Group bug triage; P0/P1 fixed, P2 listed in `KNOWN-ISSUES.md`.
 19. Run `scripts/pre-push-secret-scan.sh` (fails on `sk-`, `ntn_`, `ghp_`, `Bearer `); rotate the two exposed `sk-` keys before any push.
 20. `git tag -a v9.1.0` on the playable commit. No freeze package, no SHA256SUMS, no upload from this repo.
