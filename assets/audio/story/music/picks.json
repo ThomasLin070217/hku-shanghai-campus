@@ -6,10 +6,10 @@
     "bytes": 2357857
   },
   "mus_prologue": {
-    "source": ".scratch/music-2026-11-23/family-a2/mus_prologue/take-a/prologue_symphony.wav",
+    "source": ".scratch/music-2026-11-24/mus_prologue-v2-fix/symphony_warm.wav",
     "file": "assets/audio/story/music/mus_prologue.mp3",
-    "duration": 50.53,
-    "bytes": 1012028
+    "duration": 78.45,
+    "bytes": 1884622
   },
   "mus_invitation": {
     "source": ".scratch/music-2026-11-23/family-a2/mus_invitation/take-a/invitation_music_box.wav",
@@ -18,10 +18,10 @@
     "bytes": 321351
   },
   "mus_dinner": {
-    "source": ".scratch/music-2026-11-23/family-a2/mus_dinner/take-a/dinner_waltz.wav",
+    "source": ".scratch/music-2026-11-23/family-a2/mus_dinner/take-b/dinner_processional.wav",
     "file": "assets/audio/story/music/mus_dinner.mp3",
-    "duration": 36.92,
-    "bytes": 739832
+    "duration": 53.33,
+    "bytes": 1281506
   },
   "mus_dinner_toast": {
     "source": ".scratch/music-2026-11-23/family-a2/mus_dinner_toast/take-a/toast_brass.wav",
