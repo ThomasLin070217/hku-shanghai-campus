@@ -41,6 +41,7 @@
   "check:sports-students": "tsx scripts/check-sports-students.ts",
   "check:campaign-b4": "tsx scripts/check-campaign-b4.ts",
   "check:b4-flip-room": "tsx scripts/check-b4-flip-room.ts",
+ "check:interior-surfaces": "tsx scripts/check-interior-surfaces.ts",
   "check:campaign-walk": "tsx scripts/check-campaign-walk.ts",
   "check:campaign-dome": "tsx scripts/check-campaign-dome.ts",
   "check:campaign-playthrough": "${PYTHON:-python3} scripts/check-campaign-playthrough.py",

@@ -13,6 +13,27 @@ export function createSiteViewer(host:HTMLElement, renderWhen:()=>boolean=()=>tr
  function refreshEnvironment(){const pmrem=new T.PMREMGenerator(renderer),room=new RoomEnvironment();try{const next=pmrem.fromScene(room,.04);scene.environment=next.texture;env?.dispose();env=next;}finally{room.dispose();pmrem.dispose();}}
  refreshEnvironment();scene.environmentIntensity=.25;
  renderer.domElement.addEventListener('webglcontextrestored',refreshEnvironment);
+ // The campus sun shades 400 m across 2048 texels — 0.195 m per texel, which cannot resolve
+ // a chair leg or a door reveal, so interiors read as pasted-on. `followSunShadow` keeps the
+ // sun's direction but re-centres a 64 m box on the player (0.031 m/texel) for the first-person
+ // game; `releaseSunShadow` restores the campus-wide box for the overview.
+ const sunHome={left:-200,right:200,top:210,bottom:-210,far:650,normalBias:.12,bias:-.00012};
+ let sunFollowing=false,sunFollowSize=32;
+ function followSunShadow(point:{x:number;y:number;z:number}){
+  const cam=sun.shadow.camera as T.OrthographicCamera;
+  const dir=sun.position.clone().sub(sun.target.position);
+  sun.target.position.set(point.x,point.y+1,point.z);
+  sun.position.copy(sun.target.position).add(dir);
+  sun.target.updateMatrixWorld();
+  if(!sunFollowing||cam.right!==sunFollowSize){cam.left=-sunFollowSize;cam.right=sunFollowSize;cam.top=sunFollowSize;cam.bottom=-sunFollowSize;cam.near=.5;cam.updateProjectionMatrix();sunFollowing=true;}
+  sun.shadow.normalBias=.03;sun.shadow.bias=-.0003;
+ }
+ function releaseSunShadow(){
+  if(!sunFollowing)return;sunFollowing=false;
+  const cam=sun.shadow.camera as T.OrthographicCamera;
+  Object.assign(cam,{left:sunHome.left,right:sunHome.right,top:sunHome.top,bottom:sunHome.bottom,far:sunHome.far});cam.updateProjectionMatrix();
+  sun.shadow.normalBias=sunHome.normalBias;sun.shadow.bias=sunHome.bias;
+ }
  const lights=new T.Group();lights.name='Preview_Lights';scene.add(lights);const hemi=new T.HemisphereLight(0xe5f3ff,0x6c8157,1.35);lights.add(hemi);const sun=new T.DirectionalLight(0xffefd6,2.5);sun.position.set(-160,240,150);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-200,right:200,top:210,bottom:-210,far:650});sun.shadow.normalBias=.12;sun.shadow.bias=-.00012;lights.add(sun);const fill=new T.DirectionalLight(0xc1d8e0,.4);fill.position.set(160,100,-130);lights.add(fill);
  const camera=new T.OrthographicCamera(-200,200,200,-200,.1,2000);camera.name='Preview_Camera';const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.08;controls.minZoom=.25;controls.maxZoom=14;controls.maxPolarAngle=Math.PI*.495;let activeCamera:T.Camera=camera; const beforeRender=new Set<(dt:number)=>void>(); let viewHeight=330;let current:CampusView='iso';let frameSpan=330;
  // Adaptive resolution: the ratio handed to the renderer is the capped device ratio times
@@ -41,7 +62,7 @@ export function createSiteViewer(host:HTMLElement, renderWhen:()=>boolean=()=>tr
  /** Renderer counters plus the governor state. Diagnostics only: it reports what the
   * renderer actually submitted, it does not claim a measured improvement. */
  function perf():RendererPerf{const info=renderer.info,memory=(performance as HeapPerformance).memory,frameMs=governor.frameMs;return{calls:info.render.calls,triangles:info.render.triangles,lines:info.render.lines,points:info.render.points,geometries:info.memory.geometries,textures:info.memory.textures,programs:info.programs?.length??0,frameMs:Math.round(frameMs*100)/100,fps:frameMs?Math.round(1000/frameMs):0,pixelRatio:Math.round(renderer.getPixelRatio()*1000)/1000,basePixelRatio:Math.round(baseRatio*1000)/1000,resolutionScale:governor.scale,resolutionStep:governor.step,heap:memory?{used:memory.usedJSHeapSize,total:memory.totalJSHeapSize,limit:memory.jsHeapSizeLimit}:null};}
- return{scene,camera,controls,renderer,lights:{hemi,sun,fill},view,capture,perf,
+ return{scene,camera,controls,renderer,lights:{hemi,sun,fill},followSunShadow,releaseSunShadow,view,capture,perf,
   screenshot(){if(renderer.getContext().isContextLost())throw Error('The graphics context has not recovered yet, so a screenshot cannot be taken');const ratio=renderer.getPixelRatio();try{// Captures keep the full capped ratio so a degraded gameplay frame is not exported.
    if(ratio!==baseRatio)renderer.setPixelRatio(baseRatio);renderer.render(scene,activeCamera);return renderer.domElement.toDataURL('image/png');}finally{if(ratio!==baseRatio)renderer.setPixelRatio(ratio);}},
   callbacks,beforeRender,setActiveCamera(c:T.Camera){activeCamera=c;},get activeCamera(){return activeCamera;},getView:()=>current,
