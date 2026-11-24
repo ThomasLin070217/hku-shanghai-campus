@@ -45,7 +45,13 @@ type SportsDoorRuntime={
 export function createSportsChapter():Chapter{
  let ctx:ChapterContext|null=null,doorRuntime:SportsDoorRuntime|null=null,opened=false;
  let emitted=false,runTime=0,crowd:ReturnType<typeof createStudentCrowd>|null=null,runout:StudentRunout|null=null;
+ let bed='';
  const isOpen=()=>doorRuntime?.open??false;
+ /** The rescue owns the score from the walk in until the last student is through the door. */
+ function score(name:string|null){
+  if(bed===(name??''))return;bed=name??'';
+  if(name)ctx?.music?.(name,{loop:true});else ctx?.stopMusic?.();
+ }
  /** The crowd cheer is optional and must never block the rescue. */
  function playCheer(){
   if(typeof Audio==='undefined'||typeof window==='undefined')return;
@@ -94,6 +100,8 @@ export function createSportsChapter():Chapter{
   }).catch(error=>{c.notify('The door lock could not load.');console.error(error);});
  }
  function update(dt:number){
+  const stage=ctx?.stage();
+  score(stage==='to_sports'||stage==='sports'?'mus_sports':null);
   doorRuntime?.update(dt);
   // Release the moment the lock opens on the `sports` stage. The walking leg can
   // arrive with the door already open (a per-run door never reset), and the crowd
@@ -129,7 +137,7 @@ export function createSportsChapter():Chapter{
    };
   },
   // Restart in the same tab: the next run's Chapter 3 starts at a locked door (the state is not saved).
-  detach(){runout?.dispose();runout=null;crowd?.dispose();crowd=null;doorRuntime?.lock(true);doorRuntime?.update(0);doorRuntime?.dispose();doorRuntime=null;ctx=null;opened=false;emitted=false;runTime=0;},
+  detach(){if(bed)ctx?.stopMusic?.();bed='';runout?.dispose();runout=null;crowd?.dispose();crowd=null;doorRuntime?.lock(true);doorRuntime?.update(0);doorRuntime?.dispose();doorRuntime=null;ctx=null;opened=false;emitted=false;runTime=0;},
   debug:{
    open:openDoor,
    door(){const state=doorRuntime?.state;return{...(typeof state==='function'?state():state??{}),entry:SPORTS_ENTRY};},

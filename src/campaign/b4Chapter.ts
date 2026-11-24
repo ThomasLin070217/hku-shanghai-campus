@@ -50,6 +50,7 @@ export function createB4Chapter():Chapter{
  const outlines=new Map<B4StationId,T.LineSegments>();
  let leaves:T.Object3D[]=[];
  let lightLevel=0,shutterLift=0,leverPull=0,doorOpen=0,flash=0,beat=0,beatArmed=false,seenStage:CampaignStage|null=null,hum:HTMLAudioElement|null=null,humWanted=false,humRetry:(()=>void)|null=null;
+ let bed='';
  let raf=0,focus:Focus=null,lookYaw=0,lookPitch=0,baseYaw=0,basePitch=0;
  let savedHint:string|null=null,pulse=0;
  /** Flip tiles the chapter's own builder call allocated (D5: expected 0 — the closet part only). */
@@ -309,6 +310,11 @@ export function createB4Chapter():Chapter{
   updatePresence();
  }
  /** Gold highlight on the in-reach station, and the held MacBook hidden inside B4 and in focus. */
+ /** The room's puzzle run owns `mus_puzzle`; before the lobby it hands the bed back. */
+ function score(name:string|null){
+  if(bed===(name??''))return;bed=name??'';
+  if(name)ctx?.music?.(name,{loop:true});else ctx?.stopMusic?.();
+ }
  function updatePresence(){
   const near=focus?null:nearest();
   for(const [id,line] of outlines){line.visible=id===near;if(line.visible)(line.material as T.LineBasicMaterial).opacity=.55+.4*pulse;}
@@ -318,6 +324,8 @@ export function createB4Chapter():Chapter{
  }
  function detach(){
   leaveFocus();clearRetry();
+  if(bed)ctx?.stopMusic?.();
+  bed='';
   if(typeof window!=='undefined'){window.removeEventListener('keydown',onKey,true);window.removeEventListener('pointerdown',onDown);window.removeEventListener('pointerup',onUp);}
   const w=world();if(w){w.setDoorOpen(B4_DOOR_OBSTACLE,false);setB4FlipPanel(w,false);}
   setB4DoorLeaves(leaves,0);leaves=[];hideViewModel(false);
@@ -360,6 +368,7 @@ export function createB4Chapter():Chapter{
   },
   update(dt){
    if(!ctx||!group)return;applyStage(ctx.stage());
+   score(campaignChapterOf(ctx.stage())==='b4'&&ctx.stage()!=='b4_enter'?'mus_puzzle':null);
    if(lights&&campaignChapterOf(ctx.stage())!=='b4'&&!playerInRoom()){removeLights();syncPowered();}
    if(!raf)animate(dt);
    applyFocus();

@@ -84,7 +84,7 @@ function makeHost(seed:Record<string,string>={},card?:(kicker:string,title:strin
  // No door reset between groups: `CampusGame.doors` is a real per-run fact and
  // the chapter must cope with a door that is already open (I4).
  game.body.velocity.set(0,0,0);
- const store=memoryStorage(seed),notices:string[]=[],cards:[string,string][]=[];
+ const store=memoryStorage(seed),notices:string[]=[],cards:[string,string][]=[],music:string[]=[];
  const updates:AtmosphereFrame[]=[];
  let released=0;
  useStorage(store.storage);
@@ -98,10 +98,11 @@ function makeHost(seed:Record<string,string>={},card?:(kicker:string,title:strin
    scene:new T.Scene(),root:()=>asset.root,explorer,notify:text=>notices.push(text),
    atmosphere:()=>atmosphere as never,openPanel:()=>{},closePanel:()=>{},resume:()=>{},
    card:card??((kicker,title)=>{cards.push([kicker,title]);return immediateCard();}),
+   music:(name,options)=>{music.push(options?.loop?name+':loop':name);},stopMusic:()=>{music.push('stop');},
   } as Omit<ChapterContext,'stage'|'emit'|'deviceId'>,
   storage:store.storage,chapters:CAMPAIGN_CHAPTERS,
  });
- return{host,store,notices,cards,updates,atmosphere,get released(){return released;}};
+ return{host,store,notices,cards,updates,atmosphere,music,get released(){return released;}};
 }
 
 /** Drive the real physics toward a point, exactly like the opening integration check. */
@@ -165,11 +166,12 @@ group('(c) the lawn-to-sports walking leg is walkable on foot along approach',()
 });
 
 group('(d) the lock validates with the puzzle answers, then the crowded run emits door_opened',()=>{
- const {host,store}=makeHost({[WORLD_THREAT_KEY]:SEALED_WITH_POWER});
+ const {host,store,music}=makeHost({[WORLD_THREAT_KEY]:SEALED_WITH_POWER});
  host.start('mac-device','to_sports');
  game.body.position.set(...SPORTS_ENTRY.point as [number,number,number]);game.body.velocity.set(0,0,0);
  host.update(1/120);
  assert.equal(host.stage(),'sports');
+ assert.ok(music.includes('mus_sports:loop'),'the rescue takes the bed from the walk in');
  const debug=host.debug.sports as unknown as {open:()=>({sudoku:boolean;password:boolean;open:boolean})};
  const result=debug.open();
  assert.deepEqual(result,{sudoku:true,password:true,open:true},'the content file answers open the lock');
@@ -180,6 +182,8 @@ group('(d) the lock validates with the puzzle answers, then the crowded run emit
  assert.equal(host.stage(),'sports','the stage holds on sports while the crowd runs out');
  const waited=runOut(host);
  assert.equal(host.stage(),'ending','door_opened moves the campaign to the ending after the run-out');
+ host.update(1/120);
+ assert.equal(music.at(-1),'stop','the last student through the door hands the bed back');
  assert.ok(waited<=RUNOUT_EMIT_CAP,`the run-out lands within its ${RUNOUT_EMIT_CAP} s cap (${waited.toFixed(2)} s)`);
  const threat=loadWorldThreat({storage:store.storage});
  assert.deepEqual(threat.flags,{lionDefeated:true,powerCut:true,localModelCleared:true},'the ending clears the local model');

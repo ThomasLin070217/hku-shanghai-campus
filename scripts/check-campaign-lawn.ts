@@ -72,9 +72,10 @@ for(let i=1;i<chapter.approach.length;i++){
 
 const explorer={game,world,camera:new T.PerspectiveCamera(),interactions:new Set<()=>void>(),pause(){game.pause('check');}} as unknown as Explorer;
 const scene=new T.Scene();
-const stubContext=(o:{stage:()=>CampaignStage;emit:(e:CampaignEvent)=>boolean;deviceId:string;hearts?:ChapterContext['hearts']}):ChapterContext=>({
+const stubContext=(o:{stage:()=>CampaignStage;emit:(e:CampaignEvent)=>boolean;deviceId:string;hearts?:ChapterContext['hearts'];music?:string[]}):ChapterContext=>({
  scene,root:()=>asset.root,explorer,deviceId:()=>o.deviceId,stage:o.stage,emit:o.emit,notify:()=>{},
- atmosphere:()=>undefined,openPanel(){},closePanel(){},resume(){},card:async()=>{},hearts:o.hearts});
+ atmosphere:()=>undefined,openPanel(){},closePanel(){},resume(){},card:async()=>{},hearts:o.hearts,
+ music:(name,options)=>{o.music?.push(options?.loop?name+':loop':name);},stopMusic:()=>{o.music?.push('stop');}});
 
 /* debug.complete() is a lawn shortcut only: from a Building 4 stage it changes nothing. */
 {
@@ -98,8 +99,9 @@ let campaign=createCampaignState(device);
 for(const e of ['enter_b4','keyboard_solved','flip_solved','breaker_pulled','macbook_connected'] as const)campaign=reduceCampaign(campaign,e).state;
 assert.equal(campaign.stage,'to_lawn');
 const emitted:CampaignEvent[]=[];
+const music:string[]=[];
 const emit=(e:CampaignEvent)=>{const r=reduceCampaign(campaign,e);if(r.changed){campaign=r.state;emitted.push(e);}return r.changed;};
-chapter.attach(stubContext({stage:()=>campaign.stage,emit,deviceId:device,hearts}));
+chapter.attach(stubContext({stage:()=>campaign.stage,emit,deviceId:device,hearts,music}));
 const debug=chapter.debug as unknown as LawnDebug;
 
 const rig=debug.rig?.();
@@ -175,6 +177,9 @@ assert.equal(debug.state()?.phase,'complete','holding F in the ring shuts L001 d
 /* Completion writes through the real writers and hands the campaign on. */
 assert.deepEqual(emitted,['reach_lawn','guardian_shutdown']);
 assert.equal(campaign.stage,'to_sports');
+/* One bed at a time: the walk in owns mus_lawn, the fight takes mus_lion_boss, the
+   shutdown fires the victory stinger and then hands the bed back. */
+assert.deepEqual(music,['mus_lawn:loop','mus_lion_boss:loop','mus_lion_victory','stop'],'the lawn asks for its cue at each beat, one bed at a time');
 assert.equal(hasCorePowerCut(device),true,'core power is cut for this MacBook');
 const threat=loadWorldThreat();
 assert.equal(threat.flags.lionDefeated,true);

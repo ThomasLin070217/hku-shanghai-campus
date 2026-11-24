@@ -195,7 +195,7 @@ export function createEndingChapter():Chapter{
   }
   // Deliberately after the pause: the pause drops every story-bus loop, so this
   // cue goes out on the shared music bus, which the pause does not touch.
-  try{ctx?.music?.('mus_credits');}catch(error){console.error('ending: could not start the credits music',error);}
+  try{ctx?.music?.('mus_credits',{loop:true});}catch(error){console.error('ending: could not start the credits music',error);}
  }
 
  function attach(c:ChapterContext){

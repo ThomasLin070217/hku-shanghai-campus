@@ -30,6 +30,19 @@ export const OPENING_AUDIO_NAMES=[
  * fetch it. The credits ask for it on demand, once, at the moment they appear.
  */
 export const ENDING_AUDIO_NAMES=['mus_credits'] as const;
+/**
+ * Score for the campaign's own beats. Registered with the story URL map so a chapter
+ * can ask for its cue at the moment it needs it; never part of the first click.
+ * Take, role and length for each are set in `docs/plans/2026-11-23-score-cue-map.md`.
+ */
+export const CHAPTER_SCORE_NAMES=[
+ 'mus_lawn',          // the lawn, lion approach
+ 'mus_lion_boss',     // the L001 fight
+ 'mus_lion_victory',  // L001 shut down, one shot
+ 'mus_puzzle',        // the B4 flip wall and breaker
+ 'mus_sports',        // the sports hall rescue
+ 'mus_finale',        // the barrier coming down
+] as const;
 
 /** Current chapter plus one chapter of prefetch. Conditional score cues are added from each live frame. */
 const CHAPTER_AUDIO_NAMES:Readonly<Record<string,readonly string[]>>={
@@ -52,11 +65,17 @@ export class StoryAudio {
  private robotMotion=new Map<string,{x:number;z:number;distance:number}>();
  private paused=true;
  private duckUntil=0;
+ /** When set, this cue owns the music bed instead of the opening's stage mapping. */
+ private score:string|null=null;
  private starts:Record<string,number>={};
  private gameplayRequested=false;
  private requestedChapterKey:string|null=null;
  constructor(private owner:CampusAudio){}
  get voices(){return this.loops.size;}
+ /** True before the first frame and whenever the mixer dropped the bed (pause, hidden tab). */
+ get suspended(){return this.paused;}
+ /** A campaign chapter takes the bed, or hands it back with `null`. */
+ setScore(id:string|null){this.score=id;}
  get diagnostics(){return{music:this.music,loops:[...this.loops.keys()],loopStarts:{...this.starts},timeline:this.timeline?{elapsed:this.timeline.elapsed,pending:this.timeline.events.map(e=>e.id)}:null,paused:this.paused,duckUntil:this.duckUntil};}
  private bus(group:'ambient'|'music'){
   if(!this.ducks[group]){const node=this.owner.context!.createGain();node.connect(this.owner.groups[group]);this.ducks[group]=node;}
@@ -130,8 +149,13 @@ export class StoryAudio {
   this.paused=false;const dt=Math.min(.1,Math.max(0,frame.dt));
   if(this.timeline){this.timeline.elapsed+=dt;while(this.timeline.events[0]?.at<=this.timeline.elapsed)this.cue(this.timeline.events.shift()!.id);if(!this.timeline.events.length)this.timeline=null;}
   const fallback:Music=frame.stage==='complete'?'hope':frame.chasing?'chase':frame.dark?'tension':frame.stage==='return_b5'?'unease':'safe';
-  const music=frame.music??'mus_'+fallback;
+  // A chapter's own score replaces the stage mapping while it holds the bed, so
+  // the campaign never stacks a second music bus on top of this one.
+  const music=this.score??frame.music??'mus_'+fallback;
   const changed=this.music!==music,previous=this.music;this.music=music;
+  // Chapter cues are registered but not eagerly fetched; the first frame that asks
+  // for one starts its fetch, and `loop` picks it up on a later frame.
+  if(changed&&!this.owner.buffers.has(music))void this.owner.loadAudioNames([music]);
   const fade=music==='mus_chase'?delivery.crossfadeMs.toChase/1000:previous==='mus_chase'?delivery.crossfadeMs.fromChase/1000:delivery.crossfadeMs.normal/1000;
   if(changed)for(const key of this.loops.keys())if(key.startsWith('music:')&&key!=='music:'+music)this.retire(key,fade);
   this.loop('music:'+music,music,'music',.5,fade);

@@ -57,6 +57,7 @@ export function createLawnChapter():Chapter{
  let ctx:ChapterContext|null=null,visuals:ReturnType<typeof createBossScene>|null=null;
  let combat:ReturnType<typeof createCombat>|null=null,prompt:ReturnType<typeof createKeyPrompt>=null;
  let localHearts=OPENING_MAX_HEARTS,holding=false,started=false,finished=false,grace=0;
+ let bed='';
  let events:AbortController|null=null;
 
  const game=()=>ctx!.explorer.game;
@@ -72,6 +73,11 @@ export function createLawnChapter():Chapter{
   damage:(n:number)=>ctx?.hearts?ctx.hearts.damage(n):(localHearts=Math.max(0,localHearts-n)),
   heal:()=>ctx?.hearts?ctx.hearts.heal():(localHearts=OPENING_MAX_HEARTS),
  };
+ /** One bed at a time, and `null` hands the bed back to the opening's stage mapping. */
+ function score(name:string|null){
+  if(bed===(name??''))return;bed=name??'';
+  if(name)ctx?.music?.(name,{loop:true});else ctx?.stopMusic?.();
+ }
  function begin(){
   started=true;holding=false;grace=0;
   combat!.start();
@@ -89,6 +95,7 @@ export function createLawnChapter():Chapter{
  }
  function finish(){
   finished=true;holding=false;
+  ctx!.music?.('mus_lion_victory');   // one shot over the bed, which the next frame hands back
   if(shutDownGuardian(ctx!.deviceId()))game().event('ai_core_power_cut','AI core power is off',{next:'sports-hall'});
   ctx!.emit('guardian_shutdown');
   ctx!.notify('L001 is offline · Core power is cut');
@@ -124,7 +131,11 @@ export function createLawnChapter():Chapter{
   },
   update(dt){
    if(!ctx||!combat)return;
-   if(ctx.stage()==='lawn'){
+   // The walking leg into the lawn owns `mus_lawn`; the fight takes `mus_lion_boss`;
+   // past the shutdown the bed goes back to the campaign's own mapping.
+   const stage=ctx.stage();
+   score(finished?null:stage==='lawn'?'mus_lion_boss':stage==='to_lawn'?'mus_lawn':null);
+   if(stage==='lawn'){
     if(finished&&combat.state.phase==='complete')ctx.emit('guardian_shutdown');   // core power was cut before the stage caught up
     else if(!started)begin();
    }
@@ -150,6 +161,8 @@ export function createLawnChapter():Chapter{
   },
   detach(){
    events?.abort();events=null;
+   if(bed)ctx?.stopMusic?.();
+   bed='';
    prompt?.dispose();prompt=null;
    visuals?.dispose();visuals=null;
    ctx=null;combat=null;holding=false;started=false;finished=false;localHearts=OPENING_MAX_HEARTS;

@@ -44,7 +44,7 @@ function ending(liftSeconds:number|null){
  };
  const settled={then(ok?:()=>void){ok?.();return settled;},catch(){return settled;}} as unknown as Promise<void>;
  const ctx={stage:()=>stage,emit:(e:string)=>{emitted.push(e);if(e==='ending_finished')stage='done';return true;},deviceId:()=>'mac',
-  notify(){},atmosphere:()=>atmosphere,cardSettled:()=>settled,explorer:{pause(){}},music:(name:string)=>{music.push(name);},
+  notify(){},atmosphere:()=>atmosphere,cardSettled:()=>settled,explorer:{pause(){}},music:(name:string,options?:{loop?:boolean})=>{music.push(options?.loop?name+':loop':name);},stopMusic(){},
   scene:null,root:()=>null,openPanel(){},closePanel(){},resume(){},card:()=>settled} as unknown as ChapterContext;
  const chapter=createEndingChapter();chapter.attach(ctx);
  return{chapter,emitted,music,step(seconds:number){for(let i=0;i<Math.round(seconds/dt);i++){time+=dt;chapter.update(dt);}},get time(){return time;},get releasedAt(){return releasedAt;}};
@@ -92,9 +92,9 @@ group('(b) a dome that never reports released still gets credits, about 3 s late
 group('(c) the credits ask for the ending theme, exactly once',()=>{
  data.clear();sealWorld();markLionDefeated();markPowerCut();
  const e=ending(5.2);e.step(3.2+dt);e.step(ENDING_SECONDS+.1);
- assert.deepEqual(e.music,['mus_credits'],'the credits request the ending theme');
+ assert.deepEqual(e.music,['mus_credits:loop'],'the credits request the ending theme, looping');
  e.step(30);
- assert.deepEqual(e.music,['mus_credits'],'and only once, however long the credits stay up');
+ assert.deepEqual(e.music,['mus_credits:loop'],'and only once, however long the credits stay up');
 });
 
 group('(c) every ending cue has a shipped URL and is not in the opening fetches',()=>{

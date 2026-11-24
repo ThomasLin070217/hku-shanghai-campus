@@ -2,7 +2,7 @@ import {OPENING_FOLEY} from '../opening/audioAssets';
 import type {Settings} from './save';
 import type {Gait} from '../characters/gait';
 import {STORY_AUDIO_URLS} from './storyAudioAssets';
-import {StoryAudio,OPENING_AUDIO_NAMES,ENDING_AUDIO_NAMES} from './storyAudio';
+import {StoryAudio,OPENING_AUDIO_NAMES,ENDING_AUDIO_NAMES,CHAPTER_SCORE_NAMES} from './storyAudio';
 type Point={x:number;y:number;z:number};
 const audioUrls:Record<string,URL>={
  'select':new URL('../../assets/audio/select.wav',import.meta.url),
@@ -48,12 +48,51 @@ export class CampusAudio {
  story:StoryAudio|null=null;
  private urls={...audioUrls};private seenGrounded=true;private seenY=0;
  private shots=new Map<AudioBufferSourceNode,{group:string;gain:GainNode;panner?:PannerNode;preview:boolean}>();
+ /** The chapter's current looping score on the music bus; replaced, never stacked. */
+ private score:{source:AudioBufferSourceNode;gain:GainNode}|null=null;
  private visibility=()=>{if(document.hidden){this.setActive(false);this.stopPreviews();this.stopShots(undefined,true);void this.context?.suspend().catch(()=>{});}};
  constructor(settings:Settings){this.settings={...settings};document.addEventListener('visibilitychange',this.visibility);}
- enableStory(){if(this.story)return;this.story=new StoryAudio(this);for(const name of [...OPENING_AUDIO_NAMES,...ENDING_AUDIO_NAMES])this.urls[name]=STORY_AUDIO_URLS[name];Object.assign(this.urls,OPENING_FOLEY);}
- /** One-shot score on the shared music bus, so the player's music volume and mute still apply. */
- playMusicCue(name:string,play=true){
-  this.loadAudioNames([name]).then(()=>{if(play)this.play(name,'music',undefined,.5);});
+ enableStory(){if(this.story)return;this.story=new StoryAudio(this);for(const name of [...OPENING_AUDIO_NAMES,...ENDING_AUDIO_NAMES,...CHAPTER_SCORE_NAMES])this.urls[name]=STORY_AUDIO_URLS[name];Object.assign(this.urls,OPENING_FOLEY);}
+ /**
+  * Score on the shared music bus, so the player's music volume and mute still apply.
+  * Looping cues are owned by this class (one at a time) and crossfaded into each
+  * other, because a chapter cue outlives any single shot in the 16-voice budget.
+  */
+ playMusicCue(name:string,loop=false){
+  this.loadAudioNames([name]).then(()=>{
+   const c=this.context;if(!c||this.disposed||c.state!=='running'||document.hidden)return;
+   const buffer=this.buffers.get(name);if(!buffer)return;
+   // Only a looping bed is "the current score"; a one-shot stinger must survive stopMusic.
+   if(loop)this.stopMusic(.8);
+   const source=c.createBufferSource(),volume=c.createGain();
+   source.buffer=buffer;source.loop=loop;
+   volume.gain.value=0;volume.gain.setTargetAtTime(.5,c.currentTime,.05);
+   source.connect(volume);volume.connect(this.groups.music);
+   source.onended=()=>{if(loop&&this.score?.source===source)this.score=null;try{volume.disconnect();}catch{/* already torn down */}};
+   source.start();
+   if(loop)this.score={source,gain:volume};
+   this.counts[name]=(this.counts[name]??0)+1;
+  });
+ }
+ /**
+  * The one way a chapter or the credits takes the score. A looping bed goes to the
+  * story bus, which already crossfades and ducks the opening's cues; anything the
+  * story bus is not running for (its pause at the credits, a headless or silent
+  * start) falls through to the shared music bus, so the cue is never lost.
+  */
+ playScore(name:string,loop=true){
+  if(loop&&this.story&&this.active&&!this.story.suspended){this.story.setScore(name);return;}
+  this.playMusicCue(name,loop);
+ }
+ /** Hands the bed back to the opening's stage mapping and clears any music-bus score. */
+ stopScore(){this.story?.setScore(null);this.stopMusic();}
+ /** Fade the current chapter score out; a following playMusicCue crosses into its own cue. */
+ stopMusic(fade=.6){
+  const current=this.score;this.score=null;
+  if(!current||!this.context)return;
+  const t=this.context.currentTime,gain=current.gain.gain;
+  gain.cancelScheduledValues(t);gain.setTargetAtTime(0,t,Math.max(.02,fade/3));
+  try{current.source.stop(t+fade);}catch{try{current.source.disconnect();}catch{/* nothing to release */}}
  }
  get voiceCount(){return this.shots.size+(this.story?.voices??0);}
  /** Call from a user gesture. Loading failure never blocks movement or throws an unhandled rejection. */

@@ -146,9 +146,11 @@ const explorer={game:g2,world:w2,camera,firstPerson:{socket,root:arms},enabled:t
  assert.equal(rule({enabled:false,story:false}),false);
  console.log('PASS first-person view model rule: stowed in story mode, held in survey');
 }
+const music:string[]=[];
 const ctx:ChapterContext={scene:new T.Scene(),root:()=>site.root,explorer,deviceId:()=>'mac-1',stage:()=>cs.stage,
  emit:e=>{const r=reduceCampaign(cs,e);cs=r.state;return r.changed;},notify:t=>{notes.push(t);},atmosphere:()=>undefined,
- openPanel:()=>{g2.openPanel('door');},closePanel:()=>{g2.closePanel();},resume:()=>{g2.paused=false;},card:async()=>{}};
+ openPanel:()=>{g2.openPanel('door');},closePanel:()=>{g2.closePanel();},resume:()=>{g2.paused=false;},card:async()=>{},
+ music:(name,options)=>{music.push(options?.loop?name+':loop':name);},stopMusic:()=>{music.push('stop');}};
 const b4=createB4Chapter(),dbg=b4.debug as Record<string,(...a:unknown[])=>any>;
 /** The focus camera looks square-on at the station and the whole panel is inside the view. */
 function framed(id:'keyboard'){
@@ -431,6 +433,10 @@ function poweredState(when:string){
  g2.body.position.set(...O.handoff);step(1);
  // Ruling 39 (FU6): once out, the chapter lights give way to a dim, contained powered state.
  assert.equal(site.root.getObjectByName('B4_room_lights'),undefined,'the chapter lights are removed once the player has left B04');
+ // The puzzle run takes the bed, and the walk out hands it back. A restored chapter
+ // instance asks again (its own bed), so the count is per instance, not per recorder.
+ assert.ok(music.includes('mus_puzzle:loop'),'the room puzzle asks for its cue');
+ assert.equal(music.at(-1),'stop','leaving B04 hands the bed back to the campaign mapping');
  poweredState('to_lawn, player outside');
  // FU3: with no lights the restored room still reads as powered: the racks keep a green emissive.
  const rackGlow=(name:string)=>{let out=-1;site.root.traverse(o=>{if(o instanceof T.Mesh)for(const m of [o.material].flat())if(m instanceof T.MeshStandardMaterial&&m.name===name){const e=m.emissive;out=Math.max(out,m.emissiveIntensity*(e.r+e.g+e.b)/3);}});return out;};

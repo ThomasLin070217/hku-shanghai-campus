@@ -13,7 +13,8 @@ export interface ChapterContext{
  card:(kicker:string,title:string,ms?:number)=>Promise<void>;          // shared full-screen chapter card (Task 1)
  cardSettled?:()=>Promise<void>;                                      // resolves when the most recent chapter card has faded out
  hearts?:{get():number;max:number;damage(n:number):number;heal():number};   // the opening runtime's hearts; damage/heal return the new value and persist like a robot catch does
- music?:(name:string)=>void;                                           // one-shot score on the shared music bus; used by the credits, where the story bus is already paused
+ music?:(name:string,options?:{loop?:boolean})=>void;                  // score on the shared music bus; used by chapter beats and the credits, where the story bus is already paused
+ stopMusic?:()=>void;                                                 // fades the chapter score out; call it when the beat that owns the cue ends
 }
 export interface Chapter{
  id:'b4'|'lawn'|'sports'|'ending';
