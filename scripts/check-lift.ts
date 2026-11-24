@@ -681,6 +681,6 @@ if (invokedDirectly) {
  // every orchestrator reads it as "running". The short delay lets the queued stderr land.
  const finish = (code: number) => setTimeout(() => process.exit(code), 50);
  main().then(
-  () => finish(process.exitCode ?? 0),
+  () => finish(typeof process.exitCode === 'number' ? process.exitCode : 0),
   error => { console.error('check-lift: FAIL —', error); finish(1); });
 }
