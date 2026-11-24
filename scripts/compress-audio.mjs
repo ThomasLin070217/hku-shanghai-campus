@@ -54,7 +54,7 @@ export async function compressionPlan(sourcePath){
  const channels=role==='ambience'?1:media.channels;
  // A dual-mono stereo bed measures 3 LU louder than one channel under EBU R128.
  // Summing both channels preserves that program loudness; the default matrix loses 6 dB.
- const downmix=channels===1&&media.channels===2?'pan=mono|c0=c0+c1':null;
+ const downmix=channels===1&&media.channels===2?'pan=mono|c0=c0+c1,alimiter=limit=0.707945:level=false:attack=5:release=50':null;
  const supportedRates=[44100,48000,32000,24000,22050,16000,12000,11025,8000];
  // Preserve every standard rate at or below 44.1 kHz. MP3 cannot encode 44 kHz;
  // use the nearest supported rate rather than silently discarding 12 kHz of bandwidth.
