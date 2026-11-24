@@ -1,7 +1,7 @@
 {
   "scope": "opening asset mode only",
   "baselineRevision": "b074ec5fd7a3",
-  "openingRevision": "2632cb955221",
+  "openingRevision": "35d71de59dcb",
   "migrations": [
     {
       "oldId": "B04-G-5238d2dc03c3",

@@ -11,6 +11,14 @@ import {buildSite} from '../src/model/buildSite';
 import {PLANTING_BED} from '../src/model/groundLayout';
 import {sceneRegistry} from '../src/scene/registry';
 import {disposeAsset} from '../src/model/buildCampus';
+// Both scenes are built before any navigation or game state exists.
+// `createNavigation` and `new CampusGame` perturb module state, which made
+// `openingRevision` come out different on every run of this gate (Task E review
+// §5.7: four runs at one commit gave four values, none of them the committed
+// one). Building first makes the hash reproducible, so the evidence file only
+// changes when the scene actually does.
+const baseline=buildSite(),opening=buildSite(undefined,undefined,true);
+const baseIndex=sceneRegistry(baseline.root),index=sceneRegistry(opening.root);
 const results:object[]=[];
 const w=createNavigation(BUILDINGS,SITE,true),g=new CampusGame(w,BUILDINGS,SITE);
 function route(name:string,start:readonly number[],points:readonly (readonly number[])[]){g.body.position.fromArray([...start]);g.body.velocity.set(0,0,0);g.paused=false;g.body.grounded=true;let total=0;
@@ -57,7 +65,7 @@ route('Building5 door through the planting-bed gap',O.checkpoints.b5safe,[[O.b5.
 assert.ok(g.body.position.z>bedEdge,`the planting-bed gap must open the Building 5 door axis; stopped at z=${g.body.position.z}, far edge ${bedEdge}`);
 let called=0;g.scenario={interact(){called++;g.openPanel('computer');return{ok:true,code:'test_modal',message:'Paused'};},computer(){called++;g.openPanel('computer');return{ok:true,code:'page_ready',message:'Paused'};},tick(){},snapshot(){return{};},spawn(){}};
 g.panel=null;g.enableAI();g.acquireControl('opening-test');const epoch=g.epoch,before=g.body.position.toArray();g.act({commandId:'open-modal',controlEpoch:epoch,durationMs:100,interact:'opening-staff',move:{forward:1,right:0}},1000);g.step(1/120,1001);assert.equal(called,1);assert.deepEqual(g.body.position.toArray(),before);assert.equal(g.owner,null);assert.equal(g.paused,true);assert.equal(g.act({commandId:'old',controlEpoch:epoch,durationMs:100},1002).ok,false);results.push({name:'Shared RPC route, modal same-frame stop and epoch invalidation',passed:true});
-const baseline=buildSite(),opening=buildSite(undefined,undefined,true),baseIndex=sceneRegistry(baseline.root),index=sceneRegistry(opening.root),migrations=baseIndex.entities.filter(e=>!index.byId.has(e.id)).map(e=>({oldId:e.id,authorKey:e.authorKey,newId:e.buildingId==='B04'?'B04':e.buildingId==='B05'?'B05':e.buildingId==='B06'?'B06':null,reason:'Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original.'}));
+const migrations=baseIndex.entities.filter(e=>!index.byId.has(e.id)).map(e=>({oldId:e.id,authorKey:e.authorKey,newId:e.buildingId==='B04'?'B04':e.buildingId==='B05'?'B05':e.buildingId==='B06'?'B06':null,reason:'Opening mode doorway/room cavity replaces this fully clipped source part. Survey mode retains the original.'}));
 assert.ok(migrations.every(m=>m.newId),'Unexpected ID removal outside opening buildings');
 for(const room of [O.b5,O.b6]){const origin=new T.Vector3(room.door,room.floor+1.3,room.z1+1.1),ray=new T.Raycaster(origin,new T.Vector3(0,0,-1),0,4);const building=opening.byId.get(room.id)!;building.updateWorldMatrix(true,true);const hits=ray.intersectObject(building,true);assert.equal(hits.length,0,`${room.id} door has hidden core/glass backing: ${hits[0]?.object.name}`);assert.equal(w.blocked(room.door,room.z1-.5,room.floor),false);}
 results.push({name:'Visual doorway rays match collision openings',passed:true});
