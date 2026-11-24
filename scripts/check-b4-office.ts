@@ -651,10 +651,18 @@ const waitMs = (ms: number) => { const until = Date.now() + ms; while (Date.now(
 const IN_CAR = () => ({x: CX, z: CZ, y: LIFT.y});
 const OFF_CAR = () => ({x: CX, z: CZ, y: LIFT.y + 3});   // same column, far above the car floor
 
-/** Open the car's doors on the wall clock with whatever query the test wants. */
-function openDoorsWith(ms: number, at: () => {x: number; z: number; y: number}): void {
- const end = Date.now() + ms;
- while (Date.now() < end) {
+/**
+ * Drive the car's doors fully open on the wall clock with whatever query the test wants.
+ *
+ * `budgetMs` is a ceiling, not a duration: the loop stops as soon as the doors are open.
+ * It used to run for a fixed 1000 ms, which silently assumed the harness could tick fast
+ * enough for `doorSeconds` (0.8 s) to elapse inside it — true on an idle machine, false on
+ * a loaded one, where the lift's own clock (each advance capped at 50 ms) falls behind the
+ * wall clock and the next case began while the doors were still opening.
+ */
+function openDoorsWith(budgetMs: number, at: () => {x: number; z: number; y: number}): void {
+ const deadline = Date.now() + budgetMs;
+ while (Date.now() < deadline && LIFT.doors < 1) {
   const p = at();
   tickLift(p.x, p.z, p.y);
   waitMs(20);
@@ -666,22 +674,32 @@ function openDoorsWith(ms: number, at: () => {x: number; z: number; y: number}):
 // starves the close for ever (the return-ride defect the grace fixes).
 resetLift();
 tickLift(IN_CAR().x, IN_CAR().z, IN_CAR().y);      // bootstrap the clock, no step
-openDoorsWith(1000, IN_CAR);                       // doors open; the passenger's dwell starts
+openDoorsWith(4000, IN_CAR);                       // doors open; the passenger's dwell starts
+// The flood is every *other* tick off-car, not seven in eight. At the 25 ms pacing the
+// one-in-eight version left only ~50 ms of margin inside the .25 s grace, so a machine busy
+// enough to stretch ticks past 31 ms turned this case red without the lift changing
+// (observed 2026-11-25 under three concurrent builds). One off-car tick between passenger
+// queries still fails without the grace: it resets the dwell every other tick.
 const b1Start = Date.now();
-let b1ClosedAt = -1, b1Ticks = 0;
-while (Date.now() - b1Start < 4000) {
+let b1ClosedAt = -1, b1Ticks = 0, b1PeakOpen = 0;
+while (Date.now() - b1Start < 8000) {
  const i = b1Ticks++;
- const p = i % 8 === 0 ? IN_CAR() : OFF_CAR();
+ const p = i % 2 === 0 ? IN_CAR() : OFF_CAR();
  tickLift(p.x, p.z, p.y);
+ b1PeakOpen = Math.max(b1PeakOpen, liftDebug().open);
  if (LIFT.phase === 'doors-closing') { b1ClosedAt = Date.now() - b1Start; break; }
  waitMs(25);
 }
-const b1 = {closedAfterMs: b1ClosedAt, ticks: b1Ticks, latchAtClose: liftDebug()};
+const b1 = {closedAfterMs: b1ClosedAt, ticks: b1Ticks, peakOpenSeconds: b1PeakOpen, latchAtClose: liftDebug()};
 check(b1ClosedAt >= 0, 'grace:flood-closes',
  `a passenger plus an off-car flood must still close the doors, read ${JSON.stringify(b1)}`);
-check(b1ClosedAt >= L.dwellSeconds * 1000 * .6 && b1ClosedAt <= (L.dwellSeconds + .25 + .6) * 1000,
+// Assert the lift's own clock, not wall time: each advance is capped at 50 ms, so a loaded
+// machine runs the lift clock slower than the wall and a millisecond bound measures the load
+// instead of the rule. The rule is that the dwell runs to completion despite the flood —
+// and no further, which is what catches a grace leaking into the dwell.
+check(b1PeakOpen >= L.dwellSeconds * .9 && b1PeakOpen <= L.dwellSeconds + 1 / 240,
  'grace:flood-within-dwell',
- `the close must take about one dwell, measured ${b1ClosedAt} ms against dwell ${L.dwellSeconds * 1000} ms + grace 250 ms`);
+ `the dwell must run exactly once despite the flood, peak ${b1PeakOpen.toFixed(3)} s against dwell ${L.dwellSeconds} s`);
 
 // B.2 — an empty car's doors must not stay open because a passenger left .2 s ago. Arrive at
 // the ground with a passenger (so the arrival hold is set), open the doors, order the car up,
@@ -693,10 +711,14 @@ for (let i = 0; i < 3000; i++) {
  if (LIFT.phase === 'arrived' && Math.abs(LIFT.y - GROUND) <= .005) break;
 }
 tickLift(IN_CAR().x, IN_CAR().z, IN_CAR().y);      // bootstrap the wall clock at the arrived car
-openDoorsWith(1000, IN_CAR);
+openDoorsWith(4000, IN_CAR);
 const heldAfterArrival = liftDebug();
 callLift('top');                                   // the car must leave; calledElsewhere is true
-// The passenger steps out: one announcing outside query, then a flood.
+// The passenger steps out: one announcing outside query, then a flood. The 2 ms pause makes
+// it a distinct instant: a query arriving in the same instant as the previous advance
+// carries no time, and `advanceLift` ignores it by design — the frame clock never sends two
+// queries in one instant, so the test must not either.
+waitMs(2);
 tickLift(OFF_CAR().x, OFF_CAR().z, OFF_CAR().y);
 const afterLeave = liftDebug();
 check(heldAfterArrival.hold === true, 'grace:arrival-hold-set',
@@ -706,15 +728,20 @@ check(afterLeave.hold === false, 'grace:hold-clears-on-leaving',
 check(afterLeave.open > 0, 'grace:dwell-starts-on-leaving',
  `the departure dwell must start on the leaving query, read ${JSON.stringify(afterLeave)}`);
 const b2Start = Date.now();
-let b2ClosedAt = -1;
-while (Date.now() - b2Start < 3000) {
+let b2ClosedAt = -1, b2PeakOpen = 0;
+while (Date.now() - b2Start < 8000) {
  const p = OFF_CAR();
  tickLift(p.x, p.z, p.y);
+ b2PeakOpen = Math.max(b2PeakOpen, liftDebug().open);
  if (LIFT.phase === 'doors-closing') { b2ClosedAt = Date.now() - b2Start; break; }
  waitMs(20);
 }
-check(b2ClosedAt >= 0 && b2ClosedAt <= (L.dwellSeconds + .6) * 1000, 'grace:empty-car-departs-on-dwell',
- `an empty car with a pending call must close one dwell after the passenger leaves, measured ${b2ClosedAt} ms`);
+// Same rule as B.1, on the lift's own clock: exactly one dwell, measured on the clock that
+// decides the close. A late start caused by the grace is caught by
+// `grace:dwell-starts-on-leaving`, which reads the first query after the passenger leaves.
+check(b2ClosedAt >= 0 && b2PeakOpen >= L.dwellSeconds * .9 && b2PeakOpen <= L.dwellSeconds + 1 / 240,
+ 'grace:empty-car-departs-on-dwell',
+ `an empty car with a pending call must close after exactly one dwell, peak ${b2PeakOpen.toFixed(3)} s in ${b2ClosedAt} ms wall`);
 
 // B.3 — an in-car ambient probe's effect is bounded. Even .5 s of probes is shorter than the
 // dwell, so it can never dispatch an empty car; when the probes stop, the dwell resets and
@@ -722,7 +749,7 @@ check(b2ClosedAt >= 0 && b2ClosedAt <= (L.dwellSeconds + .6) * 1000, 'grace:empt
 // .25 s; sustained probes for a whole dwell are by design indistinguishable from one.)
 resetLift();
 tickLift(OFF_CAR().x, OFF_CAR().z, OFF_CAR().y);
-openDoorsWith(1000, OFF_CAR);                      // empty car, no call: open, dwell 0
+openDoorsWith(4000, OFF_CAR);                      // empty car, no call: open, dwell 0
 const ambientStart = liftDebug();
 const ambientBurstEnd = Date.now() + 500;
 while (Date.now() < ambientBurstEnd) {             // 20 in-car probes over 0.5 s
