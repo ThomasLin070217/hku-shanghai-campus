@@ -1,6 +1,6 @@
 # Submission — HKU: Barrier 2030
 
-**Version:** `9.1.1` (see `../VERSION`). The submission is `v9.1.0` — the tag the video and the slides quote. `v9.1.1` is a post-tag console-hygiene fix on the same game content (below), deployed to the same link.
+**Version:** `9.2.0` (see `../VERSION`). The submission is `v9.1.0` — the tag the video and the slides quote. `v9.1.1` is a post-tag console-hygiene fix on the same game content, and `v9.2.0` adds the three scenes that line left as architecture (seated dinner, four-tower finale, CDS-1 gate bank); all three deploy to the same link.
 **Status:** tag-based release, deployed continuously. Every push to `main` builds and publishes the playable link from that commit; the tag is what the video and the slides quote. There is no frozen archive and no checksum file.
 **Live:** https://thomaslin070217.github.io/hku-shanghai-campus/ — the URL is stable, the build behind it changes with each push (ruling of 2026-11-25, superseding "the owner pushes and deploys").
 
@@ -16,6 +16,7 @@
 | Deliverable | Where it lives |
 |---|---|
 | Playable build | `git checkout v9.1.0 && npm ci && npm run build` → `dist/` |
+| Current playable build (post-submission) | `git checkout v9.2.0` — the same route with the seated dinner, the four-tower finale and the CDS-1 gate bank; deployed to the same link |
 | Source of that build | the `v9.1.0` git tag |
 | Demo video | `demo/` (recorded from the `v9.1.0` build after a full playtest) |
 | Slides | `submission/slides/` — `deck.html` (self-contained, offline) and `hku-barrier-2030-deck.pdf` (14 pages, A4 landscape). Built after the video was recorded, so the deck and the film show the same `v9.1.0` build |
@@ -26,7 +27,7 @@ Every later playable version gets its own tag (`v9.1.1`, `v9.2.0`, …). The vid
 
 ## Pre-push checklist (every push to `main` deploys the link)
 
-- [ ] `VERSION`, `package.json` and `package-lock.json` agree on `9.1.0`.
+- [ ] `VERSION`, `package.json` and `package-lock.json` agree on `9.2.0`.
 - [ ] `node_modules/.bin/tsc --noEmit` and `node_modules/.bin/vite build` are green.
 - [ ] The pause card/credits show `v9.1.0 · <12-char commit>` with no `-dirty` suffix. The suffix is real provenance: a build over uncommitted work says so, and the filmed build must come from the tag, not a dirty tree.
 - [ ] `scripts/pre-push-secret-scan.sh` is clean (no `sk-`, `ntn_`, `ghp_`, `Bearer `, no `.env`, no keychain dumps). The GitHub repo is **public**, so a leak is a publication.
