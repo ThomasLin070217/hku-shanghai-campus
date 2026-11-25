@@ -21,6 +21,8 @@ import argparse
 import base64
 import os
 import pathlib
+import re
+import subprocess
 import sys
 import time
 
@@ -103,13 +105,13 @@ def main() -> int:
 
         print(f'boot {args.url}', flush=True)
         page.goto(args.url, wait_until='domcontentloaded', timeout=240000)
-        # The mixer's AudioContext is created on the first gesture; the pause
-        # card's own button is that gesture for every gate in this tree
-        # (src/opening/experience.ts:567 listens on enter-game, enter-compat
-        # and enable-ai).
-        page.wait_for_selector('#enter-game', timeout=240000, state='visible')
+        # The prologue's BEGIN button is the first gesture that creates the
+        # mixer's AudioContext. Wait for that button specifically: a selector
+        # union with `#enter-game` resolves in DOM order to the pause card's
+        # button, which sits hidden behind the prologue gate.
+        page.wait_for_selector('.prologue-begin', timeout=240000, state='visible')
         started = time.time()
-        page.locator('#enter-game').first.click()
+        page.locator('.prologue-begin').first.click()
         print(f'gesture after {round(time.time() - started)} s', flush=True)
 
         # Wait for the tapped context and at least one live connection.
@@ -150,6 +152,25 @@ def main() -> int:
     print(f'wrote {out} ({len(data)} bytes)')
     if len(data) < 2000:
         print('FAIL: file is too small to be speech or music; treat as silence')
+        return 1
+    # Bytes are not sound: Opus encodes silence into a small but non-zero file.
+    # Measure the level; the prologue's music sits near -27 dB mean (measured
+    # 2026-11-26 on the release build), so anything under -55 dB is silence.
+    try:
+        result = subprocess.run(
+            ['ffmpeg', '-hide_banner', '-i', str(out), '-af', 'volumedetect', '-f', 'null', '-'],
+            capture_output=True, text=True, timeout=120)
+    except FileNotFoundError:
+        print('note: ffmpeg not found; cannot prove the track is not silence')
+        return 0
+    means = re.findall(r'mean_volume:\s*(-?\d+(?:\.\d+)?) dB', result.stderr)
+    if not means:
+        print('FAIL: ffmpeg could not measure the track')
+        return 1
+    mean = float(means[-1])
+    print(f'mean volume: {mean} dB')
+    if mean <= -55:
+        print('FAIL: the track is silence — the tap recorded nothing audible')
         return 1
     print('OK: audio captured')
     return 0
