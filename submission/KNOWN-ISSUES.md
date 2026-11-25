@@ -99,6 +99,18 @@ Both are cosmetic or diagnostic; neither blocks the build, and neither was chang
 | The presentation MacBook renders as brown wood | `B4_office_macbook_base` and `_lid` are built with `m.officeDoor` (`std('B4 5F office door', 0x6b4a2f)`), so the laptop a player is told to collect is the colour of the office door it sits behind. The scene graph confirms it: mesh `B4_office_macbook__B4 5F office door`, 0.32 × 0.209 × 0.239 m at (58.70, 19.68, 12.40), colour `#6b4a2f`. The HUD names the MacBook, so the errand is still legible; a silver `macBody` material is the fix, and it belongs in the next patch rather than in a build that is already tagged and filmed. | P2 |
 | The build probes `http://127.0.0.1:8790/health` at boot | The in-game assistant talks to the loopback LLM bridge and nothing else. With no bridge running — the normal demo case — that one request fails (`net::ERR_FAILED`) and the assistant falls back to its built-in knowledge base; the opening plays unaffected. It is a loopback call, not a third-party dependency: a full opening run made 82 requests and every host was `127.0.0.1`. | P2 |
 
+## Bridge console errors, fixed in 9.1.1, 2026-11-26
+
+The GLM shakedown found a red console on the normal play path. Reproduced on the `v9.1.0` release build served from `dist/` at `127.0.0.1:5295`: **8** `ws://127.0.0.1:8788/game` failures and **2** assistant-bridge errors (`http://127.0.0.1:8790/health`, one CORS block and one `ERR_FAILED`) in a 17-second opening run.
+
+**Root cause:** `src/agent/bridge.ts` called `connect()` unconditionally on construction and retried every 2 s forever; `src/main.ts` constructed it in every non-playtest build, `src/lionBoss/agentControl.ts` gated only on the hostname, and the assistant probed `/health` whenever its default endpoint was loopback. A static build has no such service, so every retry was a guaranteed failure. On an https deployment the WebSocket is also a mixed-content block.
+
+**Fix (9.1.1):** a shared `LOCAL_TOOLS` gate (`src/agent/localTools.ts`) — loopback host **and** dev/review mode, or an explicit `?agent=1`. It gates the bridge construction (both call sites), the assistant health probe and the model config, and the bridge backoff now goes 2 s → 4 s → 8 s → 15 s (reset on open). Headless checks are unaffected (`LOCAL_TOOLS` defaults to allowed when there is no page).
+
+**Evidence:** same probe, same build command → **0 ws errors, 0 other errors**; the control run `?agent=1` → 4 ws errors, 2 other (the gate opens and the backoff spaces the retries); the dev server on `localhost:5296` still auto-connects, so local tooling is intact. Gates after the change: `tsc --noEmit`, `check:opening` (49 PASS, exit 0), `check:payload`, `check:pause-menu` 33/33, and the pause card hides Enable AI / the bridge status in a release build.
+
+**Demo-day note:** on the local fallback (`dist/` + a static server), append `?agent=1` to the URL if the local AI control bridge and the LLM-backed assistant are wanted; without it the assistant answers from its built-in knowledge base and the control bridge stays off.
+
 ## Security
 
 Two `sk-` API keys were posted in the group chat on 2026-11-23 19:51/19:54. Treat them as compromised and rotate them; do not put them in the repo, the build or the tagged release. `scripts/pre-push-secret-scan.sh` passes on the current tree (no `sk-`, `ntn_`, `ghp_`, `Bearer ` shapes; no `.env`; `dist/` clean). Rotation is the owner's action.

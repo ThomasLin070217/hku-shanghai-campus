@@ -3,7 +3,7 @@ import {findPath,type PathOptions,type PathResult} from '../exploration/pathfind
 import type {GameEvent} from './protocol';
 /** Real transport; actions are consumed only by the game's fixed-step loop. */
 export function connectAgent(getGame:()=>CampusGame,screenshot:()=>string,status:(s:string)=>void,sceneRequest?:(method:string,args:Record<string,unknown>)=>unknown){
- let socket:WebSocket|null=null,lastHeartbeat=0,disposed=false,retry:ReturnType<typeof setTimeout>|undefined,queue:GameEvent[]=[];
+ let socket:WebSocket|null=null,lastHeartbeat=0,disposed=false,retry:ReturnType<typeof setTimeout>|undefined,queue:GameEvent[]=[],backoff=2000;
  // The browser owns the simulation; state changes are pushed instead of replayed from the screen.
  const pump=(events:GameEvent[])=>{if(queue.length>256)queue=queue.slice(-256);queue.push(...events);};
  const detach=()=>{const g=getGame();if(g.eventSink===pump)g.eventSink=null;};
@@ -21,7 +21,7 @@ export function connectAgent(getGame:()=>CampusGame,screenshot:()=>string,status
   if(disposed)return;clearTimeout(retry);lastHeartbeat=0;
   const previous=socket,ws=new WebSocket(`ws://127.0.0.1:${import.meta.env.VITE_AGENT_PORT||8788}/game`+(claim?'?claim=1':''));socket=ws;previous?.close();
   // A closing old socket must never revoke a newer connection or its authority.
-  ws.onopen=()=>{if(socket!==ws)return;lastHeartbeat=Date.now();ws.send(JSON.stringify({type:'ready'}));getGame().eventSink=pump;status('Local AI service: this window is connected · 127.0.0.1:'+ (import.meta.env.VITE_AGENT_PORT||8788));};
+  ws.onopen=()=>{if(socket!==ws)return;backoff=2000;lastHeartbeat=Date.now();ws.send(JSON.stringify({type:'ready'}));getGame().eventSink=pump;status('Local AI service: this window is connected · 127.0.0.1:'+ (import.meta.env.VITE_AGENT_PORT||8788));};
   ws.onmessage=e=>{if(socket!==ws)return;let msg;try{msg=JSON.parse(e.data);}catch{return;}
    if(msg.type==='heartbeat'){lastHeartbeat=Date.now();ws.send(JSON.stringify({type:'heartbeat'}));return;}
    if(msg.type!=='rpc')return;const g=getGame(),args=msg.args;let result:unknown;
@@ -43,7 +43,7 @@ export function connectAgent(getGame:()=>CampusGame,screenshot:()=>string,status
   ws.onerror=()=>{if(socket===ws)status('Local AI not connected: run npm run agent:server; if another window holds it, click Enable AI to switch.');};
   ws.onclose=e=>{if(socket!==ws)return;socket=null;lastHeartbeat=0;detach();revoke('bridge_disconnected');
    if(e.code===4001){status('Another campus window took over the service; this window has stopped control. Click Enable AI to switch back.');return;}
-   status('Local AI not connected: run npm run agent:server; if another window holds it, click Enable AI to switch.');if(!disposed)retry=setTimeout(()=>connect(),2000);
+   status('Local AI not connected: run npm run agent:server; if another window holds it, click Enable AI to switch.');if(!disposed){retry=setTimeout(()=>connect(),backoff);backoff=Math.min(backoff*2,15000);}
   };
  }
  const watchdog=setInterval(()=>{if(lastHeartbeat&&Date.now()-lastHeartbeat>1800){revoke('bridge_timeout');socket?.close();lastHeartbeat=0;}},250);

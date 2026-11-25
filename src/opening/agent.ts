@@ -1,4 +1,5 @@
 import {campusModelConfig as config,ModelUnavailable,requestCampusModelReply} from './modelTransport';
+import {LOCAL_TOOLS} from '../agent/localTools';
 import type {OpeningState} from './contracts';
 import type {OpeningRuntime} from './runtime';
 import {personaGreeting, personaIdentity, personaPrompt, prefersChinese} from './persona';
@@ -168,7 +169,7 @@ export function createLocalAgent(guide?:RecoveryGuide):LocalAgent{
  let retryAfter=0;
  // The bundled bridge exposes its real provider/model. This keeps the model
  // chip honest before the first answer and marks a missing bridge as offline.
- if(!initial.offline&&/127\.0\.0\.1:8790|localhost:8790/.test(initial.endpoint)){
+ if(LOCAL_TOOLS&&!initial.offline&&/127\.0\.0\.1:8790|localhost:8790/.test(initial.endpoint)){
   const health=initial.endpoint.replace(/\/api\/chat.*$/,'/health');
   fetch(health,{method:'GET',signal:AbortSignal.timeout(1500)}).then(response=>response.ok?response.json():null).then((body:unknown)=>{
    if(disposed||!body||typeof body!=='object')return;

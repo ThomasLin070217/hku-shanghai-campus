@@ -17,6 +17,8 @@ const route=new URLSearchParams(location.search).get('experience');
 const sportsMode=route==='sports-hall';
 const openingMode=route!=='survey'&&!sportsMode;
 const publicPlaytest=import.meta.env.MODE==='playtest';
+/** The local AI bridge only exists when this page is served as local tooling. */
+const localAiControls=!publicPlaytest&&LOCAL_TOOLS;
 import {createSceneInspector} from './scene/inspector';
 import {createSceneService} from './scene/service';
 import {sceneRegistry} from './scene/registry';
@@ -29,6 +31,7 @@ import {buildLounge} from './model/buildLounge';
 import {createGlassEnvironment} from './viewer/glassEnvironment';
 import {createNightLighting} from './viewer/nightLighting';
 import {connectAgent} from './agent/bridge';
+import {LOCAL_TOOLS} from './agent/localTools';
 import './style.css';
 import './ui/exploration.css';
 import {setText,setHidden} from './ui/dom';
@@ -239,14 +242,14 @@ toolsMenu.querySelector('.tools-content')!.addEventListener('click',e=>{if((e.ta
 const help=document.createElement('button');help.textContent='Help';help.onclick=()=>experience.openSettings();document.querySelector('.header-right')!.prepend(help);
 const advanced=document.createElement('details');advanced.className='pause-options';advanced.innerHTML='<summary>Restart / AI control</summary>';el('session-save').after(advanced);advanced.append(el('new-game'),el('enable-ai'),el('bridge-status'));
 {const buildVersion=document.getElementById('build-version');if(buildVersion)buildVersion.textContent=`HKU: Barrier 2030 · ${BUILD_STAMP}`;}
-if(publicPlaytest){el('enable-ai').hidden=true;el('bridge-status').hidden=true;}
+if(!localAiControls){el('enable-ai').hidden=true;el('bridge-status').hidden=true;advanced.querySelector('summary')!.textContent='Restart';}
 const levelsLink=document.createElement('a');levelsLink.href='?experience=levels';levelsLink.textContent=openingMode?'Chapters':'Chapters';document.querySelector('.header-right')!.prepend(levelsLink);
 const desktopNote=document.createElement('p');desktopNote.className='desktop-note';desktopNote.textContent='Keyboard and mouse are supported. On a phone, the left stick walks, drag to look, and the buttons act.';el('enter-game').before(desktopNote);
 const inspector=createSceneInspector({host,scene:viewer.scene,camera:()=>viewer.activeCamera,root:()=>asset.root,ready:()=>!imported&&!loungeView,openModel:()=>{mode(false);(el('isolate') as HTMLInputElement).checked=false;for(const id of ['environment','circulation','sports'])(el(id) as HTMLInputElement).checked=true;sync();},frame:box=>{const center=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3()),span=Math.max(size.x,size.y,size.z,2)*1.65;viewer.controls.target.copy(center);viewer.camera.position.copy(center).add(new T.Vector3(.8,.65,1).normalize().multiplyScalar(Math.max(15,span*1.5)));const aspect=host.clientWidth/host.clientHeight;const height=Math.max(span,span/aspect);Object.assign(viewer.camera,{left:-height*aspect/2,right:height*aspect/2,top:height/2,bottom:-height/2,zoom:1});viewer.camera.updateProjectionMatrix();viewer.camera.lookAt(center);viewer.controls.update();},notify});
 viewer.callbacks.add(inspector.update);
 const numberButton=document.createElement('button');numberButton.id='scene-index-toggle';numberButton.textContent='Scene index';numberButton.onclick=()=>inspector.setOpen(!inspector.opened);document.querySelector('.header-right')!.prepend(numberButton);
 const sceneService=createSceneService(()=>asset.root,()=>explorer.game,id=>{inspector.show(id);});
-const agentBridge=publicPlaytest?null:connectAgent(()=>explorer.game,()=>viewer.screenshot(),s=>el('bridge-status').textContent=openingMode?(s.includes('此窗口已连接')?'Local AI control service connected.':'Local AI control service unavailable or owned by another window.'):s,sceneService);
+const agentBridge=localAiControls?connectAgent(()=>explorer.game,()=>viewer.screenshot(),s=>el('bridge-status').textContent=openingMode?(s.includes('此窗口已连接')?'Local AI control service connected.':'Local AI control service unavailable or owned by another window.'):s,sceneService):null;
 // Any stable scene ID (S001, R005, B04-P-...) can be a walkTo/lookAt target, resolved from the same registry the inspector uses.
 explorer.game.entityResolver=id=>{const entity=sceneRegistry(asset.root).get(id);return entity?[entity.center[0],entity.center[1],entity.center[2]]:null;};
 if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign((window as unknown as {__CAMPUS:object}).__CAMPUS,{inspector});
@@ -263,7 +266,7 @@ if(openingMode){
  const checkpointStart=openingCheckpoint(new URLSearchParams(location.search).get('checkpoint'));
  const pause=document.querySelector('.pause-card');if(pause){const eyebrow=pause.querySelector('.eyebrow');if(eyebrow)eyebrow.textContent='A CDS CAMPUS STORY';pause.querySelector('h2')!.textContent='HKU: Barrier 2030';pause.querySelector('p')!.textContent=checkpointStart?`Checkpoint: ${CHECKPOINT_LABELS[checkpointStart]}. Continue from here.`:'You are a Student Ambassador on your way to the High Table Dinner. Begin on the campus shuttle.';pause.querySelector('.key-guide')!.textContent='WASD move · Shift run · Space jump · F interact · E backpack · C MacBook';pause.querySelector('.desktop-note')!.textContent='Keyboard and mouse · Continue to look around and move';pause.querySelector('.pause-options summary')!.textContent='Restart / AI control';}
  const help=document.querySelector('.header-right > button:not(#scene-index-toggle):not(#night-toggle)');if(help)help.textContent='Help';
- toolsMenu.querySelector('summary')!.textContent='Campus tools';advanced.querySelector('summary')!.textContent='Restart / AI control';
+ toolsMenu.querySelector('summary')!.textContent='Campus tools';advanced.querySelector('summary')!.textContent=localAiControls?'Restart / AI control':'Restart';
  document.querySelector('.brand-copy > span')!.textContent='HKU: Barrier 2030';
  document.querySelector('.stage-bottom > span')!.textContent='WASD move · Shift run · F interact · C MacBook · E backpack';
  for(const node of Array.from(document.querySelectorAll<HTMLElement>('.header-right > span'))){if(node.textContent==='张江基地')node.textContent='Shanghai';}

@@ -1,3 +1,5 @@
+import {LOCAL_TOOLS} from '../agent/localTools';
+
 /**
  * Model transport shared by the Harness assistant (岚) and the lawn skill
  * compiler (src/lionBoss/skillCompiler.ts).
@@ -9,6 +11,8 @@
  */
 export const ASSISTANT_DEFAULT_ENDPOINT='http://127.0.0.1:8790/api/chat';
 export const ASSISTANT_DEFAULT_MODEL='deepseek-flash';
+/** A loopback endpoint only exists when the runner started the bridge; a shipped page has none. */
+const LOOPBACK_ENDPOINT=/^https?:\/\/(?:127\.0\.0\.1|localhost|\[::1\])(?::\d+)?(?:\/|$)/;
 
 export interface ModelConfig {endpoint:string;model:string;offline:boolean}
 export interface ModelTurn {role:'system'|'user'|'assistant';content:string}
@@ -28,7 +32,11 @@ export function campusModelConfig():ModelConfig {
   if(env?.MODE==='playtest'&&!builtEndpoint)return {endpoint:'',model:'built-in',offline:true};
   const endpoint=setting('endpoint')??(builtEndpoint||ASSISTANT_DEFAULT_ENDPOINT);
   const model=setting('model')??((env?.VITE_CAMPUS_MODEL_NAME??'').trim()||ASSISTANT_DEFAULT_MODEL);
-  return {endpoint,model,offline:!endpoint||!model||setting('offline')==='1'};
+  // A loopback bridge is local tooling: on a shipped page it is either absent
+  // (http) or blocked as mixed content (https), so answer from the built-in
+  // core instead of spending a round trip on a request that cannot succeed.
+  const localEndpoint=LOOPBACK_ENDPOINT.test(endpoint)&&!LOCAL_TOOLS;
+  return {endpoint,model,offline:!endpoint||!model||setting('offline')==='1'||localEndpoint};
 }
 
 /** The endpoint could not be reached (`status` unset) or answered with an HTTP error. */

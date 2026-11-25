@@ -1,4 +1,5 @@
 import {connectAgent} from '../agent/bridge';
+import {LOCAL_TOOLS} from '../agent/localTools';
 import type {CampusGame} from '../exploration/game';
 
 interface AgentControls {
@@ -10,7 +11,7 @@ interface AgentControls {
 }
 
 export function attachLawnAgent({game,explorer,host,screenshot,eligible}:AgentControls){
-  if(import.meta.env.MODE==='playtest'||!['localhost','127.0.0.1'].includes(location.hostname)){
+  if(!LOCAL_TOOLS){
     return {dispose(){}};
   }
   const panel=document.createElement('details'),title=document.createElement('summary');
