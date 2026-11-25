@@ -104,7 +104,7 @@ def boot(page):
     page.goto(ORIGIN + '?experience=opening&intro=0', wait_until='domcontentloaded')
     page.wait_for_function(
         '() => window.__CAMPUS && window.__CAMPUS.openingDebug && window.__CAMPUS.explorer && window.__CAMPUS.ready',
-        timeout=120000,
+        timeout=240000,  # SwiftShader boot under load has passed 120 s; see check-fullscreen.
     )
     page.keyboard.press('Shift')  # claimSave needs a trusted input
     page.evaluate('() => window.__CAMPUS.explorer.enterCompat()')

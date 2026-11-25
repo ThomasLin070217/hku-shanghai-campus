@@ -1,0 +1,17 @@
+{
+  "name": "HKU Shanghai at War — BARRIER 2030",
+  "short_name": "Barrier 2030",
+  "description": "A first-person campus story at HKU Shanghai: the High Table Dinner, the barrier, and the night the campus changes.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0d211b",
+  "theme_color": "#eff0e9",
+  "icons": [
+    {"src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"},
+    {"src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

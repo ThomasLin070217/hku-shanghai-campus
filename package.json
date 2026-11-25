@@ -82,7 +82,8 @@
   "check:voice": "tsx scripts/check-voice-profiles.ts",
   "audition": "node scripts/build-audition-pages.mjs",
   "voice:takes": "node scripts/generate-voice-takes.mjs --main-first",
-  "check:opening-phone": "${PYTHON:-python3} scripts/check-opening-phone.py"
+  "check:opening-phone": "${PYTHON:-python3} scripts/check-opening-phone.py",
+  "check:fullscreen": "${PYTHON:-python3} scripts/check-fullscreen.py"
  },
  "dependencies": {
   "@sparkjsdev/spark": "2.4.0",

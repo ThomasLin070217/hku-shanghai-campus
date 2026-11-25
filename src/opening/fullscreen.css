@@ -1,0 +1,96 @@
+/*
+ * The in-game fullscreen button and the iPhone "Add to Home Screen" hint.
+ *
+ * The button sits below the Chapters link (top right), which is where the
+ * player shell already puts its one navigation control. It is 44 x 44 px at
+ * every size, above the HUD but below the pause overlay (z-index 12), and
+ * honours the safe area on a notched phone.
+ */
+
+.fullscreen-toggle {
+  position: absolute;
+  top: calc(56px + env(safe-area-inset-top));
+  right: calc(18px + env(safe-area-inset-right));
+  z-index: 11;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid #7d9a88aa;
+  background: #0d211bd9;
+  color: #e6efe6;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.fullscreen-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.fullscreen-toggle:hover,
+.fullscreen-toggle:focus-visible {
+  background: #17352b;
+  outline: 2px solid #b8efa3;
+  outline-offset: 2px;
+}
+
+.fullscreen-toggle.is-active {
+  background: #17352b;
+  border-color: #b8efa3aa;
+}
+
+/* --------------------------------------------------- iPhone fallback hint. */
+.fullscreen-hint {
+  position: absolute;
+  top: calc(12px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 11;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100vw - 24px);
+  padding: 4px 4px 4px 14px;
+  border: 1px solid #7d9a88aa;
+  border-radius: 999px;
+  background: #0d211be6;
+  color: #e6efe6;
+  font: 11px/1.35 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.02em;
+  box-shadow: 0 6px 18px #06120d66;
+}
+
+.fullscreen-hint span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fullscreen-hint button {
+  flex: none;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid #dfe9d659;
+  border-radius: 999px;
+  background: #17352b;
+  color: #eef4e8;
+  font: inherit;
+}
+
+/* The hint is only for a touch device without the API; never on desktop. */
+@media (hover: hover) and (pointer: fine) {
+  .fullscreen-hint {
+    display: none;
+  }
+}
+
+/* In portrait the pill is wider than the gap between VITALS and CHAPTERS, so
+   the top row cannot hold it; it sits below the objective card instead. */
+@media (orientation: portrait) {
+  .fullscreen-hint {
+    top: calc(196px + env(safe-area-inset-top));
+  }
+}

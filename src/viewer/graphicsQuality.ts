@@ -8,6 +8,11 @@ const storageKey = 'hku.campus.graphics-quality.v1';
  * are never scaled by the governor below. */
 export const MAX_PIXEL_RATIO = 1.5;
 
+/** A phone renders into a quarter of the pixels of a laptop at the same ratio and
+ * still fills the screen; 1.15 keeps the image sharp without paying for retina
+ * resolution the GPU cannot hold at 60 fps. */
+export const TOUCH_MAX_PIXEL_RATIO = 1.15;
+
 /** Quality for a device when the player has made no explicit choice.
  *
  * An explicit `?quality=` override wins; then a stored `low`; then a touch
@@ -20,7 +25,7 @@ export function defaultGraphicsQuality(input: {override: string | null; stored: 
   return 'auto';
 }
 
-function touchDevice() {
+export function touchDevice() {
   if (typeof matchMedia !== 'function' || typeof navigator === 'undefined') return false;
   return useTouchControls({
     coarsePointer: matchMedia('(pointer: coarse)').matches,

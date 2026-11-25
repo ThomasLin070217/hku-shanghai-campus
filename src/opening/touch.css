@@ -1,0 +1,295 @@
+/*
+ * The on-screen gamepad. Only mounted on touch devices (createTouchControls);
+ * hidden until the game is running, so the pause card never has to compete with
+ * a stick. Every target is at least 44 px, and every edge honours the safe area
+ * so a notch or a home indicator never covers a control.
+ */
+
+.touch-controls {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: none;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+body.exploring .touch-controls {
+  display: block;
+}
+
+/* --------------------------------------------------------------- The stick. */
+.touch-stick {
+  position: absolute;
+  left: calc(16px + env(safe-area-inset-left));
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%, #f2f6ec1f, #0b1d171f 70%);
+  border: 1px solid #dfe9d64d;
+  box-shadow: inset 0 0 0 1px #0b1d1733;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.touch-stick::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  border: 1px dashed #dfe9d640;
+}
+
+.touch-stick.is-active {
+  border-color: #cfe8b899;
+  background: radial-gradient(circle at 50% 45%, #d9efc72e, #0b1d1726 70%);
+}
+
+.touch-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 48px;
+  height: 48px;
+  margin: -24px 0 0 -24px;
+  border-radius: 50%;
+  background: #dfe9d6d9;
+  border: 1px solid #ffffff8c;
+  box-shadow: 0 3px 10px #00000059, inset 0 -2px 4px #8fa88666;
+  transition: transform 60ms linear;
+  will-change: transform;
+}
+
+.touch-stick.is-active .touch-knob {
+  transition: none;
+}
+
+/* ------------------------------------------------------------- The buttons. */
+.touch-actions {
+  position: absolute;
+  right: calc(16px + env(safe-area-inset-right));
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: repeat(2, 56px);
+  grid-auto-rows: 56px;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.touch-button {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid #dfe9d659;
+  background: #0b1d17c9;
+  color: #eef4e8;
+  font: 700 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.08em;
+  touch-action: none;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.touch-button:active,
+.touch-button.is-on {
+  background: #cfe8b8;
+  color: #10281e;
+  border-color: #eaf6dd;
+}
+
+.touch-button[data-touch="interact"] {
+  width: 64px;
+  height: 64px;
+  margin: -4px;
+  grid-column: 2;
+  grid-row: 3;
+  font-size: 11px;
+}
+
+.touch-button[data-touch="menu"] {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.touch-button[data-touch="run"] {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.touch-button[data-touch="jump"] {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.touch-button[data-touch="bag"] {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.touch-actions {
+  grid-template-rows: repeat(3, 56px);
+}
+
+/* ---------------------------------------------------------------- The copy. */
+.touch-guide {
+  position: absolute;
+  left: calc(16px + env(safe-area-inset-left));
+  bottom: calc(154px + env(safe-area-inset-bottom));
+  margin: 0;
+  max-width: 40vw;
+  color: #dfe9d6a6;
+  font: 10px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------- Portrait rotate. */
+/* The top row is taken on a 390 px phone (vitals left, Chapters right), so the
+   hint sits just above the hotbar and the prompt instead of colliding there. */
+.touch-rotate {
+  position: absolute;
+  left: 50%;
+  bottom: calc(252px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 32px);
+  padding: 6px 6px 6px 14px;
+  border-radius: 999px;
+  background: #0b1d17d9;
+  border: 1px solid #dfe9d659;
+  color: #eef4e8;
+  font: 11px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+  pointer-events: auto;
+  z-index: 2;
+}
+
+.touch-rotate[hidden] {
+  display: none;
+}
+
+.touch-rotate button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid #dfe9d659;
+  background: #17352b;
+  color: #eef4e8;
+  font: inherit;
+}
+
+/* ------------------------------------------- HUD clear of the gamepad. */
+body.touch-mode .opening-prompt {
+  bottom: calc(170px + env(safe-area-inset-bottom));
+}
+
+body.touch-mode .opening-hud {
+  max-width: min(250px, calc(100vw - 120px));
+}
+
+/* In portrait the hotbar would sit between the stick and the buttons, where
+   there is no room; it moves above both. The action cluster's top edge is
+   206 px from the bottom (18 + 188), so the stack from the floor is: buttons,
+   hotbar (bottom 216), prompt (272), rotate hint (320). Each clears the one
+   below it, measured by check:fullscreen.
+   `opening-mode.exploring` outranks the 6 px game rule in style.css. */
+@media (orientation: portrait) {
+  body.touch-mode.opening-mode.exploring #inventory-hud {
+    bottom: calc(216px + env(safe-area-inset-bottom));
+  }
+  body.touch-mode .opening-prompt {
+    bottom: calc(272px + env(safe-area-inset-bottom));
+  }
+  .touch-rotate {
+    bottom: calc(320px + env(safe-area-inset-bottom));
+  }
+  .touch-guide {
+    bottom: calc(152px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (orientation: landscape) {
+  body.touch-mode.opening-mode.exploring #inventory-hud {
+    bottom: calc(10px + env(safe-area-inset-bottom));
+  }
+}
+
+/* A short landscape phone has no room for the minimap beside the thumb
+   buttons: at 390 px tall the card sits on top of RUN and MENU. A phone in
+   portrait already hides it (opening.css, max-width 700 px); the objective
+   card carries the distance in both orientations. */
+@media (orientation: landscape) and (max-height: 500px) {
+  body.touch-mode .opening-mapcard {
+    display: none;
+  }
+}
+
+/* "Bag (E)" is the desktop hotbar's keyboard hint. On a phone the BAG button
+   opens the same bag, and the label only widens the hotbar into the narrow
+   gap between the stick and the action buttons. */
+body.touch-mode .bag-open {
+  display: none;
+}
+
+/* A short landscape phone cannot afford a 132 px stick; shrink it, never below
+   the 44 px target floor for the buttons. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .touch-stick {
+    width: 108px;
+    height: 108px;
+  }
+  .touch-stick::before {
+    inset: 10px;
+  }
+  .touch-actions {
+    grid-template-columns: repeat(2, 48px);
+    grid-template-rows: repeat(3, 48px);
+    gap: 8px;
+  }
+  .touch-button {
+    width: 48px;
+    height: 48px;
+  }
+  .touch-button[data-touch="interact"] {
+    width: 54px;
+    height: 54px;
+  }
+  body.touch-mode .opening-prompt {
+    bottom: calc(140px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Campaign focus (B4 keyboard): movement hides, USE becomes BACK, MENU stays. */
+body[data-campaign-focus] .touch-stick,
+body[data-campaign-focus] .touch-guide,
+body[data-campaign-focus] .touch-button[data-touch="jump"],
+body[data-campaign-focus] .touch-button[data-touch="run"],
+body[data-campaign-focus] .touch-button[data-touch="bag"] {
+  display: none;
+}
+
+/* Toasts are top-centre on desktop, where the left and right of the header are
+   free; on a phone the vitals and Chapters chips own that row, so a notice
+   drops below the objective card instead of covering them. */
+body.touch-mode.opening-mode.exploring #toast {
+  top: calc(200px + env(safe-area-inset-top));
+  max-width: calc(100vw - 32px);
+}
+
+/* Keyboard-only copy is noise on a phone: the MENU button replaces "Esc · menu",
+   the stick replaces the WASD list, and the bottom line would sit inside the
+   stick itself. */
+body.touch-mode .shell-hint,
+body.touch-mode .pause-card .key-guide,
+body.touch-mode .stage-bottom > span {
+  display: none;
+}
+
+/* The pause overlay covers the controls, so a tap can never reach them. */
+body:not(.exploring) .touch-controls {
+  display: none;
+}

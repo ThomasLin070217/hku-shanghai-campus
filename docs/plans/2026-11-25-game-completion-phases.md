@@ -187,6 +187,14 @@ Rules: name every path you git add (never git add -A); commit in verified units;
 3. **iPhone fallback** — where the Fullscreen API is unavailable (iPhone Safari generally exposes it only for video), show a dismissible one-line hint: **Add to Home Screen** to play full screen. Add `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`, `mobile-web-app-capable`, a `manifest.webmanifest` with `display: "standalone"`, and `env(safe-area-inset-*)` padding. In standalone mode (`navigator.standalone`) hide the hint. The game must never depend on fullscreen to be playable.
 4. **Mobile pass** at 390×844 and 430×932, portrait and landscape: joystick, look, interact, panels, keyboard prompts, ≥44 px targets, no hover-only affordances, pause when the tab is backgrounded, audio unlock on first tap, auto quality, measured FPS.
 
+### Built 2026-11-25
+
+- `src/opening/fullscreen.ts` (DOM) + `fullscreenPlan.ts` (pure rules, so the tsx gate never imports CSS) + `fullscreen.css`: one 44 px button under the CHAPTERS chip; state follows `fullscreenchange`; canvas/HUD resize on `fullscreenchange`, `orientationchange`, `visualViewport.resize`. **Ruling: the desktop shortcut is Alt+Enter, not the `F` first drafted here.** `F` is already USE/interact (`KeyF`), so binding fullscreen to it would break playing; the button covers discovery, Alt+Enter covers the keyboard. Where the API is missing the button becomes the dismissible Add-to-Home-Screen hint; a standalone app gets neither.
+- `index.html` + `public/manifest.webmanifest` + `public/apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `icon.svg`: apple/mobile web-app meta, relative manifest and icons for the Pages subpath, `display: standalone`.
+- `src/opening/touchControls.ts` + `touch.css`: stick, RUN/JUMP/BAG/USE/MENU, drag-look, safe areas on every edge, portrait and landscape layouts, campaign focus turns USE into BACK.
+- Layout fixes found by playing, then pinned by measurement in `check:fullscreen`: portrait stack is buttons (top edge 206 px) → hotbar (216) → prompt (272) → rotate hint (320), each clearing the one below; a short landscape phone hides the minimap (it covered RUN and MENU) and the "Bag (E)" keyboard hint; keyboard-only copy is hidden on touch.
+- The gate now measures geometry, not only presence: every control fully on screen and no two thumb targets overlapping, at 390×844, 844×390 and 430×932.
+
 ### Gate
 
 ```

@@ -1,0 +1,460 @@
+"""Browser check: the opening is playable on a phone, and fullscreen works.
+
+Before 2026-11-25 a phone could drag to look but had no way to walk: the on-screen
+gamepad was designed (`docs/plans/2026-11-23-mobile-shell.md`) but never built.
+This check drives the real touch layer at 390x844 (full flow), 844x390
+(landscape play) and 430x932 (a taller phone, layout only) — stick drags,
+look drags and button taps, all through Chromium's touch pipeline, so the
+pointerType is `touch` exactly as on a device.
+
+Fullscreen: Chromium 157+ enables `SuppressFullscreenFromUnfocusedView`, so a
+window launched by automation (never focused by the OS) rejects
+`requestFullscreen` with `TypeError: not granted` even from a trusted tap. The
+launch args below disable that feature for this browser only, which is exactly
+the state of a real user's focused window; without it every fullscreen assertion
+here would fail for a reason that cannot happen to a player. Measured
+2026-11-25: with the flag, headless and headed both grant and exit.
+
+Needs a review build served over HTTP:
+  npm run build:review
+  npx vite preview --mode review --host 127.0.0.1 --port 5252   (or any server)
+  CAMPUS_URL=http://127.0.0.1:5252/ CHROME_PATH=<chrome> python3.13 scripts/check-fullscreen.py
+
+`?shell=1` is required: the review build keeps the authoring chrome otherwise,
+and the shell is the player's real page.
+"""
+import os
+import sys
+
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
+from playwright.sync_api import sync_playwright
+
+ORIGIN = os.environ.get('CAMPUS_URL', 'http://127.0.0.1:5252/')
+CHROME = os.environ.get('CHROME_PATH')
+HEADLESS = os.environ.get('HEADLESS', '1') != '0'
+SHOTS = os.environ.get('SHOTS', '/tmp/one-world/fullscreen/')
+ARGS = [
+    '--use-gl=angle', '--use-angle=swiftshader', '--enable-webgl', '--enable-unsafe-swiftshader',
+    # An automation window never gets OS focus; real players click a focused one.
+    '--disable-features=SuppressFullscreenFromUnfocusedView',
+]
+URL = ORIGIN + '?experience=opening&intro=0&shell=1'
+
+# An iPhone exposes no document.fullscreenEnabled to a page. Reporting the same
+# in Chromium makes the fallback a real browser run, not only a unit test of the
+# device rule.
+HIDE_FULLSCREEN_API = """
+Object.defineProperty(Document.prototype, 'fullscreenEnabled', {get: () => false, configurable: true});
+Object.defineProperty(Document.prototype, 'webkitFullscreenEnabled', {get: () => false, configurable: true});
+"""
+
+# The player spawn faces Building 4's closed door, so the stick drag pulls back.
+# Both values are CSS pixels; the stick is 132 px at left 16 / bottom 16.
+STICK_CENTRE = (16 + 66, 844 - 16 - 66)
+
+failures = []
+passed = 0
+
+
+def check(name, ok, detail=''):
+    global passed
+    if ok:
+        passed += 1
+        print('  ok  ', name, flush=True)
+    else:
+        failures.append(name)
+        print('  FAIL', name, '\n        ', detail, flush=True)
+
+
+def shot(page, label, name):
+    try:
+        page.screenshot(path=SHOTS + f'{label}-{name}.png', timeout=180000)
+        print('  shot', SHOTS + f'{label}-{name}.png', flush=True)
+    except Exception as error:  # Evidence, not an assertion.
+        print('  shot failed', name, type(error).__name__, flush=True)
+
+
+def until(page, js, timeout=60):
+    try:
+        page.wait_for_function(js, timeout=timeout * 1000, polling=200)
+        return True
+    except PlaywrightTimeoutError:
+        return False
+
+
+def boot(page):
+    page.goto(URL, wait_until='domcontentloaded')
+    page.wait_for_function(
+        """() => window.__CAMPUS && window.__CAMPUS.explorer && window.__CAMPUS.touchControls
+             && window.__CAMPUS.ready && document.querySelector('.shell-chapters')""",
+        timeout=240000,  # SwiftShader boot under load has passed 120 s before.
+    )
+
+
+def enter(page):
+    """Tap the real Enter exploration button; the touch path goes through
+    explorer.enter -> enterCompat, never pointer lock."""
+    box = page.evaluate("""() => {
+      const b = document.getElementById('enter-game').getBoundingClientRect();
+      return {x: b.x + b.width / 2, y: b.y + b.height / 2};
+    }""")
+    page.touchscreen.tap(box['x'], box['y'])
+    return until(page, "() => document.body.classList.contains('exploring')", timeout=30)
+
+
+def touch_drag(page, start, end, steps=6, hold_ms=0):
+    """A real touch drag through CDP, so every pointer event carries
+    pointerType 'touch' and the stick sees one finger end to end."""
+    client = page.context.new_cdp_session(page)
+    x0, y0 = start
+    x1, y1 = end
+    client.send('Input.dispatchTouchEvent', {
+        'type': 'touchStart', 'touchPoints': [{'x': x0, 'y': y0, 'id': 1}]})
+    for i in range(1, steps + 1):
+        t = i / steps
+        client.send('Input.dispatchTouchEvent', {
+            'type': 'touchMove',
+            'touchPoints': [{'x': x0 + (x1 - x0) * t, 'y': y0 + (y1 - y0) * t, 'id': 1}]})
+    if hold_ms:
+        page.wait_for_timeout(hold_ms)
+    client.send('Input.dispatchTouchEvent', {'type': 'touchEnd', 'touchPoints': []})
+    client.detach()
+
+
+def tap_button(page, selector):
+    box = page.evaluate("""(selector) => {
+      const el = document.querySelector(selector);
+      if (!el) return null;
+      const b = el.getBoundingClientRect();
+      return {x: b.x + b.width / 2, y: b.y + b.height / 2};
+    }""", selector)
+    if not box:
+        return False
+    page.touchscreen.tap(box['x'], box['y'])
+    return True
+
+
+def box_of(page, selector):
+    return page.evaluate("""(selector) => {
+      const el = document.querySelector(selector);
+      if (!el) return null;
+      const b = el.getBoundingClientRect();
+      return {x: b.x, y: b.y, w: b.width, h: b.height, display: getComputedStyle(el).display};
+    }""", selector)
+
+
+def overlaps(a, b):
+    """True when two visible rects share pixels. Hidden or missing rects never
+    overlap: a display:none control is not in the player's way."""
+    if not a or not b or a['display'] == 'none' or b['display'] == 'none':
+        return False
+    if a['w'] <= 0 or a['h'] <= 0 or b['w'] <= 0 or b['h'] <= 0:
+        return False
+    return (a['x'] < b['x'] + b['w'] and b['x'] < a['x'] + a['w']
+            and a['y'] < b['y'] + b['h'] and b['y'] < a['y'] + a['h'])
+
+
+def state(page):
+    return page.evaluate("""() => {
+      const c = window.__CAMPUS;
+      return {
+        pos: c.explorer.position.toArray(),
+        yaw: c.explorer.state.yaw,
+        paused: c.explorer.game.paused,
+        touchMode: document.body.classList.contains('touch-mode'),
+        exploring: document.body.classList.contains('exploring'),
+        touchRoot: !!document.querySelector('.touch-controls'),
+        buttons: [...document.querySelectorAll('.touch-button')].map((b) => b.dataset.touch),
+        fullscreenApi: c.fullscreen ? c.fullscreen.api : null,
+        fullscreenHint: c.fullscreen ? c.fullscreen.hint : null,
+        fullscreenElement: !!document.fullscreenElement,
+        shellHintShown: (() => {
+          const el = document.querySelector('.shell-hint');
+          return el ? getComputedStyle(el).display !== 'none' : null;
+        })(),
+        keyGuideShown: (() => {
+          const el = document.querySelector('.pause-card .key-guide');
+          return el ? getComputedStyle(el).display !== 'none' : null;
+        })(),
+        width: innerWidth, height: innerHeight,
+      };
+    }""")
+
+
+def run_portrait(page):
+    errors = []
+    page.on('pageerror', lambda error: errors.append(str(error)))
+    boot(page)
+    s = state(page)
+    check('portrait: a coarse touch device mounts the gamepad', s['touchMode'] and s['touchRoot'], s)
+    check('portrait: the gamepad has stick, run, jump, bag, use and menu',
+          s['buttons'] == ['run', 'jump', 'bag', 'interact', 'menu'], s['buttons'])
+    check('portrait: a touch device without the API shows no dead button, and reports the hint',
+          s['fullscreenApi'] is not None, s)
+    check('portrait: the keyboard-only hints are hidden on a phone',
+          s['shellHintShown'] is False and s['keyGuideShown'] is False, s)
+    mapcard = box_of(page, '.opening-mapcard')
+    bag_hint = box_of(page, '.bag-open')
+    check('portrait: the desktop minimap and bag hint are hidden (the objective and the BAG button replace them)',
+          bool(mapcard) and mapcard['display'] == 'none'
+          and bool(bag_hint) and bag_hint['display'] == 'none', f'{mapcard} {bag_hint}')
+    check('portrait: Enter exploration starts the game without pointer lock', enter(page))
+    page.wait_for_timeout(500)
+    # Geometry: every on-screen control must be reachable, and nothing may sit
+    # on top of a thumb button. These are measured, not eyeballed.
+    view = state(page)
+    hotbar = box_of(page, '#inventory-hud .hotbar')
+    stick = box_of(page, '.touch-stick')
+    actions = box_of(page, '.touch-actions')
+    rotate = box_of(page, '.touch-rotate')
+    check('portrait: the hotbar is fully on screen',
+          bool(hotbar) and hotbar['display'] != 'none'
+          and hotbar['x'] >= 0 and hotbar['y'] >= 0
+          and hotbar['x'] + hotbar['w'] <= view['width']
+          and hotbar['y'] + hotbar['h'] <= view['height'], f'{hotbar} in {view["width"]}x{view["height"]}')
+    check('portrait: the hotbar clears the stick and the buttons',
+          not overlaps(hotbar, stick) and not overlaps(hotbar, actions),
+          f'hotbar={hotbar} stick={stick} actions={actions}')
+    check('portrait: the rotate hint clears the hotbar',
+          not overlaps(rotate, hotbar), f'rotate={rotate} hotbar={hotbar}')
+    shot(page, '390x844', '01-entered')
+
+    # ---- Walking. Pull the stick down (backwards, away from the B4 door). The
+    # walk reaches the 1.6 m invitation beat, so the phone opens on its own —
+    # exactly the flow a phone player gets, with no debug hook involved.
+    before = state(page)
+    cx, cy = STICK_CENTRE
+    touch_drag(page, (cx, cy), (cx, cy + 50), hold_ms=1500)
+    walked = until(page, f"""() => {{
+      const p = window.__CAMPUS.explorer.position;
+      return Math.hypot(p.x - {before['pos'][0]!r}, p.z - {before['pos'][2]!r}) > 0.4;
+    }}""", timeout=20)
+    after = state(page)
+    distance = sum((a - b) ** 2 for a, b in zip(before['pos'], after['pos'])) ** 0.5
+    check('portrait: the stick walks the player (>0.4 m)', walked, f'moved {distance:.3f} m')
+    shot(page, '390x844', '02-walked')
+
+    # ---- The invitation the walk triggers. Answering it must hand control back
+    # to the touch layer, or a phone player is stuck behind a dialog forever.
+    invited = until(page, "() => !!document.querySelector('.opening-phone')", timeout=30)
+    check('portrait: walking far enough opens the invitation phone', invited)
+    if invited:
+        check('portrait: tapping Yes answers the invitation',
+              tap_button(page, '.opening-phone-yes')
+              and until(page, "() => !document.querySelector('.opening-phone') && window.__CAMPUS.openingDebug.state().modal === null", timeout=20))
+        stage = page.evaluate('() => window.__CAMPUS.openingDebug.state().story.stage')
+        check('portrait: the invitation starts the walk to Building 5', stage == 'to_b5', stage)
+        check('portrait: the game is running again after Yes',
+              until(page, '() => !window.__CAMPUS.explorer.game.paused', timeout=20))
+
+    # ---- Looking. Drag across the open sky, well clear of the stick and buttons.
+    yaw_before = state(page)['yaw']
+    touch_drag(page, (195, 300), (95, 300), steps=8)
+    page.wait_for_timeout(300)
+    yaw_after = state(page)['yaw']
+    check('portrait: a touch drag turns the view', abs(yaw_after - yaw_before) > 0.05,
+          f'yaw {yaw_before:.3f} -> {yaw_after:.3f}')
+
+    # ---- MENU pauses; Enter exploration resumes. (Escape is a one-way pause,
+    # exactly as on desktop, so the resume is the pause card's own button.)
+    check('portrait: tapping MENU pauses', tap_button(page, '.touch-button[data-touch="menu"]')
+          and until(page, '() => window.__CAMPUS.explorer.game.paused', timeout=20))
+    shot(page, '390x844', '03-menu')
+    check('portrait: the pause card resumes the game', tap_button(page, '#enter-game')
+          and until(page, '() => !window.__CAMPUS.explorer.game.paused', timeout=20))
+
+    # ---- Fullscreen: a real tap, a real Fullscreen API element.
+    before = state(page)
+    check('portrait: this browser exposes the Fullscreen API',
+          before['fullscreenApi'] is True, before)
+    tapped = tap_button(page, '.fullscreen-toggle')
+    entered = until(page, '() => !!document.fullscreenElement', timeout=20)
+    check('portrait: the fullscreen button enters fullscreen', tapped and entered,
+          f'tapped={tapped} element={state(page)["fullscreenElement"]}')
+    shot(page, '390x844', '04-fullscreen')
+    tap_button(page, '.fullscreen-toggle')
+    left = until(page, '() => !document.fullscreenElement', timeout=20)
+    check('portrait: the button leaves fullscreen again', left)
+    after = state(page)
+    check('portrait: the game is still running after the fullscreen round trip',
+          after['exploring'] and not after['paused'], after)
+
+    page.wait_for_timeout(300)
+    check('portrait: no page errors', not errors, errors[:4])
+
+
+def run_landscape(page):
+    errors = []
+    page.on('pageerror', lambda error: errors.append(str(error)))
+    boot(page)
+    check('landscape: Enter exploration starts the game', enter(page))
+    page.wait_for_timeout(500)
+    s = state(page)
+    stick = box_of(page, '.touch-stick')
+    actions = box_of(page, '.touch-actions')
+    check('landscape: the stick is fully on screen',
+          bool(stick) and stick['display'] != 'none' and stick['x'] >= 0
+          and stick['y'] >= 0 and stick['x'] + stick['w'] <= s['width']
+          and stick['y'] + stick['h'] <= s['height'], f'{stick} in {s["width"]}x{s["height"]}')
+    check('landscape: the action buttons are fully on screen',
+          bool(actions) and actions['display'] != 'none' and actions['x'] >= 0
+          and actions['y'] >= 0 and actions['x'] + actions['w'] <= s['width']
+          and actions['y'] + actions['h'] <= s['height'], f'{actions} in {s["width"]}x{s["height"]}')
+    overlap = bool(stick and actions
+                   and stick['x'] < actions['x'] + actions['w']
+                   and actions['x'] < stick['x'] + stick['w']
+                   and stick['y'] < actions['y'] + actions['h']
+                   and actions['y'] < stick['y'] + stick['h'])
+    check('landscape: the stick and the buttons do not overlap', not overlap)
+
+    # The minimap used to sit on top of RUN and MENU at this height; a phone
+    # cannot afford it, so it is hidden exactly as in portrait.
+    mapcard = box_of(page, '.opening-mapcard')
+    check('landscape: the minimap is hidden instead of covering the buttons',
+          bool(mapcard) and mapcard['display'] == 'none', mapcard)
+    hotbar = box_of(page, '#inventory-hud .hotbar')
+    bag_hint = box_of(page, '.bag-open')
+    check('landscape: the hotbar is fully on screen and not empty',
+          bool(hotbar) and hotbar['display'] != 'none' and hotbar['w'] > 0
+          and hotbar['x'] >= 0 and hotbar['y'] >= 0
+          and hotbar['x'] + hotbar['w'] <= s['width']
+          and hotbar['y'] + hotbar['h'] <= s['height'], f'{hotbar} in {s["width"]}x{s["height"]}')
+    check('landscape: the hotbar clears the stick and the buttons',
+          not overlaps(hotbar, stick) and not overlaps(hotbar, actions),
+          f'hotbar={hotbar} stick={stick} actions={actions}')
+    check('landscape: the desktop bag hint is hidden on touch',
+          bool(bag_hint) and bag_hint['display'] == 'none', bag_hint)
+    shot(page, '844x390', '01-entered')
+
+    before = state(page)
+    touch_drag(page, (82, 390 - 16 - 66), (82, 390 - 16 - 66 + 50), hold_ms=1200)
+    walked = until(page, f"""() => {{
+      const p = window.__CAMPUS.explorer.position;
+      return Math.hypot(p.x - {before['pos'][0]!r}, p.z - {before['pos'][2]!r}) > 0.3;
+    }}""", timeout=20)
+    check('landscape: the stick walks the player', walked)
+    shot(page, '844x390', '02-walked')
+    page.wait_for_timeout(300)
+    check('landscape: no page errors', not errors, errors[:4])
+
+
+def run_layout(page, label):
+    """A second phone size: geometry only. The flow is covered at 390x844; this
+    proves the stack still clears every control on a tall modern phone."""
+    errors = []
+    page.on('pageerror', lambda error: errors.append(str(error)))
+    boot(page)
+    check(f'{label}: Enter exploration starts the game', enter(page))
+    page.wait_for_timeout(500)
+    view = state(page)
+    stick = box_of(page, '.touch-stick')
+    actions = box_of(page, '.touch-actions')
+    hotbar = box_of(page, '#inventory-hud .hotbar')
+    for name, box in (('stick', stick), ('action buttons', actions), ('hotbar', hotbar)):
+        check(f'{label}: the {name} are fully on screen',
+              bool(box) and box['display'] != 'none' and box['w'] > 0
+              and box['x'] >= 0 and box['y'] >= 0
+              and box['x'] + box['w'] <= view['width']
+              and box['y'] + box['h'] <= view['height'], f'{box} in {view["width"]}x{view["height"]}')
+    check(f'{label}: stick, buttons and hotbar do not overlap',
+          not overlaps(stick, actions) and not overlaps(hotbar, stick)
+          and not overlaps(hotbar, actions), f'stick={stick} actions={actions} hotbar={hotbar}')
+    shot(page, label, '01-entered')
+    page.wait_for_timeout(300)
+    check(f'{label}: no page errors', not errors, errors[:4])
+
+
+def run_fallback(page):
+    """An iPhone: `document.fullscreenEnabled` is false. The game must offer the
+    Add to Home Screen hint — and, just as important, no expand button that
+    would do nothing when tapped."""
+    errors = []
+    page.on('pageerror', lambda error: errors.append(str(error)))
+    boot(page)
+    s = state(page)
+    check('fallback: the game itself detects that fullscreen is unavailable', s['fullscreenApi'] is False, s)
+    toggles = page.evaluate("() => document.querySelectorAll('.fullscreen-toggle').length")
+    check('fallback: a device without the API gets no dead fullscreen button', toggles == 0, toggles)
+    hint = box_of(page, '.fullscreen-hint')
+    check('fallback: the Add to Home Screen hint is shown instead',
+          bool(hint) and hint['display'] != 'none' and hint['w'] > 0, hint)
+    text = page.evaluate("() => document.querySelector('.fullscreen-hint span')?.textContent")
+    check('fallback: the hint says exactly what to do',
+          text == 'Add to Home Screen to play full screen', text)
+    dismiss = box_of(page, '.fullscreen-hint button')
+    check('fallback: Dismiss meets the 44 px touch target',
+          bool(dismiss) and dismiss['w'] >= 44 and dismiss['h'] >= 44, dismiss)
+    shot(page, '390x844-fallback', '01-hint')
+    check('fallback: tapping Dismiss removes the hint',
+          tap_button(page, '.fullscreen-hint button')
+          and until(page, "() => !document.querySelector('.fullscreen-hint')", timeout=10))
+    page.wait_for_timeout(300)
+    check('fallback: no page errors', not errors, errors[:4])
+
+
+def main():
+    os.makedirs(SHOTS, exist_ok=True)
+    print(f'check-fullscreen: {URL} -> {SHOTS} ({"headless" if HEADLESS else "headed"})', flush=True)
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(
+            executable_path=CHROME, headless=HEADLESS, args=ARGS) if CHROME else playwright.chromium.launch(
+            headless=HEADLESS, args=ARGS)
+        try:
+            print('\n390x844 portrait', flush=True)
+            context = browser.new_context(
+                viewport={'width': 390, 'height': 844}, device_scale_factor=1,
+                is_mobile=True, has_touch=True)
+            page = context.new_page()
+            try:
+                run_portrait(page)
+            except Exception as error:
+                check('portrait: flow completed', False, f'{type(error).__name__}: {error}')
+            finally:
+                context.close()
+
+            print('\n844x390 landscape', flush=True)
+            context = browser.new_context(
+                viewport={'width': 844, 'height': 390}, device_scale_factor=1,
+                is_mobile=True, has_touch=True)
+            page = context.new_page()
+            try:
+                run_landscape(page)
+            except Exception as error:
+                check('landscape: flow completed', False, f'{type(error).__name__}: {error}')
+            finally:
+                context.close()
+
+            print('\n430x932 portrait (large phone)', flush=True)
+            context = browser.new_context(
+                viewport={'width': 430, 'height': 932}, device_scale_factor=1,
+                is_mobile=True, has_touch=True)
+            page = context.new_page()
+            try:
+                run_layout(page, '430x932')
+            except Exception as error:
+                check('430x932: layout completed', False, f'{type(error).__name__}: {error}')
+            finally:
+                context.close()
+
+            print('\n390x844 iPhone fallback (no Fullscreen API)', flush=True)
+            context = browser.new_context(
+                viewport={'width': 390, 'height': 844}, device_scale_factor=1,
+                is_mobile=True, has_touch=True)
+            context.add_init_script(HIDE_FULLSCREEN_API)
+            page = context.new_page()
+            try:
+                run_fallback(page)
+            except Exception as error:
+                check('fallback: flow completed', False, f'{type(error).__name__}: {error}')
+            finally:
+                context.close()
+        finally:
+            browser.close()
+    if failures:
+        print(f'\ncheck-fullscreen: {len(failures)} failed, {passed} passed', flush=True)
+        sys.exit(1)
+    print(f'\n{passed} checks, 0 failed', flush=True)
+
+
+if __name__ == '__main__':
+    main()

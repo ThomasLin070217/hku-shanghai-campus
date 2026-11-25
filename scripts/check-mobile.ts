@@ -8,7 +8,8 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {joystickAxes,useTouchControls,TOUCH_DEAD_ZONE} from '../src/opening/touchInput';
-import {defaultGraphicsQuality} from '../src/viewer/graphicsQuality';
+import {fullscreenLabel,fullscreenPlan} from '../src/opening/fullscreenPlan';
+import {defaultGraphicsQuality,TOUCH_MAX_PIXEL_RATIO} from '../src/viewer/graphicsQuality';
 
 let passed=0;const failures:string[]=[];
 function check(name:string,fn:()=>void){
@@ -95,6 +96,112 @@ check('index.html: the viewport meta covers the safe area',()=>{
  const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
  assert.match(html,/name="viewport"/,'the viewport meta exists');
  assert.match(html,/width=device-width, initial-scale=1\.0, viewport-fit=cover/,'the viewport content is unchanged except for the safe-area cover');
+});
+
+// 5. Fullscreen: what the control does on each device.
+check('fullscreen: a desktop with the API gets a button that drives it',()=>{
+ assert.deepEqual(fullscreenPlan({fullscreenEnabled:true,requestAvailable:true,standalone:false,touch:false}),
+  {button:true,api:true,hint:false});
+});
+check('fullscreen: an iPhone without the API gets the Add to Home Screen hint, not a dead button',()=>{
+ assert.deepEqual(fullscreenPlan({fullscreenEnabled:false,requestAvailable:false,standalone:false,touch:true}),
+  {button:true,api:false,hint:true});
+});
+check('fullscreen: an installed app needs neither the button nor the hint',()=>{
+ assert.deepEqual(fullscreenPlan({fullscreenEnabled:false,requestAvailable:false,standalone:true,touch:true}),
+  {button:false,api:false,hint:false});
+ assert.deepEqual(fullscreenPlan({fullscreenEnabled:true,requestAvailable:true,standalone:true,touch:false}),
+  {button:false,api:false,hint:false},'even with the API, the installed app already owns the screen');
+});
+check('fullscreen: a disabled API (no allowfullscreen iframe) shows nothing',()=>{
+ assert.deepEqual(fullscreenPlan({fullscreenEnabled:false,requestAvailable:true,standalone:false,touch:false}),
+  {button:false,api:false,hint:false});
+});
+check('fullscreen: the label follows the state',()=>{
+ assert.equal(fullscreenLabel(false),'Full screen');
+ assert.equal(fullscreenLabel(true),'Exit full screen');
+});
+check('fullscreen: only a working API gets the toggle, never a dead button',()=>{
+ const source=readFileSync(new URL('../src/opening/fullscreen.ts',import.meta.url),'utf8');
+ assert.ok(source.includes('if (plan.api) {'),'the toggle is gated by the API');
+ assert.ok(!source.includes('if (plan.button) {'),'plan.button alone would mount a toggle that does nothing on an iPhone');
+});
+
+// 6. The manifest and the iPhone meta that make Add to Home Screen full-screen.
+check('index.html: the manifest and the Apple web-app meta exist',()=>{
+ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+ assert.match(html,/rel="manifest" href="\.\/manifest\.webmanifest"/,'the manifest is linked relatively (the site is served from a subpath)');
+ assert.match(html,/name="apple-mobile-web-app-capable" content="yes"/);
+ assert.match(html,/name="mobile-web-app-capable" content="yes"/);
+ assert.match(html,/name="apple-mobile-web-app-status-bar-style" content="black-translucent"/);
+ assert.match(html,/rel="apple-touch-icon"/,'iOS needs its own icon link');
+});
+check('manifest: standalone display, relative scope, real icons',()=>{
+ const manifest=JSON.parse(readFileSync(new URL('../public/manifest.webmanifest',import.meta.url),'utf8')) as {display:string;start_url:string;scope:string;icons:{src:string;sizes:string}[]};
+ assert.equal(manifest.display,'standalone','Add to Home Screen must open without browser chrome');
+ assert.equal(manifest.start_url,'./','the game is served from /hku-shanghai-campus/, so the start URL is relative');
+ assert.equal(manifest.scope,'./');
+ assert.ok(manifest.icons.length>=3,'192, 512 and the maskable icon');
+ assert.ok(manifest.icons.every(i=>i.src.startsWith('./')),'icons are relative to the manifest');
+ for(const size of ['192x192','512x512'])assert.ok(manifest.icons.some(i=>i.sizes===size),`a ${size} icon is declared`);
+});
+
+// 7. The touch layer is the real one: one code path with the keyboard.
+check('touch controls: mounted as .touch-controls and driven by the explorer',()=>{
+ const source=readFileSync(new URL('../src/opening/touchControls.ts',import.meta.url),'utf8');
+ assert.ok(source.includes("className = 'touch-controls'"));
+ assert.ok(source.includes('explorer.touchMove'),'the stick drives the analog move API');
+ assert.ok(source.includes('explorer.touchRun'),'RUN drives the sprint API');
+});
+check('touch controls: USE, JUMP, BAG and MENU send the keyboard codes',()=>{
+ const source=readFileSync(new URL('../src/opening/touchControls.ts',import.meta.url),'utf8');
+ for(const code of ['KeyF','KeyE','Space','Escape'])assert.ok(source.includes(`code: '${code}'`),`${code} is dispatched, so the game keeps one input path`);
+});
+check('touch controls: the stick re-sends while held (a clear() must not stall it)',()=>{
+ const source=readFileSync(new URL('../src/opening/touchControls.ts',import.meta.url),'utf8');
+ assert.match(source,/requestAnimationFrame\(step\)/,'the hold loop keeps sending the deflection');
+});
+check('touch controls: campaign focus turns USE into BACK',()=>{
+ const source=readFileSync(new URL('../src/opening/touchControls.ts',import.meta.url),'utf8');
+ assert.ok(source.includes("focused ? 'BACK' : 'USE'"));
+ assert.ok(source.includes('data-campaign-focus'));
+});
+
+// 8. The touch stylesheet: safe areas, both orientations, target sizes.
+check('touch.css: safe areas and both orientation rules exist',()=>{
+ const css=readFileSync(new URL('../src/opening/touch.css',import.meta.url),'utf8');
+ assert.ok(css.includes('env(safe-area-inset'),'every edge respects the notch and the home indicator');
+ assert.match(css,/@media \(orientation: portrait\)/);
+ assert.match(css,/@media \(orientation: landscape\)/);
+ assert.match(css,/min-height: 44px/,'the dismiss button meets the 44 px target floor');
+});
+check('touch.css: the hotbar and the prompt move above the controls',()=>{
+ const css=readFileSync(new URL('../src/opening/touch.css',import.meta.url),'utf8');
+ assert.match(css,/body\.touch-mode\.opening-mode\.exploring #inventory-hud/,'the rule must outrank the 6 px game rule');
+ assert.match(css,/body\.touch-mode \.opening-prompt/);
+});
+check('touch.css: desk-only chrome is hidden on a phone, never overlapped',()=>{
+ const css=readFileSync(new URL('../src/opening/touch.css',import.meta.url),'utf8');
+ assert.match(css,/body\.touch-mode \.bag-open \{\s*display: none;/,'the Bag (E) hotbar hint is a keyboard affordance, not a phone one');
+ assert.match(css,/@media \(orientation: landscape\) and \(max-height: 500px\) \{[\s\S]*?body\.touch-mode \.opening-mapcard \{\s*display: none;/,'a short landscape phone hides the minimap rather than covering RUN and MENU');
+});
+
+// 9. The renderer cap is wired, and the desktop path is untouched.
+check('renderer: touch devices cap at 1.15 and main.ts passes it',()=>{
+ assert.equal(TOUCH_MAX_PIXEL_RATIO,1.15);
+ const main=readFileSync(new URL('../src/main.ts',import.meta.url),'utf8');
+ assert.match(main,/createSiteViewer\(host,\(\)=>true,touch\?TOUCH_MAX_PIXEL_RATIO:undefined\)/,'the cap is handed to the viewer');
+ assert.ok(main.includes("createTouchControls(explorer)"));
+ assert.ok(main.includes("createFullscreenControl({stage:stageEl"));
+});
+check('controller: touchMove and touchRun are part of the explorer API',()=>{
+ const controller=readFileSync(new URL('../src/exploration/controller.ts',import.meta.url),'utf8');
+ assert.ok(controller.includes('touchMove,'));
+ assert.ok(controller.includes('touchRun,'));
+});
+check('controller: the look multiplier only applies to touch pointers',()=>{
+ const controller=readFileSync(new URL('../src/exploration/controller.ts',import.meta.url),'utf8');
+ assert.match(controller,/e\.pointerType === 'touch'\?2\.4:1/,'a mouse drag keeps its desktop sensitivity');
 });
 
 if(failures.length){console.log(`\ncheck-mobile: ${failures.length} failed`);process.exit(1);}
