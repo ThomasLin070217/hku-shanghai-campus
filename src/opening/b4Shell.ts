@@ -121,7 +121,7 @@ interface OfficeMats{
  deskWood:T.Material;chairFabric:T.Material;paper:T.Material;coat:T.Material;warmLamp:T.Material;
  window:T.Material;book:T.Material;bookAlt:T.Material;screenFrame:T.Material;glass:T.Material;
  callPlate:T.Material;callLamp:T.Material;landingFloor:T.Material;landingWall:T.Material;
- landingCeiling:T.Material;officeDoor:T.Material;officePlate:T.Material;officeText:T.Material;macBody:T.Material;
+ landingCeiling:T.Material;officeDoor:T.Material;officePlate:T.Material;officeText:T.Material;macBody:T.Material;macScreen:T.Material;
  /** E.8's dressing: the trolley's steel, the evacuation notice, the dying corridor panel. */
  trolleyFrame:T.Material;trolleyDeck:T.Material;trolleyLinen:T.Material;evacPlate:T.Material;evacText:T.Material;flicker:T.Material;
 }
@@ -170,6 +170,12 @@ function buildOffice(m:OfficeMats){
  const laptop=group(root,'B4_office_macbook');laptop.position.set(O.laptop.x,O.laptop.y,O.laptop.z);
  box(laptop,'B4_office_macbook_base',.32,.016,.22,0,.008,0,m.macBody);
  const lid=box(laptop,'B4_office_macbook_lid',.32,.21,.012,0,.105,-.104,m.macBody);lid.rotation.x=.18;
+ // The display sits on the lid's inner face and leans with it: without it the open
+ // lid reads as a bare aluminium slab from the pickup angle. It is a sibling, not a
+ // child of the lid, because `compact()` merges a group's direct mesh children per
+ // material and a child of a merged mesh would be dropped with its parent. The
+ // offset is the lid's own (0,0,.008) rotated by the same .18 rad.
+ const screen=box(laptop,'B4_office_macbook_screen',.29,.185,.002,0,.103566,-.096129,m.macScreen);screen.rotation.x=.18;
  // A chair turned away from the desk, and a coat over its back.
  const C=O.chair,chair=group(root,'B4_office_chair');
  chair.position.set(C.x,F,C.z);chair.rotation.y=.62;
@@ -320,6 +326,8 @@ export function buildB4Shell(){
   /* The erased MacBook the errand is named after: silver aluminium, so it does not read as a
      second piece of the office door it sits behind. */
   macBody:std('B4 office MacBook aluminium',0xb9bcc0),
+  /** The dead display: near-black glass, so the object reads as an open laptop and not a slab. */
+  macScreen:std('B4 office MacBook screen',0x11161b),
   paper:std('B4 office paper',0xe8e3d6),coat:std('B4 office coat',0x3a3f45),
   warmLamp:std('B4 office warm lamp',0xffe6bd,0xffca82,1.15),window:std('B4 office window light',0xbcd6e4,0x9dc6dd,.30),
   book:std('B4 office book',0x7d3b34),bookAlt:std('B4 office book spine',0x3d5a6b),
