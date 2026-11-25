@@ -132,6 +132,28 @@ The GLM shakedown found a red console on the normal play path. Reproduced on the
 
 **Demo-day note:** on the local fallback (`dist/` + a static server), append `?agent=1` to the URL if the local AI control bridge and the LLM-backed assistant are wanted; without it the assistant answers from its built-in knowledge base and the control bridge stays off.
 
+## Phase F: the GLM-5.4 shakedown is blocked upstream, 2026-11-26
+
+The owner's standing order is that a GLM-5.4 reviewer runs over the finished build before filming. It cannot: the ZCode account behind the `auto/glm-5.4` and `auto/glm-5.3-flash` routes is suspended, and the refusal comes from the provider, not from this repo.
+
+**Evidence** (probe through the local proxy that every subagent route runs on, `http://127.0.0.1:3425`, 2026-11-26):
+
+```
+POST /v1/messages  {"model":"auto/glm-5.4"}
+→ HTTP 405  permission_error
+  "ZCode: Your account has been suspended for misusing the Start Plan, such as
+   proxying it to non-ZCode clients. (405, code 3012)"
+POST /v1/messages  {"model":"auto/glm-5.3-flash"} → the same 405 / code 3012
+```
+
+Both GLM routes share the one ZCode account, so neither works. This is the second attempt at this step; the first was blocked at the same place.
+
+**What was done instead.** A read-only shakedown ran on a different model family (Qoder, `auto/hmodel`), with the same brief the GLM reviewer would have had — find what breaks a recorded run or looks wrong on camera, reproduce it, cite evidence. Its report is `.scratch/shakedown-2026-11-26/qoder-report.md`, and every reproduced finding is triaged in this file. The full-route playthrough was re-run on the same build (`npm run check:campaign-playthrough`).
+
+**Owner action to unblock the ordered review:** resolve the ZCode suspension (or supply another GLM-5.4 route) and re-run. Nothing in the repo can fix this.
+
+
+
 ## Security
 
 Two `sk-` API keys were posted in the group chat on 2026-11-23 19:51/19:54. Treat them as compromised and rotate them; do not put them in the repo, the build or the tagged release. `scripts/pre-push-secret-scan.sh` passes on the current tree (no `sk-`, `ntn_`, `ghp_`, `Bearer ` shapes; no `.env`; `dist/` clean). Rotation is the owner's action.
