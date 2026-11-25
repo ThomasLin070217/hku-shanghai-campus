@@ -8,6 +8,7 @@ This note is the runbook; it names what exists and what still has to be proven.
 | Piece | Where | State |
 |---|---|---|
 | Video capture (silent) | `scripts/lawn-recording.mjs` — CDP `Page.startScreencast`, JPEG frames → `ffmpeg` concat → H.264 | **Proven** on the lawn chapter at 1280×720 |
+| Video + audio recorder | `scripts/record-demo.py` — screencast and `AudioContext` tap in one take, muxed | **Proven** 2026-11-26: `demo/hku-barrier-2030-v9.1.0.mp4`, 84.5 s, 31 MB, mean −28.6 dB |
 | Route driver | `scripts/check-campaign-playthrough.py` — drives the whole route with real key events | **Proven** (gate, not a recorder) |
 | Screenshot capture | `scripts/capture-opening-evidence.py` | Proven |
 
@@ -65,9 +66,27 @@ the final take.
 - After recording, verify: duration, no black frames at the head, audio present, and that the
   version label in the pause card matches the tag.
 
+## What the 2026-11-26 take taught (read before re-recording)
+
+- **Hardware GL, not SwiftShader.** SwiftShader renders the cinematic at ~1.7 fps — the concat
+  turns that into a slideshow. `--gl hardware` (the default) measured ~15 fps at 1280×720 and
+  produces a smooth 18 fps file. `scripts/record-demo.py` records; the gates keep SwiftShader.
+- **`?shell=1` on the review build.** Without it the review build shows the campus authoring
+  chrome — scene index, breadcrumb, "Campus tools" — which no player ever sees. `src/entry.ts`
+  switches the player shell on for `?shell=1`.
+- **Point lock is denied in headless Chrome.** Clicking *Start opening* calls
+  `explorer.enter()`, which requests pointer lock; headless denies it, so the game pauses with
+  `pointer_lock_failed` and shows "Pointer lock unavailable. Use drag mode to continue." The
+  recorder claims the save with a key press and then drives `enterCompat()` — the game's own
+  drag-control mode — so nothing extra appears on screen. Verified: `pauseReason` and the notice
+  element were both read after the fact.
+- **The phone invitation needs movement.** `src/opening/experience.ts` opens it only after the
+  player has walked 1.6 m, so the recorder walks first and then waits for it.
+- **The card fades in.** Playwright calls an opacity-0 element visible; wait for computed opacity
+  > 0.95 or the take ships a blank phone.
+
 ## Still to prove
 
-- The audio tap above has **not** been run against the current build yet; the first dry run is a
-  10-second capture with the prologue music, checked for a non-silent track.
-- A/V drift over a 10-minute take has not been measured. If drift exceeds ~100 ms, record a clap
-  marker at the start and trim by hand.
+- A/V drift over a long take has not been measured. The mux applies the measured start offset
+  (0.29 s on the 2026-11-26 take); if a later take drifts visibly, record a clap marker and trim
+  by hand.
