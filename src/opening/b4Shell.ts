@@ -510,6 +510,31 @@ export function buildB4Shell(){
   const pane=new T.Mesh(new T.BoxGeometry(sdLeaf-.06,SD.height-.12,.02),panel);
   pane.name='B4_side_door_leaf_panel';pane.position.set(0,SD.height/2,0);pane.userData={...SOURCE,authorKey:'B4_side_door_leaf_panel'};leaf.add(pane);
  }
+ // The CDS-1 gate bank from the lobby photographs: four brushed pedestals with
+ // top readers and glass wings across the main entrance. Scenery only — no
+ // collision rect — so the walk in and out of the room is unchanged, and the
+ // 0.72 m centre lane lines up with the player's approach.
+ const gates=group(root,'B04_gate_bank'),gateZ=D.z-1.15;
+ const gateScreen=new T.MeshBasicMaterial({name:'B4 gate reader screen',color:0xcfe8e8});
+ // Its own glazing: the façade glass is nearly invisible indoors, and the wings
+ // have to read as glass from the plaza, so this one is denser and catches light.
+ const gateGlass=mats.windowGlass.clone();gateGlass.name='B4 gate glazing';gateGlass.opacity=.34;gateGlass.emissiveIntensity=.45;
+ for(const dx of [-1.15,-.50,.50,1.15]){
+  const x=mid+dx,side=dx<0?-1:1;
+  box(gates,'B4_gate_pedestal',.28,1.15,1.30,x,F+.595,gateZ,mats.car);
+  box(gates,'B4_gate_cap',.30,.045,1.32,x,F+1.192,gateZ,mats.white);
+  box(gates,'B4_gate_reader',.13,.06,.22,x+side*.065,F+1.245,gateZ+.42,mats.rack);
+  const screen=new T.Mesh(new T.BoxGeometry(.09,.012,.14),gateScreen);
+  screen.name='B4_gate_reader_screen';screen.position.set(x+side*.065,F+1.278,gateZ+.42);screen.userData={...SOURCE};gates.add(screen);
+ }
+ for(const [lane,clear] of [[-.825,.33],[0,.68],[.825,.33]] as const){
+  const flap=new T.Mesh(new T.BoxGeometry(clear,.95,.02),gateGlass);
+  flap.name='B4_gate_flap';flap.position.set(mid+lane,F+.51,gateZ+.35);flap.userData={...SOURCE};gates.add(flap);
+  box(gates,'B4_gate_flap_rail',clear+.02,.025,.03,mid+lane,F+.035,gateZ+.35,mats.frame);
+  // A metal edge on each wing: clear glass alone disappears against the dark lobby.
+  for(const side of [-1,1])box(gates,'B4_gate_flap_stile',.03,.95,.03,mid+lane+side*(clear/2-.015),F+.51,gateZ+.35,mats.frame);
+  box(gates,'B4_gate_flap_head',clear,.03,.03,mid+lane,F+.955,gateZ+.35,mats.frame);
+ }
  // The ruled flip wall on the façade's interior face, east of the main door.
  root.add(createB4FlipWall().root);
  // The core lift and the fifth floor it opens onto. The car is the one part of the shell

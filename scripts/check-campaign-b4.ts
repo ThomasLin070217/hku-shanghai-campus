@@ -123,9 +123,35 @@ const doorRay=()=>new T.Raycaster(new T.Vector3(O.b4.door,O.b4.floor+1.3,O.hando
  assert.match(hitPath(hit.object),/B04_entrance_door/,`Chapter 1: the first thing in the B04 doorway is the closed door, got ${hitPath(hit.object)} at z=${hit.point.z}`);
  assert.ok(w2.blocked(O.b4.door,O.b4.z1+.9,O.b4.floor+.06),'Chapter 1: the closed B04 door is solid');
  assert.ok(site.root.getObjectByName('B04_room_shell'),'the B04 room shell is part of the opening build');
+ // The bank must survive the build, not only exist in a freshly built shell.
+ assert.ok(site.root.getObjectByName('B04_gate_bank'),'the gate bank is present in the built site');
  const inside=new T.Raycaster(new T.Vector3(O.b4.door,O.b4.floor+1.3,O.b4.z1-.3),new T.Vector3(0,0,-1),0,O.b4.z1-O.b4.z0).intersectObject(site.root,true)[0];
  assert.ok(inside&&inside.point.z>=O.b4.z0-.01&&inside.point.z<=O.b4.z0+.2,`B04 is capped behind the door (back wall), got ${inside?hitPath(inside.object):'nothing'} at z=${inside?.point.z}`);
- let shellLights=0;buildB4Shell().traverse(o=>{if(o instanceof T.Light)shellLights++;});assert.equal(shellLights,0,'the B04 shell carries no lights: the room cannot glow by itself in the daytime');
+ const freshShell=buildB4Shell();
+ let shellLights=0;freshShell.traverse(o=>{if(o instanceof T.Light)shellLights++;});assert.equal(shellLights,0,'the B04 shell carries no lights: the room cannot glow by itself in the daytime');
+ // The CDS-1 gate bank: four pedestals and three glass wings across the main
+ // entrance, seated inside the door. It is scenery — no collision rect — and the
+ // centre lane at the door axis must stay clear so the walk in is unchanged.
+ const bank=freshShell.getObjectByName('B04_gate_bank');
+ assert.ok(bank,'the CDS-1 gate bank stands at the B04 entrance');
+ const pedestals:string[]=[],flaps:string[]=[];
+ bank!.traverse(o=>{if(o.name==='B4_gate_pedestal')pedestals.push(o.name);if(o.name==='B4_gate_flap')flaps.push(o.name);});
+ assert.equal(pedestals.length,4,'the gate bank has four pedestals');
+ assert.equal(flaps.length,3,'the gate bank has three glass wings');
+ freshShell.updateMatrixWorld(true);
+ let bankMinX=Infinity,bankMaxX=-Infinity;
+ for(const mesh of bank!.children){
+  const b=new T.Box3().setFromObject(mesh);
+  assert.ok(b.min.x>O.b4.x0&&b.max.x<O.b4.x1&&b.min.z>O.b4.z0,`${mesh.name} stands inside the room, x ${b.min.x.toFixed(2)}..${b.max.x.toFixed(2)} z ${b.min.z.toFixed(2)}..${b.max.z.toFixed(2)}`);
+  // The bank is inside the doorway: nothing pokes out into the plaza past the door plane.
+  assert.ok(b.max.z<=O.b4.z1-.05,`${mesh.name} stays inside the doorway, front face at z=${b.max.z.toFixed(2)} (door plane ${O.b4.z1})`);
+  bankMinX=Math.min(bankMinX,b.min.x);bankMaxX=Math.max(bankMaxX,b.max.x);
+ }
+ // It fills the opening: the widest parts of the bank land on both door jambs.
+ assert.ok(bankMinX<=O.b4.door-1.25&&bankMaxX>=O.b4.door+1.25,`the bank spans the 2.6 m doorway, ${bankMinX.toFixed(2)}..${bankMaxX.toFixed(2)}`);
+ const lane=new T.Raycaster(new T.Vector3(O.b4.door,O.b4.floor+1.3,O.b4.z1-.05),new T.Vector3(0,0,-1),0,3).intersectObject(bank!,true)[0];
+ assert.ok(!lane,`the centre approach lane is clear, got ${lane?lane.object.name:'nothing'} at ${lane?.distance}`);
+ assert.equal(B4_OBSTACLES.filter(r=>/gate/i.test(r.name)).length,0,'the gate bank adds no collision rect');
  const roomLights:string[]=[];site.root.traverse(o=>{if(o instanceof T.Light){const p=o.getWorldPosition(new T.Vector3());if(p.x>O.b4.x0&&p.x<O.b4.x1&&p.z>O.b4.z0&&p.z<O.b4.z1)roomLights.push(o.name||o.type);}});
  assert.deepEqual(roomLights,[],'Chapter 1: no light inside the B04 rooms');
  console.log('PASS Chapter 1: closed, solid B04 door; capped room shell; no room lights');
