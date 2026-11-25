@@ -136,6 +136,20 @@ export function createCampaignHost(o:CampaignHostOptions){
   stage:()=>state?.stage??null,
   /** Id of the chapter that owns the current stage (null on walking legs between chapters). */
   chapter:()=>state?campaignChapterOf(state.stage):null,
+  /**
+   * Where "Return to checkpoint" should put the player: the start of the chapter that owns
+   * the current stage, else the next walking leg's entry. The body moves; the story does not.
+   * Null before the campaign starts and in the epilogue: the ending chapter's entry is a
+   * radius-0 placeholder at the campus origin (it has no walking leg), and teleporting there
+   * mid-finale would yank the body out from under the scripted 58 m camera crane.
+   */
+  chapterEntry:()=>{
+   if(!state)return null;
+   sync();
+   const own=active(),walk=walkTarget(state.stage);
+   const point=(own&&own.entry.radius>0?own.entry.point:null)??walk?.entry.point??null;
+   return point?[...point] as [number,number,number]:null;
+  },
   attached:()=>[...attached.keys()],
   start,reset,emit,update,objective,
   interact:()=>{if(!state)return false;sync();return active()?.interact()??false;},

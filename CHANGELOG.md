@@ -14,7 +14,10 @@ The three scenes the 9.1 line left as architecture are performed, and the two de
 ### Fixed
 - Finale windows were seated on the authored façade planes, but the built towers stand 2.8–5.8 m proud of them, so every quad sat inside the wall where the depth test hides it. The show now measures the built shells and seats the glass 0.22 m outside (`c3d64f7`).
 - The ending played off-screen behind the three 25.5 m sports halls; a scripted 58 m camera crane lifts the view over their roofs before the Mac overlay clears, then releases to eye level (`c3d64f7`).
-- The presentation MacBook was built from the office-door timber material and read as brown wood; it is aluminium now, so the errand's object reads as the object it is named after.
+- The presentation MacBook was built from the office-door timber material and read as brown wood; it is aluminium now, with a near-black display, so the errand's object reads as the object it is named after.
+- The epilogue advanced on frame time. The viewer caps frame dt at 0.1 s, so a software-rasterised browser running the 58 m crane view at 0.25–0.37 fps stretched the 17 s sequence to nearly eight minutes (measured: clock 15.2 of 17 s after 422 s, no credits). The cutscene now takes the wall-clock delta whenever the game is running (`85b0ee7`); the same 0.37 fps run finishes in 28 s.
+- The dome release had the same defect and could not catch up with the ending: its 5.2 s transition advanced 0.1 s per frame, so the credits arrived with the curtain still 88.5% down (`end: dome released` failed). The atmosphere now takes the same wall-clock step (`f1d293c`); on the same 0.34 fps build the dome reads `day / 0 / false` two seconds before the credits.
+- "Return to checkpoint" during Chapter 3 put the player back at the B4 handoff, 176 m from the sports hall, with the objective unchanged. The campaign host now names the checkpoint of the chapter you are in (`chapterEntry()`), the button places the body there, and the epilogue — which has no walking leg — refuses the move instead of teleporting to the origin under the finale's camera crane (`F?`).
 
 ### Changed
 - 19 music cues are reachable: `mus_dinner_toast` and `mus_finale` are both requested at their beats.

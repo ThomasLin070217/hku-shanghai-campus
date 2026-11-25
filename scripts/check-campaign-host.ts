@@ -261,5 +261,24 @@ group('ctx.hearts damages and heals the one opening runtime store',()=>{
  const plain=makeHost();plain.host.start('mac-1');assert.equal(plain.spies.b4.ctx?.hearts,undefined,'hearts stays optional');
 });
 
+group('(g) chapterEntry names the spot the pause button returns to',()=>{
+ const {host}=makeHost();
+ assert.equal(host.chapterEntry(),null,'no campaign, no checkpoint');
+ host.start('mac-1');
+ assert.deepEqual(host.chapterEntry(),CHAPTER_DATA('b4').entry.point,'inside B04: the entrance you came in by');
+ for(const e of ['enter_b4','keyboard_solved','flip_solved','breaker_pulled','macbook_connected'] as const)host.emit(e);
+ assert.equal(host.chapter(),null);
+ assert.deepEqual(host.chapterEntry(),CHAPTER_DATA('lawn').entry.point,'a walking leg sends you to the leg it leads into');
+ host.emit('reach_lawn');host.emit('guardian_shutdown');
+ assert.deepEqual(host.chapterEntry(),CHAPTER_DATA('sports').entry.point,'the sports leg lands at the east door');
+ host.emit('reach_sports');
+ assert.deepEqual(host.chapterEntry(),CHAPTER_DATA('sports').entry.point,'in Chapter 3: the sports door, not the B5 handoff');
+ host.emit('door_opened');
+ assert.equal(host.stage(),'ending');
+ assert.equal(host.chapterEntry(),null,'the epilogue has no checkpoint: its entry is a radius-0 placeholder at the origin');
+ host.emit('ending_finished');
+ assert.equal(host.chapterEntry(),null,'nor after the credits');
+});
+
 if(failures.length){console.error(`\ncheck-campaign-host: ${failures.length} failed, ${passed} passed`);process.exit(1);}
 console.log(`\ncheck-campaign-host: ${passed} passed`);
