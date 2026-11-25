@@ -2,7 +2,7 @@
 
 Source: WeChat group “Vibe Coding Hackathon CDS SH”, 2026-11-23 19:33–20:02, plus the sidebar reports on 2026-11-21. Triage is Task 12.5; fixes route to Workstreams 6, 8, 9 and 11.
 
-**Status as of 2026-11-25.** Every row below was re-checked against the tree, not against the plan. “Open” means the defect is still reachable in the build.
+**Status as of 2026-11-26.** Every row below was re-checked against the tree, not against the plan. “Open” means the defect is still reachable in the build. The 2026-11-26 work below the table (`9.2.0`: gate bank, seated dinner, four-tower finale) is post-`v9.1.1` and not yet tagged.
 
 | # | Report | Severity | Status |
 |---|---|---|---|
@@ -50,7 +50,7 @@ An independent playtest walked the B4/B5 interiors at 1.6 m eye height and recor
 |---|---|---|
 | The standalone 4F lounge view rendered as a black shell | **Fixed — `0ad8e0b`** | the sealed AI curtain composited over the room and the opening atmosphere repainted the scene to night every frame; the view now suppresses the atmosphere, hides the curtain and restores the day exposure |
 | The 5F office is underexposed while its window blew out | Partly fixed | the pane now has mullions and a transom and its emissive dropped .55 → .30 (`86dedfe`); a real interior lamp is a world-layer job — the shell gate asserts zero lights so the room cannot glow by day |
-| The B4 plaza entrance has no gate bank from the cds-lobby preview | Open | the running entrance is a broad glazed doorway; a runtime scene query found no turnstile/reader family |
+| The B4 plaza entrance has no gate bank from the cds-lobby preview | **Fixed — `f251db8`** | root cause: `cutOpeningBuildings` removes every mesh inside the B4 room cavity, so the preview's gate meshes were cut away with the rest of the interior. The bank is now built into the static room shell: four brushed pedestals with top readers, three glass wings with metal edges. `check-campaign-b4` asserts it is present in the built site, fills the 2.6 m doorway, never pokes past the door plane, adds no collision rect, and leaves the 1.3 m centre lane clear. Captured in the running build from the plaza at 4 m (`/tmp/b4-gates2-front4.png`, `/tmp/b4-gates2-inside.png`, 0 page errors) |
 | Furniture reads as placeholder massing (lounge, office) | Open | the B4 lobby and the 5F corridor were re-dressed and verified on 2026-11-25 (see below) |
 
 ## B4 lobby and 5F corridor, 2026-11-25
@@ -70,17 +70,38 @@ Verified in a real browser at 1280×800 (`.scratch/verify-2026-11-25/verify-b4-f
 
 | State | Cues |
 |---|---|
-| Reachable | 18 — the opening's own set, the credits theme, and the campaign beats (`mus_lawn`, `mus_lion_boss`, `mus_lion_victory`, `mus_puzzle`, `mus_sports`) |
+| Reachable | 19 — the opening's own set, the credits theme, the ending's `mus_finale`, and the campaign beats (`mus_lawn`, `mus_lion_boss`, `mus_lion_victory`, `mus_puzzle`, `mus_sports`) |
 | Reachable but never requested | none |
-| Not registered | 6 — `mus_boss`, `mus_title`, `mus_dinner_toast`, `mus_abduction`, `mus_abduction_stinger`, `mus_march_alt` |
+| Not registered | 5 — `mus_boss`, `mus_title`, `mus_abduction`, `mus_abduction_stinger`, `mus_march_alt` |
 
-The six are cues for scenes this build does not contain (a titled fight variant, a title screen, the dinner toast, two abduction stingers and an alternate march). They still ship inside `dist/assets` because every music file is emitted regardless of registration; they cost load time only if something asks for them, and nothing does. The four-tower finale cue, `mus_finale`, is deliberately **not** wired: the ending has no light show yet, and playing it over the dome lift would fight the story bus's own bed. Wiring it belongs with that scene.
+The six are cues for scenes this build does not contain (a titled fight variant, a title screen, two abduction stingers and an alternate march). They still ship inside `dist/assets` because every music file is emitted regardless of registration; they cost load time only if something asks for them, and nothing does. **Updated 2026-11-26:** `mus_dinner_toast` and `mus_finale` are both registered and requested now — the dinner cue at the staff intro (`81d6364`) and the finale cue on the ending's release beat (`c3d64f7`), each counted exactly once by its gate.
 
 ## B5 High Table Dinner has no beat, 2026-11-25
+
+> **Superseded 2026-11-26 — the beat now exists.** `81d6364` seats the guests and
+> `src/gameplay/storyAudio.ts` registers `mus_dinner_toast`, cued once from
+> `src/opening/experience.ts:216` when the coordinator's staff intro starts.
+> `check-opening-npcs` asserts the seating: **7 of 12** actors take a chair within
+> arm's reach, face the nearest table, and sit with both legs at −1.571 rad, each
+> within 0.01 m of a drawn chair; the forecourt pair stays standing by design.
+> Still true and unchanged: the high table itself offers **no F prompt** — the
+> toast is part of the story beat, not a table interaction. The paragraph below is
+> the original finding, kept for the record.
 
 An independent QA run reached the hall, walked to the high table and pressed F (`.scratch/b5-dinner-qa/evidence-b5-dinner-pass2.json`, 14 shots, 0 page errors). The stage went from “Walk to the High Table Dinner” straight to “Collect the presentation MacBook”, the seats are empty, and the F attempt changed nothing (`toastAttempt.attempts[0]` stays on `to_b6`). The 135 console errors in that file are all the local control bridge (`ws://…/game`, `/health`) failing in a static build — not game defects.
 
 So the hall exists as architecture (tables, cloth, lamps — see `b5-20-chandelier` … `b5-27-empty-seats-at-table`) but the seated guests and the toast of the plan's Phase 2 item 10 are not built, and `mus_dinner_toast` has nothing to play for. A second, wider QA pass (36 frames, `.scratch/b5-dinner-qa/report-b5-dinner.txt`) counted 12 figures in the room and **0 seated**, with ~77 chairs and ~80 covers laid. Standing at arm's length from the high table (0.43 m from its west face, 0.42 m from its north face, facing it) `F` returns only “Move closer and face the interaction”, so the table offers no interaction at all; the engine's own `reachB5()` is gated on `stage === "return_b5"`, which the B5 checkpoint never reaches. Walking into the hall flips the objective to “Collect the presentation MacBook” at `[73.635, 0.02, -59.001]`, about 7.0 m from the table's nearest corner — inside the hall, not at the door (an earlier reading of “side lobby, 24 m” was wrong and is corrected here). Closing the beat is a content decision, not a bug fix: it needs seated figures, a toast trigger and a hand-off line, and a decision about where B5 ends.
+
+## The four-tower finale, 2026-11-26
+
+`c3d64f7` gives the ending its light show: one instanced window family across the four towers (3456 quads), six tower-to-tower beams, and one flat atrium ring, all additive, no lights and no shadows, 5.6 s long. `check-finale` asserts the structure, the B01→B04 bottom-up order, the completion, and that the ending wires `mus_finale` **once**, as a one-shot, on the release beat; a reload after the credits restores the lit campus from the `done` stage.
+
+Two defects were found and fixed on the way, both invisible to a static gate:
+
+| Defect | Root cause | Fix |
+|---|---|---|
+| Not one window appeared | the built façades stand proud of the authored envelopes (B01 is 2.8 m deeper, B04 5.8 m wider), so every quad at spec + 0.12 m sat **inside** the wall, where the depth test hides it | measure the built shells at show creation and seat the quads 0.22 m outside them; `check-finale` now runs the show against an oversized box and asserts zero buried quads |
+| The finale played off-screen | the ending spawn (−45.9, 1.78, −117) is behind the three 25.5 m sports halls; at eye level not one window is in frame, and the "tall glass tower" in early screenshots was the hall itself | a scripted 58 m camera crane over the halls (`game.cameraLift`, smoothed 4.8→6.8 s) that releases to eye level with the Mac overlay; the body keeps walking on the ground. 58 m, not 32.5 m: at 32.5 m the sightline over the halls passes at 23.3 m, below their 25.5 m roofs |
 
 ## The pause menu, 2026-11-25
 
