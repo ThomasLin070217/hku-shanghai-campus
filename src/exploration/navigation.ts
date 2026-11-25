@@ -1,4 +1,4 @@
-import {openingObstacles,openingSupport} from '../opening/navigation';
+import {openingObstacles,openingSupport,openingFloor} from '../opening/navigation';
 import {LAWN_SIGN,LAWN_SIZE,OCULUS,oculusDeck} from '../model/videoFollowup';
 import {driveLayout,centralWalkLayout,promenadeLayout,plantingBedLayout,contains,OPENING_STAIR_PASSAGE as SP} from '../model/groundLayout';
 import {linkLayout} from '../model/nov14Details';
@@ -101,7 +101,8 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters,opening=f
  for(const side of [-1,1]){box('side-passage-planter',link.x+side*(link.width/2+1.6),link.z,1.2,3.4,.65);for(const z of [-20,-6])circle('north-green-link-tree',side*10.5,z,.12,4.2);}
  if(opening){openingObstacles(obstacles);box('opening-stair-passage-ceiling',SP.x,SP.z,SP.width,SP.depth,4.2,SP.clearHeight);}
  const meshes=obstacles.map(o=>{const mesh=new T.Mesh(new T.BoxGeometry(o.w,o.top-o.bottom,o.d));mesh.name=o.name;mesh.position.set(o.x,(o.top+o.bottom)/2,o.z);mesh.rotation.y=o.angle;mesh.updateMatrixWorld();return mesh;});
- function support(x:number,z:number,y:number):number|null{
+ /** The campus height BEFORE the opening's floors are added, and with no side effects. */
+ function ground(x:number,z:number,y:number):number|null{
   if(Math.abs(x)>s.width/2-.75||Math.abs(z-s.centerZ)>s.depth/2-.75)return null;
   let h=0;
   if(drives.some(r=>contains(r,x,z)))h=.05;
@@ -138,7 +139,17 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters,opening=f
   if(Math.abs(bx)<b.width/2+2&&bz>b.depth/2+9.75&&bz<b.depth/2+16.25)h=Math.max(h,.045);
   if(Math.abs(bx)<5.7&&bz>b.depth/2&&bz<b.depth/2+3.03)h=Math.max(h,.12);
 
+  return h;
+ }
+ /** The player's ground query. In the opening it also drives the lift and the office (`openingSupport`). */
+ function support(x:number,z:number,y:number):number|null{
+  const h=ground(x,z,y);
   return opening?openingSupport(x,z,y,h):h;
+ }
+ /** The ground without the side effects: for anything that is not the player asking where the floor is. */
+ function floorAt(x:number,z:number,y:number):number|null{
+  const h=ground(x,z,y);
+  return opening?openingFloor(x,z,y,h):h;
  }
  function overlaps(o:Obstacle,x:number,z:number,r=C.radius){
   if(o.open)return false;
@@ -162,6 +173,6 @@ export function createNavigation(specs:BuildingSpec[],s:SiteParameters,opening=f
  const bounds={minX:-(s.width/2-.75),maxX:s.width/2-.75,minZ:s.centerZ-(s.depth/2-.75),maxZ:s.centerZ+(s.depth/2-.75)};
  function setDoorOpen(name:string,open:boolean){for(const o of obstacles)if(o.name===name)o.open=open;}
  function doorOpen(name:string){return obstacles.some(o=>o.name===name&&o.open===true);}
- return{surface,obstacles,meshes,support,blocked,contacts,overlaps,step,bounds,setDoorOpen,doorOpen,dispose(){meshes.forEach(m=>{m.geometry.dispose();(m.material as T.Material).dispose();});}};
+ return{surface,obstacles,meshes,support,floorAt,blocked,contacts,overlaps,step,bounds,setDoorOpen,doorOpen,dispose(){meshes.forEach(m=>{m.geometry.dispose();(m.material as T.Material).dispose();});}};
 }
 export type Navigation=ReturnType<typeof createNavigation>;

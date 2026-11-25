@@ -108,13 +108,14 @@ export function openingObstacles(obstacles:Obstacle[]){
  installOffice(obstacles);
 }
 
-export function openingSupport(x:number,z:number,y:number,base:number|null){
- // The office's beats, call points and guard ride the same query as the lift: it is the one
- // hook that runs at simulation rate, and it already carries the point the player stands at.
- tickOffice(x,z,y);
- // The lift is the only moving floor in the world. `support()` is the one query the
- // physics makes on every fixed step, so it is also the lift's clock (see `lift.ts`).
- tickLift(x,z,y);
+/**
+ * The opening's floors, and nothing else. Pure: the same question always gets the same answer,
+ * and asking it changes nothing. For anything that is not the player asking where the ground
+ * is — the plaza crowd finding its height, a test, a placement calculation. The player's own
+ * physics must go through `openingSupport`, because that is what drives the lift and the
+ * office beats; a caller that only wants a number must not drive them.
+ */
+export function openingFloor(x:number,z:number,y:number,base:number|null){
  let h=base;
  const hall=O.b5;if(x>=hall.x0&&x<=hall.x1&&z>=hall.z0&&z<=hall.z1&&hall.floor<=y+.242)h=Math.max(h??-Infinity,hall.floor);
  const dais=H.stage,[dx,dz]=dinnerHallPoint(dais.x,dais.z),daisTop=hall.floor+dais.h;
@@ -137,6 +138,23 @@ export function openingSupport(x:number,z:number,y:number,base:number|null){
  const lo=b.doorX-b.doorWidth/2,hi=b.doorX+b.doorWidth/2;
  for(const [za,zb,top] of [[z0-1.6,z0-.8,.18],[z0-.8,z0,.36]] as const)if(x>=lo&&x<=hi&&z>=za&&z<=zb&&top<=y+.242)h=Math.max(h??-Infinity,top);
  return h;
+}
+
+/**
+ * The player's ground query. Not pure: it is also the clock the lift and the office run on.
+ * The office's beats, call points and guard ride the same query as the lift: it is the one
+ * hook that runs at simulation rate, and it already carries the point the player stands at.
+ * The lift is the only moving floor in the world. `support()` is the one query the physics
+ * makes on every fixed step, so it is also the lift's clock (see `lift.ts`).
+ *
+ * Only the player's own simulation may call this. Another caller would feed its own point to
+ * those ticks: it could fire an office beat, summon the lift, or count as a passenger. Such a
+ * caller wants `openingFloor`.
+ */
+export function openingSupport(x:number,z:number,y:number,base:number|null){
+ tickOffice(x,z,y);
+ tickLift(x,z,y);
+ return openingFloor(x,z,y,base);
 }
 
 /**

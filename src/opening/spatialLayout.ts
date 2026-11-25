@@ -142,6 +142,38 @@ export const DINNER_LAYOUT={
  * Lobby and entry retain their positions. This transform is shared by scenery and physics. */
 export function dinnerHallPoint(x:number,z:number):[number,number]{return[60.5+(-60-z),-78+(x-60.5)];}
 
+/** A dining chair on the floor of the B5 hall, in world metres. */
+export interface DinnerChair{x:number;z:number;half:number}
+/**
+ * Every chair drawn at the dinner tables, as the floor it occupies.
+ *
+ * The chairs are scenery: `world.ts` builds them as boxes and merges them into one mesh per
+ * material, so there is no chair object to query afterwards, and they have no collision. Anything
+ * that stands people on that floor — the plaza crowd taking its place at the dinner — has to know
+ * where they are from here, or it puts a student inside a chair (found 2026-11-25: 2 of 52).
+ *
+ * This is the arithmetic `world.ts` uses to draw them. In authored hall coordinates a chair of
+ * table `(a,b)` stands at `(a + side*.95, b + row)`: its side offset runs along authored x and its
+ * row along authored z. `dinnerHallPoint` then turns the whole hall a quarter, so in the world
+ * the row offset lands on x and the side offset on z. The seat is a `.44` square and the back is
+ * `.18` further from the table, so a chair's footprint is about `.69` deep and `.44` wide; this
+ * uses the larger on both axes, which errs toward keeping a student clear.
+ *
+ * The three chairs `world.ts` leaves out (they are animated elsewhere) are left out here too, so
+ * the list is the chairs a player can see. Verified against the drawn seats on 2026-11-25:
+ * 77 chairs, 77 seats, every seat inside exactly one chair's footprint.
+ */
+export function dinnerChairPlaces():DinnerChair[]{
+ const out:DinnerChair[]=[],seat=.44,backOut=.18,back=.07;
+ for(const [i,[a,b]] of DINNER_LAYOUT.tables.entries())for(const [j,row] of DINNER_LAYOUT.chairOffsets.entries())for(const side of [-1,1] as const){
+  // The three capture chairs are animated standing chairs elsewhere, not static scenery.
+  if(i<3&&j===0&&side===-1)continue;
+  const [x,z]=dinnerHallPoint(a+side*(.95+backOut/2),b+row);
+  out.push({x,z,half:seat/2+Math.max(backOut/2+back/2,0)});
+ }
+ return out;
+}
+
 /** IMG_4380 00:24 / phase2-02: low timber dais, transverse table and a lectern on the left.
  * Dimensions are provisional. All rectangles are in authored hall coordinates. */
 export const DINNER_HEAD={

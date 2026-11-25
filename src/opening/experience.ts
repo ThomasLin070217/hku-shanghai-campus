@@ -12,10 +12,12 @@ import {LAWN_APPROACH} from '../campaign/lawnChapter';
 import {createOpeningRuntime,damageOpeningHearts,healOpeningHearts,syncRuntimeWithStory,OPENING_RESPAWN_GRACE_SECONDS,OPENING_MAX_HEARTS,type OpeningRuntime} from './runtime';
 import {loadWorldThreat,sealWorld,resetWorldThreat,tryPurgeWorld,markLionDefeated,markPowerCut,markLocalModelCleared,cloneWorldThreat,type WorldThreat} from '../gameplay/worldThreat';
 import {createThreatRefresh} from './threatRefresh';
-import {OPENING as O,OPENING_WORLD_REVISION} from './spatialLayout';
+import {OPENING as O,OPENING_WORLD_REVISION,dinnerChairPlaces} from './spatialLayout';
 import {B4_OFFICE,officeDebug,officeDoorOffered,openOfficeDoor,resetOffice,setOfficeArmed,setOfficeCue} from './b4Office';
 import {resetLift} from './lift';
 import {createStudentCrowd,crowdVariants} from '../gameplay/studentCrowd';
+import {createCrowdDirector} from './crowdDirector';
+import {createHallRouter,crowdArrivals,dinnerTables,crowdWorld} from './crowdArrivals';
 import {getGraphicsQuality} from '../viewer/graphicsQuality';
 import {createOpeningFleet} from './robots';
 import {createOpeningNPCs} from './npcs';
@@ -95,55 +97,87 @@ export function createOpeningExperience(
  })();
  const crowd=createStudentCrowd(crowdSeats,crowdVariants(crowdSeats.length));scene.add(crowd.root);
  /** Walk route around the west side of Building 4 to the B5 doorway, then into
-  * the lobby where the students leave the stage. It follows the same walkable
-  * gap as `OPENING.routeB5` (x 24), never a building. */
+  * the lobby. It follows the same walkable gap as `OPENING.routeB5` (x 24), never
+  * a building. */
  const crowdPath:{x:number;z:number}[]=[{x:O.crowdStart[0],z:O.crowdStart[2]},{x:40,z:33.5},{x:24,z:33.5},{x:24,z:18},{x:24,z:-8},{x:24,z:-30},{x:24,z:-46},{x:40,z:-48},{x:53,z:-51},{x:58,z:-54.5},{x:58,z:-58},{x:58,z:-62}];
- type CrowdStudent={x:number;y:number;z:number;target:number;speed:number;phase:number;scale:number;yaw:number;done:boolean};
- const crowdY=(x:number,z:number)=>{const h=explorer.world.support(x,z,4);return h===null?.08:h;};
- const crowdStudents:CrowdStudent[]=crowdSeats.map((seat,index)=>{
-  let target=0,best=Infinity;
-  for(let i=0;i<9;i++){const d=Math.hypot(crowdPath[i].x-seat.x,crowdPath[i].z-seat.z);if(d<best){best=d;target=i;}}
-  return{x:seat.x,y:crowdY(seat.x,seat.z),z:seat.z,target,speed:1.05+((index*37)%17)/17*.55,phase:(index*.618)%1,scale:seat.scale,yaw:seat.yaw,done:false};
+ /* The crowd reads the ground through its own tick-free world, never `explorer.world`: that
+  * one is the lift's and the office's clock, and it treats every query as the player's position
+  * (`crowdWorld` in `crowdArrivals.ts`). */
+ const crowdGround=crowdWorld(()=>explorer.world);
+ /** One place per student in the B5 hall, found with the game's own collision (`crowdArrivals.ts`). */
+ const crowdChairs=dinnerChairPlaces();
+ const crowdPlaces=crowdArrivals(crowdSeats.length,crowdGround,dinnerTables(explorer.world),crowdChairs);
+ /* The way in from the lobby point is a route around the tables, not a straight line: the
+  * straight line crossed a dinner table for 41 of the 52 (review D2). One grid and one search
+  * for all 52 places; `createHallRouter` in `crowdArrivals.ts`. */
+ const crowdHallRoute=createHallRouter(crowdGround,crowdChairs);
+ /** Where a student joins the route: the nearest point ON the first legs of it, not the nearest
+  * vertex. Aiming at a vertex funnelled 43 of the 52 seats on to the first waypoint and then
+  * sent them backwards to the second (review D6). The projection keeps each student walking
+  * forwards along the route from the point beside their seat. */
+ const crowdJoin=(seat:{x:number;z:number})=>{
+  let leg=0,t=0,best=Infinity;
+  for(let i=0;i<8;i++){
+   const a=crowdPath[i]!,b=crowdPath[i+1]!;
+   const dx=b.x-a.x,dz=b.z-a.z,len2=dx*dx+dz*dz;
+   const raw=len2>0?((seat.x-a.x)*dx+(seat.z-a.z)*dz)/len2:0;
+   const clamped=Math.max(0,Math.min(1,raw));
+   const px=a.x+dx*clamped,pz=a.z+dz*clamped,d=Math.hypot(px-seat.x,pz-seat.z);
+   if(d<best){best=d;leg=i;t=clamped;}
+  }
+  const a=crowdPath[leg]!,b=crowdPath[leg+1]!;
+  return{point:{x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t},leg};
+ };
+ /* Each student's own route: from the point beside their seat, along the rest of the walk, then
+  * the hall route from the lobby point to their own place. */
+ const crowdRoutes:{x:number;z:number}[][]=crowdSeats.map((seat,index)=>{
+  const {point,leg}=crowdJoin(seat);
+  const [px,pz]=crowdPlaces[index]!;
+  const last=crowdPath[crowdPath.length-1]!;
+  const hall=crowdHallRoute(last.x,last.z,[px,pz]).map(([x,z])=>({x,z}));
+  return[point,...crowdPath.slice(leg+1),...hall];
+ });
+ /* The shipped crowd state machine (`crowdDirector.ts`), the same code `check-opening-crowd-gate.ts`
+ * runs. It owns the stage gate, the walking latch, the per-checkpoint restore and the bake
+ * decision; this file only renders what it says. */
+ const crowdDirector=createCrowdDirector({
+  seats:crowdSeats,
+  routes:crowdRoutes,
+  startTarget:(seat)=>crowdJoin(seat).leg+1,
+  floorAt:(x,z)=>crowdGround.support(x,z,4),
  });
  const crowdMatrix=new T.Matrix4(),crowdQuat=new T.Quaternion(),crowdUp=new T.Vector3(0,1,0),crowdPos=new T.Vector3(),crowdScale=new T.Vector3();
  for(const mesh of crowd.meshes)mesh.frustumCulled=false;
- let crowdBaked=false;
- const crowdVisible=()=>story.stage==='crowd'||story.stage==='to_b5';
+ /**
+  * Put the students where a run at `stage` finds them, without replaying the walk: standing on
+  * the plaza at `crowd`, arrived in the hall at every later stage (`crowdRestoredAt`).
+  */
+ function resetCrowd(stage:string){
+  crowdDirector.reset(stage);
+  updateCrowd(0);
+ }
  function updateCrowd(dt:number){
-  const visible=crowdVisible();
-  crowd.root.visible=visible;
-  if(!visible)return;
-  if(dt>0){
-   let moved=false;
-   for(const s of crowdStudents){
-    if(s.done)continue;
-    const waypoint=crowdPath[s.target];
-    if(!waypoint){s.done=true;moved=true;continue;}
-    const dx=waypoint.x-s.x,dz=waypoint.z-s.z,d=Math.hypot(dx,dz);
-    if(d<.22){s.target++;if(s.target>=crowdPath.length)s.done=true;moved=true;continue;}
-    const step=Math.min(d,s.speed*dt);
-    s.x+=dx/d*step;s.z+=dz/d*step;s.y=crowdY(s.x,s.z);s.phase+=step*.9;
-    const want=Math.atan2(-dx,-dz),delta=Math.atan2(Math.sin(want-s.yaw),Math.cos(want-s.yaw));
-    s.yaw+=delta*Math.min(1,dt*6);
-    moved=true;
-   }
-   if(!moved&&crowdBaked)return;
-  }else if(crowdBaked)return;
-  crowdBaked=true;
+  const {shown,bake}=crowdDirector.frame(story.stage,dt);
+  crowd.root.visible=shown;
+  if(!bake)return;
+  const students=crowdDirector.students;
   for(const mesh of crowd.meshes){
    const indices=mesh.userData.studentIndices as number[]|undefined;
    if(!indices)continue;
-   indices.forEach((studentIndex,instance)=>{
-    const s=crowdStudents[studentIndex];
-    if(!s||s.done){crowdPos.set(0,-200,0);crowdQuat.identity();crowdScale.setScalar(0);}
+   for(let instance=0;instance<indices.length;instance++){
+    // An arrived student is a guest now and stays on screen at their place, standing still
+    // (no walk bob). This used to collapse them to scale 0 at y -200, which deleted the whole
+    // crowd in the room the player was walking into.
+    const s=students[indices[instance]!];
+    if(!s){crowdPos.set(0,-200,0);crowdQuat.identity();crowdScale.setScalar(0);}
     else{
-     crowdPos.set(s.x,s.y+Math.sin(s.phase*6.2)*.022,s.z);
+     crowdPos.set(s.x,s.y+(s.done?0:Math.sin(s.phase*6.2)*.022),s.z);
      crowdQuat.setFromAxisAngle(crowdUp,s.yaw);
      crowdScale.setScalar(s.scale);
     }
     crowdMatrix.compose(crowdPos,crowdQuat,crowdScale);
     mesh.setMatrixAt(instance,crowdMatrix);
-   });
+   }
    mesh.instanceMatrix.needsUpdate=true;
   }
  }
@@ -234,7 +268,7 @@ export function createOpeningExperience(
   worldThreat=loadWorldThreat();
   if(worldThreat.phase==='sealed')runtime={...runtime,curtain_deployed:true};
   else if(worldThreat.phase==='purged')runtime={...runtime,curtain_deployed:false};
-  g.inventory.slots.splice(0,36,...s.slots.map(i=>i?{...i}:null));g.inventory.selectedHotbar=s.selectedHotbar;g.inventory.revision++;g.view=s.view;modal=null;g.closePanel();failed=runtime.hearts<=0;respawnGrace=OPENING_RESPAWN_GRACE_SECONDS;staffTalkStarted=false;staffTalkDone=false;staffTalkClock=0;staffTalkLine=0;staffVoiceStarted=false;acceptVoicePlayed=false;acceptVoiceBusy=false;repeatVoiceBusy=false;npcs.reset();fleet.reset();crowdBaked=false;
+  g.inventory.slots.splice(0,36,...s.slots.map(i=>i?{...i}:null));g.inventory.selectedHotbar=s.selectedHotbar;g.inventory.revision++;g.view=s.view;modal=null;g.closePanel();failed=runtime.hearts<=0;respawnGrace=OPENING_RESPAWN_GRACE_SECONDS;staffTalkStarted=false;staffTalkDone=false;staffTalkClock=0;staffTalkLine=0;staffVoiceStarted=false;acceptVoicePlayed=false;acceptVoiceBusy=false;repeatVoiceBusy=false;npcs.reset();fleet.reset();resetCrowd(story.stage);
   if(validPose(s)&&story.stage!=='incident'&&story.stage!=='to_b4')pose(s.position,s.yaw);else safePose();
   g.pitch=s.pitch;applySettings();
   if(failed)open('caught');
@@ -392,7 +426,7 @@ export function createOpeningExperience(
   g.view='first';modal=null;failed=false;respawnGrace=OPENING_RESPAWN_GRACE_SECONDS;
   staffTalkStarted=false;staffTalkDone=story.stage!=='to_b5';staffTalkClock=0;staffTalkLine=0;staffVoiceStarted=false;acceptVoicePlayed=false;acceptVoiceBusy=false;
   incidentQueued=false;incidentClock=0;disturbancePlayed=false;
-  npcs.reset();fleet.reset();crowdBaked=false;resetLift();resetOffice();
+  npcs.reset();fleet.reset();resetCrowd(story.stage);resetLift();resetOffice();
   // Campaign checkpoints sit on other parts of the campus: settle them on the walkable floor there.
   const at=checkpointPose(id),[px,py,pz]=at.position,floor=checkpointCampaign(id)?explorer.world.support(px,pz,py+.6):null;pose(floor===null?at.position:[px,floor,pz],at.yaw);
   saveMessage='Checkpoint: '+CHECKPOINT_LABELS[id]+'.';
@@ -403,7 +437,7 @@ export function createOpeningExperience(
   try{const raw=localStorage.getItem(OPENING_SAVE_KEY);if(raw)localStorage.setItem(OPENING_SAVE_KEY+'.backup.'+Date.now(),raw);localStorage.setItem(writerKey,writerToken);protectedSave=false;ownsSave=true;}catch{notify('Could not back up the save. Restart cancelled.');return;}
   getCampaign?.()?.reset();
   audio.story?.reset();audio.stopPreviews();
-  worldThreat=resetWorldThreat();story=createOpeningState();runtime=createOpeningRuntime();g.inventory.slots.fill(null);g.inventory.selectedHotbar=0;g.inventory.revision++;g.records.clear();g.last=null;failed=false;incidentClock=0;disturbancePlayed=false;incidentQueued=false;respawnGrace=0;walked=0;subtitleSeconds=0;titleSeconds=0;staffTalkStarted=false;staffTalkDone=false;staffTalkClock=0;staffTalkLine=0;staffVoiceStarted=false;acceptVoicePlayed=false;acceptVoiceBusy=false;repeatVoiceBusy=false;npcs.reset();fleet.reset();crowdBaked=false;resetLift();resetOffice();modal=null;explorer.closePanel();safePose();atmo()?.reset();audio.openingAmbience('day');audio.stopOpeningCues();persist(true);
+  worldThreat=resetWorldThreat();story=createOpeningState();runtime=createOpeningRuntime();g.inventory.slots.fill(null);g.inventory.selectedHotbar=0;g.inventory.revision++;g.records.clear();g.last=null;failed=false;incidentClock=0;disturbancePlayed=false;incidentQueued=false;respawnGrace=0;walked=0;subtitleSeconds=0;titleSeconds=0;staffTalkStarted=false;staffTalkDone=false;staffTalkClock=0;staffTalkLine=0;staffVoiceStarted=false;acceptVoicePlayed=false;acceptVoiceBusy=false;repeatVoiceBusy=false;npcs.reset();fleet.reset();resetCrowd(story.stage);resetLift();resetOffice();modal=null;explorer.closePanel();safePose();atmo()?.reset();audio.openingAmbience('day');audio.stopOpeningCues();persist(true);
  }
  function beginIncident(announce=true){
   if(runtime.curtain_deployed)return;
@@ -620,5 +654,5 @@ export function createOpeningExperience(
   const enter=document.getElementById('enter-game');if(enter)enter.textContent=story.elapsedSeconds>0?'Continue':'Start opening';
   const status=document.getElementById('session-save');if(status)status.textContent=saveMessage;
  }
- return{update,hearts,announceSave,relocate(){fleet.dispose();fleet=createOpeningFleet(explorer.world);scene.add(fleet.root);crowdBaked=false;safePose();},openComputer(page:ComputerPage='tasks'){const r=computer(page);if(!r.ok)notify(r.message);},openSettings(){open('settings');},persist,audio,debug:{office(){return officeDebug();},openInvitation(){open('invitation');},readInvitation(){if(story.stage==='crowd'&&!story.invitation_read){transition('read_invitation');transition('exit_bus');if(modal==='invitation')close();}},openStaff(){open('staff');},acceptErrand(){if(story.stage==='to_b5'){runtime={...runtime,staff_task_received:true};if(transition('accept_errand')){if(modal==='staff')close();playAcceptanceVoices();}}},takeLaptop(){return collectLaptop();},setBusReady(){/* the shuttle is scenery: no door state to set */},exitBus(){if(story.stage==='crowd'&&story.invitation_read)transition('exit_bus');},triggerIncident(){beginIncident();},reachB5(){if(story.stage==='return_b5'){transition('return_b5');runtime={...runtime,curtain_deployed:true};atmo()?.startIncident();audio.openingAmbience('dark');}},readAlert(){action('read_alert');},openComputer(page:ComputerPage='tasks'){return computer(page);},arriveB4(){if(story.stage==='to_b4'){transition('reach_b4');handOff();}},catchNow(){catchPlayer();},recover(){recoverFromCatch(true);},setHearts(n:number){runtime={...runtime,hearts:Math.max(0,Math.min(OPENING_MAX_HEARTS,Math.round(n)))};},state(){return{story:structuredClone(story),runtime:structuredClone(runtime),worldThreat:cloneWorldThreat(worldThreat),modal,staffTalkStarted,staffTalkDone,staffTalkLine,staffVoiceStarted,acceptVoicePlayed,repeatVoiceBusy};},worldThreat(){return cloneWorldThreat(worldThreat);},sealWorld(){return beginIncident();},markLionDefeated(){worldThreat=markLionDefeated();return cloneWorldThreat(worldThreat);},markPowerCut(){worldThreat=markPowerCut();return cloneWorldThreat(worldThreat);},markLocalModelCleared(){worldThreat=markLocalModelCleared();return cloneWorldThreat(worldThreat);},purgeWorld(){const result=tryPurgeWorld();worldThreat=result.threat;if(result.purged){runtime={...runtime,curtain_deployed:false};atmo()?.release();audio.openingAmbience('day');}return result.purged;},resetWorld(){worldThreat=resetWorldThreat();runtime={...runtime,curtain_deployed:false};atmo()?.reset();return cloneWorldThreat(worldThreat);},tickAtmosphere(seconds:number){const sealed=worldThreat.phase==='sealed';for(let i=0;i<Math.max(0,Math.round(seconds*60));i++)atmo()?.update(1/60,{incident:sealed,curtain:sealed,paused:false});}},get settings(){return settings;},get saveStatus(){return{message:saveMessage,storageOkay,ownsSave};},get story(){return story;},get runtime(){return runtime;},dispose(){persist(true);disposed=true;events.abort();explorer.interactions.delete(humanInteract);explorer.computers.delete(humanComputer);g.scenario=null;fleet.dispose();npcs.dispose();crowd.dispose();flipWall.dispose();ui.dispose();voice.dispose();audio.dispose();}};
+ return{update,hearts,announceSave,relocate(){fleet.dispose();fleet=createOpeningFleet(explorer.world);scene.add(fleet.root);updateCrowd(0);safePose();},openComputer(page:ComputerPage='tasks'){const r=computer(page);if(!r.ok)notify(r.message);},openSettings(){open('settings');},persist,audio,debug:{office(){return officeDebug();},crowd(){return{places:crowdPlaces,students:crowdDirector.students.map(s=>({x:s.x,y:s.y,z:s.z,done:s.done,scale:s.scale}))};},openInvitation(){open('invitation');},readInvitation(){if(story.stage==='crowd'&&!story.invitation_read){transition('read_invitation');transition('exit_bus');if(modal==='invitation')close();}},openStaff(){open('staff');},acceptErrand(){if(story.stage==='to_b5'){runtime={...runtime,staff_task_received:true};if(transition('accept_errand')){if(modal==='staff')close();playAcceptanceVoices();}}},takeLaptop(){return collectLaptop();},setBusReady(){/* the shuttle is scenery: no door state to set */},exitBus(){if(story.stage==='crowd'&&story.invitation_read)transition('exit_bus');},triggerIncident(){beginIncident();},reachB5(){if(story.stage==='return_b5'){transition('return_b5');runtime={...runtime,curtain_deployed:true};atmo()?.startIncident();audio.openingAmbience('dark');}},readAlert(){action('read_alert');},openComputer(page:ComputerPage='tasks'){return computer(page);},arriveB4(){if(story.stage==='to_b4'){transition('reach_b4');handOff();}},catchNow(){catchPlayer();},recover(){recoverFromCatch(true);},setHearts(n:number){runtime={...runtime,hearts:Math.max(0,Math.min(OPENING_MAX_HEARTS,Math.round(n)))};},state(){return{story:structuredClone(story),runtime:structuredClone(runtime),worldThreat:cloneWorldThreat(worldThreat),modal,staffTalkStarted,staffTalkDone,staffTalkLine,staffVoiceStarted,acceptVoicePlayed,repeatVoiceBusy};},worldThreat(){return cloneWorldThreat(worldThreat);},sealWorld(){return beginIncident();},markLionDefeated(){worldThreat=markLionDefeated();return cloneWorldThreat(worldThreat);},markPowerCut(){worldThreat=markPowerCut();return cloneWorldThreat(worldThreat);},markLocalModelCleared(){worldThreat=markLocalModelCleared();return cloneWorldThreat(worldThreat);},purgeWorld(){const result=tryPurgeWorld();worldThreat=result.threat;if(result.purged){runtime={...runtime,curtain_deployed:false};atmo()?.release();audio.openingAmbience('day');}return result.purged;},resetWorld(){worldThreat=resetWorldThreat();runtime={...runtime,curtain_deployed:false};atmo()?.reset();return cloneWorldThreat(worldThreat);},tickAtmosphere(seconds:number){const sealed=worldThreat.phase==='sealed';for(let i=0;i<Math.max(0,Math.round(seconds*60));i++)atmo()?.update(1/60,{incident:sealed,curtain:sealed,paused:false});}},get settings(){return settings;},get saveStatus(){return{message:saveMessage,storageOkay,ownsSave};},get story(){return story;},get runtime(){return runtime;},dispose(){persist(true);disposed=true;events.abort();explorer.interactions.delete(humanInteract);explorer.computers.delete(humanComputer);g.scenario=null;fleet.dispose();npcs.dispose();crowd.dispose();flipWall.dispose();ui.dispose();voice.dispose();audio.dispose();}};
 }
