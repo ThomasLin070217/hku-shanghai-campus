@@ -12,7 +12,7 @@ Source: WeChat group “Vibe Coding Hackathon CDS SH”, 2026-11-23 19:33–20:0
 | 4 | Robot dog: “很帅” but check speed/details | P2 | **Superseded.** The quadruped was replaced by the eight Unitree-style humanoids (`a843f99`, owner request 「加个八个人形机器人，宇树」); no quadruped shell remains in the build, and the single red-eye unit is humanoid too (`src/opening/robot.ts:19`). |
 | 5 | Lion fight: story, quest and environment need a pass (`剧情，任务，环境`) | P1 | **Partly resolved.** Mission, combat nodes, interrupt/shutdown rules, hints and shelter logic exist in `src/lionBoss/` and are gated by `npm run check:lion-boss` (mechanics, rig, skills, lawn agent — all PASS). The narrative/environment *quality* pass has no recorded verdict; the owner's playtest is the judge. |
 | 6 | “模型太慢了” — model/asset load is slow | P1 | **Resolved by measurement.** The first click now fetches 10 cues / 4.23 MB instead of 65 / 19.33 MB; `dist` is 30.8 MB, not 48.4 MB; 122/122 audio files decodable; `check:payload` asserts the ceilings. |
-| 7 | Demo video expected | P1 | In progress — teaser v1 exists in `demo/teaser/`; the final video is recorded from the tagged build after the full playtest, in that order. |
+| 7 | Demo video expected | P1 | **Recorded, 2026-11-26.** `demo/hku-barrier-2030-v9.1.0.mp4` — 84.5 s, 31.4 MB, mean −28.6 dB, video and game audio in one take, from the `v9.1.0` build after the 66/66 route gate. It covers the opening cinematic to the accepted invitation, not the whole route. |
 
 **Tag rule:** P0/P1 must be fixed or explicitly listed here before the release tag. P2 may ship with a note.
 
@@ -89,6 +89,15 @@ The owner reported that the pause card could not reach the chapter select — �
 **Root cause, measured on the review build:** `.shell-chapters` and `.fullscreen-toggle` sit at `z-index: 11`; `#pause-panel { position: absolute; inset: 0; z-index: 12 }` covers both for as long as the panel is in the DOM, and while the game runs the pointer is locked — so the floating “Chapters” link has never been clickable. The offset was not the problem; the stacking order was.
 
 **Fix** (`src/main.ts`, `src/opening/chapterMenu.ts`, `src/style.css`, `src/opening/gameShell.ts`): the pause card now holds a Chapter group — Replay intro, Return to checkpoint, and a collapsed chapter select listing all eight checkpoints in four chapter groups — and a Settings group (music, ambient and mouse sensitivity with live values, plus Full screen and the full “Settings & save” dialog). The floating link is hidden while the card is open by a CSS `:has()` rule, so it cannot look clickable underneath the overlay, and the card is the single scroll container (a nested list scroller had put the last chapter rows and the Settings section below the card's edge on a phone). The taller card also reaches over the Add to Home Screen pill on a 390 px phone, where its Dismiss button used to sit just above the card; the pill is now hidden while the card is open and appears as soon as play starts, so nothing on the menu screen is a dead target (`check:fullscreen` pins both states). `scripts/check-pause-menu.py` (headless; `npm run check:pause-menu`) drives the real card: 48 px replay target, reachability judged by `elementFromPoint` (Chrome keeps layout boxes inside a closed `<details>`, so `getClientRects()` is not a visibility test), a real click on the B4 checkpoint that lands on `?experience=opening&checkpoint=b6`, slider → dialog value agreement, and the 390×844 touch layout.
+
+## Found while making the slides, 2026-11-26
+
+Both are cosmetic or diagnostic; neither blocks the build, and neither was changed after `v9.1.0` was tagged, so the deck, the film and the tag stay the same build.
+
+| Finding | Detail | Severity |
+|---|---|---|
+| The presentation MacBook renders as brown wood | `B4_office_macbook_base` and `_lid` are built with `m.officeDoor` (`std('B4 5F office door', 0x6b4a2f)`), so the laptop a player is told to collect is the colour of the office door it sits behind. The scene graph confirms it: mesh `B4_office_macbook__B4 5F office door`, 0.32 × 0.209 × 0.239 m at (58.70, 19.68, 12.40), colour `#6b4a2f`. The HUD names the MacBook, so the errand is still legible; a silver `macBody` material is the fix, and it belongs in the next patch rather than in a build that is already tagged and filmed. | P2 |
+| The build probes `http://127.0.0.1:8790/health` at boot | The in-game assistant talks to the loopback LLM bridge and nothing else. With no bridge running — the normal demo case — that one request fails (`net::ERR_FAILED`) and the assistant falls back to its built-in knowledge base; the opening plays unaffected. It is a loopback call, not a third-party dependency: a full opening run made 82 requests and every host was `127.0.0.1`. | P2 |
 
 ## Security
 
