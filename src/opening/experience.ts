@@ -502,12 +502,6 @@ export function createOpeningExperience(
  }
  function tick(dt:number){
   story.elapsedSeconds+=dt;
-  // A replayed intro is the opening, not the stage the player left: put the crowd back on
-  // the plaza for the cinematic and restore the stage's crowd when it ends. The same flag
-  // forces the prologue score below, so "Replay intro" no longer runs under dinner music
-  // with the dinner guests standing in the dark (owner, 2026-11-25).
-  const prologueActive=document.body.classList.contains('prologue-active');
-  if(prologueActive!==wasPrologueActive){wasPrologueActive=prologueActive;resetCrowd(prologueActive?'crowd':story.stage);}
   // Task E (E-F3): the abduction is armed by the errand, never by walking in. `accept_errand`
   // is the only event that leaves `to_b5`, so every later stage means the hand-off happened; a
   // checkpoint start at `b6` lands directly on `to_b6` and is armed on its first tick.
@@ -596,9 +590,16 @@ export function createOpeningExperience(
   if(!g.paused){if(titleSeconds>0)titleSeconds=Math.max(0,titleSeconds-dt);if(subtitleSeconds>0)subtitleSeconds=Math.max(0,subtitleSeconds-dt);}
 
   const active=explorer.enabled;
-  /** The replayed intro owns the sky and the score while it runs (`tick` restores the crowd
-   * and the robots on entry and exit). */
+  /** The replayed intro owns the sky and the score while it runs (the block below restores
+   * the crowd on entry and exit, and the fleet is hidden further down). */
   const prologueActive=document.body.classList.contains('prologue-active');
+  // A replayed intro is the opening, not the stage the player left: put the crowd back on
+  // the plaza for the cinematic and restore the stage's crowd when it ends. This lives here,
+  // not in `tick`: the prologue pauses the game for its whole run, and `step()` returns
+  // before the scenario tick while paused — so a tick-owned reset never fired (owner,
+  // 2026-11-25: the dinner guests were still in the hall during the replay). `update()`
+  // runs on paused frames too. The same flag forces the prologue score below.
+  if(prologueActive!==wasPrologueActive){wasPrologueActive=prologueActive;resetCrowd(prologueActive?'crowd':story.stage);}
   /* A few steps into the walk, the phone in the player's pocket buzzes. The
    * overlay is the only gate between the prologue and the dinner: movement is
    * paused by the modal, and Yes releases it from the same click. */
