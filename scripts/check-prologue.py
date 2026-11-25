@@ -125,8 +125,17 @@ def ready_or_fatal(page):
     try:
         ready(page)
     except PlaywrightTimeoutError:
-        fatal('__CAMPUS.prologue never appeared. The build must be review mode '
-              '(npm run build:review) and the preview must use --mode review.')
+        # The local review server has dropped the app chunk under load before
+        # (scripts/boot_retry.py lists the measurements). Reload once before
+        # declaring the build broken; a real failure takes the same timeout again.
+        print('  note: no prologue after 240 s; reloading once in case the local '
+              'server dropped a module load', flush=True)
+        try:
+            page.reload(wait_until='load', timeout=240000)
+            ready(page)
+        except PlaywrightTimeoutError:
+            fatal('__CAMPUS.prologue never appeared. The build must be review mode '
+                  '(npm run build:review) and the preview must use --mode review.')
 
 
 def frames(page, n=2):

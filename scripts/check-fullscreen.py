@@ -29,6 +29,8 @@ import sys
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from playwright.sync_api import sync_playwright
 
+from boot_retry import boot_with_retry
+
 ORIGIN = os.environ.get('CAMPUS_URL', 'http://127.0.0.1:5252/')
 CHROME = os.environ.get('CHROME_PATH')
 HEADLESS = os.environ.get('HEADLESS', '1') != '0'
@@ -82,13 +84,13 @@ def until(page, js, timeout=60):
         return False
 
 
+BOOT_STATE = """() => window.__CAMPUS && window.__CAMPUS.explorer && window.__CAMPUS.touchControls
+             && window.__CAMPUS.ready && document.querySelector('.shell-chapters')"""
+
+
 def boot(page):
-    page.goto(URL, wait_until='domcontentloaded')
-    page.wait_for_function(
-        """() => window.__CAMPUS && window.__CAMPUS.explorer && window.__CAMPUS.touchControls
-             && window.__CAMPUS.ready && document.querySelector('.shell-chapters')""",
-        timeout=240000,  # SwiftShader boot under load has passed 120 s before.
-    )
+    # One retry if the local server drops the app chunk; see scripts/boot_retry.py.
+    boot_with_retry(page, URL, BOOT_STATE, label='boot')
 
 
 def enter(page):

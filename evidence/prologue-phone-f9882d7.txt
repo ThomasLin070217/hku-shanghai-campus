@@ -1,0 +1,5 @@
+sha: f9882d7
+url: http://127.0.0.1:5294/?experience=opening&intro=1
+viewport: 390x844
+renderer: ANGLE (Apple, ANGLE Metal Renderer: Apple M4, Unspecified Version)
+captured_utc: 2026-11-25T17:35:41Z

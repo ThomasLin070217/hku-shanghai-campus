@@ -32,6 +32,8 @@ import time
 
 from playwright.sync_api import sync_playwright
 
+from boot_retry import boot_with_retry
+
 ORIGIN = os.environ.get('CAMPUS_URL', 'http://127.0.0.1:5254/')
 SHOTS = os.environ.get('CAMPUS_SHOTS', '/tmp/one-world/t5')
 CHROME = os.environ.get('CHROME_PATH') or (
@@ -163,8 +165,13 @@ def shot(page, name):
 
 
 def open_checkpoint(page, checkpoint):
-    page.goto(ORIGIN + '?experience=opening&checkpoint=' + checkpoint, wait_until='load')
-    page.wait_for_function('() => window.__CAMPUS && window.__CAMPUS.campaign && window.__CAMPUS.openingDebug', timeout=240000)
+    # One retry if the local server drops the app chunk; see scripts/boot_retry.py
+    # (measured 2026-11-26: the b4 checkpoint waited the full 240 s on a page that
+    # never received `assets/main-<hash>.js`).
+    boot_with_retry(
+        page, ORIGIN + '?experience=opening&checkpoint=' + checkpoint,
+        '() => window.__CAMPUS && window.__CAMPUS.campaign && window.__CAMPUS.openingDebug',
+        wait_until='load', label=checkpoint)
     page.evaluate('() => { try { window.__CAMPUS.explorer.enterCompat(); } catch (e) {} }')
     page.wait_for_timeout(1200)
 

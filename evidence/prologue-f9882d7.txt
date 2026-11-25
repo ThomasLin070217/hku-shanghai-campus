@@ -1,0 +1,6 @@
+sha: f9882d7
+url: http://127.0.0.1:5294/?experience=opening&intro=1
+renderer: ANGLE (Apple, ANGLE Metal Renderer: Apple M4, Unspecified Version)
+clock_ms: 468.2999999523163
+subtitle_ms: -233.39999997615814
+captured_utc: 2026-11-25T17:35:35Z

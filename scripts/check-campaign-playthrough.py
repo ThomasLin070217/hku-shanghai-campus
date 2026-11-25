@@ -23,6 +23,8 @@ import time
 
 from playwright.sync_api import sync_playwright
 
+from boot_retry import boot_with_retry
+
 ORIGIN = os.environ.get('CAMPUS_URL', 'http://127.0.0.1:5255/')
 CHROME = os.environ.get('CHROME_PATH')
 SHOTS = os.environ.get('SHOTS', '/tmp/one-world/t6/')
@@ -112,8 +114,11 @@ def focus_log(page, n=8):
 
 
 def boot(page, query):
-    page.goto(ORIGIN + query, wait_until='domcontentloaded', timeout=240000)
-    page.wait_for_function('() => window.__CAMPUS && window.__CAMPUS.campaign && window.__CAMPUS.openingDebug && window.__CAMPUS.explorer', timeout=240000)
+    # One retry if the local server drops the app chunk; see scripts/boot_retry.py.
+    boot_with_retry(
+        page, ORIGIN + query,
+        '() => window.__CAMPUS && window.__CAMPUS.campaign && window.__CAMPUS.openingDebug && window.__CAMPUS.explorer',
+        wait_until='domcontentloaded', label='boot')
     page.keyboard.press('Shift')  # claimSave needs a trusted input
     page.evaluate('() => { window.__doc = 1; }')
     page.evaluate(HELPERS)
