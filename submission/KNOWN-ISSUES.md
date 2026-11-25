@@ -113,11 +113,11 @@ The owner reported that the pause card could not reach the chapter select — �
 
 ## Found while making the slides, 2026-11-26
 
-Both are cosmetic or diagnostic; neither blocks the build, and neither was changed after `v9.1.0` was tagged, so the deck, the film and the tag stay the same build.
+Both were found while the deck was built and neither blocks the build. Neither was changed in the `v9.1.0` build, so the deck and the film still show that build; the MacBook material is fixed in `9.2.0`.
 
 | Finding | Detail | Severity |
 |---|---|---|
-| The presentation MacBook renders as brown wood | `B4_office_macbook_base` and `_lid` are built with `m.officeDoor` (`std('B4 5F office door', 0x6b4a2f)`), so the laptop a player is told to collect is the colour of the office door it sits behind. The scene graph confirms it: mesh `B4_office_macbook__B4 5F office door`, 0.32 × 0.209 × 0.239 m at (58.70, 19.68, 12.40), colour `#6b4a2f`. The HUD names the MacBook, so the errand is still legible; a silver `macBody` material is the fix, and it belongs in the next patch rather than in a build that is already tagged and filmed. | P2 |
+| The presentation MacBook renders as brown wood | **Fixed 2026-11-26.** `B4_office_macbook_base` and `_lid` were built with `m.officeDoor` (`std('B4 5F office door', 0x6b4a2f)`), so the laptop read as a second piece of the door it sits behind. Both parts now use `m.macBody`, `std('B4 office MacBook aluminium', 0xb9bcc0)`; `check-campaign-b4` stays green. Was P2. | P2 |
 | The build probes `http://127.0.0.1:8790/health` at boot | The in-game assistant talks to the loopback LLM bridge and nothing else. With no bridge running — the normal demo case — that one request fails (`net::ERR_FAILED`) and the assistant falls back to its built-in knowledge base; the opening plays unaffected. It is a loopback call, not a third-party dependency: a full opening run made 82 requests and every host was `127.0.0.1`. | P2 |
 
 ## Bridge console errors, fixed in 9.1.1, 2026-11-26

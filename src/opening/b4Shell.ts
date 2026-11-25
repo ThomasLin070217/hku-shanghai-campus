@@ -121,7 +121,7 @@ interface OfficeMats{
  deskWood:T.Material;chairFabric:T.Material;paper:T.Material;coat:T.Material;warmLamp:T.Material;
  window:T.Material;book:T.Material;bookAlt:T.Material;screenFrame:T.Material;glass:T.Material;
  callPlate:T.Material;callLamp:T.Material;landingFloor:T.Material;landingWall:T.Material;
- landingCeiling:T.Material;officeDoor:T.Material;officePlate:T.Material;officeText:T.Material;
+ landingCeiling:T.Material;officeDoor:T.Material;officePlate:T.Material;officeText:T.Material;macBody:T.Material;
  /** E.8's dressing: the trolley's steel, the evacuation notice, the dying corridor panel. */
  trolleyFrame:T.Material;trolleyDeck:T.Material;trolleyLinen:T.Material;evacPlate:T.Material;evacText:T.Material;flicker:T.Material;
 }
@@ -168,8 +168,8 @@ function buildOffice(m:OfficeMats){
  box(root,'B4_office_paper',.21,.004,.30,dx-.06,top+.009,dz-.58,m.paper);
  box(root,'B4_office_paper',.21,.004,.30,dx+.04,top+.009,dz+.62,m.paper);
  const laptop=group(root,'B4_office_macbook');laptop.position.set(O.laptop.x,O.laptop.y,O.laptop.z);
- box(laptop,'B4_office_macbook_base',.32,.016,.22,0,.008,0,m.officeDoor);
- const lid=box(laptop,'B4_office_macbook_lid',.32,.21,.012,0,.105,-.104,m.officeDoor);lid.rotation.x=.18;
+ box(laptop,'B4_office_macbook_base',.32,.016,.22,0,.008,0,m.macBody);
+ const lid=box(laptop,'B4_office_macbook_lid',.32,.21,.012,0,.105,-.104,m.macBody);lid.rotation.x=.18;
  // A chair turned away from the desk, and a coat over its back.
  const C=O.chair,chair=group(root,'B4_office_chair');
  chair.position.set(C.x,F,C.z);chair.rotation.y=.62;
@@ -317,6 +317,9 @@ export function buildB4Shell(){
      must carry zero lights (`check-campaign-b4` asserts it), so "warm practical lighting" is
      a warm-emitting shade and ceiling panel, not a lit room. */
   deskWood:std('B4 office desk timber',0x6b4a2f),chairFabric:std('B4 office chair fabric',0x2f3b44),
+  /* The erased MacBook the errand is named after: silver aluminium, so it does not read as a
+     second piece of the office door it sits behind. */
+  macBody:std('B4 office MacBook aluminium',0xb9bcc0),
   paper:std('B4 office paper',0xe8e3d6),coat:std('B4 office coat',0x3a3f45),
   warmLamp:std('B4 office warm lamp',0xffe6bd,0xffca82,1.15),window:std('B4 office window light',0xbcd6e4,0x9dc6dd,.30),
   book:std('B4 office book',0x7d3b34),bookAlt:std('B4 office book spine',0x3d5a6b),
