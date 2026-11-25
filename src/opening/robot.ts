@@ -15,10 +15,12 @@
  * units farther than `ROBOT.farDistance` simulate at `ROBOT.farHz` while movement still
  * goes through the same physics step, so nothing teleports or clips.
  *
- * Look (fidelity round, task 3): a low-poly quadruped in the Unitree Go2 manner with four
- * articulated legs on shared thigh/shank/foot buffers. The trot is visual only: it advances
- * from real displacement and yaw change on simulated ticks, so render reads (dt=0), pauses
- * and standby never move a leg, and no detection, movement or timing value depends on it.
+ * Look (owner, 2026-11-25: "加个八个人形机器人，宇树"): a low-poly humanoid in the
+ * Unitree G1/H1 manner — sensor head, compact torso, two articulated arms and two legs on
+ * shared limb buffers. The walk is visual only: it advances from real displacement and yaw
+ * change on simulated ticks, so render reads (dt=0), pauses and standby never move a limb,
+ * and no detection, movement or timing value depends on it. The detection eye and the
+ * capture radius are unchanged; the shell got taller, the rules did not.
  *
  * Caller contract (already written by the integrator, see src/opening/experience.ts):
  *   const robot = createOpeningRobot(explorer.world);
@@ -238,12 +240,18 @@ export interface OpeningRobotAssets{
  readonly bandGeometry:T.BufferGeometry;
  readonly eyeGeometry:T.BufferGeometry;
  readonly beaconGeometry:T.BufferGeometry;
- /** Thigh with its hip and knee hubs, hanging 0.26 m down from the hip pivot. */
+ /** Thigh with its hip and knee hubs, hanging 0.41 m down from the hip pivot. */
  readonly legUpperGeometry:T.BufferGeometry;
- /** Shank, hanging 0.26 m down from the knee pivot. */
+ /** Shank, hanging 0.41 m down from the knee pivot. */
  readonly legLowerGeometry:T.BufferGeometry;
- /** Round 0.07 m foot at the end of the shank. */
+ /** Flat foot at the end of the shank. */
  readonly footGeometry:T.BufferGeometry;
+ /** Upper arm with shoulder and elbow hubs, hanging 0.27 m down from the shoulder pivot. */
+ readonly armUpperGeometry:T.BufferGeometry;
+ /** Forearm, hanging 0.25 m down from the elbow pivot. */
+ readonly armLowerGeometry:T.BufferGeometry;
+ /** Hand at the end of the forearm. */
+ readonly handGeometry:T.BufferGeometry;
  readonly bodyMaterial:T.MeshStandardMaterial;
  readonly bandMaterial:T.MeshStandardMaterial;
  /** Dark graphite shared by every leg part of every unit. */
@@ -251,21 +259,26 @@ export interface OpeningRobotAssets{
  dispose():void;
 }
 
-/** Quadruped rig dimensions in metres, rig space: +y up, the robot faces -z, left is -x.
- *  Go2-style proportions from docs/plans/2026-11-22-fidelity-round.md (Task 3, 3A). */
+/** Humanoid rig dimensions in metres, rig space: +y up, the robot faces -z, left is -x.
+ *  Unitree G1/H1 manner, scaled for the campus: about 1.67 m tall, so eight of them read as
+ *  people-sized guards rather than toys. Detection still uses ROBOT.eyeHeight (1.05 m), so
+ *  the taller shell does not change what the robot can see. */
 const RIG={
- /** Hip pivots sit at x ±legX, z ±legZ, just outside the 0.46 m chassis. */
- legX:.26,legZ:.26,hipY:.5,
+ /** Hip pivots sit at x ±hipX, y hipY, z 0. */
+ hipX:.115,hipY:.862,
  /** Thigh and shank length. */
- segment:.26,
- footRadius:.035,
- /** Sensor-head turret pivot on the front of the deck. */
- turret:[0,.75,-.2] as const,
+ segment:.41,
+ /** Ankle height in the standing pose; the sole then rests on y 0. */
+ ankle:.05,
+ /** Shoulder pivots and arm segments. */
+ shoulderX:.235,shoulderY:1.35,arm:.27,forearm:.25,
+ /** Sensor-head pivot on top of the neck. */
+ turret:[0,1.44,0] as const,
 };
-/** Standing pose: thigh slants back and down, shank forward and down, so each foot rests
- *  under its hip with the bottom of the foot exactly on the ground (rig origin, y 0). */
-const STAND_ANGLE=Math.acos((RIG.hipY-RIG.footRadius)/(2*RIG.segment));
-const STAND_THIGH=-STAND_ANGLE,STAND_KNEE=2*STAND_ANGLE;
+/** Standing pose: thigh forward and shank back so each ankle sits under its hip with the
+ *  sole exactly on the ground (rig origin, y 0). */
+const STAND_ANGLE=Math.acos((RIG.hipY-RIG.ankle)/(2*RIG.segment));
+const STAND_HIP=STAND_ANGLE,STAND_KNEE=-2*STAND_ANGLE;
 
 const SHELL=0xe6eaed,SHELL_LIGHT=0xc9d0d5,GRAPHITE=0x2a2f34,SENSOR=0x14181b,HUB=0x4a535a;
 
@@ -276,25 +289,31 @@ const SHELL=0xe6eaed,SHELL_LIGHT=0xc9d0d5,GRAPHITE=0x2a2f34,SENSOR=0x14181b,HUB=
  */
 const GAIT={
  /** Thigh pitch either side of the standing pose, radians. */
- thighSwing:.42,
- /** Extra knee bend while a foot swings forward, radians (0 in stance). */
- kneeLift:.55,
+ thighSwing:.34,
+ /** Extra knee bend while a leg swings forward, radians (0 in stance). */
+ kneeLift:.5,
  /** Hip roll either side of the standing pose, radians. */
- hipRoll:.07,
- /** Rig bob amplitude, metres: 0.02·sin(2·phase), twice per gait cycle. */
- bob:.02,
+ hipRoll:.025,
+ /** Arm swing either side of rest, opposite the same-side leg, radians. */
+ armSwing:.42,
+ /** Constant elbow bend so the arms never lock straight, radians. */
+ elbowBend:.16,
+ /** Extra elbow bend when the arm swings forward, radians. */
+ elbowSwing:.12,
+ /** Rig bob amplitude, metres: 0.018·sin(2·phase), twice per gait cycle. */
+ bob:.018,
  /** Stride credited per radian of body yaw, metres, so turning in place still steps. */
  turnStride:.32,
- /** Ground covered by one full gait cycle, metres. Matches the stance sweep of the
-  *  legs above (two 0.26 m segments, ±0.42 rad), so planted feet barely skate. */
- cycle:.76,
- /** Pace at which the trot reaches full amplitude, m/s. */
+ /** Ground covered by one full gait cycle, metres. Two 0.82 m legs swinging ±0.34 rad
+  *  step about 0.55 m each, so a cycle is two steps; planted feet barely skate. */
+ cycle:1.05,
+ /** Pace at which the walk reaches full amplitude, m/s. */
  fullPace:.45,
- /** Blend rate towards the walking or standing pose, 1/s; idle legs settle inside a second. */
+ /** Blend rate towards the walking or standing pose, 1/s; idle limbs settle inside a second. */
  blendRate:6,
  /** A displacement larger than this in one tick (reset, relocation) is never walked, metres. */
  maxStep:.5,
- /** Phase of the FL/RR pair against the bob, so the body rides highest at mid-stance. */
+ /** Phase of the left leg against the bob, so the body rides highest at mid-stance. */
  phaseOffset:Math.PI*.75,
  /** Speed smoothing for the acceleration lean, 1/s. */
  speedRate:8,
@@ -374,68 +393,85 @@ const mergeColored=(parts:T.BufferGeometry[]):T.BufferGeometry=>{
  * change at runtime and must not leak between units.
  */
 export function createOpeningRobotAssets():OpeningRobotAssets{
- // Low-poly quadruped in the Unitree Go2 manner: white upper shell over a graphite belly,
- // dark sensor face, hip fenders and a top LiDAR puck. Generic shapes only: no logo, no text.
- const sx=RIG.legX,sz=RIG.legZ;
+ // Low-poly humanoid in the Unitree G1/H1 manner: white shells over graphite joints, a
+ // dark visor plate for the face and a green status strip. Generic shapes only: no logo,
+ // no text.
  const bodyGeometry=mergeColored([
-  // Chassis 0.46 (x) x 0.30 (y) x 0.72 (z) centred at y 0.62: belly, shell, narrower deck.
-  coloredBox(.42,.12,.66,GRAPHITE,0,.53,0),          // belly
-  coloredBox(.46,.15,.72,SHELL,0,.665,0),            // upper shell
-  coloredBox(.38,.03,.62,SHELL,0,.755,0),            // deck, steps in to round the top edge
-  coloredBox(.465,.035,.4,GRAPHITE,0,.62,.02),       // side seam between the two tones
-  // Front: short snout carrying the dark sensor face, chin sensor below it.
-  coloredBox(.4,.12,.05,SHELL,0,.66,-.385),
-  coloredBox(.3,.07,.012,SENSOR,0,.655,-.416),
-  coloredBox(.12,.05,.06,GRAPHITE,0,.565,-.37),
-  // Rear battery cap, which carries the status bar (robot-band).
-  coloredBox(.4,.1,.03,GRAPHITE,0,.63,.374),
-  // Shoulder plates over the four hips, and the hip housings the legs turn on.
-  ...[[-1,-1],[1,-1],[-1,1],[1,1]].flatMap(([x,z])=>[
-   coloredBox(.09,.05,.2,SHELL_LIGHT,x*.25,.585,z*sz),
-   coloredCylinder(.05,.05,8,GRAPHITE,x*(sx-.045),RIG.hipY,z*sz,'x'),
-  ]),
-  // Top LiDAR puck (r 0.12) with a dark window ring.
-  coloredCylinder(.12,.05,12,GRAPHITE,0,.795,.12),
-  coloredCylinder(.123,.02,12,SENSOR,0,.79,.12),
+  // Pelvis, waist seam and chest. The waist is deliberately narrow so the torso reads as a
+  // machine rather than an armoured person.
+  coloredBox(.27,.12,.19,GRAPHITE,0,.885,0),        // pelvis
+  coloredBox(.31,.09,.21,SHELL,0,.98,0),             // belt
+  coloredBox(.26,.045,.19,SENSOR,0,1.045,0),         // waist seam
+  coloredBox(.35,.24,.225,SHELL,0,1.185,0),          // chest
+  coloredBox(.24,.12,.015,SHELL_LIGHT,0,1.205,-.118),// chest front plate
+  coloredBox(.30,.05,.02,GRAPHITE,0,1.075,-.10),     // lower chest vent
+  // Backpack and shoulder caps; the arms hang from the shoulder pivots beside them.
+  coloredBox(.24,.19,.055,GRAPHITE,0,1.19,.13),
+  coloredBox(.09,.08,.12,SHELL_LIGHT,-.215,1.32,0),
+  coloredBox(.09,.08,.12,SHELL_LIGHT,.215,1.32,0),
+  coloredCylinder(.055,.05,10,GRAPHITE,0,1.395,0),   // neck ring
  ]);
- // Sensor head, built around the turret pivot so it can yaw in place on the deck.
+ // Sensor head, built around the turret pivot so it can yaw and pitch in place.
  const headGeometry=mergeColored([
-  coloredCylinder(.06,.04,10,GRAPHITE,0,.01,0),      // neck ring
-  coloredBox(.22,.07,.2,SHELL,0,.065,-.01),          // pod
-  coloredBox(.18,.015,.16,SHELL_LIGHT,0,.1075,0),    // pod cap
-  coloredBox(.2,.045,.012,SENSOR,0,.065,-.116),      // visor behind the eye bar
+  coloredCylinder(.05,.06,10,GRAPHITE,0,.02,0),      // neck
+  coloredBox(.19,.16,.20,SHELL,0,.12,0),             // skull
+  coloredBox(.17,.10,.015,SENSOR,0,.125,-.103),      // visor plate
+  coloredBox(.17,.03,.18,SHELL_LIGHT,0,.215,0),      // crown
+  coloredCylinder(.035,.03,8,GRAPHITE,-.105,.13,0,'x'), // ear pods
+  coloredCylinder(.035,.03,8,GRAPHITE,.105,.13,0,'x'),
  ]);
- // Rear status bar plus a thin running strip down each flank, all in the band material.
+ // Chest status strip, in the band material.
  const bandGeometry=mergeColored([
-  coloredBox(.22,.025,.012,0xffffff,0,.66,.395),
-  coloredBox(.006,.02,.3,0xffffff,-.2335,.7,-.05),
-  coloredBox(.006,.02,.3,0xffffff,.2335,.7,-.05),
+  coloredBox(.25,.022,.012,0xffffff,0,1.15,-.12),
+  coloredBox(.006,.02,.14,0xffffff,-.172,1.24,-.02),
+  coloredBox(.006,.02,.14,0xffffff,.172,1.24,-.02),
  ]);
  bandGeometry.deleteAttribute('color');
- const eyeGeometry=coloredBox(.16,.022,.01,0xffffff,0,.068,-.124);
+ const eyeGeometry=coloredBox(.14,.02,.01,0xffffff,0,.13,-.112);
  eyeGeometry.deleteAttribute('color');
- const beaconGeometry=coloredBox(.04,.022,.04,0xffffff,0,.126,.03);
+ const beaconGeometry=coloredBox(.05,.024,.04,0xffffff,0,.245,.02);
  beaconGeometry.deleteAttribute('color');
- // Legs: one thigh, one shank and one foot buffer drawn by all four legs of every unit.
+ // Limbs: one thigh, one shank, one foot, one upper arm, one forearm and one hand buffer,
+ // shared by every unit and by both sides.
  const legUpperGeometry=mergeColored([
-  coloredCylinder(.05,.07,8,HUB,0,0,0,'x'),           // hip hub
-  coloredBox(.065,.14,.1,GRAPHITE,0,-.07,0),
-  coloredBox(.055,.13,.07,GRAPHITE,0,-.195,0),
-  coloredCylinder(.035,.06,8,HUB,0,-RIG.segment,0,'x'), // knee hub
+  coloredCylinder(.055,.10,8,HUB,0,0,0,'x'),         // hip hub
+  coloredBox(.095,.20,.11,SHELL,0,-.11,0),
+  coloredBox(.08,.16,.09,GRAPHITE,0,-.29,0),
+  coloredCylinder(.048,.07,8,HUB,0,-RIG.segment,0,'x'), // knee hub
  ]);
  const legLowerGeometry=mergeColored([
-  coloredBox(.042,.24,.046,GRAPHITE,0,-.12,0),
+  coloredBox(.075,.19,.085,SHELL,0,-.105,0),
+  coloredBox(.06,.17,.07,GRAPHITE,0,-.28,0),
+  coloredCylinder(.038,.06,8,HUB,0,-RIG.segment,0,'x'), // ankle hub
  ]);
- const footGeometry=mergeColored([paint(new T.SphereGeometry(RIG.footRadius,6,4),SENSOR)]);
+ const footGeometry=mergeColored([
+  coloredBox(.11,.05,.235,SHELL_LIGHT,0,-.025,-.05), // flat sole, toe forward
+  coloredBox(.105,.025,.09,SENSOR,0,-.0375,-.105),   // toe cap, same sole line
+ ]);
+ const armUpperGeometry=mergeColored([
+  coloredCylinder(.048,.085,8,HUB,0,0,0,'x'),        // shoulder hub
+  coloredBox(.08,.17,.085,SHELL,0,-.105,0),
+  coloredBox(.065,.10,.07,GRAPHITE,0,-.22,0),
+  coloredCylinder(.04,.06,8,HUB,0,-RIG.arm,0,'x'),   // elbow hub
+ ]);
+ const armLowerGeometry=mergeColored([
+  coloredBox(.065,.17,.07,SHELL,0,-.095,0),
+  coloredBox(.055,.09,.06,GRAPHITE,0,-.20,0),
+ ]);
+ const handGeometry=mergeColored([
+  coloredBox(.07,.10,.055,GRAPHITE,0,-.03,-.01),
+ ]);
  const bodyMaterial=new T.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:.5,metalness:.18});
  const bandMaterial=new T.MeshStandardMaterial({color:0x1c8f65,roughness:.5,metalness:.18,emissive:0x0c4f38,emissiveIntensity:.55});
  const legMaterial=new T.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:.58,metalness:.32});
  return{
   bodyGeometry,headGeometry,bandGeometry,eyeGeometry,beaconGeometry,legUpperGeometry,legLowerGeometry,footGeometry,
+  armUpperGeometry,armLowerGeometry,handGeometry,
   bodyMaterial,bandMaterial,legMaterial,
   dispose(){
    bodyGeometry.dispose();headGeometry.dispose();bandGeometry.dispose();eyeGeometry.dispose();beaconGeometry.dispose();
    legUpperGeometry.dispose();legLowerGeometry.dispose();footGeometry.dispose();
+   armUpperGeometry.dispose();armLowerGeometry.dispose();handGeometry.dispose();
    bodyMaterial.dispose();bandMaterial.dispose();legMaterial.dispose();
   },
  };
@@ -689,15 +725,15 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
  mount(assets.eyeGeometry,eyeMat,'opening-robot-eye',turret,false);
  mount(assets.beaconGeometry,lampMat,'robot-beacon',turret,false);
  const shadowMeshes=[bodyMesh,headMesh];
- /** Four articulated legs: hip group (pitch + roll) -> thigh, knee pivot group -> shank and foot. */
- const LEG_SOURCE={sourceFile:'src/opening/robot.ts'};
- const legs=([['fl',-1,-1],['fr',1,-1],['rl',-1,1],['rr',1,1]] as const).map(([key,side,end])=>{
-  const hip=new T.Group();hip.name='robot-leg-'+key;hip.userData={...LEG_SOURCE,authorKey:'robot-leg-'+key};
+ const LIMB_SOURCE={sourceFile:'src/opening/robot.ts'};
+ /** Two articulated legs: hip group (pitch + roll) -> thigh, knee pivot group -> shank and foot. */
+ const legs=([['ll',-1],['rl',1]] as const).map(([key,side])=>{
+  const hip=new T.Group();hip.name='robot-leg-'+key;hip.userData={...LIMB_SOURCE,authorKey:'robot-leg-'+key};
   // Roll about the body axis first, then pitch: the hip abducts, then the thigh swings.
   hip.rotation.order='ZYX';
-  hip.position.set(side*RIG.legX,RIG.hipY,end*RIG.legZ);
+  hip.position.set(side*RIG.hipX,RIG.hipY,0);
   rig.add(hip);
-  const knee=new T.Group();knee.name='robot-knee-'+key;knee.userData={...LEG_SOURCE,authorKey:'robot-knee-'+key};
+  const knee=new T.Group();knee.name='robot-knee-'+key;knee.userData={...LIMB_SOURCE,authorKey:'robot-knee-'+key};
   knee.position.set(0,-RIG.segment,0);
   hip.add(knee);
   const upper=mount(assets.legUpperGeometry,assets.legMaterial,'robot-leg-upper',hip,true);
@@ -705,12 +741,33 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
   const foot=mount(assets.footGeometry,assets.legMaterial,'robot-foot',knee,false);
   foot.position.set(0,-RIG.segment,0);
   for(const [mesh,part] of [[upper,'upper'],[lower,'lower'],[foot,'foot']] as const){
-   mesh.receiveShadow=false;mesh.userData={...LEG_SOURCE,authorKey:`robot-leg-${part}-${key}`};
+   mesh.receiveShadow=false;mesh.userData={...LIMB_SOURCE,authorKey:`robot-leg-${part}-${key}`};
   }
   shadowMeshes.push(upper,lower);
-  // Trot: FL with RR, FR with RL, the two diagonal pairs half a cycle apart.
-  const offset=(key==='fl'||key==='rr'?0:Math.PI)+GAIT.phaseOffset;
-  return{hip,knee,side,offset};
+  // The two legs alternate, half a gait cycle apart.
+  const offset=(key==='ll'?0:Math.PI)+GAIT.phaseOffset;
+  return{hip,knee,foot,side,offset};
+ });
+ /** Two articulated arms: shoulder group -> upper arm, elbow pivot group -> forearm and hand. */
+ const arms=([['la',-1],['ra',1]] as const).map(([key,side])=>{
+  const shoulder=new T.Group();shoulder.name='robot-arm-'+key;shoulder.userData={...LIMB_SOURCE,authorKey:'robot-arm-'+key};
+  shoulder.rotation.order='ZYX';
+  shoulder.position.set(side*RIG.shoulderX,RIG.shoulderY,0);
+  rig.add(shoulder);
+  const elbow=new T.Group();elbow.name='robot-elbow-'+key;elbow.userData={...LIMB_SOURCE,authorKey:'robot-elbow-'+key};
+  elbow.position.set(0,-RIG.arm,0);
+  shoulder.add(elbow);
+  const upper=mount(assets.armUpperGeometry,assets.legMaterial,'robot-arm-upper',shoulder,true);
+  const lower=mount(assets.armLowerGeometry,assets.legMaterial,'robot-arm-lower',elbow,true);
+  const hand=mount(assets.handGeometry,assets.legMaterial,'robot-hand',elbow,false);
+  hand.position.set(0,-RIG.forearm,0);
+  for(const [mesh,part] of [[upper,'upper'],[lower,'lower'],[hand,'hand']] as const){
+   mesh.receiveShadow=false;mesh.userData={...LIMB_SOURCE,authorKey:`robot-arm-${part}-${key}`};
+  }
+  shadowMeshes.push(upper,lower);
+  // The arm swings opposite the leg on the same side, so the walk reads as a gait.
+  const offset=(key==='la'?0:Math.PI)+GAIT.phaseOffset;
+  return{shoulder,elbow,side,offset};
  });
  const sectorCount=Math.max(5,ROBOT.scanSamples);
  const sectorGeometry=new T.BufferGeometry();
@@ -720,7 +777,7 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
  for(let i=0;i<sectorCount-1;i++)sectorIndices.push(0,i+1,i+2);
  sectorGeometry.setIndex(sectorIndices);
  const sector=new T.Mesh(sectorGeometry,beamMat);sector.name='opening-robot-scan-sector';sector.frustumCulled=false;sector.renderOrder=2;root.add(sector);
- const beaconLight=new T.PointLight(0xff2a1c,1.1,5.5,2);beaconLight.position.set(0,.95,0);root.add(beaconLight);
+ const beaconLight=new T.PointLight(0xff2a1c,1.1,5.5,2);beaconLight.position.set(0,1.5,0);root.add(beaconLight);
 
  // ---------- authoritative state ----------
  let standby=options.standby?.()??false;
@@ -774,10 +831,19 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
   const w=gaitWeight;
   for(const leg of legs){
    const phase=gaitPhase+leg.offset,swing=Math.cos(phase);
-   leg.hip.rotation.x=STAND_THIGH+w*GAIT.thighSwing*Math.sin(phase);
+   leg.hip.rotation.x=STAND_HIP+w*GAIT.thighSwing*Math.sin(phase);
    // Outward roll while the foot swings forward, a touch inward in stance.
    leg.hip.rotation.z=w>0?leg.side*GAIT.hipRoll*w*swing:0;
-   leg.knee.rotation.x=STAND_KNEE+w*GAIT.kneeLift*Math.max(0,swing);
+   // The knee folds the opposite way to the thigh, so the foot lifts and tucks behind.
+   leg.knee.rotation.x=STAND_KNEE-w*GAIT.kneeLift*Math.max(0,swing);
+   // Keep the sole level while the shank swings under it.
+   leg.foot.rotation.x=-(leg.hip.rotation.x+leg.knee.rotation.x);
+  }
+  for(const arm of arms){
+   const phase=gaitPhase+arm.offset;
+   arm.shoulder.rotation.z=arm.side*.06;
+   arm.shoulder.rotation.x=-w*GAIT.armSwing*Math.sin(phase);
+   arm.elbow.rotation.x=GAIT.elbowBend+w*GAIT.elbowSwing*Math.max(0,-Math.sin(phase));
   }
   // The bob lives on the rig only; the scan sector hangs from the root and never moves with it.
   rig.position.y=w>0?w*GAIT.bob*Math.sin(2*gaitPhase):0;

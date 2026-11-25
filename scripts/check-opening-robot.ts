@@ -113,12 +113,12 @@ function inSectorAndRange(robot:OpeningRobot,player:T.Vector3){
 }
 
 /** Gait values from docs/plans/2026-11-22-fidelity-round.md (Task 3, 3B/3C), restated here on purpose. */
-const BRIEF_GAIT={thighSwing:0.42,kneeLift:0.55,hipRoll:0.07,bob:0.02,searchPitch:-0.12,neighbourRadius:1.2};
+const BRIEF_GAIT={thighSwing:0.34,kneeLift:0.5,hipRoll:0.025,bob:0.018,armSwing:0.42,elbowBend:0.16,searchPitch:-0.12,neighbourRadius:1.2};
 /** Smallest centre-to-centre gap a walker keeps from a unit parked dead ahead, metres (0.24 measured).
  *  The Task 3 review (fix round 1) asked for 0.5; every bias strong enough for that also moved the
  *  B5 fairness timings in scripts/check-opening-fleet.ts, so the plan's gentle bias stays. */
 const MIN_SEPARATION=0.2;
-const LEGS=['fl','fr','rl','rr'] as const;
+const LEGS=['ll','rl'] as const;
 interface LegPose{thigh:number;roll:number;knee:number}
 /** Joint angles as rendered: the hip group pitches and rolls, the knee pivot holding the shank bends. */
 function legPose(robot:OpeningRobot):LegPose[]{
@@ -126,6 +126,16 @@ function legPose(robot:OpeningRobot):LegPose[]{
   const leg=robot.root.getObjectByName('robot-leg-'+key)!;
   const knee=leg.getObjectByName('robot-leg-lower')!.parent!;
   return{thigh:leg.rotation.x,roll:leg.rotation.z,knee:knee.rotation.x};
+ });
+}
+const ARMS=['la','ra'] as const;
+interface ArmPose{shoulder:number;roll:number;elbow:number}
+/** Joint angles as rendered: the shoulder swings, the elbow pivot holding the forearm bends. */
+function armPose(robot:OpeningRobot):ArmPose[]{
+ return ARMS.map(key=>{
+  const shoulder=robot.root.getObjectByName('robot-arm-'+key)!;
+  const elbow=shoulder.getObjectByName('robot-elbow-'+key)!;
+  return{shoulder:shoulder.rotation.x,roll:shoulder.rotation.z,elbow:elbow.rotation.x};
  });
 }
 
@@ -328,7 +338,7 @@ function legPose(robot:OpeningRobot):LegPose[]{
  robot.dispose();
 }
 
-// ---------------------------------------------------------------- 8. quadruped model, polygon wedge, clean disposal
+// ---------------------------------------------------------------- 8. humanoid model, polygon wedge, clean disposal
 {
  const meshesBefore=world.meshes.length;
  const scene=new T.Scene();
@@ -349,23 +359,23 @@ function legPose(robot:OpeningRobot):LegPose[]{
  robot.root.traverse(object=>{if((object as T.Mesh).isMesh)meshes.push(object as T.Mesh);});
  const shadowCasters=meshes.filter(m=>m.castShadow).length;   // in the shadow budget, before the inactive call below
  // T25 merged the shell boxes into two vertex-coloured meshes (body and head), plus the
- // always-separate band, eye, beacon and the animated scan sector. The quadruped adds four
- // articulated legs, each three small meshes on shared buffers, so the gait can bend them.
- assert.ok(meshes.length>=5,`a quadruped model built from merged parts, got ${meshes.length} meshes`);
+ // always-separate band, eye, beacon and the animated scan sector. The humanoid adds two
+ // articulated legs and two arms, each three small meshes on shared buffers.
+ assert.ok(meshes.length>=5,`a humanoid model built from merged parts, got ${meshes.length} meshes`);
  assert.equal(meshes.filter(m=>m.name==='robot-body').length,1,'the static chassis is batched into one robot-body mesh');
  assert.equal(meshes.filter(m=>m.name==='robot-head').length,1,'the sensor head is batched into one robot-head mesh');
  assert.ok(meshes.some(m=>m.name==='opening-robot-eye'),'red eye present');
  assert.ok(meshes.some(m=>m.name==='opening-robot-scan-sector'),'visible scan sector present');
  assert.equal(meshes.filter(m=>/health|hp|bar|weapon|drop|ammo|icon|glow_billboard/i.test(m.name)).length,0,'no health bar, weapon, drop or icon-like part');
- // Four legs: FL/FR at the front (-z), RL/RR at the rear; left is -x while the rig faces -z.
- const legLayout:Record<string,[number,number]>={fl:[-1,-1],fr:[1,-1],rl:[-1,1],rr:[1,1]};
+ // Two legs: left is -x while the rig faces -z, and both hips sit on the centre line.
+ const legLayout:Record<string,number>={ll:-1,rl:1};
  const legDetail:Record<string,unknown>={};
- for(const [key,[sx,sz]] of Object.entries(legLayout)){
+ for(const [key,sx] of Object.entries(legLayout)){
   const leg=rig.getObjectByName('robot-leg-'+key);
   assert.ok(leg,`leg robot-leg-${key} present`);
   assert.ok(!(leg as T.Mesh).isMesh,`robot-leg-${key} is an articulated group, not a merged mesh`);
-  assert.ok(Math.sign(leg!.position.x)===sx&&Math.abs(Math.abs(leg!.position.x)-0.26)<0.02,`robot-leg-${key} hip sits at x ${sx>0?'+':'-'}0.26 (${leg!.position.x})`);
-  assert.ok(Math.sign(leg!.position.z)===sz&&Math.abs(Math.abs(leg!.position.z)-0.26)<0.02,`robot-leg-${key} hip sits at z ${sz>0?'+':'-'}0.26 (${leg!.position.z})`);
+  assert.ok(Math.sign(leg!.position.x)===sx&&Math.abs(Math.abs(leg!.position.x)-0.115)<0.02,`robot-leg-${key} hip sits at x ${sx>0?'+':'-'}0.115 (${leg!.position.x})`);
+  assert.ok(Math.abs(leg!.position.z)<1e-9,`robot-leg-${key} hip sits on the body centre line (${leg!.position.z})`);
   const parts:Record<string,T.Mesh[]>={'robot-leg-upper':[],'robot-leg-lower':[],'robot-foot':[]};
   leg!.traverse(object=>{const mesh=object as T.Mesh;if(mesh.isMesh&&parts[mesh.name])parts[mesh.name].push(mesh);});
   for(const [name,list] of Object.entries(parts))assert.equal(list.length,1,`robot-leg-${key} holds exactly one ${name} mesh`);
@@ -373,20 +383,40 @@ function legPose(robot:OpeningRobot):LegPose[]{
   assert.equal(upper.parent,leg,`robot-leg-${key}: the thigh hangs straight from the hip group`);
   const knee=lower.parent!;
   assert.ok(knee!==leg&&knee.parent===leg&&!(knee as T.Mesh).isMesh,`robot-leg-${key}: the shank hangs from a knee pivot group inside the leg`);
-  assert.ok(foot.parent===knee||foot.parent?.parent===knee,`robot-leg-${key}: the foot moves with the shank`);
+  assert.equal(foot.parent,knee,`robot-leg-${key}: the foot hangs from the ankle under the shank`);
   legDetail[key]={hip:[leg!.position.x,leg!.position.y,leg!.position.z].map(round),knee:knee.name};
  }
- assert.equal(meshes.filter(m=>m.name.startsWith('robot-leg-')||m.name==='robot-foot').length,12,'four legs, three meshes each');
+ assert.equal(meshes.filter(m=>m.name.startsWith('robot-leg-')||m.name==='robot-foot').length,6,'two legs, three meshes each');
+ // Two arms at the shoulders, same three-part articulation as a leg.
+ const armLayout:Record<string,number>={la:-1,ra:1};
+ const armDetail:Record<string,unknown>={};
+ for(const [key,sx] of Object.entries(armLayout)){
+  const arm=rig.getObjectByName('robot-arm-'+key);
+  assert.ok(arm,`arm robot-arm-${key} present`);
+  assert.ok(!(arm as T.Mesh).isMesh,`robot-arm-${key} is an articulated group, not a merged mesh`);
+  assert.ok(Math.sign(arm!.position.x)===sx&&Math.abs(Math.abs(arm!.position.x)-0.235)<0.02,`robot-arm-${key} shoulder sits at x ${sx>0?'+':'-'}0.235 (${arm!.position.x})`);
+  assert.ok(Math.abs(arm!.position.y-1.35)<0.02,`robot-arm-${key} shoulder sits at y 1.35 (${arm!.position.y})`);
+  const parts:Record<string,T.Mesh[]>={'robot-arm-upper':[],'robot-arm-lower':[],'robot-hand':[]};
+  arm!.traverse(object=>{const mesh=object as T.Mesh;if(mesh.isMesh&&parts[mesh.name])parts[mesh.name].push(mesh);});
+  for(const [name,list] of Object.entries(parts))assert.equal(list.length,1,`robot-arm-${key} holds exactly one ${name} mesh`);
+  const upper=parts['robot-arm-upper'][0],lower=parts['robot-arm-lower'][0],hand=parts['robot-hand'][0];
+  assert.equal(upper.parent,arm,`robot-arm-${key}: the upper arm hangs straight from the shoulder group`);
+  const elbow=lower.parent!;
+  assert.ok(elbow!==arm&&elbow.parent===arm&&!(elbow as T.Mesh).isMesh,`robot-arm-${key}: the forearm hangs from an elbow pivot group inside the arm`);
+  assert.equal(hand.parent,elbow,`robot-arm-${key}: the hand moves with the forearm`);
+  armDetail[key]={shoulder:[arm!.position.x,arm!.position.y,arm!.position.z].map(round),elbow:elbow.name};
+ }
+ assert.equal(meshes.filter(m=>m.name.startsWith('robot-arm-')||m.name==='robot-hand').length,6,'two arms, three meshes each');
  // The drawn scan wedge is a child of the root and reaches metres ahead, so the body
  // footprint is measured on the rig itself rather than on the whole group.
  const body=rig;
  const size=new T.Box3().setFromObject(body).getSize(new T.Vector3());
- assert.ok(size.y>0.6&&size.y<2.2,`plausible quadruped height, got ${size.y.toFixed(2)}m`);
- assert.ok(size.x>0.3&&size.x<1.6&&size.z>0.3&&size.z<1.6,`quadruped footprint, got ${size.x.toFixed(2)}x${size.z.toFixed(2)}m`);
- // The sensor head sits at the front of the chassis (-z in rig space) and carries the eye.
+ assert.ok(size.y>1.5&&size.y<1.9,`plausible humanoid height, got ${size.y.toFixed(2)}m`);
+ assert.ok(size.x>0.35&&size.x<0.9&&size.z>0.15&&size.z<0.8,`humanoid footprint, got ${size.x.toFixed(2)}x${size.z.toFixed(2)}m`);
+ // The sensor head sits above the torso and carries the eye.
  const head=meshes.find(m=>m.name==='robot-head')!;
  const headCentre=rig.worldToLocal(new T.Box3().setFromObject(head).getCenter(new T.Vector3()));
- assert.ok(headCentre.z<-0.08,`the sensor head sits at the front of the chassis (rig z ${headCentre.z.toFixed(2)})`);
+ assert.ok(headCentre.y>1.45,`the sensor head sits above the torso (rig y ${headCentre.y.toFixed(2)})`);
  const turret=robot.root.getObjectByName('opening-security-robot-turret')!;
  assert.ok(head.parent===turret&&meshes.find(m=>m.name==='opening-robot-eye')!.parent===turret&&meshes.find(m=>m.name==='robot-beacon')!.parent===turret,'head, eye and beacon turn together on the turret');
  const wedge=meshes.find(m=>m.name==='opening-robot-scan-sector')!;
@@ -453,8 +483,8 @@ function legPose(robot:OpeningRobot):LegPose[]{
  assert.doesNotThrow(()=>robot.dispose(),'dispose is safe to repeat');
  assert.equal(world.meshes.length,meshesBefore,'shared navigation meshes untouched by create/update/dispose');
  const triangles=meshes.reduce((sum,m)=>sum+(m.geometry.index?m.geometry.index.count:m.geometry.getAttribute('position').count)/3,0);
- pass('quadruped red-eye model with four articulated legs and a polygon scan wedge; dispose releases geometry and material',
-  {meshes:meshes.length,drawCalls:meshes.length,triangles,shadowCasters,heightMeters:round(size.y),footprint:[round(size.x),round(size.z)],standingFeetLift:round(feetLift),legs:legDetail,headRigZ:round(headCentre.z),wedgeVertices:positions.count,disposedGeometries:geometryDispose.size,disposedMaterials:materialDispose.size});
+ pass('humanoid red-eye model with two articulated legs and two arms, a polygon scan wedge; dispose releases geometry and material',
+  {meshes:meshes.length,drawCalls:meshes.length,triangles,shadowCasters,heightMeters:round(size.y),footprint:[round(size.x),round(size.z)],standingFeetLift:round(feetLift),legs:legDetail,arms:armDetail,headRigY:round(headCentre.y),wedgeVertices:positions.count,disposedGeometries:geometryDispose.size,disposedMaterials:materialDispose.size});
 }
 
 // ---------------------------------------------------------------- 9. published tuning stays inside the task book
@@ -487,15 +517,18 @@ function legPose(robot:OpeningRobot):LegPose[]{
   return set;
  };
  const gA=geometriesOf(a),gB=geometriesOf(b);
- assert.equal([...gA].filter(g=>gB.has(g)).length,8,'body, head, band, eye, beacon and the three leg buffers are shared by both units');
- assert.equal(gA.size,9,'a unit adds only its own animated scan-sector polygon');
- // All four legs of a unit draw the same thigh, shank and foot buffers, each its own pooled one.
- const legBuffers:readonly (readonly [string,T.BufferGeometry,string])[]=[
+ assert.equal([...gA].filter(g=>gB.has(g)).length,11,'body, head, band, eye, beacon, the three leg buffers and the three arm buffers are shared by both units');
+ assert.equal(gA.size,12,'a unit adds only its own animated scan-sector polygon');
+ // Both legs draw the same thigh, shank and foot buffers; both arms the same arm buffers.
+ const limbBuffers:readonly (readonly [string,T.BufferGeometry,string])[]=[
   ['robot-leg-upper',assets.legUpperGeometry,'legUpperGeometry'],
   ['robot-leg-lower',assets.legLowerGeometry,'legLowerGeometry'],
   ['robot-foot',assets.footGeometry,'footGeometry'],
+  ['robot-arm-upper',assets.armUpperGeometry,'armUpperGeometry'],
+  ['robot-arm-lower',assets.armLowerGeometry,'armLowerGeometry'],
+  ['robot-hand',assets.handGeometry,'handGeometry'],
  ];
- for(const [name,buffer,pooled] of legBuffers){
+ for(const [name,buffer,pooled] of limbBuffers){
   const used=new Set<T.BufferGeometry>();
   a.root.traverse(object=>{const mesh=object as T.Mesh;if(mesh.isMesh&&mesh.name===name)used.add(mesh.geometry);});
   assert.equal(used.size,1,`every ${name} mesh shares one buffer`);
@@ -514,7 +547,7 @@ function legPose(robot:OpeningRobot):LegPose[]{
  a.dispose();b.dispose();
  assert.doesNotThrow(()=>assets.dispose(),'the fleet owner releases the shared pool after the units');
  pass('the shell pool is shared across units while eye, lamp, beam and scan sector stay per unit',
-  {geometriesPerUnit:gA.size,sharedGeometries:8,sharedMaterials:3,materialsPerUnit:mA.size});
+  {geometriesPerUnit:gA.size,sharedGeometries:11,sharedMaterials:3,materialsPerUnit:mA.size});
 }
 
 // ---------------------------------------------------------------- 11. shared awareness shares a stale point, never a live track
@@ -675,18 +708,20 @@ function legPose(robot:OpeningRobot):LegPose[]{
  guard.dispose();
 }
 
-// ---------------------------------------------------------------- 17. a trot that follows real displacement; reads never move a leg
+// ---------------------------------------------------------------- 17. a walk that follows real displacement; reads never move a limb
 {
  const robot=fresh();
  const rig=robot.root.getObjectByName('opening-security-robot-rig')!;
  const turret=robot.root.getObjectByName('opening-security-robot-turret')!;
  const sector=robot.root.getObjectByName('opening-robot-scan-sector')!;
  const stand=legPose(robot);
- for(const p of stand)assert.ok(Math.abs(p.thigh-stand[0].thigh)+Math.abs(p.roll-stand[0].roll)+Math.abs(p.knee-stand[0].knee)<1e-9,'all four legs share one standing pose');
+ const armStand=armPose(robot);
+ for(const p of stand)assert.ok(Math.abs(p.thigh-stand[0].thigh)+Math.abs(p.roll-stand[0].roll)+Math.abs(p.knee-stand[0].knee)<1e-9,'both legs share one standing pose');
+ assert.ok(Math.abs(armStand[0].elbow-BRIEF_GAIT.elbowBend)<1e-9&&Math.abs(armStand[1].elbow-BRIEF_GAIT.elbowBend)<1e-9,'both elbows rest at the standing bend');
  const start=robot.position.clone(),startHeading=robot.diagnostics.heading;
  const astern=ground(66,-48);   // behind the first patrol leg, so the unit just walks
- const swing=LEGS.map(()=>0);
- let spread=0,pairSame=0,pairOpposite=0,maxBob=0,maxRoll=0,maxKneeLift=0,minKneeLift=Number.POSITIVE_INFINITY,maxThigh=0,turretPitch=0,maxTurn=0;
+ const swing=LEGS.map(()=>0),armSwing=ARMS.map(()=>0);
+ let spread=0,armSpread=0,armOpposite=0,maxBob=0,maxRoll=0,maxKneeLift=0,minKneeLift=Number.POSITIVE_INFINITY,maxThigh=0,maxArm=0,turretPitch=0,maxTurn=0;
  const stats=drive(robot,{seconds:3,player:astern,stop:(_t,r)=>{
   const pose=legPose(r);
   const offsets=pose.map((p,i)=>p.thigh-stand[i].thigh);
@@ -696,8 +731,12 @@ function legPose(robot:OpeningRobot):LegPose[]{
    const lift=p.knee-stand[i].knee;maxKneeLift=Math.max(maxKneeLift,lift);minKneeLift=Math.min(minKneeLift,lift);
   });
   spread=Math.max(spread,Math.max(...pose.map(p=>p.thigh))-Math.min(...pose.map(p=>p.thigh)));
-  pairSame+=offsets[0]*offsets[3]+offsets[1]*offsets[2];        // FL with RR, FR with RL
-  pairOpposite+=offsets[0]*offsets[1]+offsets[2]*offsets[3];    // FL against FR, RL against RR
+  // Each arm swings against the leg on its own side.
+  const armsNow=armPose(r);
+  const armOffsets=armsNow.map((p,i)=>p.shoulder-armStand[i].shoulder);
+  armOffsets.forEach((d,i)=>{armSwing[i]=Math.max(armSwing[i],Math.abs(d));maxArm=Math.max(maxArm,Math.abs(d));});
+  armOpposite+=armOffsets[0]*offsets[0]+armOffsets[1]*offsets[1];
+  armSpread=Math.max(armSpread,Math.max(...armOffsets)-Math.min(...armOffsets));
   maxBob=Math.max(maxBob,Math.abs(rig.position.y));
   turretPitch=Math.max(turretPitch,Math.abs(turret.rotation.x));
   maxTurn=Math.max(maxTurn,Math.abs(wrapAngle(r.diagnostics.heading-startHeading)));
@@ -709,22 +748,25 @@ function legPose(robot:OpeningRobot):LegPose[]{
  assert.deepEqual(Object.keys(stats.states),['patrol'],'scenario: the unit only patrols, nothing is detected');
  assert.ok(travelled>3&&maxTurn<0.05&&Math.abs(robot.position.z-start.z)<0.05,`scenario: a straight 3 s walk (${travelled.toFixed(2)}m, turned ${maxTurn.toFixed(3)} rad)`);
  swing.forEach((s,i)=>assert.ok(s>0.05,`robot-leg-${LEGS[i]} swings while walking (${s.toFixed(3)} rad)`));
- assert.ok(spread>0.1,`the four legs are not in the same phase (spread ${spread.toFixed(3)} rad)`);
- assert.ok(pairSame>0&&pairOpposite<0,`trot: FL moves with RR and FR with RL, the pairs in antiphase (${pairSame.toFixed(2)} / ${pairOpposite.toFixed(2)})`);
+ assert.ok(spread>0.1,`the two legs are not in the same phase (spread ${spread.toFixed(3)} rad)`);
+ armSwing.forEach((s,i)=>assert.ok(s>0.05,`robot-arm-${ARMS[i]} swings while walking (${s.toFixed(3)} rad)`));
+ assert.ok(armSpread>0.1,`the arms are in antiphase with each other (spread ${armSpread.toFixed(3)} rad)`);
+ assert.ok(armOpposite<0,`each arm swings against the leg on its own side (${armOpposite.toFixed(2)})`);
  assert.ok(maxThigh<=BRIEF_GAIT.thighSwing+1e-6,`thigh pitch stays inside +/-${BRIEF_GAIT.thighSwing} rad (${maxThigh.toFixed(3)})`);
- assert.ok(minKneeLift>=-1e-6&&maxKneeLift<=BRIEF_GAIT.kneeLift+1e-6&&maxKneeLift>0.2,`knee lift stays inside 0..${BRIEF_GAIT.kneeLift} rad and is used (${minKneeLift.toFixed(3)}..${maxKneeLift.toFixed(3)})`);
+ assert.ok(minKneeLift>=-BRIEF_GAIT.kneeLift-1e-6&&maxKneeLift<=1e-6&&minKneeLift<-0.2,`the knee folds inside -${BRIEF_GAIT.kneeLift}..0 rad and is used (${minKneeLift.toFixed(3)}..${maxKneeLift.toFixed(3)})`);
+ assert.ok(maxArm>0.05&&maxArm<=BRIEF_GAIT.armSwing+1e-6,`arm swing stays inside +/-${BRIEF_GAIT.armSwing} rad (${maxArm.toFixed(3)})`);
  assert.ok(maxRoll>0.01&&maxRoll<=BRIEF_GAIT.hipRoll+1e-6,`hip roll stays inside +/-${BRIEF_GAIT.hipRoll} rad (${maxRoll.toFixed(3)})`);
  assert.ok(maxBob>0.005&&maxBob<=BRIEF_GAIT.bob+1e-6,`the rig bobs by at most ${BRIEF_GAIT.bob} m (${maxBob.toFixed(4)})`);
  assert.ok(turretPitch<1e-6,`the head stays level on patrol (${turretPitch})`);
  // Render reads, paused ticks and inactive ticks must leave the pose exactly where it is.
- const snapshot=()=>JSON.stringify({legs:legPose(robot),bob:rig.position.y,pitch:rig.rotation.x,head:turret.rotation.x});
+ const snapshot=()=>JSON.stringify({legs:legPose(robot),arms:armPose(robot),bob:rig.position.y,pitch:rig.rotation.x,head:turret.rotation.x});
  const frozen=snapshot();
  for(let i=0;i<120;i++){robot.update(0,astern,true,false);robot.update(DT,astern,true,true);robot.update(1,astern,true,true);}
- assert.equal(snapshot(),frozen,'dt=0 reads and paused ticks never move a leg, the bob or the head');
+ assert.equal(snapshot(),frozen,'dt=0 reads and paused ticks never move a limb, the bob or the head');
  for(let i=0;i<60;i++)robot.update(DT,astern,false,false);
- assert.equal(snapshot(),frozen,'inactive ticks never move a leg either');
- pass('a trot driven by real displacement: diagonal pairs in antiphase, bounded joints, bob on the rig only, frozen on reads',
-  {travelled:round(travelled),thighSwing:swing.map(round),phaseSpread:round(spread),maxKneeLift:round(maxKneeLift),maxHipRoll:round(maxRoll),maxBob:round(maxBob*1000)/1000});
+ assert.equal(snapshot(),frozen,'inactive ticks never move a limb either');
+ pass('a walk driven by real displacement: legs in antiphase, arms against their own leg, bounded joints, bob on the rig only, frozen on reads',
+  {travelled:round(travelled),thighSwing:swing.map(round),armSwing:armSwing.map(round),phaseSpread:round(spread),maxKneeFold:round(minKneeLift),maxHipRoll:round(maxRoll),maxBob:round(maxBob*1000)/1000});
  robot.dispose();
 }
 

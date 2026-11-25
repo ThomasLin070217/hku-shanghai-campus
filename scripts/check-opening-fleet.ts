@@ -73,7 +73,7 @@ const fleetGeometries=new Set(fleetMeshes.map(mesh=>mesh.geometry));
 const fleetMaterials=new Set(fleetMeshes.flatMap(mesh=>Array.isArray(mesh.material)?mesh.material:[mesh.material]));
 // Per unit: body, band, head, eye, beacon, scan sector, and four legs of three meshes each.
 assert.equal(fleetMeshes.length,8*18,`eight units x eighteen meshes = ${fleetMeshes.length}`);
-assert.equal(fleetGeometries.size,16,`eight shared shell and leg buffers plus one scan sector per unit (${fleetGeometries.size})`);
+assert.equal(fleetGeometries.size,19,`eleven shared shell and limb buffers plus one scan sector per unit (${fleetGeometries.size})`);
 assert.equal(fleetMaterials.size,27,`three shared materials plus three emissive ones per unit (${fleetMaterials.size})`);
 const shadowed=fleet.units.filter(unit=>(unit.root.getObjectByName('robot-body') as T.Mesh).castShadow);
 assert.equal(shadowed.length,ROBOT.shadowUnits,`only the nearest ${ROBOT.shadowUnits} units cast shadows (${shadowed.length})`);
@@ -98,7 +98,7 @@ for(let i=0;i<60;i++)fleet.update(dt,player,false,false);
 assert.deepEqual(fleet.units.map(u=>u.position.toArray().join(',')),frozen,'inactive units are frozen');
 // Standing down (campaign `to_lawn` onwards) puts every unit back in the standing pose,
 // wherever its trot was when the patrol stopped.
-const legJoints=(unit:OpeningRobot)=>['fl','fr','rl','rr'].map(key=>{
+const legJoints=(unit:OpeningRobot)=>['ll','rl'].map(key=>{
  const leg=unit.root.getObjectByName('robot-leg-'+key)!;
  const knee=leg.getObjectByName('robot-leg-lower')!.parent!;
  return [leg.rotation.x,leg.rotation.z,knee.rotation.x];

@@ -315,56 +315,58 @@
       }
     },
     {
-      "name": "quadruped red-eye model with four articulated legs and a polygon scan wedge; dispose releases geometry and material",
+      "name": "humanoid red-eye model with two articulated legs and two arms, a polygon scan wedge; dispose releases geometry and material",
       "passed": true,
       "detail": {
         "meshes": 18,
         "drawCalls": 18,
-        "triangles": 1058,
+        "triangles": 942,
         "shadowCasters": 10,
-        "heightMeters": 0.87,
+        "heightMeters": 1.68,
         "footprint": [
-          0.98,
-          0.62
+          0.73,
+          0.61
         ],
         "standingFeetLift": 0,
         "legs": {
-          "fl": {
+          "ll": {
             "hip": [
-              -0.26,
-              0.5,
-              -0.26
+              -0.11,
+              0.86,
+              0
             ],
-            "knee": "robot-knee-fl"
-          },
-          "fr": {
-            "hip": [
-              0.26,
-              0.5,
-              -0.26
-            ],
-            "knee": "robot-knee-fr"
+            "knee": "robot-knee-ll"
           },
           "rl": {
             "hip": [
-              -0.26,
-              0.5,
-              0.26
+              0.12,
+              0.86,
+              0
             ],
             "knee": "robot-knee-rl"
-          },
-          "rr": {
-            "hip": [
-              0.26,
-              0.5,
-              0.26
-            ],
-            "knee": "robot-knee-rr"
           }
         },
-        "headRigZ": -0.22,
+        "arms": {
+          "la": {
+            "shoulder": [
+              -0.23,
+              1.35,
+              0
+            ],
+            "elbow": "robot-elbow-la"
+          },
+          "ra": {
+            "shoulder": [
+              0.24,
+              1.35,
+              0
+            ],
+            "elbow": "robot-elbow-ra"
+          }
+        },
+        "headRigY": 1.55,
         "wedgeVertices": 12,
-        "disposedGeometries": 9,
+        "disposedGeometries": 12,
         "disposedMaterials": 6
       }
     },
@@ -450,8 +452,8 @@
       "name": "the shell pool is shared across units while eye, lamp, beam and scan sector stay per unit",
       "passed": true,
       "detail": {
-        "geometriesPerUnit": 9,
-        "sharedGeometries": 8,
+        "geometriesPerUnit": 12,
+        "sharedGeometries": 11,
         "sharedMaterials": 3,
         "materialsPerUnit": 6
       }
@@ -537,20 +539,22 @@
       }
     },
     {
-      "name": "a trot driven by real displacement: diagonal pairs in antiphase, bounded joints, bob on the rig only, frozen on reads",
+      "name": "a walk driven by real displacement: legs in antiphase, arms against their own leg, bounded joints, bob on the rig only, frozen on reads",
       "passed": true,
       "detail": {
         "travelled": 3.75,
         "thighSwing": [
-          0.42,
-          0.42,
+          0.34,
+          0.34
+        ],
+        "armSwing": [
           0.42,
           0.42
         ],
-        "phaseSpread": 0.84,
-        "maxKneeLift": 0.55,
-        "maxHipRoll": 0.07,
-        "maxBob": 0.02
+        "phaseSpread": 0.68,
+        "maxKneeFold": -0.5,
+        "maxHipRoll": 0.02,
+        "maxBob": 0.01799
       }
     },
     {
@@ -562,8 +566,8 @@
         "noticePulses": 2,
         "noticeTravel": 0.65,
         "solidIntensity": 2.2,
-        "chaseSwing": 0.42,
-        "settleDelta": 0.00075,
+        "chaseSwing": 0.34,
+        "settleDelta": 0.00106,
         "standDelta": 0
       }
     },
