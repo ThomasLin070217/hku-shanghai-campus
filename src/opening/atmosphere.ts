@@ -215,6 +215,8 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
  let releasing=false;
  let clock=0;
  let pulse=0;
+ /** Wall-clock time of the previous update: the dome is a transition authored in seconds. */
+ let lastAt=0;
  let lastSnapshot:OpeningAtmosphereSnapshot|null=null;
  /** Prologue-only dusk override. While true, update() leaves the Magic Hour
   * lighting alone; endDusk() restores the saved day/sealed state. */
@@ -315,6 +317,16 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
  }
 
  function update(dt:number,state:OpeningAtmosphereState){
+  // The dome is a transition authored in seconds, so it follows the wall clock rather
+  // than the frame clock. The viewer caps frame dt at 0.1 s; at the ending's 58 m crane
+  // view a software-rasterised browser runs at 0.25-0.37 fps, and a 5.2 s drop became
+  // 140 s — the ending's own clock (now wall-based) reached the credits with the dome
+  // still 88% down. A zero dt still means the explorer is off, and `state.paused`
+  // still holds it, so nothing advances behind a pause. A fixed-dt caller keeps its dt.
+  const now=typeof performance!=='undefined'?performance.now():0;
+  const wall=lastAt&&now>lastAt?Math.min(2,(now-lastAt)/1000):0;
+  lastAt=now;
+  const step=dt>0?Math.max(dt,wall):0;
   // The prologue owns the sky while it runs: no day/night application, no dome.
   if(dusk){root.visible=false;return;}
   const wantsSeal=state.incident||state.curtain;
@@ -326,7 +338,7 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
    release();
   }
   if(releasing){
-   if(dt>0&&!state.paused&&progress>0)progress=Math.max(0,progress-dt/DOME_SECONDS);
+   if(step>0&&!state.paused&&progress>0)progress=Math.max(0,progress-step/DOME_SECONDS);
    if(progress>0&&progress<1&&phase!=='disturbance')phase='disturbance';
    if(progress<=0){
     progress=0;target=0;curtain=false;releasing=false;phase='day';
@@ -334,7 +346,7 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
     apply(0,0);return;
    }
   }else{
-   if(dt>0&&!state.paused&&progress<target)progress=Math.min(target,progress+dt/DOME_SECONDS);
+   if(step>0&&!state.paused&&progress<target)progress=Math.min(target,progress+step/DOME_SECONDS);
    if(progress>=1&&phase!=='night')phase='night';
    if(progress>0&&progress<1&&phase!=='disturbance')phase='disturbance';
   }
@@ -342,7 +354,7 @@ export function createOpeningAtmosphere(scene:T.Scene,renderer:T.WebGLRenderer,l
  }
 
  function reset(){
-  progress=0;target=0;curtain=false;releasing=false;phase='day';clock=0;pulse=0;
+  progress=0;target=0;curtain=false;releasing=false;phase='day';clock=0;pulse=0;lastAt=0;
   dusk=false;
   if(savedSunPosition)(lights.sun as T.DirectionalLight).position.copy(savedSunPosition);
   root.visible=false;curtainRoot.position.y=dropFor(0);
