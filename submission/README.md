@@ -18,7 +18,7 @@
 | Playable build | `git checkout v9.1.0 && npm ci && npm run build` → `dist/` |
 | Source of that build | the `v9.1.0` git tag |
 | Demo video | `demo/` (recorded from the `v9.1.0` build after a full playtest) |
-| Slides | `submission/slides/` — built from the audited outline (`.scratch/slides-2026-11-24/outline.md`) after the video is recorded, so the deck and the film show the same build |
+| Slides | `submission/slides/` — `deck.html` (self-contained, offline) and `hku-barrier-2030-deck.pdf` (14 pages, A4 landscape). Built after the video was recorded, so the deck and the film show the same `v9.1.0` build |
 | Known issues | `submission/KNOWN-ISSUES.md` |
 | Licences | `submission/LICENSES.md` |
 
@@ -34,7 +34,7 @@ Every later playable version gets its own tag (`v9.1.1`, `v9.2.0`, …). The vid
 - [ ] `git tag -a v9.1.0` points at the playable commit, once the build is the one to film.
 - [ ] The tagged build boots from a static server and the version label matches.
 - [ ] The demo video was recorded from that tagged build, after the playtest.
-- [ ] The local fallback (`dist/` + a local static server) works with the network off.
+- [x] The local fallback (`dist/` + a local static server) works with the network off — measured 2026-11-26: an opening run served from `dist/` made 82 requests, every one to `127.0.0.1`, and the missing assistant bridge (`127.0.0.1:8790`) did not stop the opening. No third-party host is contacted, so losing the venue network removes nothing.
 
 ## What is deliberately absent
 

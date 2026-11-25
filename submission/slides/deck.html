@@ -1,0 +1,980 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>HKU: Barrier 2030</title>
+<style>
+  :root {
+    --ink: #101715;
+    --ink-deep: #0c1210;
+    --surface: #17201d;
+    --surface-2: #1d2923;
+    --ivory: #f0e9d6;
+    --muted: #a7ad9f;
+    --dim: #778173;
+    --amber: #d9a441;
+    --amber-pale: #f0c878;
+    --mark: #bc862f;
+    --line: #3a463b;
+    --alert: #d28b6e;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: var(--ink-deep); }
+  body {
+    color: var(--ivory);
+    font-family: var(--font-sans);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  button, a { -webkit-tap-highlight-color: transparent; }
+  button { font: inherit; }
+  a { color: inherit; }
+  p, h1, h2, h3, figure, blockquote { margin: 0; }
+  h1, h2, h3, blockquote { text-wrap: balance; }
+  p { text-wrap: pretty; }
+  :focus-visible { outline: 2px solid var(--amber-pale); outline-offset: 4px; }
+
+  .deck {
+    position: fixed;
+    inset: 0 0 3.6rem;
+    display: grid;
+    place-items: center;
+    background: var(--ink-deep);
+  }
+  .slide {
+    display: none;
+    position: relative;
+    inline-size: min(100vw, calc((100dvh - 3.6rem) * 16 / 9));
+    block-size: min(calc(100dvh - 3.6rem), calc(100vw * 9 / 16));
+    padding: 4.4% 5.4% 4.2%;
+    overflow: hidden;
+    container-type: inline-size;
+    isolation: isolate;
+    background:
+      radial-gradient(circle at 84% 18%, rgba(217, 164, 65, .055), transparent 31%),
+      linear-gradient(135deg, #111916 0%, var(--ink) 62%, #141c18 100%);
+  }
+  .slide:first-of-type, .slide.active { display: grid; }
+  .slide::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: .12;
+    background-image:
+      linear-gradient(rgba(240, 233, 214, .08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(240, 233, 214, .08) 1px, transparent 1px);
+    background-size: 4.4cqw 4.4cqw;
+    mask-image: linear-gradient(90deg, transparent 0%, #000 58%, #000 100%);
+  }
+  .slide::after {
+    content: "";
+    position: absolute;
+    left: 5.4%;
+    right: 5.4%;
+    top: 2.2%;
+    height: 1px;
+    background: linear-gradient(90deg, var(--amber) 0 7.2%, var(--line) 7.2% 100%);
+    opacity: .7;
+    z-index: 3;
+  }
+
+  .slide-grid {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 2.2cqw;
+    height: 100%;
+    min-height: 0;
+  }
+  .slide-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2cqw;
+  }
+  .kicker, .label, .folio, .hud, .chip, .status, .micro, .metric-label {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: .11em;
+  }
+  .kicker { color: var(--amber-pale); font-size: .83cqw; line-height: 1.4; }
+  .folio { color: var(--muted); font-size: .83cqw; line-height: 1.4; white-space: nowrap; }
+  .slide-content {
+    min-height: 0;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2.1cqw;
+  }
+  h1, h2 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: -.035em;
+  }
+  h1 { font-size: 6.55cqw; }
+  h2 { font-size: 3.55cqw; }
+  h3 { font-size: 1.65cqw; font-weight: 500; line-height: 1.2; letter-spacing: -.02em; }
+  .display { font-family: var(--font-serif); font-size: 4.65cqw; line-height: 1.02; letter-spacing: -.035em; }
+  .lead { font-size: 1.85cqw; line-height: 1.42; max-width: 56ch; }
+  .body { font-size: 1.36cqw; line-height: 1.48; }
+  .small { font-size: 1.06cqw; line-height: 1.48; }
+  .micro { font-size: .78cqw; line-height: 1.45; color: var(--muted); }
+  .accent { color: var(--amber-pale); }
+  .muted { color: var(--muted); }
+  .serif { font-family: var(--font-serif); }
+  .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums lining-nums; }
+  .rule { height: 1px; background: var(--line); }
+  .grid-2 { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: 4.2cqw; align-items: center; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.4cqw; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.5cqw; }
+  .stack { display: flex; flex-direction: column; gap: 1.25cqw; }
+  .panel {
+    border: 1px solid var(--line);
+    background: rgba(23, 32, 29, .78);
+    padding: 1.55cqw;
+  }
+  .panel-top { border-top: 2px solid var(--amber); }
+  .metric { font-family: var(--font-serif); font-size: 4.15cqw; line-height: .98; letter-spacing: -.04em; font-variant-numeric: tabular-nums lining-nums; }
+  .metric-label { color: var(--muted); font-size: .75cqw; line-height: 1.45; }
+  .status { display: inline-flex; align-items: center; gap: .5em; font-size: .72cqw; line-height: 1.35; }
+  .status::before { content: ""; inline-size: .55cqw; block-size: .55cqw; background: currentColor; flex: 0 0 auto; }
+  .status.built { color: #c8d3af; }
+  .status.pending { color: var(--amber-pale); }
+  .status.defect { color: var(--alert); }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.75cqw;
+    padding: .28cqw .6cqw;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    font-size: .68cqw;
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+  .quote {
+    font-family: var(--font-serif);
+    font-size: 2.15cqw;
+    line-height: 1.3;
+    letter-spacing: -.02em;
+  }
+
+  /* A restrained, CSS-only campus silhouette. */
+  .campus {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 39cqw;
+    height: 36cqw;
+    z-index: 0;
+    opacity: .12;
+    pointer-events: none;
+  }
+  .campus .tower {
+    position: absolute;
+    bottom: 0;
+    border: 1px solid rgba(217, 164, 65, .55);
+    background:
+      repeating-linear-gradient(0deg, transparent 0 1.15cqw, rgba(240, 200, 120, .34) 1.15cqw 1.25cqw),
+      repeating-linear-gradient(90deg, transparent 0 .95cqw, rgba(16, 23, 21, .96) .95cqw 1.1cqw),
+      #263029;
+  }
+  .campus .tower::before {
+    content: "";
+    position: absolute;
+    left: 18%;
+    right: 18%;
+    top: -1.25cqw;
+    height: 1.25cqw;
+    background: #2d392f;
+    border: 1px solid rgba(217, 164, 65, .5);
+  }
+  .campus .tower:nth-child(1) { left: 1%; width: 8cqw; height: 24cqw; }
+  .campus .tower:nth-child(2) { left: 10.5%; width: 8cqw; height: 24cqw; }
+  .campus .tower:nth-child(3) { left: 20%; width: 8cqw; height: 19.5cqw; }
+  .campus .tower:nth-child(4) { left: 29.5%; width: 8cqw; height: 19.5cqw; }
+  .title-slide .campus { width: 46cqw; height: 42cqw; opacity: .96; }
+  .title-slide .campus .tower:nth-child(1) { left: 0; width: 10cqw; height: 29cqw; }
+  .title-slide .campus .tower:nth-child(2) { left: 12cqw; width: 10cqw; height: 29cqw; }
+  .title-slide .campus .tower:nth-child(3) { left: 24cqw; width: 10cqw; height: 23cqw; }
+  .title-slide .campus .tower:nth-child(4) { left: 36cqw; width: 10cqw; height: 23cqw; }
+  .title-slide .campus::after {
+    content: "";
+    position: absolute;
+    left: -4cqw;
+    right: -4cqw;
+    bottom: 6.3cqw;
+    height: .22cqw;
+    background: var(--amber);
+    box-shadow: 0 0 2.2cqw rgba(217, 164, 65, .45);
+  }
+  .title-year {
+    position: absolute;
+    right: 3.5cqw;
+    top: 7.5cqw;
+    color: rgba(240, 233, 214, .055);
+    font-family: var(--font-serif);
+    font-size: 18cqw;
+    line-height: 1;
+    letter-spacing: -.08em;
+    z-index: 0;
+  }
+
+  /* Screenshot slots: local image wins; the CSS panel remains when it does not. */
+  .shot {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 18cqw;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: #15201b;
+    isolation: isolate;
+  }
+  .shot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 2; }
+  .shot-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .8cqw;
+    padding: 2cqw 2cqw 5cqw;
+    text-align: center;
+    background:
+      linear-gradient(rgba(217, 164, 65, .055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(217, 164, 65, .055) 1px, transparent 1px),
+      radial-gradient(circle at 50% 30%, rgba(217, 164, 65, .1), transparent 55%),
+      #15201b;
+    background-size: 2.2cqw 2.2cqw, 2.2cqw 2.2cqw, auto, auto;
+  }
+  .shot-fallback .mini-campus { display: flex; align-items: flex-end; gap: .45cqw; height: 5.6cqw; }
+  .shot-fallback .mini-campus i { display: block; width: 1.7cqw; background: #2c382e; border: 1px solid rgba(217, 164, 65, .55); }
+  .shot-fallback .mini-campus i:nth-child(1), .shot-fallback .mini-campus i:nth-child(2) { height: 5.6cqw; }
+  .shot-fallback .mini-campus i:nth-child(3), .shot-fallback .mini-campus i:nth-child(4) { height: 4.3cqw; }
+  .shot-fallback strong { font-family: var(--font-mono); font-size: .78cqw; letter-spacing: .14em; color: var(--amber-pale); font-weight: 500; }
+  .shot-fallback span { font-family: var(--font-mono); font-size: .68cqw; color: var(--muted); }
+  .shot figcaption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    padding: .75cqw 1cqw;
+    border-top: 1px solid var(--line);
+    background: rgba(12, 18, 16, .94);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: .7cqw;
+    line-height: 1.35;
+    letter-spacing: .035em;
+  }
+
+  /* Slide-specific composition. */
+  .title-layout { position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: center; gap: 1.8cqw; width: 66%; }
+  .title-layout .subtitle { font-family: var(--font-serif); font-size: 2.25cqw; color: var(--amber-pale); }
+  .title-layout .meta { display: flex; flex-direction: column; gap: .45cqw; margin-top: 1.4cqw; font-size: 1.04cqw; color: var(--muted); }
+
+  .premise-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, .7fr); gap: 5cqw; align-items: center; }
+  .premise-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.6cqw; margin-top: 3.1cqw; }
+  .premise-item { border-top: 1px solid var(--line); padding-top: 1cqw; }
+  .premise-item .n { font-family: var(--font-mono); color: var(--amber-pale); font-size: .78cqw; }
+  .premise-item p { font-size: 1.18cqw; line-height: 1.4; margin-top: .55cqw; }
+  .barrier-motif { position: relative; height: 27cqw; border-left: 1px solid var(--line); border-right: 1px solid var(--line); overflow: hidden; }
+  .barrier-motif::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(90deg, rgba(217, 164, 65, .2) 0 .22cqw, transparent .22cqw 1.15cqw);
+    border-top: .3cqw solid var(--amber);
+    box-shadow: inset 0 -6cqw 8cqw rgba(16, 23, 21, .9);
+  }
+  .barrier-motif::after { content: "BARRIER / SEALED"; position: absolute; left: 1.4cqw; top: 1.3cqw; font-family: var(--font-mono); font-size: .74cqw; letter-spacing: .12em; color: var(--amber-pale); }
+  .barrier-year { position: absolute; right: 1.2cqw; bottom: 1.4cqw; font-family: var(--font-serif); font-size: 5.2cqw; color: var(--ivory); }
+
+  .audience-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .8fr); gap: 4.2cqw; align-items: center; }
+  .audience-voice { font-family: var(--font-serif); font-size: 2.5cqw; line-height: 1.2; letter-spacing: -.025em; margin-bottom: 1.5cqw; }
+  .needs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2cqw; margin-top: 2cqw; }
+  .need { border-top: 2px solid var(--amber); padding-top: .9cqw; }
+  .need strong { display: block; font-size: 1.4cqw; font-weight: 500; }
+  .need span { display: block; font-size: 1.02cqw; color: var(--muted); line-height: 1.4; margin-top: .35cqw; }
+
+  .loop { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-top: 2.2cqw; }
+  .loop-step { position: relative; min-height: 13.6cqw; padding: 1.6cqw 1.4cqw; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .loop-step + .loop-step { border-left: 1px solid var(--line); }
+  .loop-step:not(:last-child)::after { content: "→"; position: absolute; right: -.48cqw; top: 5.25cqw; z-index: 2; color: var(--amber-pale); background: var(--ink); font-size: 1.25cqw; line-height: 1; padding: .2cqw 0; }
+  .loop-step .num { font-family: var(--font-mono); font-size: .75cqw; color: var(--amber-pale); }
+  .loop-step h3 { margin-top: 2.6cqw; font-family: var(--font-serif); font-size: 2.1cqw; font-weight: 400; }
+  .loop-step p { margin-top: .75cqw; font-size: 1.02cqw; line-height: 1.4; color: var(--muted); }
+  .loop-coda { display: flex; justify-content: space-between; gap: 2cqw; align-items: baseline; margin-top: 2.2cqw; }
+  .loop-coda strong { font-family: var(--font-serif); font-size: 2.15cqw; font-weight: 400; }
+  .loop-coda span { max-width: 40ch; font-size: 1.12cqw; line-height: 1.4; color: var(--muted); text-align: right; }
+
+  .route-layout { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, .55fr); gap: 3.2cqw; align-items: stretch; }
+  .route-list { list-style: none; padding: 0; display: grid; gap: .85cqw; }
+  .route-list li { display: grid; grid-template-columns: 2.3cqw minmax(0, 1fr); gap: .8cqw; align-items: baseline; border-bottom: 1px solid rgba(58, 70, 59, .65); padding-bottom: .75cqw; }
+  .route-list .route-no { font-family: var(--font-mono); color: var(--amber-pale); font-size: .78cqw; }
+  .route-list p { font-size: 1.08cqw; line-height: 1.36; }
+  .route-list .pending-copy { color: var(--amber-pale); }
+  .route-status { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 1.2cqw; margin-top: 1.25cqw; }
+  .route-status .small { font-size: .91cqw; }
+  .route-shot { min-height: 25cqw; }
+
+  .decision-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .72fr); gap: 4.2cqw; align-items: center; }
+  .decision-headline { font-family: var(--font-serif); font-size: 4.1cqw; line-height: 1.06; letter-spacing: -.035em; }
+  .decision-floor { display: inline-block; margin-top: 1.1cqw; font-family: var(--font-mono); font-size: .98cqw; letter-spacing: .06em; color: var(--ink); background: var(--amber-pale); padding: .48cqw .7cqw; }
+  .decision-reasons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5cqw; margin-top: 2.2cqw; }
+  .decision-reasons p { font-size: 1.12cqw; line-height: 1.44; }
+  .decision-reasons strong { display: block; color: var(--amber-pale); font-weight: 500; margin-bottom: .45cqw; }
+  .decision-shot { height: 30cqw; }
+  .clock-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2cqw; margin-top: 1.5cqw; }
+  .clock-pair .metric { font-size: 2.55cqw; }
+
+  .cost-equation { display: grid; grid-template-columns: 1fr auto 1fr; gap: 2cqw; align-items: center; padding: 1.5cqw 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .cost-equation .metric { font-size: 3.8cqw; }
+  .cost-equation .operator { font-family: var(--font-serif); font-size: 3cqw; color: var(--amber-pale); }
+  .watch-line { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.4cqw; align-items: baseline; }
+  .watch-line .metric { font-size: 2.8cqw; }
+  .cost-bottom { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 3cqw; align-items: end; }
+  .share-head { display: flex; justify-content: space-between; gap: 1cqw; align-items: baseline; }
+  .share-head strong { font-family: var(--font-serif); font-size: 2.7cqw; font-weight: 400; }
+  .share-track { position: relative; height: 1.05cqw; margin-top: .8cqw; background: #2c362e; }
+  .share-fill { width: 63%; height: 100%; background: var(--mark); }
+  .share-note { margin-top: .65cqw; color: var(--muted); font-size: .92cqw; }
+  .cost-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1cqw 1.5cqw; }
+  .cost-facts .fact { border-left: 1px solid var(--line); padding-left: .9cqw; }
+  .cost-facts strong { display: block; font-family: var(--font-serif); font-weight: 400; font-size: 1.8cqw; }
+  .cost-facts span { display: block; margin-top: .25cqw; color: var(--muted); font-size: .85cqw; line-height: 1.35; }
+
+  .strength-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .82fr) minmax(0, 1fr); gap: 2.1cqw; align-items: stretch; }
+  .strength-grid .panel { min-height: 29.2cqw; }
+  .tower-chart { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2cqw; height: 17.5cqw; align-items: end; margin-top: 1.2cqw; border-bottom: 1px solid var(--line); }
+  .tower-bar { height: var(--h); background: var(--mark); position: relative; min-height: 1cqw; }
+  .tower-bar::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent 0 1.1cqw, rgba(16, 23, 21, .42) 1.1cqw 1.2cqw); }
+  .tower-labels { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2cqw; margin-top: .75cqw; }
+  .tower-labels strong { display: block; font-family: var(--font-serif); font-size: 2.1cqw; font-weight: 400; }
+  .tower-labels span { font-family: var(--font-mono); color: var(--muted); font-size: .72cqw; }
+  .dogleg { position: relative; height: 12.5cqw; margin: 1.3cqw 0 1cqw; border-bottom: 1px solid var(--line); }
+  .planter { position: absolute; left: 40%; bottom: 1.3cqw; width: 4.1cqw; height: 4.1cqw; border: 1px solid var(--line); background: #253128; }
+  .dogleg-line { position: absolute; left: 8%; right: 8%; bottom: 3.1cqw; height: 5.2cqw; border-left: .22cqw solid var(--amber); border-top: .22cqw solid var(--amber); border-right: .22cqw solid var(--amber); }
+  .flip-grid {
+    height: 11.5cqw;
+    margin: 1.2cqw 0 1cqw;
+    border: 1px solid var(--line);
+    background:
+      repeating-linear-gradient(0deg, transparent 0 calc(100% / 33 - 1px), rgba(217, 164, 65, .2) calc(100% / 33 - 1px) calc(100% / 33)),
+      repeating-linear-gradient(90deg, transparent 0 calc(100% / 17 - 1px), rgba(217, 164, 65, .2) calc(100% / 17 - 1px) calc(100% / 17)),
+      #19231e;
+  }
+
+  .gate-hero { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 4cqw; align-items: end; }
+  .gate-count { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.3cqw; }
+  .gate-count .metric { font-size: 4.4cqw; }
+  .gate-run { border-left: 2px solid var(--amber); padding-left: 1.25cqw; }
+  .gate-run p { font-size: 1.15cqw; line-height: 1.45; }
+  .gate-details { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 2.2cqw; }
+  .gate-table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: .83cqw; }
+  .gate-table th, .gate-table td { text-align: left; padding: .52cqw .4cqw; border-bottom: 1px solid var(--line); }
+  .gate-table th { color: var(--muted); font-weight: 400; text-transform: uppercase; letter-spacing: .08em; font-size: .68cqw; }
+  .gate-table td:last-child { color: var(--amber-pale); text-align: right; }
+  .lift-facts { display: grid; gap: .85cqw; }
+  .lift-facts div { display: flex; justify-content: space-between; gap: 1cqw; border-bottom: 1px solid var(--line); padding-bottom: .55cqw; }
+  .lift-facts strong { font-family: var(--font-mono); font-weight: 500; font-size: 1.05cqw; }
+  .lift-facts span { color: var(--muted); font-size: .9cqw; text-align: right; }
+  .gate-caveat { display: grid; grid-template-columns: 1fr 1fr; gap: 2cqw; border-top: 1px solid var(--line); padding-top: 1.05cqw; }
+  .gate-caveat p { font-size: 1cqw; line-height: 1.42; }
+  .gate-caveat strong { color: var(--amber-pale); font-weight: 500; }
+
+  .limitation-voice { display: grid; grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr); gap: 4.2cqw; align-items: center; }
+  .limitation-voice .display { font-size: 5.2cqw; }
+  .finding-stack { display: grid; gap: 1.15cqw; }
+  .finding { display: grid; grid-template-columns: 9.4cqw minmax(0, 1fr); gap: 1.1cqw; border-top: 1px solid var(--line); padding-top: .85cqw; }
+  .finding .finding-label { font-family: var(--font-mono); color: var(--amber-pale); font-size: .75cqw; text-transform: uppercase; letter-spacing: .08em; }
+  .finding p { font-size: 1.06cqw; line-height: 1.42; }
+  .limitation-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2cqw; margin-top: 1.4cqw; }
+  .limitation-metrics .panel { display: flex; gap: 1.2cqw; align-items: baseline; }
+  .limitation-metrics .metric { font-size: 3.2cqw; }
+  .limitation-metrics p { font-size: .96cqw; color: var(--muted); line-height: 1.4; }
+
+  .scope-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: 3.2cqw; align-items: stretch; }
+  .scope-left { display: flex; flex-direction: column; gap: 1cqw; }
+  .scope-row { display: grid; grid-template-columns: 13.8cqw minmax(0, 1fr); gap: 1.2cqw; border-top: 1px solid var(--line); padding-top: .8cqw; }
+  .scope-row .scope-name { font-family: var(--font-serif); font-size: 1.55cqw; line-height: 1.2; }
+  .scope-row p { font-size: 1.02cqw; line-height: 1.4; }
+  .scope-shot { height: 20.5cqw; }
+  .scope-bottom { display: grid; grid-template-columns: 1.2fr 1fr .8fr; gap: 1.5cqw; margin-top: 1.15cqw; }
+  .scope-bottom .panel { padding: 1.1cqw; }
+  .scope-bottom h3 { font-family: var(--font-mono); font-size: .74cqw; text-transform: uppercase; letter-spacing: .1em; color: var(--amber-pale); margin-bottom: .55cqw; }
+  .scope-bottom p { font-size: .91cqw; line-height: 1.4; }
+  .scope-bottom .big { font-family: var(--font-serif); font-size: 2cqw; line-height: 1; margin-bottom: .45cqw; }
+
+  .llm-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.7cqw; }
+  .llm-card { border-top: 2px solid var(--amber); padding-top: 1cqw; }
+  .llm-card .num { font-family: var(--font-mono); color: var(--amber-pale); font-size: .75cqw; }
+  .llm-card h3 { font-family: var(--font-serif); font-size: 1.9cqw; font-weight: 400; margin: .75cqw 0; }
+  .llm-card p { font-size: 1.04cqw; line-height: 1.43; }
+  .llm-quote { display: grid; grid-template-columns: 10.5cqw minmax(0, 1fr); gap: 2cqw; align-items: center; margin-top: .4cqw; }
+  .equation { font-family: var(--font-mono); font-size: 1.1cqw; color: var(--amber-pale); line-height: 1.5; font-variant-numeric: tabular-nums; }
+  .routing-rule { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5cqw; border-top: 1px solid var(--line); padding-top: 1cqw; }
+  .routing-rule p { font-size: .98cqw; line-height: 1.42; }
+  .routing-rule strong { display: block; color: var(--amber-pale); font-weight: 500; margin-bottom: .3cqw; }
+
+  .demo-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 3.2cqw; align-items: stretch; }
+  .timebox { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8cqw; }
+  .timebox div { border-top: 1px solid var(--line); padding-top: .65cqw; }
+  .timebox strong { display: block; font-family: var(--font-serif); font-size: 2.45cqw; font-weight: 400; }
+  .timebox span { font-size: .85cqw; color: var(--muted); }
+  .demo-route { display: flex; flex-wrap: wrap; gap: .45cqw .65cqw; margin-top: 1.4cqw; }
+  .demo-route span { font-family: var(--font-mono); font-size: .8cqw; color: var(--ivory); }
+  .demo-route span:not(:last-child)::after { content: " →"; color: var(--amber-pale); }
+  .beats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1cqw; margin-top: 1.4cqw; }
+  .beat { border-top: 2px solid var(--amber); padding-top: .7cqw; }
+  .beat .n { font-family: var(--font-mono); font-size: .72cqw; color: var(--amber-pale); }
+  .beat p { margin-top: .4cqw; font-size: .94cqw; line-height: 1.4; }
+  .demo-shot { height: 28.5cqw; }
+  .demo-link { display: flex; flex-direction: column; gap: .5cqw; margin-top: 1.3cqw; }
+  .demo-link a { font-family: var(--font-mono); font-size: 1.03cqw; color: var(--amber-pale); text-decoration-thickness: 1px; text-underline-offset: .22cqw; overflow-wrap: anywhere; }
+  .demo-link span { font-size: .93cqw; color: var(--muted); }
+
+  .close-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 4.2cqw; align-items: center; }
+  .close-steps { display: grid; gap: 1cqw; margin-top: 1.8cqw; }
+  .close-step { display: grid; grid-template-columns: 2.7cqw minmax(0, 1fr); gap: .9cqw; align-items: baseline; border-top: 1px solid var(--line); padding-top: .8cqw; }
+  .close-step .n { font-family: var(--font-mono); color: var(--amber-pale); font-size: .8cqw; }
+  .close-step p { font-size: 1.2cqw; line-height: 1.4; }
+  .fallback { border-left: 2px solid var(--amber); padding-left: 1.3cqw; }
+  .fallback .big { font-family: var(--font-serif); font-size: 3.2cqw; line-height: 1.05; margin: .7cqw 0; }
+  .fallback p { font-size: 1.04cqw; line-height: 1.45; color: var(--muted); }
+
+  .notes { display: none !important; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+  .hud {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 20;
+    min-height: 3.6rem;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1rem;
+    padding: .55rem 1.1rem;
+    border-top: 1px solid var(--line);
+    background: rgba(12, 18, 16, .97);
+    color: var(--muted);
+    font-size: .68rem;
+  }
+  .hud-brand { justify-self: start; color: var(--ivory); }
+  .hud-controls { display: flex; align-items: center; gap: .45rem; }
+  .hud button {
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ivory);
+    padding: .42rem .7rem;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-size: .65rem;
+  }
+  .hud button:hover:not(:disabled) { border-color: var(--amber); color: var(--amber-pale); }
+  .hud button:disabled { opacity: .35; cursor: default; }
+  .hud-hint { justify-self: end; }
+  .counter { color: var(--ivory); font-variant-numeric: tabular-nums; min-width: 4.5rem; text-align: center; }
+  .progress { position: absolute; left: 0; top: -1px; height: 1px; width: 7.1429%; background: var(--amber); transition: width 180ms ease-out; }
+
+  @media (max-width: 760px) {
+    .hud { grid-template-columns: 1fr auto; }
+    .hud-hint { display: none; }
+    .hud-brand { font-size: .6rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .progress { transition: none; }
+  }
+
+  @page { size: A4 landscape; margin: 0; }
+  @media print {
+    html, body { width: 297mm; height: auto; overflow: visible; background: var(--ink-deep); }
+    body { margin: 0; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .hud { display: none !important; }
+    .deck { position: static; inset: auto; display: block; width: 297mm; background: var(--ink-deep); }
+    .slide, .slide:first-of-type, .slide.active {
+      display: grid !important;
+      position: relative;
+      inline-size: 297mm;
+      block-size: 167.0625mm;
+      margin: 21.46875mm auto 0;
+      padding: 12.85mm 16.04mm 12.35mm;
+      break-after: page;
+      page-break-after: always;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .slide:last-of-type { break-after: auto; page-break-after: auto; }
+    .slide::before { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .notes, .sr-only { display: none !important; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<main class="deck" aria-label="HKU: Barrier 2030 submission deck">
+
+  <section class="slide title-slide active" role="group" aria-roledescription="slide" aria-label="1 of 14: Title">
+    <div class="campus" aria-hidden="true"><i class="tower"></i><i class="tower"></i><i class="tower"></i><i class="tower"></i></div>
+    <div class="title-year" aria-hidden="true">2030</div>
+    <div class="slide-grid">
+      <div class="slide-top"><div class="kicker">Vibe Coding Hackathon · Submission deck</div><div class="folio">01 / 14</div></div>
+      <div class="slide-content">
+        <div class="title-layout">
+          <h1><span>HKU:</span><br><span class="accent">Barrier 2030</span></h1>
+          <p class="subtitle">A CDS campus story</p>
+          <div class="meta">
+            <span>A first-person 3D campus story</span>
+            <span class="mono">Vite + TypeScript + Three.js · v9.1.0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">This is HKU: Barrier 2030 — A CDS campus story. It is a first-person 3D story that takes place on this campus, built with Vite, TypeScript and Three.js. It runs as one page, one continuous run, with no reload between chapters.</aside>
+  </section>
+
+  <section class="slide" role="group" aria-roledescription="slide" aria-label="2 of 14: The premise">
+    <div class="slide-grid">
+      <div class="slide-top"><div class="kicker">02 / The premise</div><div class="folio">02 / 14</div></div>
+      <div class="slide-content">
+        <div class="premise-grid">
+          <div>
+            <h2>2030. The campus wakes up.</h2>
+            <p class="lead" style="margin-top:1.4cqw">The campus AI takes the robots and seals the base behind a barrier.</p>
+            <div class="premise-list">
+              <div class="premise-item"><div class="n">01</div><p>You are the one Student Ambassador nobody caught.</p></div>
+              <div class="premise-item"><div class="n">02</div><p>One MacBook.</p></div>
+              <div class="premise-item"><div class="n">03</div><p>Three breaks in the power chain.</p></div>
+            </div>
+          </div>
+          <div class="barrier-motif" aria-hidden="true"><div class="barrier-year">The campus<br>is the level.</div></div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">In 2030 the campus AI wakes up and takes the robots with it, sealing the base behind a barrier. You are the one Student Ambassador it did not catch, and the only tools you have are a MacBook and three breaks in the power chain. The point of the fiction is not the fight — it is that every one of those three breaks sits in a different building, so the story makes you learn the campus by walking it.</aside>
+  </section>
+
+  <section class="slide" role="group" aria-roledescription="slide" aria-label="3 of 14: Who it is for">
+    <div class="slide-grid">
+      <div class="slide-top"><div class="kicker">03 / Who it is for</div><div class="folio">03 / 14</div></div>
+      <div class="slide-content">
+        <div class="audience-main">
+          <div>
+            <h2>For the visitor who arrives with no mental map.</h2>
+            <p class="audience-voice" style="margin-top:1.4cqw">Not “gamers”.<br>Not “students” in general.<br>Not the judges.</p>
+            <p class="body muted">A first-time visitor to the HKU Zhangjiang Base, invited to an open day, a High Table Dinner or a family visit — and not yet sure which building is which.</p>
+            <div class="needs">
+              <div class="need"><strong>Not being lost</strong><span>They arrive at the gate with about half an hour and no mental map.</span></div>
+              <div class="need"><strong>One thing to tell</strong><span>Having one thing worth telling someone afterwards.</span></div>
+            </div>
+            <p class="micro" style="margin-top:.85cqw">“About half an hour” is our pacing assumption, not a measured visitor figure. The game opens at the High Table Dinner because that is the event this visitor actually attends.</p>
+          </div>
+          <figure class="shot" data-shot="dinner">
+            <img src="shots/dinner.png" alt="High Table Dinner scene from the game" onerror="this.hidden=true;this.parentElement.classList.add('is-missing');">
+            <div class="shot-fallback" aria-hidden="true"><div class="mini-campus"><i></i><i></i><i></i><i></i></div><strong>B5 / HIGH TABLE DINNER</strong><span>Screenshot pending · shots/dinner.png</span></div>
+            <figcaption>B5 High Table Dinner · the opening event</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">This is built for one person: a first-time visitor to the HKU Zhangjiang Base who has been invited to an open day or a dinner and has no idea which building is which. They have about half an hour and no mental map, and what they want is to not be lost and to leave with one thing worth telling someone. That is why the game opens at the High Table Dinner — it is the event that visitor is actually attending, so the fiction starts where the visitor already is.</aside>
+  </section>
+
+  <section class="slide" role="group" aria-roledescription="slide" aria-label="4 of 14: The loop">
+    <div class="slide-grid">
+      <div class="slide-top"><div class="kicker">04 / The loop · four-verb design summary</div><div class="folio">04 / 14</div></div>
+      <div class="slide-content">
+        <h2>Explore. Solve. Answer. Move.</h2>
+        <div class="loop">
+          <div class="loop-step"><div class="num">01</div><h3>Explore</h3><p>The campus is the level.</p></div>
+          <div class="loop-step"><div class="num">02</div><h3>Solve</h3><p>Use the MacBook.</p></div>
+          <div class="loop-step"><div class="num">03</div><h3>The building answers</h3><p>The world changes.</p></div>
+          <div class="loop-step"><div class="num">04</div><h3>The next place</h3><p>The route opens.</p></div>
+        </div>
+        <div class="loop-coda"><strong>Four verbs. One page. No menu between them.</strong><span>The MacBook is the only interface that is not the world.</span></div>
+      </div>
+    </div>
+    <aside class="notes">The loop is four verbs: explore, solve, the building answers, and the next place opens. There is no chapter menu between them — the state machine is a single ordered list of stages, and the page never reloads. The MacBook is the one interface that is not the world itself, which is why it is the thing the errand is about.</aside>
+  </section>
+
+  <section class="slide" role="group" aria-roledescription="slide" aria-label="5 of 14: The route">
+    <div class="slide-grid">
+      <div class="slide-top"><div class="kicker">05 / The route, and what is on it</div><div class="folio">05 / 14</div></div>
+      <div class="slide-content">
+        <h2>One route. Three crossings.</h2>
+        <div class="route-layout">
+          <div>
+            <ol class="route-list">
+              <li><span class="route-no">01</span><p>B5 High Table Dinner → B4 5F principal’s office (the MacBook) → back to B5 (the incident)</p></li>
+              <li><span class="route-no">02</span><p>B4 main entrance (the Keyboard Wall) → exterior → B4 side entrance</p></li>
+              <li><span class="route-no">03</span><p><span class="pending-copy">Flip wall</span> → breaker → the MacBook comes back online</p></li>
+              <li><span class="route-no">04</span><p>Lawn → sports hall</p></li>
+              <li><span class="route-no">05</span><p><span class="pending-copy">Four-tower finale</span></p></li>
+            </ol>
+            <div class="route-status">
+              <div class="panel" style="padding:1cqw"><div class="status built">Built</div><p class="small" style="margin-top:.55cqw">Opening · B5 dinner · B4 side door · lift · 5F office + three beats · Keyboard Wall · lawn and sports hall chapters.</p><p class="micro" style="margin-top:.45cqw">Keyboard Wall: type I LOVE CDS, or click the gold caps.</p></div>
+              <div class="panel" style="padding:1cqw"><div class="status pending">Not built yet</div><p class="small" style="margin-top:.55cqw">Flip-wall puzzle: <span class="mono">b4_flip</span> is a 1.2 s automatic service-wall beat. B6 retirement: <span class="mono">to_b6</span> remains canonical. Four-tower mesh light show: prototype only.</p></div>
+            </div>
+          </div>
+          <figure class="shot route-shot" data-shot="bus">
+            <img src="shots/bus.png" alt="Bus view from the campus route" onerror="this.hidden=true;this.parentElement.classList.add('is-missing');">
+            <div class="shot-fallback" aria-hidden="true"><div class="mini-campus"><i></i><i></i><i></i><i></i></div><strong>BUS / CAMPUS ROUTE</strong><span>Screenshot pending · shots/bus.png</span></div>
+            <figcaption>Campus route · local screenshot slot</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">The route crosses between B4 and B5 three times, and that is the shape the plan settled on — it is also why the flip wall sits on the second B4 visit, after the exterior and beam beat has landed. I want to be plain about status: the opening, the side door, the lift, the fifth-floor office and the Keyboard Wall are all built and gated; the flip-wall puzzle, the B6 retirement and the light-show finale are not, and the last one exists only as a prototype.</aside>
+  </section>
+
+  <section class="slide" role="group" aria-roledescription="slide" aria-label="6 of 14: The team decision">
+    <div class="slide-grid">
+      <div class="slide-top"><div class="kicker">06 / One team decision</div><div class="folio">06 / 14</div></div>
+      <div class="slide-content">
+        <div class="decision-layout">
+          <div>
+            <div class="decision-headline">First-person 3D<br>+ 30–45 s errand pacing</div>
+            <div class="decision-floor">Measured floor: 27.12 s</div>
+            <div class="decision-reasons">
+              <p><strong>The building is the interface.</strong>A map tells you which building is which; walking it teaches you where the side door is.</p>
+              <p><strong>A corridor becomes somewhere.</strong>30–45 s is the shortest band where the walk stops being scenery.</p>
+            </div>
+          </div>
+          <figure class="shot decision-shot" data-shot="laptop">
+            <img src="shots/laptop.png" alt="MacBook objective in the first-person campus game" onerror="this.hidden=true;this.parentElement.classList.add('is-missing');">
+            <div class="shot-fallback" aria-hidden="true"><div class="mini-campus"><i></i><i></i><i></i><i></i></div><strong>ONE MACBOOK / ONE INTERFACE</strong><span>Screenshot pending · shots/laptop.png</span></div>
+            <figcaption>The MacBook · the only interface that is not the world</figcaption>
+          </figure>
+        </div>
+        <div class="clock-pair">
+          <div class="panel"><div class="metric">27.12 s</div><div class="metric-label" style="margin-top:.4cqw">Walk straight through</div></div>
+          <div class="panel"><div class="metric">31.14 s</div><div class="metric-label" style="margin-top:.4cqw">Includes the monitor stop</div></div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">Our decision was first-person 3D, with the errand paced at thirty to forty-five seconds — and the honest floor under that band is twenty-seven: if you walk straight through, the errand is twenty-seven point one two seconds, and if you stop at the monitor it is thirty-one point one four. We picked the band because first person makes the building the interface, and thirty seconds is about where a corridor stops being scenery and becomes somewhere you have been. The cost was that the band and the world did not agree, and we decided not to force them to.</aside>
+  </section>
+
+  <section class="slide" role="group" aria-roledescription="slide" aria-label="7 of 14: What the decision cost">
+    <div class="slide-grid">
+      <div class="slide-top"><div class="kicker">07 / What that decision cost</div><div class="folio">07 / 14</div></div>
+      <div class="slide-content">
+        <h2>The band and the world did not agree.</h2>
+        <div class="cost-equation">
+          <div><div class="metric">27.12 s</div><div class="metric-label" style="margin-top:.45cqw">The world</div></div>
+          <div class="operator">&lt;</div>
+          <div><div class="metric">30 s</div><div class="metric-label" style="margin-top:.45cqw">The band’s floor</div></div>
+        </div>
+        <div class="watch-line"><div class="metric">31.14 s</div><p class="body">includes a <span class="accent">4.0 s</span> stop authored inside the test, not a product hold. <strong>Ruling: no product hold.</strong> A forced stop is a stopwatch gate in product clothes.</p></div>
+        <div class="cost-bottom">
+          <div>
+            <div class="share-head"><strong>17.13 s · 63%</strong><span class="small muted">of the 27.12 s beeline is lift</span></div>
+            <div class="share-track" role="img" aria-label="Lift accounts for 63 percent of the 27.12 second beeline errand"><div class="share-fill" title="17.13 s of 27.12 s is lift — 63%"></div></div>
+            <p class="share-note">The car is parked on the 5th floor; the ground call alone is 8.42 s. One errand is two full 6 s travels.</p>
+            <table class="sr-only"><caption>Lift share of beeline errand</caption><tr><th>Measure</th><th>Value</th></tr><tr><td>Lift time</td><td>17.13 s</td></tr><tr><td>Share of 27.12 s</td><td>63%</td></tr></table>
+          </div>
+          <div class="cost-facts">
+            <div class="fact"><strong>18.90 m</strong><span>in 6.0083 s descent</span></div>
+            <div class="fact"><strong>8940 ms</strong><span>lift call</span></div>
+            <div class="fact"><strong>0.0005 m</strong><span>max |body − car| · 34 samples</span></div>
+            <div class="fact"><strong>14.98 s</strong><span>return leg · desk → ground lobby</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">Here is the cost, and it is the most interesting true thing about the pacing. The world asks for twenty-seven point one two seconds, which is under the thirty-second floor, and the thirty-one point one four only exists because our test stands at the monitor for four seconds. We refused to put that hold into the product, because a forced four-second stop is the stopwatch gate the plan forbids, just wearing product clothes. And seventeen point one three seconds of that twenty-seven is lift — sixty-three percent — because the car lives on the fifth floor and has to come down before it can take you up.</aside>
+  </section>
+
+  <section class="slide" role="group" aria-roledescription="slide" aria-label="8 of 14: Strength one">
+    <div class="slide-grid">
+      <div class="slide-top"><div class="kicker">08 / Strength 01</div><div class="folio">08 / 14</div></div>
+      <div class="slide-content">
+        <h2>The building is surveyed, not invented.</h2>
+        <div class="strength-grid">
+          <div class="panel panel-top">
+            <div class="label accent">Source parameters, not taste</div>
+            <div class="tower-chart" role="img" aria-label="B01 and B02 are 79.60 metres tall; B03 and B04 are 66.15 metres tall">
+              <div class="tower-bar" style="--h:100%" title="B01 / B02 — 79.60 m"></div>
+              <div class="tower-bar" style="--h:83.1%" title="B03 / B04 — 66.15 m"></div>
+            </div>
+            <div class="tower-labels"><div><strong>79.60 m</strong><span>B01 / B02</span></div><div><strong>66.15 m</strong><span>B03 / B04</span></div></div>
+            <table class="sr-only"><caption>Tower heights</caption><tr><th>Towers</th><th>Height</th></tr><tr><td>B01 / B02</td><td>79.60 m</td></tr><tr><td>B03 / B04</td><td>66.15 m</td></tr></table>
+          </div>
+          <div class="panel panel-top">
+            <div class="label accent">The planter stayed</div>
+            <div class="dogleg" role="img" aria-label="The B4 side door doglegs around the surveyed planter"><div class="planter"></div><div class="dogleg-line"></div></div>
+            <div class="metric" style="font-size:3.1cqw">about 2 m</div>
+            <p class="small muted" style="margin-top:.55cqw">The side door moved around the surveyed planter rather than moving the planter. Extra walking was accepted because the pacing wanted the walk.</p>
+          </div>
+          <div class="panel panel-top">
+            <div class="label accent">The grid belongs on the wall</div>
+            <div class="flip-grid" role="img" aria-label="Flip wall grid: 17 by 33 equals 561 tiles"></div>
+            <div class="metric" style="font-size:2.7cqw">17 × 33 = 561</div>
+            <p class="small" style="margin-top:.55cqw">tiles on a <span class="mono">7.37 × 3.90 m</span> wall: <span class="mono">0.223 × 0.229 m</span> tiles, near-square.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">The first strength is that the building is surveyed, not invented. The tower heights come from the campus parameters, so the two tall towers are seventy-nine point six metres and the two shorter ones are sixty-six point one five. When the new side door landed on top of a surveyed planter, we moved the door around the planter instead of moving the planter — about two metres of extra walking, which the pacing wanted anyway. The flip wall's grid is five hundred and sixty-one tiles because that is what makes the tiles near-square on a seven-point-three-seven-metre wall.</aside>
+  </section>
+
+  <section class="slide" role="group" aria-roledescription="slide" aria-label="9 of 14: Strength two">
+    <div class="slide-grid">
+      <div class="slide-top"><div class="kicker">09 / Strength 02</div><div class="folio">09 / 14</div></div>
+      <div class="slide-content">
+        <h2>Behaviour is gated, not described.</h2>
+        <div class="gate-hero">
+          <div class="gate-count">
+            <div><div class="metric">70</div><div class="metric-label" style="margin-top:.4cqw">passed</div></div>
+            <div><div class="metric">0</div><div class="metric-label" style="margin-top:.4cqw">failed</div></div>
+            <div><div class="metric">0</div><div class="metric-label" style="margin-top:.4cqw">findings</div></div>
+          </div>
+          <div class="gate-run"><div class="status built">Review build · after the MacBook fix</div><p class="mono" style="margin-top:.65cqw">check:b4-errand · 70 passed / 0 failed / 0 findings</p><p class="small muted" style="margin-top:.45cqw">This is the 70-check review-build run, not the earlier 48-check recorded run.</p></div>
+        </div>
+        <div class="gate-details">
+          <div>
+            <div class="label muted" style="margin-bottom:.45cqw">Five other gates · earlier recorded run</div>
+            <table class="gate-table"><tbody>
+              <tr><th>Gate</th><th>Result</th></tr>
+              <tr><td>tsc</td><td>exit 0</td></tr>
+              <tr><td>check:b4-office</td><td>failures: []</td></tr>
+              <tr><td>check:opening</td><td>exit 0</td></tr>
+              <tr><td>check:campaign</td><td>exit 0</td></tr>
+              <tr><td>check:lift</td><td>PASS</td></tr>
+            </tbody></table>
+          </div>
+          <div>
+            <div class="label muted" style="margin-bottom:.45cqw">check:lift · its own numbers</div>
+            <div class="lift-facts">
+              <div><strong>8940 ms</strong><span>call</span></div>
+              <div><strong>6.0083 s</strong><span>descent</span></div>
+              <div><strong>x 46.413</strong><span>doorway blocked · car at 5F</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="gate-caveat">
+          <p><strong>State, not pixels.</strong> A redesign does not silently pass.</p>
+          <p><strong>What no gate covers:</strong> whether the CCTV feed reads, whether the trolley is in frame. Both failed by eye.</p>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">The second strength is that behaviour is gated rather than described. The errand gate finishes seventy checks with zero failures and zero findings, and the lift gate prints its own numbers — an eight-nine-four-zero millisecond call and a six-point-zero-zero-eight-three second descent. Because the gates assert state rather than pixels, we can change the look of a room without quietly breaking the claim that the errand works. I want to be exact about where that stops. The gates cover what the build does, not what it shows. Whether the CCTV feed is legible, whether the trolley is in frame — nothing asserts those, and both are wrong today. Slide ten is what looking at the screenshots found, and looking is the only thing that found it.</aside>
+  </section>
+
+  <section class="slide" role="group" aria-roledescription="slide" aria-label="10 of 14: Limitation one">
+    <div class="slide-grid">
+      <div class="slide-top"><div class="kicker">10 / Limitation 01 · what is weak in what we built</div><div class="folio">10 / 14</div></div>
+      <div class="slide-content">
+        <div class="limitation-voice">
+          <div><div class="status defect">Found by looking, not by a gate</div><div class="display" style="margin-top:1cqw">It plays.<br><span class="accent">It does not always read.</span></div></div>
+          <div class="finding-stack">
+            <div class="finding"><div class="finding-label">CCTV / 1280</div><p>Five pale columns, one taller with a red bar. The 4.0 s look is currently paid for a picture that says nothing.</p></div>
+            <div class="finding"><div class="finding-label">CCTV / 390</div><p>Two columns and a red dot. The feed still does not read at a glance.</p></div>
+            <div class="finding"><div class="finding-label">Trolley</div><p>A small dark shape at 1280; out of frame at 390. The object meant to say “people left in a hurry” says nothing.</p></div>
+          </div>
+        </div>
+        <div class="limitation-metrics">
+          <div class="panel"><div class="metric">63%</div><p>of the errand is behind lift doors.</p></div>
+          <div class="panel"><div class="metric">17.13 s</div><p>of lift: fine to play, thin to watch in the video.</p></div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">These are the weaknesses in what we actually built, and they were found by looking at the screenshots rather than reading the report about them. The CCTV feed does not read at either size — five pale columns at desktop, two columns and a red dot at phone — so the four seconds we spend there is buying a look at something that says nothing. The trolley is the same story, and at phone width it is out of frame entirely. And sixty-three percent of the errand is behind lift doors, which is fine to play and thin to watch.</aside>
+  </section>
+
+  <section class="slide" role="group" aria-roledescription="slide" aria-label="11 of 14: Limitation two">
+    <div class="slide-grid">
+      <div class="slide-top"><div class="kicker">11 / Limitation 02 · what is not built</div><div class="folio">11 / 14</div></div>
+      <div class="slide-content">
+        <div class="scope-grid">
+          <div class="scope-left">
+            <div class="scope-row"><div><div class="status pending">Not built yet</div><div class="scope-name" style="margin-top:.4cqw">Flip-wall puzzle</div></div><p><span class="mono">b4_flip</span> is a 1.2 s automatic service-wall beat.</p></div>
+            <div class="scope-row"><div><div class="status pending">Not built yet</div><div class="scope-name" style="margin-top:.4cqw">B6 retirement</div></div><p><span class="mono">to_b6</span> is still the canonical stage id.</p></div>
+            <div class="scope-row"><div><div class="status pending">Not built yet</div><div class="scope-name" style="margin-top:.4cqw">Four-tower light show</div></div><p>Mesh light show is prototype only.</p></div>
+            <div class="scope-row"><div><div class="status built">Done · 2026-11-26</div><div class="scope-name" style="margin-top:.4cqw">Tag and demo video</div></div><p><span class="mono">v9.1.0</span> is cut on <span class="mono">abcf599</span>; a 84.5 s clip is recorded from it — opening cinematic to the accepted invitation, not the whole route.</p></div>
+          </div>
+          <figure class="shot scope-shot" data-shot="finale">
+            <img src="shots/finale.png" alt="Four-tower finale prototype" onerror="this.hidden=true;this.parentElement.classList.add('is-missing');">
+            <div class="shot-fallback" aria-hidden="true"><div class="mini-campus"><i></i><i></i><i></i><i></i></div><strong>FOUR-TOWER FINALE / PROTOTYPE</strong><span>Screenshot pending · shots/finale.png</span></div>
+            <figcaption>Prototype only · not shipped in v9.1.0</figcaption>
+          </figure>
+        </div>
+        <div class="scope-bottom">
+          <div class="panel"><h3>Voice</h3><div class="big">12 shipped · 31 planned</div><p>Main-story lines are recorded and wired; <span class="mono">staff-line3</span> carries a spoken-direction defect. The 31 NPC lines have no takes at all — planned, not generated.</p></div>
+          <div class="panel"><h3>Payload · fixed by measurement</h3><div class="big">4.23 MB first click</div><p>Down from 19.33 MB. <span class="mono">dist</span> is 30.8 MB, almost all audio. <span class="mono">check:payload</span> enforces both ceilings; this P1 is fixed.</p></div>
+          <div class="panel"><h3>Honest status</h3><p>Scope is visible.<br>Known defects are named.<br>Nothing here is presented as done.</p></div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">The bigger limitations are scope, and I would rather list them than have you find them. The flip wall is still a one-point-two-second automatic beat rather than a puzzle, the old Building Six naming has not been retired from the save schema, and the four-tower light show is a prototype sitting in a scratch folder. Voice covers the main story — all twelve lines of it, with one clip still carrying a spoken direction inside the take — but the thirty-one side characters' lines have no recordings yet; that is a casting decision we have not made, not audio sitting unconnected. Loading used to be a priority bug — the first click pulled 19.33 MB and the team reported it. It is measured and bounded now: 4.23 MB at the first click, 30.8 MB total, and a gate fails the build if either ceiling moves. The remaining cost is audio, because every cue has to ship.</aside>
+  </section>
+
+  <section class="slide" role="group" aria-roledescription="slide" aria-label="12 of 14: Built with LLMs">
+    <div class="slide-grid">
+      <div class="slide-top"><div class="kicker">12 / How we built it with LLMs</div><div class="folio">12 / 14</div></div>
+      <div class="slide-content">
+        <h2>Built with LLMs — and audited anyway.</h2>
+        <div class="llm-grid">
+          <div class="llm-card"><div class="num">01 / HELD</div><h3>A separate seat</h3><p>In the round we audited, the reviewer never graded its own code.</p></div>
+          <div class="llm-card"><div class="num">02 / BROKEN</div><h3>A different model family</h3><p>We thought this guarantee held too. It did not: our aliases all resolved to one backend, so that round ran on its implementer’s family.</p></div>
+          <div class="llm-card"><div class="num">03 / CAUGHT</div><h3>The lead’s arithmetic</h3><p>The 4.0249 s gap was not “look + walking”. The walking term was negative.</p><div class="equation" style="margin-top:.65cqw">4.0249 s = 4.0000 watch<br>+ 0.0833 lift − 0.0585 walking</div></div>
+        </div>
+        <div class="llm-quote"><div class="label accent">The lesson</div><blockquote class="quote">“I checked that a number appeared, not what it was made of.”</blockquote></div>
+        <div class="routing-rule">
+          <p><strong>Gating reviews → flash-reviewer</strong>GLM 5.3 Flash via Magpie.</p>
+          <p><strong>Parallel off-critical-path reads → hku-worker</strong>DeepSeek on the HKU liteLLM group.</p>
+        </div>
+        <p class="micro">What replaced the broken guarantee is a routing rule, not a result. Two different backends. No review has been dispatched on either yet.</p>
+      </div>
+    </div>
+    <aside class="notes">The competition asks us to use LLMs, so here is the part that mattered, including the part we got wrong. We wanted two guarantees: the reviewer never grades its own code, and it comes from a different model family than the implementer. Mid-sprint we found the second one was not real — our model aliases all pointed at the same backend, so that review round was the implementer's own family grading it. That round still caught the lead's arithmetic mistake, which is exactly why the separate seat is the guarantee that has to hold. We have since ruled the routing onto two genuinely different backends — GLM 5.3 Flash on Magpie for gating reviews, DeepSeek on the HKU liteLLM group for parallel reads — and I am saying plainly that this is a rule we have written down, not an experiment we have run yet.</aside>
+  </section>
+
+  <section class="slide" role="group" aria-roledescription="slide" aria-label="13 of 14: Live demo">
+    <div class="slide-grid">
+      <div class="slide-top"><div class="kicker">13 / Live demo</div><div class="folio">13 / 14</div></div>
+      <div class="slide-content">
+        <div class="demo-layout">
+          <div>
+            <h2>9-minute demo budget.<br><span class="accent">Not a measured route time.</span></h2>
+            <div class="timebox">
+              <div><strong>2 min</strong><span>intro</span></div>
+              <div><strong>9 min</strong><span>demo</span></div>
+              <div><strong>2 min</strong><span>strengths + limits</span></div>
+              <div><strong>2 min</strong><span>questions</span></div>
+            </div>
+            <div class="demo-route" aria-label="Demo order"><span>crowd</span><span>B5 dinner</span><span>B4 side door</span><span>lift</span><span>5F office</span><span>B5 incident</span><span>B4 Keyboard Wall</span></div>
+            <div class="beats">
+              <div class="beat"><div class="n">BEAT 01</div><p>Lobby monitor: robots escorting people away.</p></div>
+              <div class="beat"><div class="n">BEAT 02</div><p>The feed dies as the doors close.</p></div>
+              <div class="beat"><div class="n">BEAT 03</div><p>Distant servo, a muffled shout, and the office door.</p></div>
+            </div>
+            <p class="micro" style="margin-top:1cqw">Checkpoint jumps sit behind the built legs only; say each jump out loud.</p>
+          </div>
+          <div>
+            <figure class="shot demo-shot" data-shot="lobby">
+              <img src="shots/lobby.png" alt="Office lobby monitor scene from the live demo" onerror="this.hidden=true;this.parentElement.classList.add('is-missing');">
+              <div class="shot-fallback" aria-hidden="true"><div class="mini-campus"><i></i><i></i><i></i><i></i></div><strong>LOBBY MONITOR / LIVE DEMO</strong><span>Screenshot pending · shots/lobby.png</span></div>
+              <figcaption>B4 ground lobby · the monitor by the lift</figcaption>
+            </figure>
+            <div class="demo-link"><a href="https://thomaslin070217.github.io/hku-shanghai-campus/">https://thomaslin070217.github.io/hku-shanghai-campus/</a><span>How to play: keyboard and mouse · Esc pauses.</span><span class="mono">Recorded clip · demo/hku-barrier-2030-v9.1.0.mp4 · 84.5 s</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">For the live run: two minutes of intro, nine of demo, two on strengths and limits, two for questions. I will play the opening crowd into the dinner, take the side door, ride the lift, and do the office and its three beats — the monitor showing people led away, the feed dying as the doors close, and the servo and the shout on five. Then back to B5 for the incident and the Keyboard Wall. Anything past the Keyboard Wall we jump to by checkpoint, and I will say so when I do it.</aside>
+  </section>
+
+  <section class="slide" role="group" aria-roledescription="slide" aria-label="14 of 14: Close">
+    <div class="campus" aria-hidden="true"><i class="tower"></i><i class="tower"></i><i class="tower"></i><i class="tower"></i></div>
+    <div class="slide-grid">
+      <div class="slide-top"><div class="kicker">14 / Close</div><div class="folio">14 / 14</div></div>
+      <div class="slide-content">
+        <div class="close-grid">
+          <div>
+            <h2>v9.1.0.<br><span class="accent">One thing before submission.</span></h2>
+            <div class="close-steps">
+              <div class="close-step"><div class="n">01</div><p>Cut the tag. <span class="status built">Done</span> <span class="mono">v9.1.0</span> on <span class="mono">abcf599</span>.</p></div>
+              <div class="close-step"><div class="n">02</div><p>Playtest it, then record from that tag. <span class="status built">Done</span> 66/66 route gate green; 84.5 s clip recorded 2026-11-26.</p></div>
+              <div class="close-step"><div class="n">03</div><p>Rotate the two credentials posted in the team chat.</p></div>
+            </div>
+          </div>
+          <div class="fallback">
+            <div class="status built">Built · verified 2026-11-26</div>
+            <div class="big">Local fallback,<br>network off.</div>
+            <p><span class="mono">dist/</span> served from one folder. A full opening run made 82 requests and every host was <span class="mono">127.0.0.1</span> — no CDN, no font host, no API. The assistant's loopback bridge is absent in that run and the game still plays.</p>
+            <p class="serif accent" style="font-size:1.8cqw;margin-top:1.4cqw">A CDS campus story.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">What you are looking at is version nine point one point zero. Two of the three items that were between this build and the submission are closed: the tag is cut on that commit, and the full route gate passed sixty-six of sixty-six before the clip was recorded from the tagged build. The one that remains is not ours to close on this laptop — two credentials were posted in our team chat and have to be rotated before anything goes public. The build is meant to run from a static folder with the network off so the demo does not depend on the venue, and that check passed: the opening run from the static folder made eighty-two requests and every one of them went to the loopback server, so there is no third-party host for the venue's network to take away.</aside>
+  </section>
+
+</main>
+
+<nav class="hud" aria-label="Slide navigation">
+  <div class="progress" id="progress" aria-hidden="true"></div>
+  <div class="hud-brand">HKU: BARRIER 2030</div>
+  <div class="hud-controls">
+    <button id="prev" type="button" aria-label="Previous slide">Prev</button>
+    <span class="counter" id="counter" aria-live="polite">01 / 14</span>
+    <button id="next" type="button" aria-label="Next slide">Next</button>
+    <button id="print" type="button" aria-label="Print or save deck as PDF">Print</button>
+  </div>
+  <div class="hud-hint">Arrows / Space · Home / End</div>
+</nav>
+
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var prev = document.getElementById('prev');
+  var next = document.getElementById('next');
+  var counter = document.getElementById('counter');
+  var progress = document.getElementById('progress');
+  var current = 0;
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function show(index) {
+    current = Math.max(0, Math.min(slides.length - 1, index));
+    slides.forEach(function (slide, i) {
+      var active = i === current;
+      slide.classList.toggle('active', active);
+      slide.setAttribute('aria-hidden', active ? 'false' : 'true');
+    });
+    counter.textContent = pad(current + 1) + ' / ' + pad(slides.length);
+    progress.style.width = ((current + 1) / slides.length * 100) + '%';
+    prev.disabled = current === 0;
+    next.disabled = current === slides.length - 1;
+    try { history.replaceState(null, '', '#slide-' + (current + 1)); } catch (error) {}
+  }
+
+  prev.addEventListener('click', function () { show(current - 1); });
+  next.addEventListener('click', function () { show(current + 1); });
+  document.getElementById('print').addEventListener('click', function () { window.print(); });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.altKey || event.ctrlKey || event.metaKey) return;
+    if (event.target && event.target.closest && event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
+    var key = event.key;
+    if ((key === ' ' || key === 'Enter') && event.target && event.target.closest && event.target.closest('button, a')) return;
+    if (key === 'ArrowRight' || key === 'ArrowDown' || key === 'PageDown' || key === ' ') {
+      event.preventDefault();
+      show(current + 1);
+    } else if (key === 'ArrowLeft' || key === 'ArrowUp' || key === 'PageUp') {
+      event.preventDefault();
+      show(current - 1);
+    } else if (key === 'Home') {
+      event.preventDefault();
+      show(0);
+    } else if (key === 'End') {
+      event.preventDefault();
+      show(slides.length - 1);
+    }
+  });
+
+  var match = window.location.hash.match(/^#slide-(\d+)$/);
+  var start = match ? parseInt(match[1], 10) - 1 : 0;
+  show(Number.isFinite(start) ? start : 0);
+}());
+</script>
+</body>
+</html>
