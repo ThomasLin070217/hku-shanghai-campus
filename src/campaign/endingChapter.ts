@@ -159,6 +159,8 @@ body:has(#ending-credits) :is(.opening-hud,.opening-hearts,.opening-mapcard,#inv
 export function createEndingChapter():Chapter{
  let ctx:ChapterContext|null=null;
  let hold=0,cardWait=0,clock=0,next=0;
+ /** Wall-clock time of the previous update, for the cutscene step below. */
+ let lastFrame=0;
  let started=false,cleared=false,finished=false,released=false;
  let cardResolved=false,cardWatched=false,creditsStarted=false;
  let overlay:HTMLElement|null=null,lines:HTMLElement|null=null,barrier:HTMLElement|null=null,credits:HTMLElement|null=null;
@@ -228,7 +230,7 @@ export function createEndingChapter():Chapter{
  }
 
  function attach(c:ChapterContext){
-  ctx=c;hold=0;cardWait=0;clock=0;next=0;
+  ctx=c;hold=0;cardWait=0;clock=0;next=0;lastFrame=0;
   started=cleared=finished=released=false;
   cardResolved=false;cardWatched=false;
   // The last endgame fact. The purge itself waits for the ADMINISTRATOR beat so
@@ -268,8 +270,21 @@ export function createEndingChapter():Chapter{
 
  function update(dt:number){
   if(finished)return;
-  const step=Math.max(0,dt);
   watchCard();
+  // The epilogue is a cutscene authored in story seconds, so it follows the wall
+  // clock rather than the frame clock. The viewer caps frame dt at 0.1 s, and a
+  // slow renderer would otherwise stretch the sequence by the frame rate: the
+  // software-rasterised playthrough measured 0.36 fps, which turned the 17 s
+  // ending into ~470 s and timed the run out at 420 s with the curtain halfway
+  // down. A zero dt still means paused or the explorer is off — it holds then,
+  // so the cutscene never runs behind a pause. A direct caller passing a fixed
+  // dt faster than real time (the headless checks) keeps that dt. The 2 s cap
+  // only guards a tab-hidden or stalled gap; at the measured 0.25 fps it is
+  // what lets the sequence finish in half a minute instead of eight minutes.
+  const now=typeof performance!=='undefined'?performance.now():0;
+  const wall=lastFrame&&now>lastFrame?Math.min(2,(now-lastFrame)/1000):0;
+  lastFrame=now;
+  const step=dt>0?Math.max(dt,wall):0;
   if(!started){
    // The card covers the rescue banner: the banner's own hold starts after it.
    if(!cardResolved){
