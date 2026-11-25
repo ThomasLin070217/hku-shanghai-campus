@@ -1,6 +1,7 @@
 import {markLocalModelCleared,resetWorldThreat,tryPurgeWorld,type WorldThreatStorage} from '../gameplay/worldThreat';
 import {clearProgress,type ProgressStorage} from '../levels/resetProgress';
 import {BUILD_STAMP} from '../version';
+import {createFinaleLightShow,type FinaleShow} from './finaleLightShow';
 import type {Chapter,ChapterContext} from './types';
 
 /** The ending has no walking leg: radius 0, the host never emits its entry event. */
@@ -47,6 +48,20 @@ export const ENDING_HOLD_SECONDS=3.2;
 const CARD_WAIT_CAP_SECONDS=6;
 /** The Mac screen has faded out by here, before the 8 s release beat. */
 export const ENDING_CLEAR_AT=7;
+/**
+ * The run ends on the ground north of the sports hall, where the three 25 m halls
+ * (B05–B07) stand between the player and the four towers: at eye level not one
+ * window of the finale is on screen. The view cranes up under the Mac overlay and
+ * is over the roofs by the time the Mac fades, so the towers light on open sky.
+ */
+export const ENDING_CRANE_START=4.8;
+export const ENDING_CRANE_END=6.8;
+/**
+ * Clearance so the shot is over the tallest sports hall roof (25.51 m) *and* high
+ * enough to see down into the courtyard: at 32.5 m the atrium ring at 2.6 m is
+ * still behind the hall roofs, at 58 m the whole courtyard is in view.
+ */
+export const ENDING_CRANE_METRES=58;
 /** The credits wait for the atmosphere to report the dome fully up, at most this long past ENDING_SECONDS. */
 export const ENDING_DOME_WAIT_SECONDS=3;
 
@@ -147,6 +162,16 @@ export function createEndingChapter():Chapter{
  let started=false,cleared=false,finished=false,released=false;
  let cardResolved=false,cardWatched=false,creditsStarted=false;
  let overlay:HTMLElement|null=null,lines:HTMLElement|null=null,barrier:HTMLElement|null=null,credits:HTMLElement|null=null;
+ let finale:FinaleShow|null=null;
+
+ /** The scripted camera lift, written to the explorer each frame; 0 restores the eye. */
+ function crane(){
+  const game=(ctx?.explorer as unknown as {game?:{cameraLift?:number}}|null)?.game;
+  if(!game)return;
+  const span=Math.max(.001,ENDING_CRANE_END-ENDING_CRANE_START);
+  const t=Math.min(1,Math.max(0,(clock-ENDING_CRANE_START)/span));
+  game.cameraLift=ENDING_CRANE_METRES*t*t*(3-2*t);
+ }
 
  function dom(){
   if(typeof document==='undefined')return;
@@ -171,6 +196,10 @@ export function createEndingChapter():Chapter{
    const result=tryPurgeWorld();
    if(!result.purged&&result.threat.phase!=='purged')console.error('ending: the campus did not purge, so the barrier stays sealed; every endgame fact must be written first',result.threat);
    ctx?.atmosphere()?.release();
+   // The four-tower light show is the middle beat: it starts with the dome lift and
+   // finishes before the credits, while the Mac overlay is already fading away.
+   finale?.start();
+   try{ctx?.music?.('mus_finale',{loop:false});}catch(error){console.error('ending: could not start the finale cue',error);}
   }
   if(!lines)return;
   const line=document.createElement('li');
@@ -208,6 +237,21 @@ export function createEndingChapter():Chapter{
   markLocalModelCleared();
   // A reload after the credits: the epilogue already played, so go straight back to them.
   if(c.stage()==='done'){started=cleared=released=finished=true;showCredits();}
+  // The light show is scenery, not a save field: a run that already finished restores
+  // the lit campus from the ending stage alone.
+  finale?.dispose();finale=null;
+  if(c.scene){
+   finale=createFinaleLightShow(c.scene);
+   if(c.stage()==='done')finale.seek(Number.POSITIVE_INFINITY);
+  }
+  // The run ends north of the campus at the sports hall, facing away from the four
+  // towers. The epilogue card is about to cover the screen, so the view is turned
+  // here — under the card — and the card lifts onto the campus as it lights.
+  const game=(c.explorer as unknown as {game?:{body?:{position?:{x:number;z:number}};yaw?:number;cameraLift?:number}}).game;
+  const at=game?.body?.position;
+  if(game&&at&&typeof game.yaw==='number'&&Math.hypot(at.x,at.z-36)>80)game.yaw=Math.atan2(at.x,at.z-36);
+  // A fresh ending starts on the ground; a re-attach must not inherit a raised view.
+  if(game)game.cameraLift=0;
  }
 
  /**
@@ -239,6 +283,8 @@ export function createEndingChapter():Chapter{
    return;
   }
   clock+=step;
+  crane();
+  finale?.update(step);
   if(!cleared&&clock>=ENDING_CLEAR_AT)clearScreen();
   while(next<ENDING_BEATS.length&&ENDING_BEATS[next].at<=clock)fire(ENDING_BEATS[next++]);
   if(clock>=ENDING_SECONDS&&(domeUp()||clock>=ENDING_SECONDS+ENDING_DOME_WAIT_SECONDS)){
@@ -258,6 +304,7 @@ export function createEndingChapter():Chapter{
  function detach(){
   overlay?.remove();credits?.remove();
   overlay=null;credits=null;lines=null;barrier=null;
+  finale?.dispose();finale=null;
   ctx=null;
  }
 
@@ -269,7 +316,18 @@ export function createEndingChapter():Chapter{
   detach,
   debug:{
    complete(){ctx?.emit('ending_finished');return ctx?.stage();},
-   state(){return{hold,cardWait,cardResolved,clock,next,started,cleared,finished,released,beats:ENDING_BEATS.length};},
+   state(){return{hold,cardWait,cardResolved,clock,next,started,cleared,finished,released,beats:ENDING_BEATS.length,cameraLift:ctx?((ctx.explorer as unknown as {game?:{cameraLift?:number}}).game?.cameraLift??0):0};},
+   finale(){return finale?.state()??null;},
+   finaleSeek(seconds:number){if(!finale)return null;finale.start();finale.seek(seconds);return finale.state();},
+   /** Seek the Mac clock to a beat (headless evidence); fires every beat up to it. */
+   clockTo(seconds:number){
+    if(!started){started=true;dom();}
+    clock=Math.max(clock,Math.max(0,seconds));
+    crane();
+    if(!cleared&&clock>=ENDING_CLEAR_AT)clearScreen();
+    while(next<ENDING_BEATS.length&&ENDING_BEATS[next].at<=clock)fire(ENDING_BEATS[next++]);
+    return{hold,clock,next,started,cleared,released,finished};
+   },
   },
  };
 }

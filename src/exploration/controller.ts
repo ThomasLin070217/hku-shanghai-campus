@@ -83,7 +83,7 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  function updateCamera(dt:number){const p=game.body.position;
   student.root.visible=enabled&&game.view==='third';showViewModel();
   if(game.view==='first'){
-   camera.position.copy(p).y+=C.eyeHeight+(bob&&!game.paused&&game.body.grounded&&Math.hypot(game.body.velocity.x,game.body.velocity.z)>.1?Math.sin(game.timeMs*.012)*.018:0);camera.rotation.set(-game.pitch,game.yaw,0,'YXZ');actualDistance=0;
+   camera.position.copy(p).y+=C.eyeHeight+game.cameraLift+(bob&&!game.paused&&game.body.grounded&&Math.hypot(game.body.velocity.x,game.body.velocity.z)>.1?Math.sin(game.timeMs*.012)*.018:0);camera.rotation.set(-game.pitch,game.yaw,0,'YXZ');actualDistance=0;
   }else{
    const target=p.clone().add(new T.Vector3(0,C.targetHeight,0));
    const a=T.MathUtils.clamp(game.pitch+.22,-.18,1.36),dir=new T.Vector3(Math.sin(game.yaw)*Math.cos(a),Math.sin(a),Math.cos(game.yaw)*Math.cos(a));let allowed=distance;

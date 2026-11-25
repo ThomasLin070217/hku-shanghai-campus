@@ -92,9 +92,9 @@ group('(b) a dome that never reports released still gets credits, about 3 s late
 group('(c) the credits ask for the ending theme, exactly once',()=>{
  data.clear();sealWorld();markLionDefeated();markPowerCut();
  const e=ending(5.2);e.step(3.2+dt);e.step(ENDING_SECONDS+.1);
- assert.deepEqual(e.music,['mus_credits:loop'],'the credits request the ending theme, looping');
+ assert.deepEqual(e.music,['mus_finale','mus_credits:loop'],'the release starts the finale one-shot; the credits then request the ending theme, looping');
  e.step(30);
- assert.deepEqual(e.music,['mus_credits:loop'],'and only once, however long the credits stay up');
+ assert.deepEqual(e.music,['mus_finale','mus_credits:loop'],'and neither is repeated, however long the credits stay up');
 });
 
 group('(c) every ending cue has a shipped URL and is not in the opening fetches',()=>{

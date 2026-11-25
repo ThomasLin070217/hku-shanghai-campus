@@ -24,6 +24,8 @@ export class CampusGame {
  scenario:GameplayScenario|null=null;
  inventory=new Inventory();inventoryOpen=false;panel:'computer'|'settings'|'door'|null=null;survey:Survey;
  body:CharacterPhysics;frame=0;timeMs=0;yaw=0;pitch=0;view:ViewMode='first';paused=true;pauseReason:string|null=null;
+ /** Extra eye height for scripted reveals (the ending cranes over the sports hall). The body keeps walking on the ground. */
+ cameraLift=0;
  epoch=Date.now();armed=false;owner:string|null=null;human=idle();humanJump=false;
  /** Game-play door states by stable door id; the model and navigation stay source-authored. */
  doors:Record<string,boolean>={};
@@ -34,7 +36,7 @@ export class CampusGame {
  constructor(world:Navigation,public buildings:BuildingSpec[],public site:SiteParameters=SITE){this.body=new CharacterPhysics(world);this.survey=new Survey(this);this.spawn();}
  /** Keep command history/epoch/clock across geometry rebuilds; revoke authority first. */
  replaceWorld(world:Navigation,buildings:BuildingSpec[],site:SiteParameters){this.pause('world_rebuilt');this.buildings=buildings;this.site=site;this.body=new CharacterPhysics(world);this.survey.invalidateLandmarks();this.survey.revision++;this.inventoryOpen=false;this.panel=null;this.spawn();this.event('world','World rebuilt',{revision:NOV13.revision});}
- spawn(){if(this.scenario){this.takeover('reset');this.scenario.spawn();this.event('spawn','Character returned to spawn',{scenario:true});return;}this.takeover('reset');const b=this.buildings.find(b=>b.id==='B04')!,a=b.rotation*Math.PI/180,x=C.spawnOffset[0],z=b.depth/2+C.spawnOffset[2];this.body.position.set(b.x+Math.cos(a)*x+Math.sin(a)*z,0,b.z-Math.sin(a)*x+Math.cos(a)*z);this.body.position.y=this.body.world.support(this.body.position.x,this.body.position.z,0)??0;this.body.velocity.set(0,0,0);this.body.grounded=true;this.yaw=a;this.pitch=0;this.pauseReason=null;this.event('spawn','Character returned to spawn',{position:this.body.position.toArray()});}
+ spawn(){if(this.scenario){this.takeover('reset');this.scenario.spawn();this.event('spawn','Character returned to spawn',{scenario:true});return;}this.takeover('reset');const b=this.buildings.find(b=>b.id==='B04')!,a=b.rotation*Math.PI/180,x=C.spawnOffset[0],z=b.depth/2+C.spawnOffset[2];this.body.position.set(b.x+Math.cos(a)*x+Math.sin(a)*z,0,b.z-Math.sin(a)*x+Math.cos(a)*z);this.body.position.y=this.body.world.support(this.body.position.x,this.body.position.z,0)??0;this.body.velocity.set(0,0,0);this.body.grounded=true;this.yaw=a;this.pitch=0;this.pauseReason=null;this.cameraLift=0;this.event('spawn','Character returned to spawn',{position:this.body.position.toArray()});}
  finish(status:CommandRecord['status'],reason:string){if(this.active){Object.assign(this.active.record,{status,reason,finishedFrame:this.frame});if(this.active.record.directive)this.active.record.directive.reason=reason;this.event('command_finished',reason,{commandId:this.active.record.commandId,status,reason});this.active=null;}}
  takeover(reason='human_takeover'){const hadControl=!!this.owner,hadArmed=this.armed;this.finish('interrupted',reason);this.owner=null;this.armed=false;this.epoch++;this.human=idle();this.humanJump=false;if(hadArmed)this.event('ai_disabled','AI control revoked',{reason});if(hadControl)this.event('control_revoked','Control reclaimed',{reason});}
  pause(reason='paused'){this.takeover(reason);this.paused=true;this.pauseReason=reason;this.body.velocity.x=0;this.body.velocity.z=0;this.event('pause','Paused',{reason});}
