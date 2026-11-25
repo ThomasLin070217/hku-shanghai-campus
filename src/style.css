@@ -59,3 +59,66 @@ body.opening-mode .pause-card button{border:1px solid rgba(116,230,180,.46);colo
 body.opening-mode .pause-card .primary{background:#74e6b4;color:#08120f;font-weight:700}
 /* The checkpoint action ships a survey-paper background; keep it dark in story mode. */
 body.opening-mode .pause-card .pause-checkpoint{background:#102019;color:#e8f4ee}
+
+/* ── Pause card: Chapter and Settings sections (owner, 2026-11-25) ──────────
+   The chapter select used to be a floating link the full-screen pause overlay
+   covered (z-index 11 under 12), so it could never be clicked. It now lives in
+   the card with Replay intro, and the card carries the settings a player most
+   often reaches for. Two columns, one column on a narrow phone. */
+.pause-group{border-top:1px solid #cbd4c2;margin:16px 0 0;padding-top:14px}
+.pause-group[hidden]{display:none}
+.pause-group-title{font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#5f7361;margin:0 0 8px}
+.pause-chapters,.pause-settings{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px}
+.pause-chapters .pause-group-title,.pause-settings .pause-group-title{grid-column:1/-1;margin-bottom:0}
+.pause-chapters #replay-intro,.pause-chapters #pause-checkpoint,
+.pause-settings #pause-fullscreen,.pause-settings #experience-settings{width:100%;margin:0}
+.pause-chapter-select{grid-column:1/-1;border:1px solid #c5cfbb;background:#e9ecdf;margin-top:2px}
+.pause-chapter-select>summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:0 12px;font-size:12px}
+.pause-chapter-select>summary::-webkit-details-marker{display:none}
+.pause-chapter-select>summary::after{content:"▾";font-size:10px;color:#5f7361;transition:transform .15s ease}
+.pause-chapter-select[open]>summary{border-bottom:1px solid #c5cfbb}
+.pause-chapter-select[open]>summary::after{transform:rotate(180deg)}
+/* One scroll container, not two: the card already scrolls (max-height above), and
+   an inner scroller left the last chapter rows and the Settings section below the
+   card's edge with no way to drag them into view on a phone (seen 2026-11-25). */
+.pause-chapter-list{display:grid;gap:2px;padding:6px}
+.pause-chapter-group{font-size:9px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#5f7361;margin:10px 8px 4px}
+.pause-chapter-group:first-child{margin-top:4px}
+.pause-chapter-start,.pause-chapter-link{display:block;padding:8px;font-size:12px;line-height:1.4}
+.pause-chapter-start{border-bottom:1px dashed #c5cfbb;margin-bottom:4px}
+.pause-chapter-link b{display:block;font-weight:600}
+.pause-chapter-link span{display:block;font-size:11px;color:#5b6f5d;margin-top:1px}
+.pause-chapter-start:hover,.pause-chapter-start:focus-visible,
+.pause-chapter-link:hover,.pause-chapter-link:focus-visible{background:#dbe3cf}
+.pause-setting{grid-column:1/-1;display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;font-size:12px}
+.pause-setting output{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums;color:#5b6f5d}
+.pause-setting input[type=range]{grid-column:1/-1;width:100%;height:28px;margin:0;accent-color:#2f6b52;cursor:pointer}
+.pause-options{margin-top:12px}
+.pause-options summary{display:flex;justify-content:space-between;align-items:center;list-style:none;cursor:pointer;padding:8px 0;font-size:12px;color:#5b6f5d}
+.pause-options summary::-webkit-details-marker{display:none}
+.pause-options summary::after{content:"▾";font-size:10px;transition:transform .15s ease}
+.pause-options[open] summary::after{transform:rotate(180deg)}
+@media(max-width:480px){.pause-chapters,.pause-settings{grid-template-columns:1fr}}
+/* A thumb needs 44 px; the card's buttons are sized for a mouse. */
+@media(pointer:coarse){.pause-card button,.pause-chapter-link,.pause-chapter-start{min-height:44px}}
+
+/* While the card is open it covers the floating chapter link and fullscreen
+   button; hide them so nothing on screen looks clickable that is not. */
+body.exploring:has(#pause-panel:not([hidden])) .shell-chapters,
+body.exploring:has(#pause-panel:not([hidden])) .fullscreen-toggle{display:none}
+
+/* Story mode: a wider menu card, dark sections, mint controls. */
+body.opening-mode .pause-card{width:min(560px,94vw);padding:24px 26px}
+body.opening-mode .pause-group{border-top-color:rgba(116,230,180,.18)}
+body.opening-mode .pause-group-title{color:#7fa696}
+body.opening-mode .pause-setting output{color:#a4bcb1}
+body.opening-mode .pause-setting input[type=range]{accent-color:#74e6b4}
+body.opening-mode .pause-chapter-select{border-color:rgba(116,230,180,.22);background:rgba(8,18,15,.72)}
+body.opening-mode .pause-chapter-select[open]>summary{border-bottom-color:rgba(116,230,180,.18)}
+body.opening-mode .pause-chapter-select>summary::after{color:#7fa696}
+body.opening-mode .pause-chapter-group{color:#7fa696}
+body.opening-mode .pause-chapter-start{border-bottom-color:rgba(116,230,180,.18)}
+body.opening-mode .pause-chapter-link span{color:#a4bcb1}
+body.opening-mode .pause-chapter-start:hover,body.opening-mode .pause-chapter-start:focus-visible,
+body.opening-mode .pause-chapter-link:hover,body.opening-mode .pause-chapter-link:focus-visible{background:rgba(116,230,180,.12)}
+body.opening-mode .pause-options summary{color:#a4bcb1}

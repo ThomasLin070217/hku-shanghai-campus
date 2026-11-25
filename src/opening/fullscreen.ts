@@ -33,6 +33,8 @@ export interface FullscreenControl {
   readonly hint: boolean;
   /** Re-read the browser state after an external change (tests, F11, Esc). */
   sync(): void;
+  /** Enter or leave fullscreen. A no-op where the API is unavailable. */
+  toggle(): Promise<void>;
   dispose(): void;
 }
 
@@ -166,6 +168,7 @@ export function createFullscreenControl(options: {
       return !!hint;
     },
     sync,
+    toggle,
     dispose() {
       events.abort();
       button?.remove();
