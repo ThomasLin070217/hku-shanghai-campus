@@ -18,7 +18,7 @@
     ]
   },
   {
-    "name": "Building5 to Building6 pickup space",
+    "name": "Building5 to the retired B6 presentation desk",
     "seconds": 50.18333333333333,
     "end": [
       7.230646153877813,
@@ -33,6 +33,15 @@
       63.92091664618144,
       0.02,
       -61.005708916888324
+    ]
+  },
+  {
+    "name": "Building5 to the B4 side door (MacBook errand)",
+    "seconds": 68.46666666666667,
+    "end": [
+      47.78028687440726,
+      0.02,
+      20.050397834750193
     ]
   },
   {

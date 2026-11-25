@@ -5,7 +5,6 @@ import {glassMaterial} from '../model/glazing';
 import {compact} from '../model/buildCampus';
 import {emblemMaterial} from '../model/heraldry';
 import shield from '../model/hall-crest.json';
-import {createMacBook} from '../items/macbook';
 import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H,OFFICE_LAYOUT as B6} from './spatialLayout';
 
 /**
@@ -483,12 +482,12 @@ function buildOffice(root:T.Group){
  roomLight.position.set(5.4,floorTop+ceiling-.25,-58.6);
  group.add(roomLight);
 
- const cabinet=B6.credenza,plant=B6.planter,presentation=B6.presentation;
+ const cabinet=B6.credenza,plant=B6.planter,presentation=B6.presentationDesk;
  box(group,'opening-b6-credenza',cabinet.w,cabinet.h,cabinet.d,cabinet.x,floorTop+cabinet.h/2,cabinet.z,materials.case);
  box(group,'opening-b6-planter',plant.w,plant.h,plant.d,plant.x,floorTop+plant.h/2,plant.z,materials.pot);
- box(group,'opening-b6-desk',presentation.w,.09,presentation.d,presentation.x,O.laptop[1]-.045,presentation.z,materials.desk);
+ box(group,'opening-b6-desk',presentation.w,.09,presentation.d,presentation.x,O.presentationDesk[1]-.045,presentation.z,materials.desk);
  for(const dx of [-.82,.82])for(const dz of [-.32,.32])box(group,'opening-b6-desk-leg-'+dx+'-'+dz,.09,presentation.h-.09,.09,presentation.x+dx,floorTop+(presentation.h-.09)/2,presentation.z+dz,materials.frame);
- box(group,'opening-b6-desk-sheet',.21,.012,.30,presentation.x-.62,O.laptop[1]+.006,presentation.z+.12,materials.paper);
+ box(group,'opening-b6-desk-sheet',.21,.012,.30,presentation.x-.62,O.presentationDesk[1]+.006,presentation.z+.12,materials.paper);
 
  const supplies=tag(new T.Group(),'opening-b6-office-supplies','Opening_b6_office_supplies');
  group.add(supplies);
@@ -546,14 +545,11 @@ function buildOffice(root:T.Group){
  }
  compact(workstations);
 
- // World laptop: hidden once the player carries it. No item is granted here.
- const laptop=createMacBook();
- laptop.root.position.set(O.laptop[0],O.laptop[1],O.laptop[2]);
- laptop.root.rotation.y=Math.PI;
- group.add(laptop.root);
- tag(laptop.root,'opening-b6-macbook','Opening_b6_macbook');
+ // No MacBook prop here: the interactive one is in the B4 5F principal's office
+ // (`b4Shell.ts`). A visible, unpickable decoy in Building 6 sent players F-pressing
+ // an empty desk while the errand was 90 m away.
 
- return{group,laptop,roomLight,materials};
+ return{group,roomLight,materials};
 }
 
 /* ------------------------------------------------------------------ */
@@ -568,7 +564,6 @@ export function createOpeningWorld(){
 
  let doorT=0;         // 0 closed, 1 fully open
  let incident=false;
- let laptopTaken=false;
  let invitationTakenState=false;
  const incidentStrips=dinner.strips.map(m=>({material:m,normal:m.emissiveIntensity,incident:.12}));
  applyIncident(false);
@@ -601,10 +596,6 @@ export function createOpeningWorld(){
   const invitationTaken=state.invitationRead===true;
   if(invitationTaken!==invitationTakenState){invitationTakenState=invitationTaken;bus.invitation.visible=!invitationTaken;}
   if(state.incident!==incident)applyIncident(state.incident);
-  if(state.laptopAcquired!==laptopTaken){
-   laptopTaken=state.laptopAcquired;
-   office.laptop.root.visible=!laptopTaken;
-  }
  }
  function dispose(){
   const geometries=new Set<T.BufferGeometry>(),materials=new Set<T.Material>();

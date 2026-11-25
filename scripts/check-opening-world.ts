@@ -102,20 +102,13 @@ group('3. The door leaf opens, and only when time passes');
  ok('the door leaf animates only with time and never blocks the exit');
 }
 
-group('4. The world laptop follows the pickup state');
+group('4. The retired B6 room carries no MacBook decoy');
 {
- const laptop=world.root.getObjectByName('Opening_b6_macbook');
- assert.ok(laptop,'the presentation laptop must exist');
- assert.equal(laptop!.visible,true,'the laptop is visible before it is collected');
- const box=new T.Box3().setFromObject(laptop!);
- assert.ok(Math.abs(box.min.x-O.laptop[0])<0.4,'the laptop must sit at OPENING.laptop.x');
- assert.ok(Math.abs(box.min.z-O.laptop[2])<0.4,'the laptop must sit at OPENING.laptop.z');
- assert.ok(Math.abs(box.min.y-O.laptop[1])<0.2,'the laptop must sit at desk height');
- world.update({incident:false,laptopAcquired:true,doorOpen:false},1/60);
- assert.equal(laptop!.visible,false,'the world laptop must disappear once the player carries it');
- world.update({incident:false,laptopAcquired:false,doorOpen:false},1/60);
- assert.equal(laptop!.visible,true,'the laptop returns when the pickup is undone');
- ok('the world laptop is shown, hidden and restored by the pickup state');
+ // The interactive MacBook lives in the B4 5F principal's office (`b4Shell.ts`). A visible,
+ // unpickable prop here is what players pressed F at while the errand was 90 m away.
+ assert.equal(world.root.getObjectByName('Opening_b6_macbook'),undefined,'the B6 room must not render a MacBook');
+ assert.ok(world.root.getObjectByName('opening-b6-desk'),'the presentation desk stays as scenery');
+ ok('the B6 room renders the desk without a MacBook');
 }
 
 group('5. The dinner area switches between the tidy and the abandoned state');
@@ -179,13 +172,13 @@ group('6. The furniture leaves the walking routes open');
   }
  }
  assert.deepEqual(blocked,[],'furniture must not stand on a walking route: '+blocked.join('; '));
- // The pickup anchor itself must still be approachable: a free standing spot has to
- // exist within the interaction range, and the desk must not swallow the anchor.
+ // The presentation desk keeps a free standing spot in front of it: the desk must not
+ // swallow its own anchor even though the MacBook that stood on it now lives in B4.
  const desk=new T.Box3().setFromObject(world.root.getObjectByName('opening-b6-desk')!);
- const anchor=new T.Vector3(O.laptop[0],O.laptop[1],O.laptop[2]);
- const stand=new T.Vector3(O.laptop[0],O.b6.floor,O.laptop[2]+1.2);
- assert.ok(!desk.containsPoint(stand),'the desk must leave a standing spot in front of the laptop');
- assert.ok(stand.distanceTo(anchor)<2.7,'the standing spot must be within the interaction range of the laptop');
+ const anchor=new T.Vector3(O.presentationDesk[0],O.presentationDesk[1],O.presentationDesk[2]);
+ const stand=new T.Vector3(O.presentationDesk[0],O.b6.floor,O.presentationDesk[2]+1.2);
+ assert.ok(!desk.containsPoint(stand),'the desk must leave a standing spot in front of it');
+ assert.ok(stand.distanceTo(anchor)<2.7,'the standing spot must be within arm\'s reach of the desk');
  // The staff must stand in the dinner area, not inside a table.
  const staffBox=new T.Box3().setFromObject(world.root.getObjectByName('Opening_b5_dinner')!);
  assert.ok(staffBox.containsPoint(new T.Vector3(...O.staff)),'the staff position must be inside the dinner area');

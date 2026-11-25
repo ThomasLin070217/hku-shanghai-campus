@@ -23,7 +23,7 @@ document.querySelector('#app')!.innerHTML = `
             <div class="levels-checkpoints" role="group" aria-label="Chapter 1 checkpoints">
               <span class="levels-checkpoints-label">Checkpoints</span>
               <a class="levels-checkpoint" href="?experience=opening&checkpoint=b5"><b>B5 · High Table dinner</b><span>Skip the shuttle and start at Building 5.</span></a>
-              <a class="levels-checkpoint" href="?experience=opening&checkpoint=b6"><b>B6 · Fetch the MacBook</b><span>Start with the errand accepted, at Building 6.</span></a>
+              <a class="levels-checkpoint" href="?experience=opening&checkpoint=b6"><b>B4 · Fetch the MacBook</b><span>Start with the errand accepted, at the B4 side door. The office is on 5F.</span></a>
               <a class="levels-checkpoint" href="?experience=opening&checkpoint=incident"><b>The incident</b><span>Start in the empty dining hall with the MacBook and the security robots active.</span></a>
               <a class="levels-checkpoint" href="${at('b4')}"><b>B4 · Emergency control</b><span>Start on the last run of Chapter 1: cross the campus and reach Building 4.</span></a>
               <a class="levels-checkpoint" href="${at('b4-inside')}"><b>B4 · The Keyboard Wall</b><span>Start inside Building 4 and restore the backup supercomputer.</span></a>

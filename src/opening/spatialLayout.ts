@@ -30,7 +30,9 @@ export const OPENING={
   doorDepth:2.45},
  b6:{id:'B06',x0:1,x1:10,z0:-62,door:4,doorWidth:2.4,floor:5.1,z1:-52.625,clearHeight:2.65,doorHeight:2.6},
  staff:[64,.02,-61] as [number,number,number],
- laptop:[7.3,5.9,-58.2] as [number,number,number],
+ /** The retired Building 6 presentation-desk anchor: scenery only. The interactive
+  * MacBook lives in the B4 5F principal's office (`B4_OFFICE.laptop`). */
+ presentationDesk:[7.3,5.9,-58.2] as [number,number,number],
  returnPoint:[62,.02,-60] as [number,number,number],
  encounterSafe:[58,0,-53.8] as [number,number,number],
  handoff:[58,.08,25] as [number,number,number],
@@ -42,7 +44,9 @@ export const OPENING={
  checkpoints:{
   bus:[66.6,.54,30.6] as [number,number,number],
   b5:[58,0,-52] as [number,number,number],
-  b6:[4,5.1,-56] as [number,number,number],
+  /** The MacBook errand starts at B4's side-door threshold, not in Building 6:
+   * Task E moved the office to B4 5F and this checkpoint has to move with it. */
+  b6:[47.75,.02,20] as [number,number,number],
   b5safe:[58,0,-53.8] as [number,number,number],
   handoff:[58,.08,25] as [number,number,number],
  },
@@ -71,6 +75,10 @@ export const OPENING={
  ] as [number,number,number][][],
  routeB5:[[63.4,27.8],[52,27.8],[52,33.5],[24,33.5],[24,-48],[58,-48],[58,-61.5],[64,-61]],
  routeB6:[[64,-61],[58,-61.5],[58,-48],[24,-48],[18,-48],[18,-26],[4,-26],[4,-52.2],[4,-58],[7.3,-57]],
+ /** B5 → B4 side door: the MacBook errand as the minimap draws it. The first legs are
+  * `routeB5` reversed, then the forecourt jog east of the entrance planter (x 32–48) and
+  * through the 1.3 m gap between that planter and the façade to the side door. */
+ routeErrand:[[64,-61],[58,-61.5],[58,-48],[24,-48],[24,33.5],[52,33.5],[52,27.8],[49.7,24.5],[49.7,21.3],[48.3,21.0],[47.75,20]],
  routeB4:[[64,-61],[58,-61.5],[58,-26],[90,-26],[90,33.5],[58,33.5],[58,25]],
 } as const;
 
@@ -115,7 +123,7 @@ export const B4_LIFT={
 /** Building 6 office dimensions shared by scenery and collision. */
 export const OFFICE_LAYOUT={
  interior:{x0:OPENING.b6.x0+.06,x1:OPENING.b6.x1-.06,z0:OPENING.b6.z0+.17,z1:OPENING.b6.z1-.24,ceiling:2.59},
- presentation:{x:OPENING.laptop[0],z:OPENING.laptop[2],w:1.90,d:.84,h:OPENING.laptop[1]-OPENING.b6.floor},
+ presentationDesk:{x:OPENING.presentationDesk[0],z:OPENING.presentationDesk[2],w:1.90,d:.84,h:OPENING.presentationDesk[1]-OPENING.b6.floor},
  credenza:{x:4.5,z:-61.45,w:5,d:.55,h:.90},
  planter:{x:1.9,z:-60.6,w:.44,d:.44,h:.44},
  workstations:[

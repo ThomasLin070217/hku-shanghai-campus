@@ -72,6 +72,9 @@ export function createOpeningExperience(
  /** A restored save at `complete`: the completion dialog is decided on the next frame, once the campaign host has loaded. */
  let completePending=false;
  let subtitleText='',subtitleSeconds=0,titleText='',titleSubtitle='',titleSeconds=0;
+ /** True while a replayed prologue owns the screen: the intro must show the opening it
+  * retells (plaza crowd, prologue score, no robots), not the state of a later stage. */
+ let wasPrologueActive=false;
  let staffTalkStarted=false,staffTalkDone=false,staffTalkClock=0,staffTalkLine=0,staffVoiceStarted=false,acceptVoicePlayed=false,acceptVoiceBusy=false,repeatVoiceBusy=false;
  let fleet=createOpeningFleet(explorer.world);scene.add(fleet.root);
  const npcs=createOpeningNPCs();scene.add(npcs.root);
@@ -165,14 +168,18 @@ export function createOpeningExperience(
    const indices=mesh.userData.studentIndices as number[]|undefined;
    if(!indices)continue;
    for(let instance=0;instance<indices.length;instance++){
-    // An arrived student is a guest now and stays on screen at their place, standing still
-    // (no walk bob). This used to collapse them to scale 0 at y -200, which deleted the whole
-    // crowd in the room the player was walking into.
+    // An arrived student is a guest now and stays on screen at their place. This used to
+    // collapse them to scale 0 at y -200, which deleted the whole crowd in the room the
+    // player was walking into. They are not statues either: a slow breath and a small
+    // turn keep a room of 52 standing people from reading as mannequins (owner,
+    // 2026-11-25: "那些学生目前看上去有点呆呆的").
     const s=students[indices[instance]!];
     if(!s){crowdPos.set(0,-200,0);crowdQuat.identity();crowdScale.setScalar(0);}
     else{
-     crowdPos.set(s.x,s.y+(s.done?0:Math.sin(s.phase*6.2)*.022),s.z);
-     crowdQuat.setFromAxisAngle(crowdUp,s.yaw);
+     const idle=performance.now()/1000;
+     const bob=s.done?Math.sin(idle*1.45+s.phase*2.7)*.006:Math.sin(s.phase*6.2)*.022;
+     crowdPos.set(s.x,s.y+bob,s.z);
+     crowdQuat.setFromAxisAngle(crowdUp,s.yaw+(s.done?Math.sin(idle*.55+s.phase*1.9)*.045:0));
      crowdScale.setScalar(s.scale);
     }
     crowdMatrix.compose(crowdPos,crowdQuat,crowdScale);
@@ -231,17 +238,18 @@ export function createOpeningExperience(
   if(staffTalkDone)return;
   staffTalkDone=true;runtime={...runtime,staff_task_received:true};
   if(!transition('accept_errand'))return;
-  showTitle('OBJECTIVE UPDATED','BUILDING 6 · PRESENTATION MACBOOK',1.25);
+  showTitle('OBJECTIVE UPDATED','BUILDING 4 · PRINCIPAL\'S OFFICE',1.25);
   // Let the objective banner clear before the acceptance line so its subtitle is not covered.
   window.setTimeout(()=>{if(!disposed&&story.stage==='to_b6'&&!failed&&!g.panel)playAcceptanceVoices();},1300);
-  notify('MacBook: Building 6 · office table.');
+  notify('MacBook: Building 4 · 5F principal\'s office.');
  }
 
  function applySettings(){explorer.setSensitivity(settings.sensitivity);explorer.setComfort(settings.fov,settings.bob);audio.apply(settings);}
  function pose(position:readonly number[],yaw=0){g.body.position.fromArray([...position]);g.body.velocity.set(0,0,0);g.body.grounded=true;g.yaw=yaw;g.pitch=0;walked=0;lastWalkX=position[0];lastWalkZ=position[2];}
  function safePose(){
   if(story.stage==='crowd'||story.stage==='to_b5')pose(O.handoff,0);
-  else if(story.stage==='to_b6')pose(O.checkpoints.b5,Math.PI);
+  // Both errand stages live at B4 now: the side door is the way in and the way out.
+  else if(story.stage==='to_b6')pose(O.checkpoints.b6,0);
   else if(story.stage==='return_b5')pose(O.checkpoints.b6,0);
   else if(story.stage==='complete')pose(O.handoff,0);
   else pose(O.checkpoints.b5safe,0);
@@ -257,6 +265,10 @@ export function createOpeningExperience(
   close();
  }
  function validPose(s:OpeningSave){const [x,y,z]=s.position,w=explorer.world,h=w.support(x,z,y+.24);return s.worldRevision===OPENING_WORLD_REVISION&&h!==null&&Math.abs(h-y)<.3&&!w.blocked(x,z,h+.003)&&[[.18,0],[-.18,0],[0,.18],[0,-.18]].every(([dx,dz])=>{const n=w.support(x+dx,z+dz,h);return n!==null&&Math.abs(n-h)<.3;});}
+ /** A save written before the errand moved to B4 can put the player inside Building 6
+  * with the MacBook 90 m away in the B4 5F office. Such a pose carries the current world
+  * revision, so `validPose` alone would keep it; the errand stages belong at B4's side door. */
+ function staleErrandPose(s:OpeningSave){const [x,,z]=s.position;return (story.stage==='to_b6'||story.stage==='return_b5')&&x>=O.b6.x0-1&&x<=O.b6.x1+1&&z>=O.b6.z0-1&&z<=O.b6.z1+1;}
  function restore(s:OpeningSave){
   explorer.pause('opening_load');story=structuredClone(s.story);
   // A shuttle-era save that already carried the invitation is the same beat as
@@ -269,7 +281,7 @@ export function createOpeningExperience(
   if(worldThreat.phase==='sealed')runtime={...runtime,curtain_deployed:true};
   else if(worldThreat.phase==='purged')runtime={...runtime,curtain_deployed:false};
   g.inventory.slots.splice(0,36,...s.slots.map(i=>i?{...i}:null));g.inventory.selectedHotbar=s.selectedHotbar;g.inventory.revision++;g.view=s.view;modal=null;g.closePanel();failed=runtime.hearts<=0;respawnGrace=OPENING_RESPAWN_GRACE_SECONDS;staffTalkStarted=false;staffTalkDone=false;staffTalkClock=0;staffTalkLine=0;staffVoiceStarted=false;acceptVoicePlayed=false;acceptVoiceBusy=false;repeatVoiceBusy=false;npcs.reset();fleet.reset();resetCrowd(story.stage);
-  if(validPose(s)&&story.stage!=='incident'&&story.stage!=='to_b4')pose(s.position,s.yaw);else safePose();
+  if(validPose(s)&&!staleErrandPose(s)&&story.stage!=='incident'&&story.stage!=='to_b4')pose(s.position,s.yaw);else safePose();
   g.pitch=s.pitch;applySettings();
   if(failed)open('caught');
   else if(story.stage==='complete')completePending=true;
@@ -490,6 +502,12 @@ export function createOpeningExperience(
  }
  function tick(dt:number){
   story.elapsedSeconds+=dt;
+  // A replayed intro is the opening, not the stage the player left: put the crowd back on
+  // the plaza for the cinematic and restore the stage's crowd when it ends. The same flag
+  // forces the prologue score below, so "Replay intro" no longer runs under dinner music
+  // with the dinner guests standing in the dark (owner, 2026-11-25).
+  const prologueActive=document.body.classList.contains('prologue-active');
+  if(prologueActive!==wasPrologueActive){wasPrologueActive=prologueActive;resetCrowd(prologueActive?'crowd':story.stage);}
   // Task E (E-F3): the abduction is armed by the errand, never by walking in. `accept_errand`
   // is the only event that leaves `to_b5`, so every later stage means the hand-off happened; a
   // checkpoint start at `b6` lands directly on `to_b6` and is armed on its first tick.
@@ -515,7 +533,9 @@ export function createOpeningExperience(
   if(story.stage==='return_b5'&&story.laptop_acquired){
    incidentClock+=dt;
    if(!runtime.curtain_deployed&&!disturbancePlayed&&incidentClock>1.1){disturbancePlayed=true;audio.openingCue('disturbance');notify('A low mechanical vibration rolls across the campus.');}
-   const outside=g.body.position.z>O.b6.z1+1.5||incidentClock>4.2;
+   // "Outside" now means outside B4: the pickup is on 5F, so the seal waits for the exit
+   // instead of firing on the first frame (z > O.b6's old face was always true at B4).
+   const outside=g.body.position.z>O.b4.z1+1.5||incidentClock>4.2;
    if(!runtime.curtain_deployed&&outside)beginIncident();
   }
   if(story.stage==='return_b5'&&g.body.position.distanceTo(new T.Vector3(...O.returnPoint))<3.3){
@@ -576,6 +596,9 @@ export function createOpeningExperience(
   if(!g.paused){if(titleSeconds>0)titleSeconds=Math.max(0,titleSeconds-dt);if(subtitleSeconds>0)subtitleSeconds=Math.max(0,subtitleSeconds-dt);}
 
   const active=explorer.enabled;
+  /** The replayed intro owns the sky and the score while it runs (`tick` restores the crowd
+   * and the robots on entry and exit). */
+  const prologueActive=document.body.classList.contains('prologue-active');
   /* A few steps into the walk, the phone in the player's pocket buzzes. The
    * overlay is the only gate between the prologue and the dinner: movement is
    * paused by the modal, and Yes releases it from the same click. */
@@ -590,7 +613,7 @@ export function createOpeningExperience(
    }
   }
   const alert=story.campus_alert_triggered||runtime.curtain_deployed;
-  const hunting=fleetHunts(),fleetShown=story.stage!=='complete'||!!campaign();
+  const hunting=fleetHunts(),fleetShown=(story.stage!=='complete'||!!campaign())&&!prologueActive;
   fleet.root.visible=active&&fleetShown;
   // The cast owns its own visibility now: during the incident it walks out through the B5
   // door and hides per actor as each one clears it, instead of vanishing on the alert frame.
@@ -623,7 +646,7 @@ export function createOpeningExperience(
   // silences it, and the opening cues still stop below.
   const audioPaused=(g.paused&&g.pauseReason!=='prologue')||!active;
   audio.update(explorer.student.gait,audioPaused,surface,g.body.position,explorer.camera.position,g.yaw);
-  audio.story?.update({stage:story.stage,dark:alert,chasing:r.chasing,music:openingScore(story.stage,alert,r.chasing),player:g.body.position,dt,
+  audio.story?.update({stage:story.stage,dark:prologueActive?false:alert,chasing:prologueActive?false:r.chasing,music:prologueActive?'mus_prologue':openingScore(story.stage,alert,r.chasing),player:g.body.position,dt,
    robots:active&&alert&&hunting?fleet.units.map((unit,index)=>({id:'opening-robot-'+index,state:unit.state,position:unit.position})):[]});
   const item=target();
   const campaignGoal=campaign()?.objective()??null;

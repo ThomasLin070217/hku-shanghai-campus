@@ -95,7 +95,7 @@ export const OPENING_UI = {
     stepsTitle: 'Opening steps',
     steps: [
       {label: 'Read the High Table Dinner invitation'},
-      {label: 'Collect the MacBook from Building 6'},
+      {label: 'Collect the MacBook from the Building 4 5F office'},
       {label: 'Read the local AI alert'},
       {label: 'Reach the Building 4 main entrance'},
     ],

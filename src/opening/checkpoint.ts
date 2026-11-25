@@ -59,7 +59,7 @@ const CHECKPOINT_POSE:Record<OpeningCheckpoint,{position:readonly number[];yaw:n
 
 export const CHECKPOINT_LABELS:Record<OpeningCheckpoint,string>={
  b5:'B5 · High Table dinner',
- b6:'B6 · Fetch the MacBook',
+ b6:'B4 · Fetch the MacBook',
  incident:'The incident',
  b4:'B4 · Emergency control',
  'b4-inside':'B4 · The Keyboard Wall',
@@ -119,10 +119,10 @@ export function applyCheckpointThreat(id:OpeningCheckpoint,storage?:WorldThreatS
 }
 
 /**
- * Chapter-select ids read as a canonical checkpoint. The canonical list keeps `b6`
- * until the B4 5F office renames it; both the dashed URL spelling and the
- * underscore spelling already resolve there, so old links and future links replay
- * the same prefix. `b4` stays a checkpoint of its own and is never an alias.
+ * Chapter-select ids read as a canonical checkpoint. The canonical list keeps the
+ * historical `b6` key, but its pose now starts the errand at B4's side door; the
+ * `b4-office` spellings resolve to it so old and future links share one run.
+ * `b4` stays a checkpoint of its own and is never an alias.
  */
 const CHECKPOINT_ALIASES:Readonly<Record<string,OpeningCheckpoint>>={'b4-office':'b6',b4_office:'b6'};
 

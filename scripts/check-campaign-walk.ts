@@ -83,8 +83,8 @@ const b4=()=>host!.debug.b4 as unknown as {type(t:string):string;enter():string;
 game.body.position.fromArray([...O.spawn]);game.body.velocity.set(0,0,0);game.body.grounded=true;
 await leg('shuttle -> bus exit',()=>walk([[O.bus.doorX,O.bus.z-O.bus.width/2-.35],[O.busExit[0],O.busExit[2]]]));
 await leg('bus exit -> Building 5 coordinator',()=>walk(O.routeB5));
-await leg('Building 5 -> Building 6 MacBook',()=>walk(O.routeB6));
-await leg('Building 6 -> Building 5',()=>walk([...O.routeB6].reverse()));
+await leg('Building 5 -> B4 side door (MacBook errand)',()=>walk(O.routeErrand));
+await leg('B4 side door -> Building 5',()=>walk([...O.routeErrand].reverse()));
 await leg('Building 5 -> Building 4 handoff',()=>{const n=walk(O.routeB4);assert.ok(game.body.position.distanceTo(new T.Vector3(...O.handoff))<2.2,'ends inside the handoff radius');return n;});
 
 /* ---------------- The campaign takes over at the handoff (relay offline) ---------------- */

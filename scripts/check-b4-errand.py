@@ -687,6 +687,20 @@ def boot(browser, checkpoint, expect_armed=None):
     page.evaluate('() => { window.__doc = 1; }')
     page.evaluate(HELPERS)
     page.evaluate('() => window.__CAMPUS.explorer.enterCompat()')
+    # The checkpoint itself must start the errand here. `place()` below exists only to make
+    # the timed route repeatable; it must never be the thing that makes the errand reachable.
+    # A `b6` spawn inside the retired B6 room is the defect this line guards (2026-11-25).
+    spawn = page.evaluate("""() => {
+      const c = window.__CAMPUS, p = c.explorer.game.body.position;
+      return {p: [p.x, p.y, p.z], stage: c.openingDebug.state().story.stage};
+    }""")
+    if checkpoint == 'b6':
+        sx, sy, sz = spawn['p']
+        if ((sx - 47.75) ** 2 + (sz - 20.0) ** 2) ** 0.5 > 1.5:
+            errors.append('checkpoint b6 spawned at %.2f,%.2f,%.2f, not the B4 side door' % (sx, sy, sz))
+        if 1 <= sx <= 10 and -62 <= sz <= -52.625:
+            errors.append('checkpoint b6 spawned inside the retired B6 room (%.2f,%.2f)' % (sx, sz))
+        print('  b6 spawn', spawn, flush=True)
     armed = None
     if expect_armed is True:
         try:

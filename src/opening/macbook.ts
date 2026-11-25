@@ -43,7 +43,7 @@ const menuNames:Record<WindowApp,string>={
 const dockApps:WindowApp[]=['finder','agent','map','logs','terminal'];
 const eventLabels:Record<string,string>={
   invitation_read:'Dinner invitation read','opening.bus_exited':'Arrived on campus',
-  'opening.laptop_requested':'Presentation MacBook requested',laptop_acquired:'MacBook collected at Building 6',
+  'opening.laptop_requested':'Presentation MacBook requested',laptop_acquired:'MacBook collected · Building 4 5F',
   campus_alert_triggered:'Campus security alert received','opening.alert_acknowledged':'Emergency assistance enabled',
   'opening.building4_reached':'Reached the Building 4 entrance',
 };

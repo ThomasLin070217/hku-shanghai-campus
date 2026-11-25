@@ -46,6 +46,16 @@ for(const id of OPENING_CHECKPOINTS){
  });
 }
 
+group('the b6 errand checkpoint starts at the B4 side door',()=>{
+ // Task E moved the errand to the B4 5F office; the checkpoint has to spawn at that errand,
+ // not in the retired B6 room 90 m away.
+ const [x,y,z]=checkpointPose('b6').position;
+ assert.ok(Math.hypot(x-47.75,z-20)<.6,`b6 must start at the B4 side door, got ${x},${y},${z}`);
+ assert.ok(Math.abs(y-O.b4.floor)<.3,`the b6 start must stand on the B4 ground floor, got y=${y}`);
+ assert.ok(x>=O.b4.x0&&x<=O.b4.x1&&z>=O.b4.z0&&z<=O.b4.z1,'b6 must start inside the B4 footprint');
+ assert.ok(!(x>=O.b6.x0&&x<=O.b6.x1&&z>=O.b6.z0&&z<=O.b6.z1),'b6 must not start inside the retired B6 room');
+});
+
 group('openingCheckpoint only accepts the menu ids',()=>{
  assert.equal(openingCheckpoint('b5'),'b5');
  assert.equal(openingCheckpoint('b4'),'b4');

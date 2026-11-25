@@ -76,7 +76,7 @@ export function openingObstacles(obstacles:Obstacle[]){
  const officeFurniture=(name:string,{x,z,w,d,h}:{x:number;z:number;w:number;d:number;h:number})=>{
   obstacles.push(box('opening-b6-'+name,x-w/2,x+w/2,z-d/2,z+d/2,officeFloor,officeFloor+h));
  };
- officeFurniture('desk',B6.presentation);
+ officeFurniture('desk',B6.presentationDesk);
  officeFurniture('credenza',B6.credenza);
  officeFurniture('planter',B6.planter);
  for(const {id,desk,chair} of B6.workstations){
