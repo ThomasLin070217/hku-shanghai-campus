@@ -1,7 +1,7 @@
 import * as T from 'three';
 import {createCharacter} from '../characters/character';
 import {NPC_APPEARANCES,type Appearance} from '../characters/config';
-import {DINNER_LAYOUT,OPENING,dinnerHallPoint} from './spatialLayout';
+import {DINNER_LAYOUT,OPENING,dinnerChairPlaces,dinnerHallPoint} from './spatialLayout';
 
 /** Opening-only cast. Keep the coordinator and original student IDs stable. */
 export const OPENING_CAST:{position:readonly [number,number,number];appearance:Appearance;yaw:number}[]=[
@@ -21,10 +21,66 @@ export const OPENING_CAST:{position:readonly [number,number,number];appearance:A
  ].map((a,i)=>({position:a.position as [number,number,number],yaw:a.yaw,appearance:{...NPC_APPEARANCES[i%2],id:'opening-guest-'+(i+1),name:i===8?'Dinner staff':'Dinner guest',height:1.70+(i%4)*.045,coat:a.coat,hair:a.hair,skin:a.skin,gown:i%3===0}})),
 ];
 
+/**
+ * The dinner is a seated dinner. Until 2026-11-26 every guest stood between the
+ * chairs and the hall read as empty despite ~80 laid covers (QA, `.scratch/b5-dinner-qa`:
+ * "12 figures in the room and 0 seated"). Each guest whose authored post is within
+ * arm's reach of a chair takes that chair and faces its table; the forecourt pair has
+ * no chair nearby and stays standing, which is what they are there for.
+ *
+ * `dinnerChairPlaces()` is the same arithmetic `world.ts` draws the chairs with, so a
+ * guest cannot end up inside a seat. The nearest *table centre* gives the facing, and
+ * one chair is used at most once.
+ */
+const SEAT_HEIGHT=.45;
+const SEAT_REACH=3.4;
+interface Seat{actor:number;x:number;z:number;yaw:number}
+function seatPlan():Seat[]{
+ const chairs=dinnerChairPlaces();
+ const tables=DINNER_LAYOUT.tables.map(([a,b])=>dinnerHallPoint(a,b));
+ const taken=new Set<number>(),plan:Seat[]=[];
+ for(let actor=1;actor<OPENING_CAST.length;actor++){
+  const [x,,z]=OPENING_CAST[actor].position;
+  let pick=-1,best=SEAT_REACH;
+  for(let i=0;i<chairs.length;i++){
+   if(taken.has(i))continue;
+   const distance=Math.hypot(chairs[i].x-x,chairs[i].z-z);
+   if(distance<best){best=distance;pick=i;}
+  }
+  if(pick<0)continue;
+  taken.add(pick);
+  const chair=chairs[pick];
+  let table=tables[0];
+  for(const t of tables)if(Math.hypot(t[0]-chair.x,t[1]-chair.z)<Math.hypot(table[0]-chair.x,table[1]-chair.z))table=t;
+  // Same yaw convention as the walking code: yaw 0 faces -Z.
+  plan.push({actor,x:chair.x,z:chair.z,yaw:Math.atan2(-(table[0]-chair.x),-(table[1]-chair.z))});
+ }
+ return plan;
+}
+
 export function createOpeningNPCs(){
  const root=new T.Group();root.name='Opening_people';root.userData.dynamicGameplay=true;
  const actors=OPENING_CAST.map(a=>{const model=createCharacter(a.appearance);model.root.position.fromArray([...a.position]);model.root.rotation.y=a.yaw;root.add(model.root);return model;});
  const staff=actors[0];
+ const seats=new Map<number,Seat>(seatPlan().map(seat=>[seat.actor,seat]));
+ const legs=actors.map(actor=>['leg-left','leg-right'].map(name=>actor.nodes.find(node=>node.name===name)!));
+ function sit(index:number){
+  const seat=seats.get(index),actor=actors[index];
+  if(!seat)return;
+  actor.root.position.set(seat.x,OPENING_CAST[index].position[1],seat.z);
+  actor.root.rotation.y=seat.yaw;
+  // The rig's hip pivots sit one rig unit above the feet, so the body drops by
+  // (hip x visual scale - seat height); both legs then swing forward to the
+  // horizontal, which puts the lap under the tabletop at 0.74 m.
+  const hip=legs[index][0].position.y,scaleY=actor.config.height/2.7;
+  actor.visual.position.y=SEAT_HEIGHT-hip*scaleY;
+  for(const leg of legs[index])leg.rotation.set(-Math.PI/2,0,0);
+ }
+ function stand(index:number){
+  actors[index].visual.position.y=0;
+  for(const leg of legs[index])leg.rotation.set(0,0,0);
+ }
+ for(const index of seats.keys())sit(index);
  let staffTarget:T.Vector3|null=null;
  /* The incident empties the hall. The cast used to be hidden by one assignment the frame the
     alert flipped — everyone vanished where they stood, which reads as a rendering fault rather
@@ -66,13 +122,14 @@ export function createOpeningNPCs(){
  });
  const pathIndex=OPENING_CAST.map(()=>0);
  const startStaffTalk=()=>{staffTarget=new T.Vector3(61.5,.02,-59.0);};
- const beginLeaving=()=>{leaving=true;staffTarget=null;};
+ const beginLeaving=()=>{leaving=true;staffTarget=null;for(const index of seats.keys())stand(index);};
  const reset=()=>{
   staffTarget=null;leaving=false;pathIndex.fill(0);
   actors.forEach((actor,index)=>{
    actor.root.position.fromArray([...OPENING_CAST[index].position]);actor.root.rotation.y=OPENING_CAST[index].yaw;
    actor.root.visible=true;
   });
+  for(const index of seats.keys())sit(index);
   root.visible=true;
  };
  return{root,startStaffTalk,staffPosition:()=>new T.Vector3(staff.root.position.x,staff.root.position.y+1.55,staff.root.position.z),staffRootPosition:()=>staff.root.position,reset,update(dt:number,incident:boolean,paused:boolean,player:T.Vector3){
@@ -101,7 +158,9 @@ export function createOpeningNPCs(){
   }
   if(leaving)return;
   root.visible=!incident;if(incident||paused||dt<=0)return;
-  for(const actor of actors){
+  for(const [index,actor] of actors.entries()){
+   // A seated guest is still: `animate()` would put the legs back under the body.
+   if(seats.has(index))continue;
    if(actor===staff&&staffTarget){
     const dx=staffTarget.x-actor.root.position.x,dz=staffTarget.z-actor.root.position.z,distance=Math.hypot(dx,dz);
     if(distance>.12){

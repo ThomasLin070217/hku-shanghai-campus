@@ -22,14 +22,17 @@ export const OPENING_AUDIO_NAMES=[
  'sfx_safe_restore','step_jump','step_land','macbook_open','macbook_close',
  'agent_status','ui_confirm','ui_cancel','ui_error','decrypt_success','cc0_bus_engine_idle','cc0_amb_birds_loop','bus_door',
  'mus_safe','mus_unease','mus_tension','mus_chase','mus_hope',
- 'mus_prologue','mus_invitation','mus_dinner','mus_office','mus_alert','mus_patrol','mus_sports',
+ 'mus_prologue','mus_invitation','mus_dinner','mus_dinner_toast','mus_office','mus_alert','mus_patrol','mus_sports',
 ];
 /**
  * The ending's closing theme. Registered with the story URL map (so the credits can
  * load it) but deliberately not in `OPENING_AUDIO_NAMES`: the first click must not
  * fetch it. The credits ask for it on demand, once, at the moment they appear.
+ *
+ * `mus_finale` sits here too: the four-tower light show asks for it on demand at the
+ * release beat, and the credits take the bed over six seconds later.
  */
-export const ENDING_AUDIO_NAMES=['mus_credits'] as const;
+export const ENDING_AUDIO_NAMES=['mus_credits','mus_finale'] as const;
 /**
  * Score for the campaign's own beats. Registered with the story URL map so a chapter
  * can ask for its cue at the moment it needs it; never part of the first click.

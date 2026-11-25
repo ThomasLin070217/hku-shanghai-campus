@@ -3,7 +3,7 @@ import * as T from 'three';
 import {createOpeningNPCs,OPENING_CAST} from '../src/opening/npcs';
 import {createNavigation} from '../src/exploration/navigation';
 import {BUILDINGS,SITE} from '../src/model/campusParameters';
-import {DINNER_LAYOUT,OPENING,dinnerHallPoint} from '../src/opening/spatialLayout';
+import {DINNER_LAYOUT,OPENING,dinnerChairPlaces,dinnerHallPoint} from '../src/opening/spatialLayout';
 const npcs=createOpeningNPCs(),world=createNavigation(BUILDINGS,SITE,true);
 assert.equal(npcs.root.children.length,12);assert.equal(new Set(OPENING_CAST.map(a=>a.appearance.id)).size,12);
 for(const spec of OPENING_CAST){
@@ -18,6 +18,19 @@ for(const spec of OPENING_CAST){
  assert.ok(head.geometry,'reuse the shared character rig');
 }
 const coordinator=npcs.root.getObjectByName('opening-staff')!;
+// The High Table Dinner is seated (2026-11-26). Every seated guest has both legs
+// swung forward and the body lowered onto a chair from the same list the scenery
+// draws; the forecourt pair has no chair nearby and stays standing.
+const chairs=dinnerChairPlaces();
+let seated=0;
+for(const actor of npcs.root.children){
+ const visual=actor.children[0]!,leg=actor.getObjectByName('leg-left')!,right=actor.getObjectByName('leg-right')!;
+ if(visual.position.y>=-.001)continue;
+ seated++;
+ assert.ok(Math.abs(leg.rotation.x+Math.PI/2)<1e-6&&Math.abs(right.rotation.x+Math.PI/2)<1e-6,`${actor.name} sits with a leg not forward`);
+ assert.ok(chairs.some(c=>Math.hypot(c.x-actor.position.x,c.z-actor.position.z)<.01),`${actor.name} sits off a chair`);
+}
+assert.ok(seated>=6,`only ${seated} guests are seated at the dinner`);
 const player=new T.Vector3(OPENING.staff[0],OPENING.staff[1],OPENING.staff[2]+2);
 for(let i=0;i<180;i++)npcs.update(1/60,false,false,player);
 const forward=new T.Vector3(0,0,-1).applyAxisAngle(new T.Vector3(0,1,0),coordinator.rotation.y);

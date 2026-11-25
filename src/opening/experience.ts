@@ -75,7 +75,7 @@ export function createOpeningExperience(
  /** True while a replayed prologue owns the screen: the intro must show the opening it
   * retells (plaza crowd, prologue score, no robots), not the state of a later stage. */
  let wasPrologueActive=false;
- let staffTalkStarted=false,staffTalkDone=false,staffTalkClock=0,staffTalkLine=0,staffVoiceStarted=false,acceptVoicePlayed=false,acceptVoiceBusy=false,repeatVoiceBusy=false;
+ let staffTalkStarted=false,staffTalkDone=false,staffTalkClock=0,staffTalkLine=0,staffVoiceStarted=false,acceptVoicePlayed=false,acceptVoiceBusy=false,repeatVoiceBusy=false,toastCuePlayed=false;
  let fleet=createOpeningFleet(explorer.world);scene.add(fleet.root);
  const npcs=createOpeningNPCs();scene.add(npcs.root);
  /* ---------------------------------------------------------------- */
@@ -208,6 +208,13 @@ export function createOpeningExperience(
   if(staffTalkStarted&&!force)return;
   staffTalkStarted=true;staffTalkDone=false;staffTalkClock=0;staffTalkLine=0;staffVoiceStarted=false;
   npcs.startStaffTalk();
+  // The High Table Dinner's toast. It plays once, under the coordinator's speech,
+  // on the story bus; the cue ships with the game but never with the first click,
+  // so it is fetched here, the one moment it can be heard.
+  if(!toastCuePlayed){
+   toastCuePlayed=true;
+   void audio.loadAudioNames(['mus_dinner_toast']).then(()=>audio.story?.cue('mus_dinner_toast'));
+  }
   void voice.playIntro({
    eligible:()=>!failed&&(modal==='staff'||(staffTalkStarted&&!staffTalkDone)),
    position:staffVoicePosition,
