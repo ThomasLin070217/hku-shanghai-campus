@@ -158,6 +158,13 @@ def main_run(browser):
     # same path (openComputer -> open('computer') pauses and opens the panel), then readAlert.
     page.evaluate(f'() => {{ {D}.triggerIncident(); {D}.reachB5(); {D}.openComputer("tasks"); {D}.readAlert(); }}')
     page.wait_for_timeout(600)
+    # Assert the stage HERE, with the MacBook still open. The player has stood on the Building 4
+    # handoff point (58, 25) since boot: nothing in this chapter moves them. So the moment the
+    # game runs unpaused at `to_b4` the handoff gate fires, by design, and the stage becomes
+    # `complete`. Asserting after `resume()` raced that frame and only passed while frames were
+    # slow enough to lose (found 2026-11-25: 66/0 on one build, 65/1 on a faster one).
+    check('Chapter 1: story reached to_b4', page.evaluate(f'() => {D}.state().story.stage') == 'to_b4', snap(page))
+    shot(page, '00-chapter1-to-b4.png')
     # Real keys close it: C closes the MacBook; Escape first closes an open app inside it.
     for key in ('c', 'Escape', 'Escape', 'c'):
         if page.evaluate(f'() => {D}.state().modal') is None:
@@ -166,8 +173,6 @@ def main_run(browser):
         until(page, f'() => {D}.state().modal === null', 8)
     check('Chapter 1: the MacBook closes with real keys', page.evaluate(f'() => {D}.state().modal') is None, snap(page))
     resume(page)
-    check('Chapter 1: story reached to_b4', page.evaluate(f'() => {D}.state().story.stage') == 'to_b4', snap(page))
-    shot(page, '00-chapter1-to-b4.png')
     page.evaluate(f'() => {D}.arriveB4()')
 
     # ---- B4 Keyboard Wall ----
