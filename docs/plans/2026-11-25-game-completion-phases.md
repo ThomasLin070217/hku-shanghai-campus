@@ -195,6 +195,12 @@ Rules: name every path you git add (never git add -A); commit in verified units;
 - Layout fixes found by playing, then pinned by measurement in `check:fullscreen`: portrait stack is buttons (top edge 206 px) → hotbar (216) → prompt (272) → rotate hint (320), each clearing the one below; a short landscape phone hides the minimap (it covered RUN and MENU) and the "Bag (E)" keyboard hint; keyboard-only copy is hidden on touch.
 - The gate now measures geometry, not only presence: every control fully on screen and no two thumb targets overlapping, at 390×844, 844×390 and 430×932.
 
+### Playtest fixes (owner reports, 2026-11-25)
+
+- **Replay intro** (`src/opening/experience.ts`): the crowd swap ran in `tick()`, but `game.step()` returns before the scenario tick while paused and the prologue pauses the game for its whole run — so a replay from B5 kept the dinner guests in the hall and the stage's score. The swap moved to `update()`, which runs on paused frames; `scripts/check-replay-intro.py` pins all twelve assertions (score `mus_prologue`, plaza crowd, hidden fleet, and the restored state after skipping). The gate enters via `#enter-game` and takes the shipped `#enter-compat` fallback because headless Chrome denies pointer lock.
+- **Eight humanoid robots** (`src/opening/robot.ts`): the owner asked for Unitree-style humanoids ("加个八个人形机器人，宇树"). Rebuilt as a 1.68 m G1/H1-like rig (hip/knee/ankle, shoulder/elbow/wrist, level foot, antiphase arms and legs, visor head with ear pods). The patrol/scan/chase/search FSM, shared eye ray, detection cone, capture radius and far-tier budget are unchanged. `check-opening-robot` 24 PASS; `check-opening-fleet` PASS (8 units, 4+4, 6/6 walk + 6/6 sprint fair, standing on a patrol edge still caught).
+- Student idle: arrived students breathe and sway instead of standing as mannequins (`updateCrowd`).
+
 ### Gate
 
 ```
