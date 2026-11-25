@@ -122,13 +122,20 @@ def touch_drag(page, start, end, steps=6, hold_ms=0):
 
 
 def tap_button(page, selector):
+    """Tap the control's centre, but only if the control is what a finger would
+    actually hit there. A covered or collapsed control returns False instead of
+    a tap that lands somewhere else (measured 2026-11-26: the fullscreen toggle
+    was tapped one frame after the pause card resumed, while the card still
+    covered it, and the tap went to the card)."""
     box = page.evaluate("""(selector) => {
       const el = document.querySelector(selector);
       if (!el) return null;
       const b = el.getBoundingClientRect();
-      return {x: b.x + b.width / 2, y: b.y + b.height / 2};
+      const hit = document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2);
+      return {x: b.x + b.width / 2, y: b.y + b.height / 2,
+              reachable: !!hit && (hit === el || el.contains(hit))};
     }""", selector)
-    if not box:
+    if not box or not box['reachable']:
         return False
     page.touchscreen.tap(box['x'], box['y'])
     return True
@@ -262,6 +269,11 @@ def run_portrait(page):
     shot(page, '390x844', '03-menu')
     check('portrait: the pause card resumes the game', tap_button(page, '#enter-game')
           and until(page, '() => !window.__CAMPUS.explorer.game.paused', timeout=20))
+    # `paused` flips inside the click handler; the card is hidden on the
+    # viewer's next frame. A tap issued in between lands on the card, which now
+    # reaches over the top-right toggle (measured 2026-11-26: enter and leave
+    # both failed while the toggle itself was healthy). Wait for the hide.
+    until(page, "() => { const p = document.getElementById('pause-panel'); return !!p && p.hidden; }", timeout=30)
 
     # ---- Fullscreen: a real tap, a real Fullscreen API element.
     before = state(page)
@@ -376,6 +388,17 @@ def run_fallback(page):
     toggles = page.evaluate("() => document.querySelectorAll('.fullscreen-toggle').length")
     check('fallback: a device without the API gets no dead fullscreen button', toggles == 0, toggles)
     hint = box_of(page, '.fullscreen-hint')
+    # The pill is a floating control, like the floating fullscreen button: the
+    # pause card covers it on a phone, so the card hides it rather than leaving
+    # a dead-looking Dismiss underneath. It must appear once play starts.
+    check('fallback: the hint waits under the pause card instead of floating over it',
+          bool(hint) and hint['display'] == 'none', hint)
+    check('fallback: starting the game shows the hint', enter(page) and until(
+        page, """() => { const h = document.querySelector('.fullscreen-hint');
+                 const p = document.getElementById('pause-panel');
+                 return !!h && (!p || p.hidden) && getComputedStyle(h).display !== 'none'
+                        && h.getBoundingClientRect().width > 0; }""", timeout=30))
+    hint = box_of(page, '.fullscreen-hint')
     check('fallback: the Add to Home Screen hint is shown instead',
           bool(hint) and hint['display'] != 'none' and hint['w'] > 0, hint)
     text = page.evaluate("() => document.querySelector('.fullscreen-hint span')?.textContent")
@@ -385,6 +408,14 @@ def run_fallback(page):
     check('fallback: Dismiss meets the 44 px touch target',
           bool(dismiss) and dismiss['w'] >= 44 and dismiss['h'] >= 44, dismiss)
     shot(page, '390x844-fallback', '01-hint')
+    # A tap the player cannot land is not a dismissal: the button has to be the
+    # element under its own centre, not something drawn over it.
+    reachable = page.evaluate("""() => { const b = document.querySelector('.fullscreen-hint button');
+      if (!b) return null; const r = b.getBoundingClientRect();
+      const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+      return {ok: !!hit && (hit === b || b.contains(hit)), hit: hit ? hit.tagName + '.' + (hit.className || '') : null}; }""")
+    check('fallback: Dismiss is the element under its own tap point',
+          bool(reachable) and reachable['ok'] is True, reachable)
     check('fallback: tapping Dismiss removes the hint',
           tap_button(page, '.fullscreen-hint button')
           and until(page, "() => !document.querySelector('.fullscreen-hint')", timeout=10))

@@ -77,7 +77,11 @@ def check(name, ok, detail=''):
 
 def shot(page, name):
     try:
-        page.screenshot(path=SHOTS + name, timeout=90000)
+        # 180 s, not the 90 s this used to pass: under SwiftShader the compositor
+        # can starve for minutes while other work runs, and a screenshot forces a
+        # frame. Measured 2026-11-26: `09-lawn-no-cinema.png` timed out at 90 s
+        # while the checks around it passed.
+        page.screenshot(path=SHOTS + name, timeout=180000)
         print('  shot', SHOTS + name, flush=True)
     except Exception as error:  # Screenshots are evidence, not assertions.
         print('  shot failed', name, type(error).__name__, flush=True)
@@ -108,8 +112,8 @@ def focus_log(page, n=8):
 
 
 def boot(page, query):
-    page.goto(ORIGIN + query, wait_until='domcontentloaded')
-    page.wait_for_function('() => window.__CAMPUS && window.__CAMPUS.campaign && window.__CAMPUS.openingDebug && window.__CAMPUS.explorer', timeout=120000)
+    page.goto(ORIGIN + query, wait_until='domcontentloaded', timeout=240000)
+    page.wait_for_function('() => window.__CAMPUS && window.__CAMPUS.campaign && window.__CAMPUS.openingDebug && window.__CAMPUS.explorer', timeout=240000)
     page.keyboard.press('Shift')  # claimSave needs a trusted input
     page.evaluate('() => { window.__doc = 1; }')
     page.evaluate(HELPERS)
@@ -418,8 +422,12 @@ def lawn_cinema(browser):
     # Reload at `lawn`: the restored run (opening save + campaign save, passed chapters re-attached).
     page.wait_for_timeout(5500)  # past the opening save throttle, so the reload restores this run
     page.evaluate(f'() => {D}.state() && window.__CAMPUS.experience.persist(true)')
-    page.reload(wait_until='domcontentloaded')
-    page.wait_for_function('() => window.__CAMPUS && window.__CAMPUS.campaign && window.__CAMPUS.openingDebug && window.__CAMPUS.explorer', timeout=120000)
+    # Playwright's default 30 s navigation timeout expired here under SwiftShader
+    # contention (measured 2026-11-26: every check before it passed, then
+    # `Page.reload: Timeout 30000ms exceeded`). The boot itself gets 240 s just
+    # below; the navigation that starts that boot gets the same budget.
+    page.reload(wait_until='domcontentloaded', timeout=240000)
+    page.wait_for_function('() => window.__CAMPUS && window.__CAMPUS.campaign && window.__CAMPUS.openingDebug && window.__CAMPUS.explorer', timeout=240000)
     page.keyboard.press('Shift')
     page.evaluate(HELPERS)
     page.evaluate('() => window.__CAMPUS.explorer.enterCompat()')

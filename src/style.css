@@ -103,9 +103,14 @@ body.opening-mode .pause-card .pause-checkpoint{background:#102019;color:#e8f4ee
 @media(pointer:coarse){.pause-card button,.pause-chapter-link,.pause-chapter-start{min-height:44px}}
 
 /* While the card is open it covers the floating chapter link and fullscreen
-   button; hide them so nothing on screen looks clickable that is not. */
+   button; hide them so nothing on screen looks clickable that is not. The Add
+   to Home Screen pill goes with them: on a 390 px phone the taller card now
+   reaches over its old position, so leaving it up would put a dead-looking
+   "Dismiss" under the menu (seen 2026-11-26 in check:fullscreen). It appears
+   as soon as the player starts, which is when fullscreen matters. */
 body.exploring:has(#pause-panel:not([hidden])) .shell-chapters,
-body.exploring:has(#pause-panel:not([hidden])) .fullscreen-toggle{display:none}
+body.exploring:has(#pause-panel:not([hidden])) .fullscreen-toggle,
+body.exploring:has(#pause-panel:not([hidden])) .fullscreen-hint{display:none}
 
 /* Story mode: a wider menu card, dark sections, mint controls. */
 body.opening-mode .pause-card{width:min(560px,94vw);padding:24px 26px}

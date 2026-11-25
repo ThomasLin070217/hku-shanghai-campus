@@ -115,7 +115,10 @@ def fatal(message):
 
 
 def ready(page):
-    page.wait_for_function('() => window.__CAMPUS && window.__CAMPUS.prologue', timeout=90000)
+    # 90 s was the old budget and it expired under SwiftShader contention while
+    # the build was perfectly healthy (measured 2026-11-26: the same build boots
+    # in 28 s on a quiet machine). Every other gate uses 240 s.
+    page.wait_for_function('() => window.__CAMPUS && window.__CAMPUS.prologue', timeout=240000)
 
 
 def ready_or_fatal(page):

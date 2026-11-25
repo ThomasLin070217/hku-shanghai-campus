@@ -155,12 +155,16 @@ def visible(page, selector):
 
 def shot(page, name):
     os.makedirs(SHOTS, exist_ok=True)
-    page.screenshot(path=os.path.join(SHOTS, name))
+    # Playwright's default screenshot timeout is 30 s. Under SwiftShader one
+    # frame of the full campus can take longer than that on a loaded machine,
+    # and a timed-out frame is not a style failure (seen 2026-11-26 on the
+    # review build at 960x540: Page.screenshot Timeout 30000ms exceeded).
+    page.screenshot(path=os.path.join(SHOTS, name), timeout=180000)
 
 
 def open_checkpoint(page, checkpoint):
     page.goto(ORIGIN + '?experience=opening&checkpoint=' + checkpoint, wait_until='load')
-    page.wait_for_function('() => window.__CAMPUS && window.__CAMPUS.campaign && window.__CAMPUS.openingDebug', timeout=90000)
+    page.wait_for_function('() => window.__CAMPUS && window.__CAMPUS.campaign && window.__CAMPUS.openingDebug', timeout=240000)
     page.evaluate('() => { try { window.__CAMPUS.explorer.enterCompat(); } catch (e) {} }')
     page.wait_for_timeout(1200)
 
@@ -476,7 +480,7 @@ def held_model_checks(page, checkpoint):
           bool(opened) and opened['arms'] and opened['socket'] and abs(opened['scale'] - 1) <= 0.02
           and abs(opened['pos'][1] + 0.30) <= 0.03, opened)
     os.makedirs('/tmp/one-world/fu', exist_ok=True)
-    page.screenshot(path='/tmp/one-world/fu/fu0-open-macbook.png')
+    page.screenshot(path='/tmp/one-world/fu/fu0-open-macbook.png', timeout=180000)
     # FU7: the MacBook menu bar date is English, like its clock ("Sun 22 Nov").
     date = page.evaluate("() => document.querySelector('.mac-calendar')?.textContent ?? null")
     check('lawn: the MacBook menu-bar date is English, no CJK characters (FU7)',
@@ -498,7 +502,7 @@ def held_model_checks(page, checkpoint):
     powered = page.evaluate("() => !!window.__CAMPUS.asset.root.getObjectByName('B4_powered_lights')")
     check('lawn: B4 keeps its powered lighting state after the player has left (FU6)', powered, powered)
     os.makedirs('/tmp/one-world/p1', exist_ok=True)
-    page.screenshot(path='/tmp/one-world/p1/p1-door.png')
+    page.screenshot(path='/tmp/one-world/p1/p1-door.png', timeout=180000)
 
 
 def pause_bag_checks(page):
@@ -892,7 +896,7 @@ def menu_checks(page):
 def survey_checks(page):
     """Survey mode keeps the hotbar it had before the campaign restyle."""
     page.goto(ORIGIN + '?experience=survey', wait_until='load')
-    page.wait_for_function('() => window.__CAMPUS && document.getElementById("inventory-hud")', timeout=90000)
+    page.wait_for_function('() => window.__CAMPUS && document.getElementById("inventory-hud")', timeout=240000)
     page.wait_for_timeout(2600)
     body = page.evaluate('() => document.body.className')
     check('survey: the story-mode body class is absent', 'opening-mode' not in body.split(), body)
