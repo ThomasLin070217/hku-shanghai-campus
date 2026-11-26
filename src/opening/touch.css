@@ -128,6 +128,12 @@ body.exploring .touch-controls {
   grid-row: 2;
 }
 
+/* The MacBook key (`C`) as a phone button, in the grid's one free cell. */
+.touch-button[data-touch="computer"] {
+  grid-column: 1;
+  grid-row: 3;
+}
+
 .touch-actions {
   grid-template-rows: repeat(3, 56px);
 }
@@ -274,7 +280,8 @@ body[data-campaign-focus] .touch-stick,
 body[data-campaign-focus] .touch-guide,
 body[data-campaign-focus] .touch-button[data-touch="jump"],
 body[data-campaign-focus] .touch-button[data-touch="run"],
-body[data-campaign-focus] .touch-button[data-touch="bag"] {
+body[data-campaign-focus] .touch-button[data-touch="bag"],
+body[data-campaign-focus] .touch-button[data-touch="computer"] {
   display: none;
 }
 

@@ -2,6 +2,26 @@
 
 All notable changes to HKU: Barrier 2030 (“A CDS campus story”). The app version lives in `VERSION` and `package.json`; the save-schema version is separate.
 
+## [9.2.2] — 2026-11-26
+
+Hotfix for the two phone defects that stop a run: the MacBook could not be
+opened, and the backpack could not be opened.
+
+### Fixed
+- **A phone could not open the MacBook, so the story stopped at "Open the
+  MacBook".** No on-screen control sent `C`; the prompt named a key a phone
+  does not have. The touch pad now has a `MAC` button (the grid's free cell,
+  row 3 column 1) that sends `KeyC`, and the prompt rewrites `C · …` to
+  `MAC · …` (`src/opening/touchControls.ts`, `src/opening/touch.css`).
+  Verified A/B on 390×844: old build has no button, new build opens the
+  presentation device.
+- **BAG threw on every tap.** `controller.ts` tested `.matches` on the event
+  target, and the touch layer dispatches its key events on `window`, whose
+  target has no `matches`; the TypeError aborted the handler, so the bag never
+  opened. The guard is now `instanceof HTMLElement` first. Verified A/B: old
+  build `TypeError: H.target?.matches is not a function`, bag closed; new
+  build bag opens, zero page errors.
+
 ## [9.2.1] — 2026-11-26
 
 Two mobile defects the owner reported after playing 9.2.0 on a phone.

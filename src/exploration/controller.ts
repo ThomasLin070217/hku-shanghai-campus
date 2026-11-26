@@ -51,7 +51,11 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  listenDocument('pointerlockerror',()=>{if(compat)return;pause('pointer_lock_failed');document.dispatchEvent(new CustomEvent('game-notice',{detail:opening?'Pointer lock unavailable. Use drag mode to continue.':'此浏览器无法锁定鼠标。请用 Chrome 打开，或选择拖动兼容模式。'}));});
  listenWindow('keydown',e=>{
   if(!enabled||e.defaultPrevented||e.isComposing||e.metaKey||e.ctrlKey||e.altKey||game.panel)return;
-  if(e.code===KEYS.inventory&&!e.repeat&&!((e.target as HTMLElement)?.matches('input,textarea,select'))){e.preventDefault();game.inventoryOpen?closeInventory():openInventory();return;}
+  // The touch layer dispatches its synthetic key events on `window`, whose
+  // target is not an Element; a bare `?.` guards the target, not the method,
+  // and `.matches` threw on every BAG tap (measured 2026-11-26: five taps,
+  // five TypeErrors, bag never opened). `instanceof` guards the method too.
+  if(e.code===KEYS.inventory&&!e.repeat&&!(e.target instanceof HTMLElement&&e.target.matches('input,textarea,select'))){e.preventDefault();game.inventoryOpen?closeInventory():openInventory();return;}
   if(game.inventoryOpen){if(e.code===KEYS.pause){e.preventDefault();closeInventory();}return;}
   if(editable(e.target))return;
   if(e.code===KEYS.computer&&!e.repeat){e.preventDefault();for(const fn of computers)fn();return;}
