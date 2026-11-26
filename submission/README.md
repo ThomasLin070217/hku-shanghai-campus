@@ -43,6 +43,15 @@ Every later playable version gets its own tag (`v9.1.1`, `v9.2.0`, …). The vid
 
 On the local fallback (`dist/` + a static server), append `?agent=1` to the URL to use the local control bridge and the LLM-backed assistant; without it the assistant answers from its built-in core.
 
+## Uploaded to the lab, 2026-11-26
+
+The Group-E submission folder in the lab's SharePoint (`hkuhk-my.sharepoint.com/personal/linkc10_hku_hk/…/Hackathon/Student-Project/Group-E`) now holds:
+
+- `hku-barrier-2030-deck.pdf` — 3.62 MB, the 14-page A4 landscape deck.
+- `hku-barrier-2030-v9.1.0.mp4` — 29.9 MB, the demo recorded from the `v9.1.0` build.
+
+The folder was empty before the upload; both files now list with those sizes and a timestamp of "a few seconds ago", uploaded through ego lite, whose browser profile already held a signed-in HKU Microsoft session. The source and the playable link remain the deliverables in this repo.
+
 ## What is deliberately absent
 
 - No `SHA256SUMS`, no source/build zip, no freeze script, no `check-submission-package`.
