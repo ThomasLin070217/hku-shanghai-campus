@@ -188,8 +188,14 @@ Both GLM routes share the one ZCode account, so neither works. This is the secon
 
 **Owner action to unblock the ordered review:** resolve the ZCode suspension (or supply another GLM-5.4 route) and re-run. Nothing in the repo can fix this.
 
+**Re-probed 2026-11-26 after the release.** `auto/glm-5.4` and `auto/glm-5.3-flash` still return the same 405 / code 3012. The other GLM routes were checked too: `auto/zai-glm-5-3-flash` and `auto/zaicoding_glm-5.3` **answer**, while `auto/glm-5.3` returns 1113 (insufficient balance), `auto/zai_glm-x-preview` returns 429 (AutoClaw GLM-5.4 free quota used up), and `opencode-zen-2/glm-5-free` returns an expired API key. So a GLM *family* reviewer can run today, but not on 5.4. A read-only shakedown was run on `auto/zai-glm-5-3-flash` (`~/.claude/agents/glm-5-3-reviewer.md`, report under `.scratch/shakedown-glm53-2026-11-26/`) to keep the pre-filming check honest on a different model family; it does not satisfy the letter of the order, which names 5.4.
+
 
 
 ## Security
 
 Two `sk-` API keys were posted in the group chat on 2026-11-23 19:51/19:54. Treat them as compromised and rotate them; do not put them in the repo, the build or the tagged release. `scripts/pre-push-secret-scan.sh` passes on the current tree (no `sk-`, `ntn_`, `ghp_`, `Bearer ` shapes; no `.env`; `dist/` clean). Rotation is the owner's action.
+
+**Checked 2026-11-26, after the `v9.2.0` release.** Neither key was ever committed: `git log --all -S"sk-DZ3K"` and `-S"sk-lWD_"` return nothing, and neither shape appears in the working tree, so the public repository and the tagged release are clean.
+
+Both keys are **still live** on the lab LiteLLM (`GET /v1/models` → 200 through both `127.0.0.1:4000` and `10.128.12.207:4000`), so the exposure is not self-limiting. They are stored in the owner's local routing pool (`~/.config/magpie/providers.json`, provider `litellm-hackathon`). They cannot rotate themselves: every key-management route (`/key/info`, `/key/generate`, `/key/delete`, `/key/regenerate`) returns 403 `Only allowed to call routes: ['llm_api_routes']`. Revoking them needs the lab's master key or the lab admin; nothing on this machine holds either. The practical sequence is: ask the lab to revoke both virtual keys and issue replacements, then replace the two entries in the routing pool and delete the group-chat messages that carried them.
