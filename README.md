@@ -4,9 +4,9 @@
 > “HKU Shanghai at War — BARRIER 2030”, which split the name into a title and a subtitle. The title
 > card, credits, menu, pause card, ending and submission all read the single name.
 
-# HKU Shanghai · 校园数字巡检 v9
+## 早期巡检试玩（v9）
 
-**[打开校园试玩](https://hku-l001-lawn-playtest.ctw557923.chatgpt.site/)**，可用电脑浏览器直接选择校园开场、体育馆营救、草坪狮子 L001 或校园巡检。帧率偏低时可在选关页勾选「低画质模式」。
+**[打开校园试玩](https://thomaslin070217.github.io/hku-shanghai-campus/)**，可用电脑浏览器直接选择校园开场、体育馆营救、草坪狮子 L001 或校园巡检。帧率偏低时可在选关页勾选「低画质模式」。
 
 本地运行 `npm run play` 后，访问 `/?experience=levels` 选关。公开试玩使用 `npm run build:playtest` 生成的 `dist-playtest/`。MacBook 已改成 macOS 桌面 + Harness 风格本地 AI：菜单栏、Finder、Dock、Preview、Maps、Terminal，支持语音输入/朗读；草坪战斗中不再有技能工作台。
 

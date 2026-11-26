@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to HKU Shanghai at War (“BARRIER 2030”). The app version lives in `VERSION` and `package.json`; the save-schema version is separate.
+All notable changes to HKU: Barrier 2030 (“A CDS campus story”). The app version lives in `VERSION` and `package.json`; the save-schema version is separate.
 
 ## [9.2.0] — 2026-11-26
 
