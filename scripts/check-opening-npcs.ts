@@ -54,9 +54,18 @@ const tables=DINNER_LAYOUT.tables.map(([a,b])=>{
   z0:z-DINNER_LAYOUT.tableWidth/2-.25,z1:z+DINNER_LAYOUT.tableWidth/2+.25};
 });
 const timeline:string[]=[];
+const opacityOf=(actor:T.Object3D)=>{let max=0;actor.traverse(o=>{const mesh=o as T.Mesh;if(!mesh.isMesh)return;for(const m of Array.isArray(mesh.material)?mesh.material:[mesh.material])max=Math.max(max,m.opacity);});return max;};
+// The owner read the old hide as people evaporating in the open (2026-11-27). Record where
+// each actor disappears and how visible it still was on that frame.
+const hiddenAt=new Map<string,{x:number,z:number,opacity:number}>();
+const wasVisible=new Map<string,boolean>(npcs.root.children.map(c=>[c.name,c.visible]));
 let previousCount=npcs.root.children.filter(c=>c.visible).length;
 for(let i=0;i<60*40;i++){
  npcs.update(1/60,true,false,new T.Vector3(0,0,0));
+ for(const actor of npcs.root.children){
+  if(wasVisible.get(actor.name)&&!actor.visible)hiddenAt.set(actor.name,{x:actor.position.x,z:actor.position.z,opacity:opacityOf(actor)});
+  wasVisible.set(actor.name,actor.visible);
+ }
  const count=npcs.root.children.filter(c=>c.visible).length;
  assert.ok(previousCount-count<=1,`${previousCount-count} actors vanished in one frame at ${(i/60).toFixed(2)} s`);
  previousCount=count;
@@ -66,6 +75,20 @@ for(let i=0;i<60*40;i++){
   const {x,z}=actor.position;
   for(const t of tables)assert.ok(!(x>t.x0&&x<t.x1&&z>t.z0&&z<t.z1),
    `${actor.name} walked through a dinner table at ${x.toFixed(2)},${z.toFixed(2)}`);
+ }
+}
+assert.equal(hiddenAt.size,OPENING_CAST.length,'every actor hides exactly once');
+for(const [index,spec] of OPENING_CAST.entries()){
+ const actor=npcs.root.children[index],hide=hiddenAt.get(actor.name)!;
+ assert.ok(hide.opacity<=.001,`${actor.name} was hidden before its fade finished (opacity ${hide.opacity.toFixed(2)})`);
+ if(spec.position[2]<OPENING.b5.z1){
+  // Hall guests must dissolve in the doorway, never in the forecourt.
+  assert.ok(Math.abs(hide.x-OPENING.b5.door)<=OPENING.b5.doorWidth/2+.15,
+   `${actor.name} vanished ${Math.abs(hide.x-OPENING.b5.door).toFixed(2)} m from the door centre`);
+  assert.ok(hide.z<=OPENING.b5.z1+.95,
+   `${actor.name} vanished ${(hide.z-OPENING.b5.z1).toFixed(2)} m outside the door plane (the void pop)`);
+ }else{
+  assert.ok(hide.z>=OPENING.b5.z1+6,`forecourt guest ${actor.name} must walk clear before fading (z ${hide.z.toFixed(2)})`);
  }
 }
 assert.equal(npcs.root.visible,false,'everyone must have left the hall within 40 s');

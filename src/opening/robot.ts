@@ -61,6 +61,8 @@ export interface OpeningRobotParams{
  halfAngle:number;
  /** Continuous visibility needed before a target counts as confirmed, seconds. */
  confirm:number;
+ /** How long a chase keeps pursuing the last seen point after sight is lost, seconds. */
+ chaseMemory:number;
  /** Horizontal distance needed to catch the player, metres. */
  capture:number;
  /** Allowed foot height difference for a capture, metres. */
@@ -164,7 +166,8 @@ export const ROBOT:OpeningRobotParams={
  searchSpeed:1.2,
  range:9,
  halfAngle:35*DEG,
- confirm:0.7,
+ confirm:0.35,
+ chaseMemory:4,
  capture:0.65,
  captureRise:0.9,
  eyeHeight:1.05,
@@ -177,7 +180,7 @@ export const ROBOT:OpeningRobotParams={
  stall:1.2,
  replan:0.35,
  maxReplans:3,
- searchSeconds:3,
+ searchSeconds:7,
  turnRate:4.2,
  captureGrace:0.25,
  patrolDwell:1.2,
@@ -209,7 +212,7 @@ export const ROBOT:OpeningRobotParams={
  interceptMax:1.2,
  searchPointSeconds:1.1,
  searchSpread:2.2,
- searchTravelCap:4,
+ searchTravelCap:8,
  guardAlert:0.6,
  guardDwell:2.4,
  guardRadius:3.5,
@@ -784,7 +787,7 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
  let state:OpeningRobotState='patrol';
  let caught=false,warning=0,seenTime=0,searchClock=0,scanClock=0;
  let patrolIndex=1,moveYaw=0,scanYaw=0,routeClock=0,progressClock=0,progressBest=Number.POSITIVE_INFINITY;
- let dwell=0,chaseClock=0,visibleNowCache=false,visualClock=0;
+ let dwell=0,chaseClock=0,unseenClock=0,visibleNowCache=false,visualClock=0;
  let routeUsedGraph=false,legStalls=0,legAbandoned=false;
  let route:{x:number;z:number}[]=[];
  const lastSeen=new T.Vector3();
@@ -794,7 +797,7 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
  /** Coordination and budget state. */
  let supporting=false,guarding=false,shadowOn=true;
  let reportClock=0;
- const playerVelocity=new T.Vector3(),previousPlayer=new T.Vector3(),stepVelocity=new T.Vector3();
+ const playerVelocity=new T.Vector3(),lastSeenVelocity=new T.Vector3(),previousPlayer=new T.Vector3(),stepVelocity=new T.Vector3();
  let hasPreviousPlayer=false;
  let farTier=false,budgetClock=0;
  let searchStep=0,searchLook=0,searchElapsed=0;
@@ -1140,7 +1143,7 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
   visibleNowCache=seen;
   const gap=Math.hypot(player.x-body.position.x,player.z-body.position.z);
   const rise=Math.abs(player.y-body.position.y);
-  if(seen){seenTime+=dt;lastSeen.copy(player);hasLastSeen=true;}
+  if(seen){seenTime+=dt;lastSeen.copy(player);lastSeenVelocity.copy(playerVelocity);hasLastSeen=true;}
   else seenTime=Math.max(0,seenTime-dt*2);
   // A sighting is published only from this unit's own eye ray. The blackboard is a stale
   // point plus an alert level; it never receives a live position through cover.
@@ -1152,17 +1155,22 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
   if(state==='patrol'||state==='scanning'){
    // A visible target only becomes a chase after the confirm window; being seen is never a failure.
    if(seen&&seenTime>=ROBOT.confirm*(options.confirmScale??1)){
-    state='chase';chaseClock=0;route=[];routeClock=0;progressBest=Number.POSITIVE_INFINITY;progressClock=0;searchClock=0;routeUsedGraph=false;legStalls=0;legAbandoned=false;supporting=false;
+    state='chase';chaseClock=0;unseenClock=0;route=[];routeClock=0;progressBest=Number.POSITIVE_INFINITY;progressClock=0;searchClock=0;routeUsedGraph=false;legStalls=0;legAbandoned=false;supporting=false;
    }else if(seen&&state==='patrol')state='scanning';
    else if(!seen&&state==='scanning')state='patrol';
    considerSupport();
   }else if(state==='chase'){
    chaseClock+=dt;
-   if(!seen){
-    // Lost sight: the remembered spot (plus a bounded prediction) is the only allowed goal,
-    // never the live position behind cover. A nearby unit may claim the shared search once.
+   // GTA-style lock: one scanned frame opens the chase, and losing sight does not drop it.
+   // The unit keeps walking the remembered point for `chaseMemory` seconds first; only then
+   // does it fall back to the search pattern. Escape means staying unseen (and getting away)
+   // for the whole window, not stepping behind the turret for a frame (owner, 2026-11-27).
+   if(seen)unseenClock=0;else unseenClock+=dt;
+   if(unseenClock>=ROBOT.chaseMemory){
+    // The remembered spot (plus a bounded prediction) is the only allowed goal, never the
+    // live position behind cover. A nearby unit may claim the shared search once.
     state='search';searchClock=0;searchElapsed=0;route=[];routeClock=0;progressBest=Number.POSITIVE_INFINITY;progressClock=0;
-    buildSearchPlan(playerVelocity);
+    buildSearchPlan(lastSeenVelocity);
    }
   }
 
@@ -1178,9 +1186,17 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
       // Route guarding (T28): hold the choke point the objective sits behind and face it.
       dwell=Math.max(dwell,ROBOT.guardDwell);
       scanYaw=turnToward(scanYaw,headingTo(guardPoint[0]-body.position.x,guardPoint[2]-body.position.z),ROBOT.turnRate*dt);
+     }else if(seen){
+      // A scan contact locks the turret on the target: the sweep stops and the head follows
+      // it while the confirm window fills. Otherwise the head sweeps past a target it just
+      // touched, so being scanned never reads as being locked (owner, 2026-11-27).
+      scanYaw=turnToward(scanYaw,headingTo(player.x-body.position.x,player.z-body.position.z),ROBOT.turnRate*dt);
      }else{
       scanYaw=turnToward(scanYaw,moveYaw+Math.sin(scanClock*ROBOT.sweepRate)*ROBOT.sweep,ROBOT.turnRate*dt);
      }
+     body.step(dt,{forward:0,right:0,sprint:false},moveYaw,false);
+    }else if(seen){
+     scanYaw=turnToward(scanYaw,headingTo(player.x-body.position.x,player.z-body.position.z),ROBOT.turnRate*dt);
      body.step(dt,{forward:0,right:0,sprint:false},moveYaw,false);
     }else{
      scanYaw=turnToward(scanYaw,moveYaw+Math.sin(scanClock*ROBOT.sweepRate)*ROBOT.sweep,ROBOT.turnRate*dt);
@@ -1208,7 +1224,7 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
     }
     following(goalX,goalZ,ROBOT.reach,ROBOT.chaseSpeed*(options.speedScale??1),dt);
     // A goal it cannot physically reach is treated as lost sight, never ground into the wall.
-    if(legAbandoned){state='search';searchClock=0;searchElapsed=0;route=[];routeClock=0;buildSearchPlan(playerVelocity);}
+    if(legAbandoned){state='search';searchClock=0;searchElapsed=0;route=[];routeClock=0;buildSearchPlan(lastSeenVelocity);}
     scanYaw=turnToward(scanYaw,headingTo(goalX-body.position.x,goalZ-body.position.z),ROBOT.turnRate*dt);
     warning=0.7+0.3*Math.max(0,1-Math.hypot(player.x-body.position.x,player.z-body.position.z)/ROBOT.range);
     if(seen&&chaseClock>=ROBOT.captureGrace&&gap<=ROBOT.capture&&rise<=ROBOT.captureRise&&canTouchPlayer(player)){
@@ -1218,7 +1234,7 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
    }
    case 'search':{
     if(seen&&seenTime>=ROBOT.confirm*(options.confirmScale??1)){
-     state='chase';chaseClock=0;route=[];routeClock=0;supporting=false;
+     state='chase';chaseClock=0;unseenClock=0;route=[];routeClock=0;supporting=false;
     }else{
      searchElapsed+=dt;
      const step=searchSteps[searchStep];
@@ -1248,13 +1264,13 @@ export function createOpeningRobot(world:Navigation,options:OpeningRobotOptions=
  }
 
  function reset(){
-  caught=false;state='patrol';warning=0;seenTime=0;searchClock=0;scanClock=0;chaseClock=0;
+  caught=false;state='patrol';warning=0;seenTime=0;searchClock=0;scanClock=0;chaseClock=0;unseenClock=0;
   hasLastSeen=false;lastSeen.set(0,0,0);visibleNowCache=false;
   route=[];routeClock=0;progressBest=Number.POSITIVE_INFINITY;progressClock=0;dwell=0;
   routeUsedGraph=false;legStalls=0;legAbandoned=false;visualClock=0;
   supporting=false;guarding=false;reportClock=0;farTier=false;budgetClock=0;
   searchStep=0;searchLook=0;searchElapsed=0;searchSteps=[];
-  playerVelocity.set(0,0,0);hasPreviousPlayer=false;
+  playerVelocity.set(0,0,0);lastSeenVelocity.set(0,0,0);hasPreviousPlayer=false;
   poseInitial();
   standGait();
   publish(0);

@@ -155,7 +155,7 @@ function armPose(robot:OpeningRobot):ArmPose[]{
  const robot=fresh();
  const player=ground(O.patrol[1][0],O.patrol[1][2]);
  assert.ok(player.distanceTo(robot.position)<ROBOT.range,'scenario: the target starts inside the range window and dead ahead');
- const scanning=drive(robot,{seconds:0.45,player});
+ const scanning=drive(robot,{seconds:0.2,player});
  assert.ok(scanning.states.scanning!==undefined,'a visible target enters the scanning state');
  assert.equal(scanning.caughtAtSecond,null,'being seen must never be a failure');
  assert.ok(scanning.maxWarning>0,'scanning raises the warning meter');
@@ -221,9 +221,11 @@ function armPose(robot:OpeningRobot):ArmPose[]{
  assert.notEqual(lastSeen,null,'a confirmed target is remembered');
  // The player breaks line of sight deep inside Building 5, off the door axis.
  const hidden=ground(64,-61);
- const lost=drive(robot,{seconds:2,player:hidden});
+ const locked=drive(robot,{seconds:1.2,player:hidden});
  assert.deepEqual(robot.diagnostics.lastSeen,lastSeen,'lastSeen must not follow the hidden live position');
- assert.equal(robot.state,'search','losing sight turns the chase into a search of the remembered position');
+ assert.equal(robot.state,'chase','a lost target stays locked for the memory window');
+ const lost=drive(robot,{seconds:ROBOT.chaseMemory+0.6,player:hidden});
+ assert.equal(robot.state,'search','after the memory window the chase becomes a search of the remembered position');
  assert.equal(robot.diagnostics.caught,false,'an escaped player is not caught');
  // The head dips to look at the ground around the remembered spot while searching near it.
  const turret=robot.root.getObjectByName('opening-security-robot-turret')!;
@@ -492,9 +494,13 @@ function armPose(robot:OpeningRobot):ArmPose[]{
  assert.ok(ROBOT.patrolSpeed<2.6&&ROBOT.chaseSpeed<2.6&&ROBOT.searchSpeed<2.6,`the robot stays slower than the 2.6 m/s player walk (${ROBOT.patrolSpeed}/${ROBOT.chaseSpeed}/${ROBOT.searchSpeed})`);
  assert.equal(ROBOT.range,9,'first version detection range');
  assert.equal(Math.round(ROBOT.halfAngle*180/Math.PI),35,'first version half angle');
- assert.equal(ROBOT.confirm,0.7,'first version confirm time');
+ // Owner, 2026-11-27: a scan contact must lock the turret on the target, not demand a 0.7 s
+ // stare. Escape is GTA-style — break sight and get away for the whole memory window.
+ assert.ok(ROBOT.confirm>0&&ROBOT.confirm<=0.4,`a scan contact confirms quickly (${ROBOT.confirm} s)`);
+ assert.ok(ROBOT.chaseMemory>=3,`a chase keeps its lock after sight is lost (${ROBOT.chaseMemory} s)`);
+ assert.ok(ROBOT.chaseMemory>ROBOT.confirm,`the lock outlasts the confirm window (${ROBOT.chaseMemory} > ${ROBOT.confirm})`);
  assert.equal(ROBOT.capture,0.65,'capture radius');
- assert.equal(ROBOT.searchSeconds,3,'search lasts about three seconds');
+ assert.ok(ROBOT.searchSeconds>=5,`the search of the remembered spot is long enough to matter (${ROBOT.searchSeconds} s)`);
  const patrol=O.patrol.map(p=>[p[0],p[2]]);
  assert.ok(patrol.length===4,'patrol points come from spatialLayout, not invented here');
  pass('tuning stays inside the task book window and positions come from the shared layout',
@@ -562,15 +568,22 @@ function armPose(robot:OpeningRobot):ArmPose[]{
  assert.ok(inside.position.distanceTo(open)>ROBOT.range&&inside.position.distanceTo(open)<ROBOT.coordinationRadius,'the inside unit can hear the sighting but cannot see the target');
  assert.ok(distant.position.distanceTo(open)>ROBOT.coordinationRadius,'the third unit is outside the coordination radius');
  const responders=new Set<OpeningRobot>();
+ const everSaw=new Set<string>();
  let alertAfterReport=0,sightingFrozen:number[]|null=null;
- for(let i=0;i<120;i++){
+ const memoryFrames=Math.ceil((ROBOT.chaseMemory+1.4)*60); // long enough for the lock to expire
+ for(let i=0;i<memoryFrames;i++){
   const t=(i+1)/60;
   const player=t<1?open:hidden;    // the target breaks line of sight after one second
   board.tick(DT);
   for(const robot of [watcher,inside,distant]){
    robot.update(DT,player,true,false);
    const d=robot.diagnostics;
-   assert.equal(d.state==='chase'&&!d.visible,false,`${robot.root.userData.fleetId} chased without its own line of sight at ${t.toFixed(2)}s`);
+   if(d.visible)everSaw.add(robot.root.userData.fleetId);
+   // A unit that never had the target in its own eye ray may not chase; only the unit that
+   // scanned it keeps the GTA-style lock through the memory window.
+   assert.equal(d.state==='chase'&&!d.visible&&!everSaw.has(robot.root.userData.fleetId),false,`${robot.root.userData.fleetId} chased without ever having its own line of sight at ${t.toFixed(2)}s`);
+   // The locked unit walks the remembered point, never the hidden live position.
+   if(d.state==='chase'&&!d.visible&&d.lastSeen)assert.ok(Math.hypot(d.lastSeen[0]-hidden.x,d.lastSeen[2]-hidden.z)>10,`${robot.root.userData.fleetId} locked onto the live position at ${t.toFixed(2)}s`);
    assert.equal(d.caught,false,`${robot.root.userData.fleetId} captured the target without a chase`);
    if(d.supporting)responders.add(robot);
   }
@@ -580,7 +593,7 @@ function armPose(robot:OpeningRobot):ArmPose[]{
  assert.ok(alertAfterReport>0.5,`a real sighting raises the fleet alert (${alertAfterReport})`);
  assert.equal(responders.size,1,'exactly one nearby unit claims the shared search, not the whole fleet');
  assert.ok(responders.has(inside),'the unit that cannot see the target is the one that searches the remembered point');
- assert.equal(watcher.state,'search','the seeing unit searches too once the target breaks line of sight');
+ assert.equal(watcher.state,'search','the seeing unit searches too once its memory window expires');
  assert.equal(inside.diagnostics.caught,false);
  assert.equal(distant.state,'patrol','a unit outside the coordination radius ignores the sighting');
  assert.equal(distant.diagnostics.lastSeen,null,'no shared point is pushed onto a distant unit');
@@ -638,13 +651,15 @@ function armPose(robot:OpeningRobot):ArmPose[]{
  for(let i=0;i<60;i++)robot.update(DT,walking((i+1)*DT),true,false);
  assert.equal(robot.state,'chase','scenario: the walking target is confirmed before it breaks sight');
  const lastSeen=robot.diagnostics.lastSeen!;
- // The target vanishes far away, which also puts this unit on the far update tier, so
- // give it a few ticks to take its next simulation step and enter the search.
+ // The target vanishes far away, which also puts this unit on the far update tier.
+ // The GTA-style lock keeps chasing the remembered point for `chaseMemory` seconds;
+ // drive past that window (plus a margin) until the search starts.
  // `assert.equal` above narrows `state` to 'chase' for the rest of this block, so widen
  // it again for the poll below.
  const hidden=ground(24,-25);
- for(let i=0;i<8&&(robot.state as string)!=='search';i++)robot.update(DT,hidden,true,false);
- assert.equal(robot.state,'search','losing sight turns into a search of the plan');
+ const memoryFrames=Math.ceil((ROBOT.chaseMemory+1.4)*60);
+ for(let i=0;i<memoryFrames&&(robot.state as string)!=='search';i++)robot.update(DT,hidden,true,false);
+ assert.equal(robot.state,'search','losing sight turns into a search of the plan after the memory window');
  const steps=robot.diagnostics.searchSteps;
  assert.ok(steps.length>=2,`the search plan adds a predicted point (${JSON.stringify(steps)})`);
  assert.ok(Math.hypot(steps[0][0]-lastSeen[0],steps[0][1]-lastSeen[2])<0.01,'the first search point is the remembered position');

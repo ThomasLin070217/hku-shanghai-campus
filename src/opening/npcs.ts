@@ -62,6 +62,19 @@ export function createOpeningNPCs(){
  const root=new T.Group();root.name='Opening_people';root.userData.dynamicGameplay=true;
  const actors=OPENING_CAST.map(a=>{const model=createCharacter(a.appearance);model.root.position.fromArray([...a.position]);model.root.rotation.y=a.yaw;root.add(model.root);return model;});
  const staff=actors[0];
+ // Per-actor material lists for the doorway fade. The rig's geometry is shared, but every
+ // character builds its own materials, so fading one guest cannot tint another.
+ const fadeMaterials=actors.map(actor=>{
+  const set=new Set<T.Material>();
+  actor.root.traverse(object=>{const mesh=object as T.Mesh;if(mesh.isMesh)for(const material of Array.isArray(mesh.material)?mesh.material:[mesh.material])set.add(material);});
+  return [...set];
+ });
+ const setOpacity=(index:number,opacity:number)=>{
+  for(const material of fadeMaterials[index]){
+   material.opacity=opacity;
+   material.transparent=opacity<1;
+  }
+ };
  const seats=new Map<number,Seat>(seatPlan().map(seat=>[seat.actor,seat]));
  const legs=actors.map(actor=>['leg-left','leg-right'].map(name=>actor.nodes.find(node=>node.name===name)!));
  function sit(index:number){
@@ -87,9 +100,11 @@ export function createOpeningNPCs(){
     than as a story beat (owner, 2026-11-24: 「他让我们去拿 MacBook 之后，那个任务做完，学生就会
     突然消失」). They now walk out through the B5 door and are hidden one at a time as each one
     passes it, which is the same beat the deck describes: robots escorting people away. */
- // Targets sit outside the B5 north door (the hall is z0 -80 to z1 -54.7), staggered outward so
- // nobody is hidden while still inside the doorway or still in the hall.
- const DOOR={x:OPENING.b5.door,z:OPENING.b5.z1+2.6,speed:1.9,reach:.8};
+ // Everyone converges on the B5 north doorway itself (the hall is z0 -80 to z1 -54.7 and the
+ // door aperture is cut 0.9 m outward), and each guest fades out while crossing it. The first
+ // version hid them 2.6-4.4 m out in the forecourt, in the open, which the owner read as
+ // people evaporating into the void (2026-11-27: 「这个人走出去后虚空消失，是怎么回事？」).
+ const DOOR={x:OPENING.b5.door,z:OPENING.b5.z1+.35,speed:1.9,reach:.8,endReach:.4,fade:1};
  let leaving=false;
  // Nobody walks through a table. The first version of this walk-out sent every guest in a
  // straight line to the door, and the lines that start east of the rows cut across them. They
@@ -116,9 +131,18 @@ export function createOpeningNPCs(){
  const leavePaths:readonly T.Vector3[][]=OPENING_CAST.map((spec,index)=>{
   const [x,y,z]=spec.position,aisleX=nearestAisle(x);
   // `max` because z grows northward: a guest already north of the lane must not walk back in.
-  const exitZ=Math.max(z,NORTH_LANE_Z),spread=DOOR.x+((index%5)-2)*.62+((index%2)?.18:-.18);
+  // The last two waypoints aim at the doorway itself: the lane runs to the door column,
+  // then the guest steps into the 2.4 m opening, staggered across it but never outside.
+  const exitZ=Math.max(z,NORTH_LANE_Z),spread=DOOR.x+((index%5)-2)*.5+((index%2)?.1:-.1);
+  // The forecourt pair already stands outside the hall. Walking them back to the doorway
+  // would make them dissolve on the wrong side of the wall, so they walk off into the dark
+  // forecourt instead, clear of the robot formation columns at x 55.3 and 60.7.
+  if(z>OPENING.b5.z1){
+   const side=x<DOOR.x?OPENING.b5.x0-1.5:OPENING.b5.x0+9.5;
+   return [new T.Vector3(x,y,z),new T.Vector3(side,y,z),new T.Vector3(side,y,OPENING.b5.z1+7.5)];
+  }
   return [new T.Vector3(aisleX,y,z),new T.Vector3(aisleX,y,exitZ),new T.Vector3(DOOR.x,y,exitZ),
-   new T.Vector3(spread,y,DOOR.z+(index%3)*.9)];
+   new T.Vector3(spread,y,DOOR.z+(index%3)*.12)];
  });
  const pathIndex=OPENING_CAST.map(()=>0);
  const startStaffTalk=()=>{staffTarget=new T.Vector3(61.5,.02,-59.0);};
@@ -127,7 +151,7 @@ export function createOpeningNPCs(){
   staffTarget=null;leaving=false;pathIndex.fill(0);
   actors.forEach((actor,index)=>{
    actor.root.position.fromArray([...OPENING_CAST[index].position]);actor.root.rotation.y=OPENING_CAST[index].yaw;
-   actor.root.visible=true;
+   actor.root.visible=true;setOpacity(index,1);
   });
   for(const index of seats.keys())sit(index);
   root.visible=true;
@@ -142,11 +166,21 @@ export function createOpeningNPCs(){
     let waypoint=path[Math.min(pathIndex[index],path.length-1)];
     let dx=waypoint.x-actor.root.position.x,dz=waypoint.z-actor.root.position.z;
     let distance=Math.hypot(dx,dz);
-    while(distance<=DOOR.reach){
-     if(pathIndex[index]>=path.length-1){actor.root.visible=false;return;}
-     pathIndex[index]++;waypoint=path[pathIndex[index]];
-     dx=waypoint.x-actor.root.position.x;dz=waypoint.z-actor.root.position.z;
-     distance=Math.hypot(dx,dz);
+    const last=pathIndex[index]>=path.length-1;
+    if(!last){
+     while(distance<=DOOR.reach){
+      if(pathIndex[index]>=path.length-1)break;
+      pathIndex[index]++;waypoint=path[pathIndex[index]];
+      dx=waypoint.x-actor.root.position.x;dz=waypoint.z-actor.root.position.z;
+      distance=Math.hypot(dx,dz);
+     }
+    }
+    if(pathIndex[index]>=path.length-1){
+     // The final leg dissolves the guest in the doorway instead of hiding a solid body in the
+     // open. Hidden only once the fade has reached zero, so the pop can never be seen.
+     const opacity=Math.max(0,Math.min(1,(distance-DOOR.endReach)/DOOR.fade));
+     setOpacity(index,opacity);
+     if(distance<=DOOR.endReach){actor.root.visible=false;return;}
     }
     const step=Math.min(distance,DOOR.speed*dt);
     actor.root.position.x+=dx/distance*step;actor.root.position.z+=dz/distance*step;
