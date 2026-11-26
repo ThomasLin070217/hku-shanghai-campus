@@ -23,8 +23,8 @@
 /* ------------------------------------------------------------------ HUD. */
 .opening-hud {
   position: absolute;
-  left: 26px;
-  top: 77px;
+  left: calc(26px + env(safe-area-inset-left));
+  top: calc(77px + env(safe-area-inset-top));
   width: 300px;
   max-width: calc(100vw - 120px);
   padding: 14px 16px;
@@ -880,7 +880,7 @@ body:not(.exploring) .opening-warning {
 }
 @media (max-height: 720px) {
   .opening-hud {
-    top: 70px;
+    top: calc(70px + env(safe-area-inset-top));
     padding: 12px 14px;
   }
   .opening-objective {
@@ -909,8 +909,8 @@ body:not(.exploring) .opening-warning {
 }
 @media (max-width: 700px) {
   .opening-hud {
-    left: 12px;
-    top: 84px;
+    left: calc(12px + env(safe-area-inset-left));
+    top: calc(84px + env(safe-area-inset-top));
     width: min(220px, 62vw);
     padding: 10px 12px;
   }

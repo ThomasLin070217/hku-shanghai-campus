@@ -236,14 +236,20 @@ if(prologue){
 }
 if(import.meta.env.DEV||import.meta.env.MODE==='review')Object.assign((window as unknown as {__CAMPUS:object}).__CAMPUS,{prologue});
 
-el('enter-game').onclick=()=>explorer.enter();
+// Both are real taps, so they are the gesture the Fullscreen API needs; entering
+// the game takes the whole screen on a phone until the player leaves it by hand.
+el('enter-game').onclick=()=>{void fullscreen.autoEnter();explorer.enter();};
 el('replay-intro').onclick=()=>{const prologue=(window as unknown as {__CAMPUS?:{prologue?:{play():Promise<void>}}}).__CAMPUS?.prologue;if(prologue){void prologue.play().catch(()=>{});return;}const url=new URL(location.href);try{sessionStorage.removeItem('hku.campus.prologue.v1');}catch{}url.searchParams.set('intro', '1');location.assign(url.toString());};
-el('takeover').onclick=()=>explorer.takeover();
+el('takeover').onclick=()=>{void fullscreen.autoEnter();explorer.takeover();};
 el('enable-ai').onclick=()=>{if(agentBridge){agentBridge.claim();explorer.enableAI();}};
 
 document.addEventListener('game-notice',e=>{notify((e as CustomEvent).detail);el('enter-compat').hidden=false;});
-el('enter-compat').onclick=()=>explorer.enterCompat();
-viewer.callbacks.add(()=>{const g=explorer.game;const pauseHidden=!exploring||!g.paused||g.inventoryOpen||!!g.panel;setHidden(el('pause-panel'),pauseHidden);if(pauseHidden!==pauseWasHidden){pauseWasHidden=pauseHidden;if(!pauseHidden)syncPauseCard();}setHidden(el('crosshair'),!exploring||g.paused||g.view!=='first');setHidden(el('control-badge'),!exploring);const state=g.owner?'active':g.armed?'armed':'human';if(document.body.dataset.aiControl!==state)document.body.dataset.aiControl=state;setText(el('control-state'),openingMode?`${g.owner?'AI controlling':g.armed?'AI ready':'Player'} · ${g.paused?'Paused':g.view==='first'?'First person':'Third person'}`:`${g.owner?'AI controlling':g.armed?'AI ready':'Player'} · ${g.paused?'Paused':g.view==='first'?'First person':'Third person'}`);});
+el('enter-compat').onclick=()=>{void fullscreen.autoEnter();explorer.enterCompat();};
+viewer.callbacks.add(()=>{const g=explorer.game;const pauseHidden=!exploring||!g.paused||g.inventoryOpen||!!g.panel;setHidden(el('pause-panel'),pauseHidden);if(pauseHidden!==pauseWasHidden){pauseWasHidden=pauseHidden;if(!pauseHidden){syncPauseCard();
+  // Reaching a slider scrolls the card; that offset used to survive the close,
+  // so the next MENU opened with the heading and Continue already above the
+  // screen edge (measured on a 390×844 phone: scrollTop 166 of 166).
+  const card=document.querySelector<HTMLElement>('.pause-card');if(card)card.scrollTop=0;}}setHidden(el('crosshair'),!exploring||g.paused||g.view!=='first');setHidden(el('control-badge'),!exploring);const state=g.owner?'active':g.armed?'armed':'human';if(document.body.dataset.aiControl!==state)document.body.dataset.aiControl=state;setText(el('control-state'),openingMode?`${g.owner?'AI controlling':g.armed?'AI ready':'Player'} · ${g.paused?'Paused':g.view==='first'?'First person':'Third person'}`:`${g.owner?'AI controlling':g.armed?'AI ready':'Player'} · ${g.paused?'Paused':g.view==='first'?'First person':'Third person'}`);});
 
 const toolsMenu=document.createElement('details');toolsMenu.id='campus-tools';toolsMenu.innerHTML='<summary>Campus tools</summary><div class="tools-content"></div>';document.querySelector('.header-right')!.append(toolsMenu);
 for(const node of Array.from(document.querySelectorAll('.header-right > a,.header-right > button:not(#night-toggle)')))toolsMenu.querySelector('.tools-content')!.append(node);
@@ -274,7 +280,7 @@ if(openingMode){
  const copy:Record<string,string>={'mode-label':'Building 4 · Shanghai Campus','reset':'Return to checkpoint','mode-toggle':'Campus model tools','takeover':'Take control','night-toggle':'Night / Day','experience-settings':'Settings & save','new-game':'Restart opening…','enable-ai':'Enable AI control','bridge-status':'Local control service','enter-compat':'Drag controls','scene-index-toggle':'Scene index'};
  for(const [id,text]of Object.entries(copy)){const node=document.getElementById(id);if(node)node.textContent=text;}
  const checkpointStart=openingCheckpoint(new URLSearchParams(location.search).get('checkpoint'));
- const pause=document.querySelector('.pause-card');if(pause){const eyebrow=pause.querySelector('.eyebrow');if(eyebrow)eyebrow.textContent='A CDS CAMPUS STORY';pause.querySelector('h2')!.textContent='HKU: Barrier 2030';pause.querySelector('p')!.textContent=checkpointStart?`Checkpoint: ${CHECKPOINT_LABELS[checkpointStart]}. Continue from here.`:'You are a Student Ambassador on your way to the High Table Dinner. Begin on the campus shuttle.';pause.querySelector('.key-guide')!.textContent='WASD move · Shift run · Space jump · F interact · E backpack · C MacBook';pause.querySelector('.desktop-note')!.textContent='Keyboard and mouse · Continue to look around and move';pause.querySelector('.pause-options summary')!.textContent='Restart / AI control';}
+ const pause=document.querySelector('.pause-card');if(pause){const eyebrow=pause.querySelector('.eyebrow');if(eyebrow)eyebrow.textContent='A CDS CAMPUS STORY';pause.querySelector('h2')!.textContent='HKU: Barrier 2030';pause.querySelector('p')!.textContent=checkpointStart?`Checkpoint: ${CHECKPOINT_LABELS[checkpointStart]}. Continue from here.`:'You are a Student Ambassador on your way to the High Table Dinner. Begin on the campus shuttle.';pause.querySelector('.key-guide')!.textContent='WASD move · Shift run · Space jump · F interact · E backpack · C MacBook';pause.querySelector('.desktop-note')!.textContent=touch?'Touch · left stick walks · drag to look · buttons act, MENU pauses':'Keyboard and mouse · Continue to look around and move';pause.querySelector('.pause-options summary')!.textContent='Restart / AI control';}
  const help=document.querySelector('.header-right > button:not(#scene-index-toggle):not(#night-toggle)');if(help)help.textContent='Help';
  toolsMenu.querySelector('summary')!.textContent='Campus tools';advanced.querySelector('summary')!.textContent=localAiControls?'Restart / AI control':'Restart';
  document.querySelector('.brand-copy > span')!.textContent='HKU: Barrier 2030';

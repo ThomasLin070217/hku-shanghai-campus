@@ -174,6 +174,12 @@ body.exploring .touch-controls {
 .touch-rotate button {
   min-width: 44px;
   min-height: 44px;
+  /* Measured 2026-11-26 at 390×844: the label was 58 px of content in a 48 px
+     button because the flex row shrank it below its text, so "Dismiss" painted
+     outside its own pill. The button does not shrink; the sentence beside it
+     does. */
+  flex: none;
+  white-space: nowrap;
   padding: 0 12px;
   border-radius: 999px;
   border: 1px solid #dfe9d659;

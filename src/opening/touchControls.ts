@@ -196,23 +196,42 @@ export function createTouchControls(explorer: TouchExplorer): TouchControls | nu
     buttons.run?.classList.toggle('is-on', on);
   }
 
-  buttons.run?.addEventListener(
-    'click',
-    () => {
-      setRunning(!running);
-      explorer.touchRun(running);
-    },
-    {signal},
-  );
-  for (const name of ['jump', 'bag', 'interact', 'menu'] as const) {
-    buttons[name]?.addEventListener(
-      'click',
-      () => {
-        const key = KEYS[name]!;
-        press(key.code, key.key);
+  // A tap is handled on `pointerdown`, not on the synthesized `click`.
+  // Owner report, 2026-11-26: on a phone, after dragging a slider, tapping JUMP
+  // did nothing. Every slider in this game is an <input type="range">; while a
+  // drag on one is being arbitrated, the browser withholds synthesized clicks,
+  // and a click-bound button stays dead until the gesture settles. Pointer
+  // events are delivered per touch and are never withheld, so the button answers
+  // the instant the finger lands — including while another finger holds a slider.
+  // `click` stays bound for keyboard and assistive activation: those come with
+  // detail 0 and no preceding pointerdown, while a real tap carries detail >= 1.
+  const onTap = (element: HTMLElement | null | undefined, act: () => void): void => {
+    element?.addEventListener(
+      'pointerdown',
+      (event) => {
+        if (event.button !== 0) return;
+        event.preventDefault();
+        act();
       },
       {signal},
     );
+    element?.addEventListener(
+      'click',
+      (event) => {
+        if (event.detail === 0) act();
+      },
+      {signal},
+    );
+  };
+  onTap(buttons.run, () => {
+    setRunning(!running);
+    explorer.touchRun(running);
+  });
+  for (const name of ['jump', 'bag', 'interact', 'menu'] as const) {
+    onTap(buttons[name], () => {
+      const key = KEYS[name]!;
+      press(key.code, key.key);
+    });
   }
 
   /** A pause or a focus change clears the sprint intent; the button must follow. */

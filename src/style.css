@@ -23,7 +23,11 @@
 body:not(.exploring) #pause-panel,body:not(.exploring) #crosshair,body:not(.exploring) #control-badge{display:none}
 
 .exploring .stage-top{z-index:14}
-.pause-card{max-height:calc(100vh - 110px);overflow:auto}
+/* `dvh`, not `vh`: in fullscreen the two agree, but a browser tab's `vh` is the
+   tallest the URL bar will ever let it be, so the card ran past the bottom on a
+   phone. The insets keep it clear of a notched phone's status bar and home
+   indicator in an installed PWA. */
+.pause-card{max-height:calc(100dvh - 110px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:auto;overscroll-behavior:contain}
 
 #quest-hud{position:absolute;left:28px;top:80px;max-width:320px;padding:16px 18px;background:#153e32ec;color:#f6f4e5;border:1px solid #93b392;box-shadow:4px 4px 0 #123c3126;pointer-events:none}#quest-hud small{display:block;color:#b9d2b2;font-size:10px;letter-spacing:1px}#quest-hud strong{display:block;font-size:17px;margin:8px 0 12px}#quest-items{font-size:12px;line-height:1.8}#quest-next{font-size:11px;line-height:1.8;margin:10px 0 0;color:#c4d3bc}#quest-hud[hidden],#interaction-prompt[hidden]{display:none}#interaction-prompt{position:absolute;left:50%;bottom:145px;transform:translateX(-50%);background:#f5f1db;color:#183f30;border:2px solid #173e31;padding:12px 24px;pointer-events:none;font-size:16px;box-shadow:4px 4px 0 #123c3144}#reset-quest{font-size:11px!important;padding:6px!important;border:0!important;color:#6b7769}body:not(.exploring) #quest-hud,body:not(.exploring) #interaction-prompt{display:none}@media(max-width:700px){#quest-hud{left:12px;top:115px;max-width:240px;padding:10px}#quest-hud strong{font-size:14px}#interaction-prompt{bottom:115px}}
 /* Inventory: pixel edges, restrained campus green, one shared slot state. */
@@ -98,7 +102,7 @@ body.opening-mode .pause-card .pause-checkpoint{background:#102019;color:#e8f4ee
 .pause-chapter-link:hover,.pause-chapter-link:focus-visible{background:#dbe3cf}
 .pause-setting{grid-column:1/-1;display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;font-size:12px}
 .pause-setting output{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums;color:#5b6f5d}
-.pause-setting input[type=range]{grid-column:1/-1;width:100%;height:28px;margin:0;accent-color:#2f6b52;cursor:pointer}
+.pause-setting input[type=range]{grid-column:1/-1;width:100%;height:28px;margin:0;accent-color:#2f6b52;cursor:pointer;touch-action:none}
 .pause-options{margin-top:12px}
 .pause-options summary{display:flex;justify-content:space-between;align-items:center;list-style:none;cursor:pointer;padding:8px 0;font-size:12px;color:#5b6f5d}
 .pause-options summary::-webkit-details-marker{display:none}

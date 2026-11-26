@@ -35,6 +35,11 @@ export interface FullscreenControl {
   sync(): void;
   /** Enter or leave fullscreen. A no-op where the API is unavailable. */
   toggle(): Promise<void>;
+  /**
+   * Enter fullscreen from the Start/Continue tap on a touch device — unless the
+   * player has left fullscreen by hand since the last entry.
+   */
+  autoEnter(): Promise<void>;
   dispose(): void;
 }
 
@@ -61,6 +66,11 @@ export function createFullscreenControl(options: {
   const events = new AbortController();
   const signal = events.signal;
   const active = () => !!(document.fullscreenElement ?? doc.webkitFullscreenElement);
+  // Starts false: the first entry should go fullscreen by itself. A transition
+  // out of fullscreen is the player leaving — by Esc, F11, the browser's back
+  // gesture or the button — and auto-enter must respect it until they re-enter
+  // by hand.
+  let playerExited = false;
   let dismissed = false;
   try {
     dismissed = sessionStorage.getItem(HINT_KEY) === '1';
@@ -81,21 +91,44 @@ export function createFullscreenControl(options: {
     button.title = fullscreenLabel(on);
   }
 
-  async function toggle(): Promise<void> {
-    if (!plan.api) return;
+  async function enter(): Promise<void> {
+    if (!plan.api || active()) return;
     try {
-      if (active()) {
-        if (doc.exitFullscreen) await doc.exitFullscreen();
-        else await doc.webkitExitFullscreen?.();
-      } else {
-        const request =
-          root.requestFullscreen?.bind(root) ?? root.webkitRequestFullscreen?.bind(root);
-        await request?.();
-      }
+      const request =
+        root.requestFullscreen?.bind(root) ?? root.webkitRequestFullscreen?.bind(root);
+      await request?.();
     } catch {
       /* A refused request leaves the game playable; the button keeps its state. */
     }
     sync();
+  }
+
+  async function leave(): Promise<void> {
+    if (!plan.api || !active()) return;
+    try {
+      if (doc.exitFullscreen) await doc.exitFullscreen();
+      else await doc.webkitExitFullscreen?.();
+    } catch {
+      /* Already out, or the browser refused: the next sync reads the truth. */
+    }
+    sync();
+  }
+
+  async function toggle(): Promise<void> {
+    if (active()) await leave();
+    else await enter();
+  }
+
+  /**
+   * Owner request, 2026-11-26: "entering the game should go fullscreen by itself,
+   * and you can leave fullscreen by hand". Called from the Start/Continue tap —
+   * the gesture the Fullscreen API requires — on touch devices only, and never
+   * again once the player has left fullscreen themselves: a deliberate exit must
+   * stay exited on the next Continue.
+   */
+  async function autoEnter(): Promise<void> {
+    if (!options.touch || playerExited) return;
+    await enter();
   }
 
   // Only an API that can actually go fullscreen gets a button. Without one the
@@ -149,7 +182,18 @@ export function createFullscreenControl(options: {
     {signal},
   );
 
+  // The same listener serves fullscreenchange, orientationchange and
+  // visualViewport resize, so "not in fullscreen right now" is not the same thing
+  // as "the player left". Reading it that way armed the opt-out on a boot-time
+  // viewport resize, before the first entry ever happened, and the Start tap
+  // silently skipped fullscreen — intermittently, which is what made this hard
+  // to see. Only an actual transition from in-fullscreen to out of it counts.
+  let wasActive = active();
   const changed = () => {
+    const now = active();
+    if (now) playerExited = false;
+    else if (wasActive) playerExited = true;
+    wasActive = now;
     sync();
     options.onViewportChange?.();
   };
@@ -169,6 +213,7 @@ export function createFullscreenControl(options: {
     },
     sync,
     toggle,
+    autoEnter,
     dispose() {
       events.abort();
       button?.remove();

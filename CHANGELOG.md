@@ -2,6 +2,18 @@
 
 All notable changes to HKU: Barrier 2030 (“A CDS campus story”). The app version lives in `VERSION` and `package.json`; the save-schema version is separate.
 
+## [9.2.1] — 2026-11-26
+
+Two mobile defects the owner reported after playing 9.2.0 on a phone.
+
+### Fixed
+- **JUMP could go dead after dragging a slider.** The four action buttons and RUN were bound only to the synthesized `click`; while a drag on an `<input type="range">` is being arbitrated the browser withholds synthesized clicks, so a click-bound button stays dead until the gesture settles. A tap is now handled on `pointerdown` (delivered per touch, never withheld); `click` stays bound for keyboard and assistive activation, which arrive with `detail === 0` (`src/opening/touchControls.ts`). The sliders themselves also take `touch-action: none` now.
+- **Entering the game did not always go fullscreen by itself.** `autoEnter()` was reached but `requestFullscreen` was never called: the "the player left fullscreen, do not re-enter" opt-out was armed inside `changed()`, which also serves `orientationchange` and `visualViewport` resize, so a viewport resize before the first entry armed it silently — intermittently. Only a real in-fullscreen → out transition arms it now, and any entry clears it (`src/opening/fullscreen.ts`). The Start, Continue and Takeover taps ask for fullscreen inside the gesture; the player's own exit is respected on the next Continue; a device without the API still gets the Add to Home Screen hint and no dead button.
+
+### Changed
+- The pause card's phone copy reads “Touch · left stick walks · drag to look · buttons act, MENU pauses” instead of the keyboard line.
+- **The phone UI is clear of the status bar and no longer opens mid-scroll** (owner report, 2026-11-26: 「现在这个 UI 有问题了，会溢出」). VITALS, the objective card and CHAPTERS take `env(safe-area-inset-top/left)`, so an installed PWA with `viewport-fit=cover` stops drawing them under the clock. The rotate pill's Dismiss label was 58 px of text in a 48 px button and painted outside its own pill; the button no longer shrinks (`flex: none`, `white-space: nowrap`, measured 72 px / 70 px now). The pause card reopens at its top — reaching a slider used to leave `scrollTop:166` behind, so the next MENU opened with the heading and Continue above the screen edge — and its `max-height` is `100dvh` minus the safe-area insets instead of `100vh`.
+
 ## [9.2.0] — 2026-11-26
 
 The three scenes the 9.1 line left as architecture are performed, and the two defects that hid the finale are fixed.

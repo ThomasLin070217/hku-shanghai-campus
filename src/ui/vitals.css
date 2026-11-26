@@ -3,8 +3,10 @@
    original eleven-row pixel sprite. */
 .opening-hearts {
   position: absolute;
-  left: 24px;
-  top: 14px;
+  /* Clear the iOS status bar when the game runs as an installed PWA with
+     `black-translucent` (viewport-fit=cover makes that inset real). */
+  left: calc(24px + env(safe-area-inset-left));
+  top: calc(14px + env(safe-area-inset-top));
   z-index: 7;
   min-width: 0;
   padding: 7px 11px 8px;

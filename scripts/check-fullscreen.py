@@ -194,6 +194,15 @@ def run_portrait(page):
     errors = []
     page.on('pageerror', lambda error: errors.append(str(error)))
     boot(page)
+    # Count real Fullscreen API requests; see the auto-entry check below.
+    page.evaluate("""() => {
+      window.__fsRequests = 0;
+      const original = Element.prototype.requestFullscreen;
+      if (original) Element.prototype.requestFullscreen = function (...args) {
+        window.__fsRequests += 1;
+        return original.apply(this, args);
+      };
+    }""")
     s = state(page)
     check('portrait: a coarse touch device mounts the gamepad', s['touchMode'] and s['touchRoot'], s)
     check('portrait: the gamepad has stick, run, jump, bag, use and menu',
@@ -208,6 +217,19 @@ def run_portrait(page):
           bool(mapcard) and mapcard['display'] == 'none'
           and bool(bag_hint) and bag_hint['display'] == 'none', f'{mapcard} {bag_hint}')
     check('portrait: Enter exploration starts the game without pointer lock', enter(page))
+    # Owner request, 2026-11-26: "entering the game should go fullscreen by
+    # itself, and you can leave fullscreen by hand". The Start tap is the
+    # gesture the Fullscreen API needs, so entry takes the whole screen.
+    #
+    # Both halves are asserted, because they failed apart: on the pre-fix build
+    # the element never appeared *and* `window.__fsRequests` stayed 0 — the
+    # request was skipped by an opt-out that a viewport resize had armed, not
+    # refused by the browser. Counting calls keeps that distinction visible if
+    # it ever returns.
+    entries = until(page, '() => !!document.fullscreenElement', timeout=20)
+    requested = page.evaluate("() => window.__fsRequests")
+    check('portrait: entering the game goes fullscreen by itself',
+          entries and requested >= 1, f'element={bool(entries)} requests={requested}')
     page.wait_for_timeout(500)
     # Geometry: every on-screen control must be reachable, and nothing may sit
     # on top of a thumb button. These are measured, not eyeballed.
@@ -264,6 +286,39 @@ def run_portrait(page):
     check('portrait: a touch drag turns the view', abs(yaw_after - yaw_before) > 0.05,
           f'yaw {yaw_before:.3f} -> {yaw_after:.3f}')
 
+    # ---- Owner report, 2026-11-26: after dragging a pause-card slider, the
+    # JUMP button stopped answering on a phone. Every slider here is an
+    # <input type="range">; while one is being dragged the browser withholds
+    # synthesized clicks, so the buttons act on pointerdown. This drives the
+    # reported sequence through the real touch pipeline and counts the jump keys
+    # the game receives — the key count is the game's own input path, not a log.
+    page.evaluate("""() => { window.__jumpKeys = 0;
+      window.addEventListener('keydown', (e) => { if (e.code === 'Space') window.__jumpKeys += 1; }, true); }""")
+    check('portrait: MENU opens the card for the slider test',
+          tap_button(page, '.touch-button[data-touch="menu"]')
+          and until(page, """() => { const p = document.getElementById('pause-panel');
+                       return !!p && !p.hidden; }""", timeout=20))
+    page.evaluate("() => document.getElementById('pause-music').scrollIntoView({block: 'center'})")
+    page.wait_for_timeout(250)
+    slider = box_of(page, '#pause-music')
+    value_before = page.evaluate("() => document.getElementById('pause-music').value")
+    if slider:
+        touch_drag(page, (slider['x'] + slider['w'] * 0.2, slider['y'] + slider['h'] / 2),
+                   (slider['x'] + slider['w'] * 0.85, slider['y'] + slider['h'] / 2))
+    page.wait_for_timeout(250)
+    value_after = page.evaluate("() => document.getElementById('pause-music').value")
+    check('portrait: the pause-card slider takes a touch drag',
+          value_before != value_after, f'{value_before} -> {value_after}')
+    check('portrait: the card closes after the slider drag',
+          tap_button(page, '#enter-game')
+          and until(page, """() => { const p = document.getElementById('pause-panel');
+                       return !!p && p.hidden; }""", timeout=30))
+    keys_before = page.evaluate("() => window.__jumpKeys")
+    check('portrait: JUMP answers straight after a slider drag',
+          tap_button(page, '.touch-button[data-touch="jump"]')
+          and until(page, f"() => window.__jumpKeys > {keys_before}", timeout=10),
+          f'keys {keys_before} -> {page.evaluate("() => window.__jumpKeys")}')
+
     # ---- MENU pauses; Enter exploration resumes. (Escape is a one-way pause,
     # exactly as on desktop, so the resume is the pause card's own button.)
     check('portrait: tapping MENU pauses', tap_button(page, '.touch-button[data-touch="menu"]')
@@ -277,21 +332,52 @@ def run_portrait(page):
     # both failed while the toggle itself was healthy). Wait for the hide.
     until(page, "() => { const p = document.getElementById('pause-panel'); return !!p && p.hidden; }", timeout=30)
 
-    # ---- Fullscreen: a real tap, a real Fullscreen API element.
+    # ---- Fullscreen: entry already took the screen; the toggle is the player's
+    # manual exit, and a manual exit must stay exited on the next Continue.
+    #
+    # `tap_until` retries: an automation window is never focused by the OS, and
+    # Chromium answers the first `exitFullscreen()` after a programmatic entry
+    # with "Document not active" until the transition settles (measured
+    # 2026-11-26 — the same tap succeeds a moment later). A player's focused
+    # window has no such window, so the check asserts the toggle's effect, not
+    # one exact request's luck.
+    def tap_until(selector, condition, tries=4, timeout=12):
+        for _ in range(tries):
+            if not tap_button(page, selector):
+                return False
+            if until(page, condition, timeout=timeout):
+                return True
+        return False
+
     before = state(page)
     check('portrait: this browser exposes the Fullscreen API',
           before['fullscreenApi'] is True, before)
-    tapped = tap_button(page, '.fullscreen-toggle')
-    entered = until(page, '() => !!document.fullscreenElement', timeout=20)
-    check('portrait: the fullscreen button enters fullscreen', tapped and entered,
-          f'tapped={tapped} element={state(page)["fullscreenElement"]}')
     shot(page, '390x844', '04-fullscreen')
-    tap_button(page, '.fullscreen-toggle')
-    left = until(page, '() => !document.fullscreenElement', timeout=20)
-    check('portrait: the button leaves fullscreen again', left)
+    check('portrait: the toggle leaves fullscreen',
+          tap_until('.fullscreen-toggle', '() => !document.fullscreenElement'),
+          f'element={state(page)["fullscreenElement"]}')
+    check('portrait: the same toggle re-enters fullscreen',
+          tap_until('.fullscreen-toggle', '() => !!document.fullscreenElement'),
+          f'element={state(page)["fullscreenElement"]}')
+    check('portrait: leaving again for the rest of the run',
+          tap_until('.fullscreen-toggle', '() => !document.fullscreenElement'),
+          f'element={state(page)["fullscreenElement"]}')
     after = state(page)
     check('portrait: the game is still running after the fullscreen round trip',
           after['exploring'] and not after['paused'], after)
+    # The deliberate exit must stick: pausing and continuing again may not yank
+    # the player back to fullscreen they just left by hand.
+    check('portrait: MENU pauses after the manual exit',
+          tap_button(page, '.touch-button[data-touch="menu"]')
+          and until(page, '() => window.__CAMPUS.explorer.game.paused', timeout=20))
+    until(page, """() => { const p = document.getElementById('pause-panel');
+                return !!p && !p.hidden; }""", timeout=30)
+    resumed = (tap_button(page, '#enter-game')
+               and until(page, '() => !window.__CAMPUS.explorer.game.paused', timeout=20))
+    page.wait_for_timeout(1500)
+    check('portrait: Continue after a manual exit does not force fullscreen back',
+          resumed and not state(page)['fullscreenElement'],
+          f'resumed={resumed} element={state(page)["fullscreenElement"]}')
 
     page.wait_for_timeout(300)
     check('portrait: no page errors', not errors, errors[:4])
@@ -385,6 +471,18 @@ def run_fallback(page):
     errors = []
     page.on('pageerror', lambda error: errors.append(str(error)))
     boot(page)
+    # Count real API calls, so "asks for nothing" is a measurement and not an
+    # absence: without a counter this check would also pass if the tap never
+    # reached the fullscreen path at all. Chromium still has the method here —
+    # only `fullscreenEnabled` is hidden, as on an iPhone.
+    page.evaluate("""() => {
+      window.__fsRequests = 0;
+      const original = Element.prototype.requestFullscreen;
+      if (original) Element.prototype.requestFullscreen = function (...args) {
+        window.__fsRequests += 1;
+        return original.apply(this, args);
+      };
+    }""")
     s = state(page)
     check('fallback: the game itself detects that fullscreen is unavailable', s['fullscreenApi'] is False, s)
     toggles = page.evaluate("() => document.querySelectorAll('.fullscreen-toggle').length")
@@ -403,6 +501,10 @@ def run_fallback(page):
     hint = box_of(page, '.fullscreen-hint')
     check('fallback: the Add to Home Screen hint is shown instead',
           bool(hint) and hint['display'] != 'none' and hint['w'] > 0, hint)
+    check('fallback: auto-fullscreen asks for nothing this device cannot give',
+          page.evaluate("() => !document.fullscreenElement") and page.evaluate(
+              "() => window.__fsRequests === 0"),
+          f'element={state(page)["fullscreenElement"]} requests={page.evaluate("() => window.__fsRequests")}')
     text = page.evaluate("() => document.querySelector('.fullscreen-hint span')?.textContent")
     check('fallback: the hint says exactly what to do',
           text == 'Add to Home Screen to play full screen', text)

@@ -44,8 +44,10 @@ body.game-shell.exploring[data-ai-control="human"] #control-badge {
    occupies the top left, and the pause overlay (z-index 12) covers it. */
 .shell-chapters {
   position: fixed;
-  top: 16px;
-  right: 18px;
+  /* Under a notched phone's status bar in an installed PWA this button used to
+     sit on the clock. */
+  top: calc(16px + env(safe-area-inset-top));
+  right: calc(18px + env(safe-area-inset-right));
   z-index: 11;
   padding: 8px 12px;
   border: 1px solid #7d9a88aa;
