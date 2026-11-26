@@ -44,7 +44,11 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  listenDocument('visibilitychange',()=>{if(document.hidden)pause('page_hidden');});
  listenDocument('focusin',e=>{if(editable(e.target))clear();});
  listenDocument('pointerlockchange',()=>{clear();if(locked()&&!game.panel&&!game.inventoryOpen){game.takeover('human_pointer_lock');game.paused=false;}else if(locked()){document.exitPointerLock();}else if(!game.armed)game.pause('pointer_unlock');});
- listenDocument('pointerlockerror',()=>{pause('pointer_lock_failed');document.dispatchEvent(new CustomEvent('game-notice',{detail:opening?'Pointer lock unavailable. Use drag mode to continue.':'此浏览器无法锁定鼠标。请用 Chrome 打开，或选择拖动兼容模式。'}));});
+ // A lock request fails asynchronously, and its error can land long after the player has
+ // already resumed through drag controls (one Continue click issues two requests: the
+ // button's enter() and the campaign's resume()). Drag mode is an explicit choice, so a
+ // stale failure must not pause the game again — measured 2026-11-26 on the epilogue.
+ listenDocument('pointerlockerror',()=>{if(compat)return;pause('pointer_lock_failed');document.dispatchEvent(new CustomEvent('game-notice',{detail:opening?'Pointer lock unavailable. Use drag mode to continue.':'此浏览器无法锁定鼠标。请用 Chrome 打开，或选择拖动兼容模式。'}));});
  listenWindow('keydown',e=>{
   if(!enabled||e.defaultPrevented||e.isComposing||e.metaKey||e.ctrlKey||e.altKey||game.panel)return;
   if(e.code===KEYS.inventory&&!e.repeat&&!((e.target as HTMLElement)?.matches('input,textarea,select'))){e.preventDefault();game.inventoryOpen?closeInventory():openInventory();return;}

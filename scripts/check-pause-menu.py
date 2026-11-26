@@ -20,6 +20,9 @@ This gate drives that card like a player, at 1280x800 and at 390x844:
               full settings dialog shows the same value afterwards
   fullscreen  the card's Full screen button is there wherever the API is
   phone       the same open-and-go chapter flow through the touch pipeline
+  epilogue    on ?checkpoint=ending a real Escape raises the card above the
+              ending overlay: Continue and Return to checkpoint take real
+              clicks, the refusal toast paints above it, and the clock advances
   errors      no page errors
 
 Needs a review build served over HTTP:
@@ -85,15 +88,15 @@ BOOT_STATE_JS = """() => ({
 })"""
 
 
-def boot(page, budget=420):
-    """Load BASE and wait for the app, reporting what the page is doing.
+def boot(page, budget=420, url=None):
+    """Load `url` (default BASE) and wait for the app, reporting what the page is doing.
 
     A flat `wait_for_function` turned a slow first shader compile into a raw
     traceback with no evidence (2026-11-25). This polls in slices, prints the
     page's own state, and fails fast when the module finished loading without
     ever exporting `__CAMPUS` — that is an init-time throw, not a slow browser.
     """
-    page.goto(BASE, wait_until='domcontentloaded')
+    page.goto(url or BASE, wait_until='domcontentloaded')
     left = budget
     while left > 0:
         if until(page, BOOT_JS, timeout=min(30, left)):
@@ -129,8 +132,9 @@ def hit(page, selector):
       const el = document.querySelector(selector);
       if (!el) return {found: false};
       const box = el.getBoundingClientRect();
-      const top = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
-      return {found: true, reachable: !!top && (top === el || el.contains(top)),
+      const x = box.x + box.width / 2, y = box.y + box.height / 2;
+      const top = document.elementFromPoint(x, y);
+      return {found: true, x, y, reachable: !!top && (top === el || el.contains(top)),
               top: top ? (top.id || String(top.className) || top.tagName) : null,
               box: {x: box.x, y: box.y, w: box.width, h: box.height}};
     }""", selector)
@@ -432,6 +436,110 @@ def run_phone(browser):
     context.close()
 
 
+def resume(page):
+    """Resume through the shipped drag-controls path (headless refuses pointer lock)."""
+    for _ in range(3):
+        page.evaluate("() => { try { window.__CAMPUS.explorer.enterCompat(); } catch (error) {} }")
+        if until(page, '() => window.__CAMPUS.explorer.game.paused === false', timeout=20):
+            return True
+    return False
+
+
+EPILOGUE = ORIGIN + '?experience=opening&intro=0&shell=1&checkpoint=ending'
+
+
+def run_epilogue(browser):
+    """The pause card must stay usable above the epilogue overlay (2026-11-26).
+
+    Playtest item 4: `#ending-overlay` is fixed, inset 0 and z-index 60, and it
+    stays in the hit-test tree while its visuals fade (only its ::before and the
+    Mac fade). The pause card at z-index 12 was therefore painted AND hit-tested
+    underneath it: a mouse-only player could not click Continue, and the ending
+    clock stayed frozen. The card is z-index 70 and the toast 71 now, and this
+    gate drives the real epilogue: ?checkpoint=ending, a real Escape, a real
+    pointer click, and the ending's own clock.
+    """
+    context = browser.new_context(viewport=VIEW)
+    page = context.new_page()
+    errors = []
+    page.on('pageerror', lambda error: errors.append(str(error)))
+    page.set_default_timeout(120000)
+    check('epilogue: ?checkpoint=ending boots straight into the epilogue',
+          boot(page, url=EPILOGUE))
+    check('epilogue: the game runs before the overlay exists', resume(page))
+    overlay = until(page, "() => !!document.getElementById('ending-overlay')", timeout=180)
+    check('epilogue: the ending overlay is mounted', overlay)
+    stage = page.evaluate('() => window.__CAMPUS.campaign.state().stage') if overlay else None
+    check('epilogue: the campaign is at the ending stage', stage == 'ending', {'stage': stage})
+    if overlay:
+        # Pause at once: the 14 s ending holds still while the slow checks run.
+        page.keyboard.press('Escape')
+        card = until(page, """() => { const p = document.getElementById('pause-panel');
+          return !!p && !p.hidden && getComputedStyle(p).display !== 'none'; }""", timeout=60)
+        enter = hit(page, '#enter-game') if card else {'reachable': False}
+        check('epilogue: the pause card is painted and hit-tested above the overlay',
+              card and enter.get('reachable') is True, {'card': card, 'hit': enter})
+
+        page.evaluate("""() => { window.__probe = 0;
+          const b = document.getElementById('enter-game');
+          if (b) b.addEventListener('click', () => { window.__probe += 1; }, {once: true}); }""")
+        if enter.get('found'):
+            page.mouse.click(enter['x'], enter['y'])
+        clicked = until(page, '() => window.__probe > 0', timeout=20)
+        check('epilogue: a real click on Continue reaches the button', clicked)
+
+        page.keyboard.press('Escape')
+        again = until(page, """() => { const p = document.getElementById('pause-panel');
+          return !!p && !p.hidden && getComputedStyle(p).display !== 'none'; }""", timeout=60)
+        checkpoint = hit(page, '#pause-checkpoint') if again else {'reachable': False}
+        check('epilogue: Return to checkpoint is reachable on the epilogue card',
+              again and checkpoint.get('reachable') is True, {'again': again, 'hit': checkpoint})
+        if checkpoint.get('found'):
+            page.mouse.click(checkpoint['x'], checkpoint['y'])
+        toasted = until(page, """() => { const t = document.getElementById('toast');
+          return !!t && t.classList.contains('show') && (t.textContent || '').includes('no checkpoint'); }""",
+                        timeout=30)
+        stage = page.evaluate('() => window.__CAMPUS.campaign.state().stage')
+        check('epilogue: the refusal is spoken and the stage does not move',
+              toasted and stage == 'ending', {'toast': toasted, 'stage': stage})
+        # The toast is pointer-events:none by design, so hit-testing skips it even
+        # when it paints on top. Re-enable pointer events for one hit test (paint
+        # order is unchanged) and restore the real value.
+        toast_hit = page.evaluate("""() => {
+          const t = document.getElementById('toast');
+          if (!t) return {found: false};
+          t.style.pointerEvents = 'auto';
+          const box = t.getBoundingClientRect();
+          const top = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+          t.style.pointerEvents = '';
+          return {found: true, reachable: !!top && (top === t || t.contains(top)),
+                  top: top ? (top.id || String(top.className) || top.tagName) : null};
+        }""")
+        check('epilogue: the toast paints above the overlay', toast_hit.get('reachable') is True, toast_hit)
+
+        check('epilogue: the game resumes for the clock check', resume(page))
+        page.evaluate("""() => { window.__raf = 0;
+          const tick = () => { window.__raf += 1; requestAnimationFrame(tick); }; requestAnimationFrame(tick); }""")
+        before = page.evaluate('() => window.__CAMPUS.campaign.debug.ending.state().clock')
+        # The ending steps at most 2 s per frame (the stalled-tab cap), and a
+        # software-rasterised crane frame here takes ~3.2 s, so a fixed 2.5 s
+        # sleep can land between two frames and read the same clock twice
+        # (measured 2026-11-26). Poll for the increase instead.
+        moved = until(page, f'() => window.__CAMPUS.campaign.debug.ending.state().clock > {before}', timeout=30)
+        after = page.evaluate('() => window.__CAMPUS.campaign.debug.ending.state().clock')
+        state = page.evaluate("""() => { const g = window.__CAMPUS.explorer.game;
+          return {clock: window.__CAMPUS.campaign.debug.ending.state().clock,
+            paused: g.paused, pauseReason: g.pauseReason || null,
+            raf: window.__raf, stage: window.__CAMPUS.campaign.state().stage,
+            credits: !!document.getElementById('ending-credits'),
+            lastEvents: (g.events || []).slice(-10).map(e => [e.seq, e.type, e.data && e.data.reason])}; }""")
+        check('epilogue: the ending clock advances after the resume',
+              moved and before is not None and after > before,
+              {'before': before, 'after': after, 'state': state})
+    check('epilogue: no page errors', not errors, errors[:4])
+    context.close()
+
+
 def main():
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=HEADLESS, args=ARGS, executable_path=CHROME)
@@ -442,6 +550,7 @@ def main():
         # stretches the phone boot past its budget.
         page.close()
         run_phone(browser)
+        run_epilogue(browser)
         browser.close()
     total = passed + len(failures)
     print(f'\ncheck-pause-menu: {passed}/{total} passed')
