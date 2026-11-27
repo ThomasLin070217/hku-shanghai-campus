@@ -2,6 +2,87 @@
 
 All notable changes to HKU: Barrier 2030 (“A CDS campus story”). The app version lives in `VERSION` and `package.json`; the save-schema version is separate.
 
+## [9.2.3] — 2026-11-27
+
+The owner's layout corrections, and the rest of the 2026-11-26 bug hunt: with
+9.2.2's two hotfixes and the three findings the verification replay added,
+**50 distinct defects have been found and fixed**.
+
+### Fixed — owner review
+- **CDS-1 is the presentation room again.** The B04 interior was rebuilt from
+  the observed keyboard lounge: curved timber plinth, seven sofa modules,
+  armchairs, keycap stools and ceiling cutaway, with the Keyboard Wall square-on
+  to the entrance as in the presentation build. The bespoke lobby is gone; the
+  stations, entry, collision and both walk gates follow the room. A backing slab
+  in the surround's own material hides the keycap pedestals from the service
+  aisle. Played in a real browser from `b4-inside` to `to_lawn`, no page errors.
+- **The lift and the HKU flip wall stand in Building 6, not B04.** The
+  ground hall is the middle building; entering it, the lift is left and the
+  canteen right. The tower is now hollow above the hall for the lift shaft and
+  the 5F landing/office, so the car does not ride inside solid geometry.
+- **The robot's scan locks on contact and escapes like a wanted level.** A
+  confirmed sighting keeps the robot on the player while the radius grows to
+  break the lock, instead of demanding the player step back into the cone.
+- **The dining cast no longer pops out of existence**: guests that leave the
+  hall cross a doorway fade.
+
+### Fixed — touch and phone
+- T-03 prompt/hint collision; T-04 the rotate hint no longer swallows look
+  drags; T-05 Chapters chip and fullscreen toggle meet 44 px; T-06 scrollable
+  44 px hotbar; T-07 44 px bag close plus “Tap × to close”; T-08 44 px sliders;
+  T-09 44 px Restart summary; T-10/D-05 the pause card says it scrolls; T-11
+  the boot notice clears Continue; T-12 the idle dock stays readable on touch;
+  T-13 44 px settings controls.
+
+### Fixed — desktop, checkpoints and copy
+- D-02 Esc closes the pause menu in the mode it was opened from; D-03/D-04 the
+  card traps and returns focus; D-06 no authoring toast on a player boot; D-07
+  the landmark is labelled as the game; D-08 both Shift keys sprint; D-09 game
+  keys are inert behind the card; D-10 slider values are announced; D-11 the
+  drag-controls offer withdraws after a lock; D-12 the Chapters chip is not a
+  dead click under pointer lock.
+- R-01/R-02 a checkpoint reset returns to the leg's own start pose instead of
+  its destination; R-09 the epilogue offers no checkpoint; R-10 a new run says
+  “No checkpoint yet”; R-12 old `?checkpoint=bus` bookmarks start the plaza run.
+- Start, pause, chapter and caught copy says plaza, not shuttle.
+
+### Fixed — audio, map, save and static surfaces
+- S-31 the supercomputer hum, sports cheer and keypad beep ride the page's one
+  mixer, so mute, effects volume and pause apply; S-33 the ending clears the
+  chapter bed before the finale cue; S-07 the incident map/HUD has no bogus
+  coordinator target; S-35 the backup-relay answers follow the printed order;
+  S-08 Skip marks the prologue seen; S-10 two dead runtime save fields removed
+  (old saves still validate); S-11 the dead tasks page removed; D-01/R-08 Play
+  again keeps the caller's boot parameters and asks for a fresh run.
+- **W-01** the MacBook Maps legend names the dark map's green objective and gold
+  player; **W-02** Skip/end of the prologue pauses the story bus under the start
+  card; **W-03** phone assistant replies say “Tap MAC”, never “Press C”.
+
+### Verified
+`tsc --noEmit`; the full `check:opening` chain and the campaign, chapter-select,
+prologue, lift, B4-office, sports-door, flip-wall and mobile gates; and real
+browser replays of the B4 route, the phone assistant and the prologue skip.
+
+## [9.2.2] — 2026-11-26
+
+Hotfix for the two phone defects that stop a run: the MacBook could not be
+opened, and the backpack could not be opened.
+
+### Fixed
+- **A phone could not open the MacBook, so the story stopped at "Open the
+  MacBook".** No on-screen control sent `C`; the prompt named a key a phone
+  does not have. The touch pad now has a `MAC` button (the grid's free cell,
+  row 3 column 1) that sends `KeyC`, and the prompt rewrites `C · …` to
+  `MAC · …` (`src/opening/touchControls.ts`, `src/opening/touch.css`).
+  Verified A/B on 390×844: old build has no button, new build opens the
+  presentation device.
+- **BAG threw on every tap.** `controller.ts` tested `.matches` on the event
+  target, and the touch layer dispatches its key events on `window`, whose
+  target has no `matches`; the TypeError aborted the handler, so the bag never
+  opened. The guard is now `instanceof HTMLElement` first. Verified A/B: old
+  build `TypeError: H.target?.matches is not a function`, bag closed; new
+  build bag opens, zero page errors.
+
 ## [9.2.1] — 2026-11-26
 
 Two mobile defects the owner reported after playing 9.2.0 on a phone.
