@@ -1,6 +1,8 @@
 import * as T from 'three';
 import {tagChildren,type PrimitiveTrace} from '../scene/authoring';
-import {OPENING} from './spatialLayout';
+import {OPENING,B4_LIFT as L6,B6_HALL} from './spatialLayout';
+import {LIFT_LANDING} from './lift';
+import {B4_OFFICE} from './b4Office';
 import {buildB4Shell} from './b4Shell';
 type V={p:T.Vector3;n:T.Vector3;uv:T.Vector2};
 function split(poly:V[],axis:'x'|'y'|'z',value:number,above:boolean){
@@ -19,6 +21,14 @@ export function cutOpeningBuildings(root:T.Group){
  for(const room of [OPENING.b4,OPENING.b5,OPENING.b6]){
   const building=root.getObjectByName(room.id);if(!building)continue;
   const boxes=[new T.Box3(new T.Vector3(room.x0+.01,room.floor+.015,room.z0+.12),new T.Vector3(room.x1-.01,room.floor+room.clearHeight,room.z1-.24)),new T.Box3(new T.Vector3(room.door-room.doorWidth/2,room.floor-.02,room.z1-3.3),new T.Vector3(room.door+room.doorWidth/2,room.floor+room.doorHeight,room.z1+('doorDepth' in room?room.doorDepth:.9)))];
+  // Building 6: above the ground hall the tower is hollow only for the lift shaft and
+  // the 5F landing/office. Cut both, or the car and the office would sit inside solid
+  // tower after the ground cavity ends at the hall ceiling.
+  if(room.id===OPENING.b6.id){
+   const W=B6_HALL,s0=L6.x0-W.shaft.wall,s1=L6.x1+W.shaft.wall,t0=L6.z0-W.shaft.wall,t1=L6.z1+W.shaft.wall;
+   boxes.push(new T.Box3(new T.Vector3(s0,room.floor,t0),new T.Vector3(s1,L6.landing+L6.clearHeight,t1)));
+   boxes.push(new T.Box3(new T.Vector3(L6.x1,room.floor,B4_OFFICE.interior.z0-B4_OFFICE.wall),new T.Vector3(room.x1,LIFT_LANDING.ceilBottom+L6.wall,B4_OFFICE.interior.z1+B4_OFFICE.wall)));
+  }
   const meshes:T.Mesh[]=[];building.traverse(o=>{if(o instanceof T.Mesh)meshes.push(o);});
   for(const mesh of meshes){const old=mesh.geometry;old.computeBoundingBox();const bounds=old.boundingBox!.clone().applyMatrix4(mesh.matrixWorld);if(!boxes.some(b=>b.intersectsBox(bounds)))continue;
    const g=old.index?old.toNonIndexed():old.clone(),p=g.getAttribute('position'),n=g.getAttribute('normal'),uv=g.getAttribute('uv'),positions:number[]=[],normals:number[]=[],uvs:number[]=[],inverse=mesh.matrixWorld.clone().invert();
