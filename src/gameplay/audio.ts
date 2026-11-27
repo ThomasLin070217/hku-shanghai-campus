@@ -2,7 +2,7 @@ import {OPENING_FOLEY} from '../opening/audioAssets';
 import type {Settings} from './save';
 import type {Gait} from '../characters/gait';
 import {STORY_AUDIO_URLS} from './storyAudioAssets';
-import {StoryAudio,OPENING_AUDIO_NAMES,ENDING_AUDIO_NAMES,CHAPTER_SCORE_NAMES} from './storyAudio';
+import {StoryAudio,OPENING_AUDIO_NAMES} from './storyAudio';
 type Point={x:number;y:number;z:number};
 const audioUrls:Record<string,URL>={
  'select':new URL('../../assets/audio/select.wav',import.meta.url),
@@ -50,9 +50,17 @@ export class CampusAudio {
  private shots=new Map<AudioBufferSourceNode,{group:string;gain:GainNode;panner?:PannerNode;preview:boolean}>();
  /** The chapter's current looping score on the music bus; replaced, never stacked. */
  private score:{source:AudioBufferSourceNode;gain:GainNode}|null=null;
+ /** Loops a chapter owns through this mixer (a room hum): pause, mute and the group volume apply. */
+ private mixLoops=new Map<string,{source:AudioBufferSourceNode;gain:GainNode;level:number;name:string}>();
+ /** The page's live mixer, so a chapter can route a cue without carrying an audio handle. */
+ static live:CampusAudio|null=null;
  private visibility=()=>{if(document.hidden){this.setActive(false);this.stopPreviews();this.stopShots(undefined,true);void this.context?.suspend().catch(()=>{});}};
- constructor(settings:Settings){this.settings={...settings};document.addEventListener('visibilitychange',this.visibility);}
- enableStory(){if(this.story)return;this.story=new StoryAudio(this);for(const name of [...OPENING_AUDIO_NAMES,...ENDING_AUDIO_NAMES,...CHAPTER_SCORE_NAMES])this.urls[name]=STORY_AUDIO_URLS[name];Object.assign(this.urls,OPENING_FOLEY);}
+ constructor(settings:Settings){this.settings={...settings};CampusAudio.live=this;document.addEventListener('visibilitychange',this.visibility);}
+ enableStory(){if(this.story)return;this.story=new StoryAudio(this);
+  // Every story cue gets a URL, not only the opening's score list: a chapter routes its
+  // own room tone and crowd through `loopCue`/`playSfx`, and those names must be fetchable
+  // here or the sound silently never plays (S-31). Nothing is fetched until it is asked for.
+  Object.assign(this.urls,STORY_AUDIO_URLS);Object.assign(this.urls,OPENING_FOLEY);}
  /**
   * Score on the shared music bus, so the player's music volume and mute still apply.
   * Looping cues are owned by this class (one at a time) and crossfaded into each
@@ -106,6 +114,61 @@ export class CampusAudio {
   const t=this.context.currentTime,gain=current.gain.gain;
   gain.cancelScheduledValues(t);gain.setTargetAtTime(0,t,Math.max(.02,fade/3));
   try{current.source.stop(t+fade);}catch{try{current.source.disconnect();}catch{/* nothing to release */}}
+ }
+ /**
+  * A looping cue owned by this mixer, for a chapter's room tone. Call it every frame with
+  * the level: the buffer is fetched on demand and the loop starts as soon as it decodes.
+  * Mute, the group volume, pause and a hidden tab all apply, which the private
+  * `HTMLAudioElement` hum it replaces could not do (S-31).
+  */
+ loopCue(key:string,name:string,group:'ambient'|'music'|'sfx',level:number){
+  if(this.disposed||!this.context||this.context.state!=='running')return;
+  const buffer=this.buffers.get(name);
+  if(!buffer){void this.loadAudioNames([name]);return;}
+  const t=this.context.currentTime,wanted=Math.max(0,level);
+  let loop=this.mixLoops.get(key);
+  if(loop&&loop.name!==name){this.stopLoopCue(key,.08);loop=undefined;}
+  if(!loop){
+   const source=this.context.createBufferSource(),gain=this.context.createGain();
+   source.buffer=buffer;source.loop=true;source.connect(gain);gain.connect(this.groups[group]!);
+   gain.gain.setValueAtTime(this.active?wanted:0,t);source.start();
+   loop={source,gain,level:wanted,name};this.mixLoops.set(key,loop);
+  }else if(loop.level!==wanted){
+   loop.level=wanted;loop.gain.gain.setTargetAtTime(this.active?wanted:0,t,.08);
+  }
+ }
+ /** Fades one chapter loop out and releases it when the fade ends. */
+ stopLoopCue(key:string,fade=.2){
+  const loop=this.mixLoops.get(key);if(!loop)return;
+  this.mixLoops.delete(key);
+  const c=this.context;
+  if(!c){try{loop.source.stop();}catch{/* already ended */}try{loop.source.disconnect();loop.gain.disconnect();}catch{/* already released */}return;}
+  const t=c.currentTime,gain=loop.gain.gain;
+  gain.cancelScheduledValues(t);gain.setValueAtTime(gain.value,t);gain.setTargetAtTime(0,t,Math.max(.02,fade/3));
+  loop.source.onended=()=>{try{loop.source.disconnect();loop.gain.disconnect();}catch{/* already released */}};
+  try{loop.source.stop(t+fade);}catch{/* the node already ended */}
+ }
+ /** A one-shot cue by name, fetched on demand; the shared volume, mute and voice budget apply. */
+ playSfx(name:string,group:'sfx'|'ui'|'music'|'ambient'='sfx',gain=1){
+  if(this.disposed||!this.context||this.context.state!=='running')return;
+  if(this.buffers.has(name)){this.play(name,group,undefined,gain);return;}
+  void this.loadAudioNames([name]).then(()=>{if(!this.disposed)this.play(name,group,undefined,gain);});
+ }
+ /**
+  * A short synthesized interface tone through the effects bus (the door keypad), so the
+  * player's effects volume and mute apply — the private `AudioContext` it replaces played
+  * straight to `destination` and ignored both (S-31).
+  */
+ beep(hz:number,duration=.13,gain=.05){
+  const c=this.context;if(!c||this.disposed||c.state!=='running')return;
+  const t=c.currentTime,osc=c.createOscillator(),level=c.createGain();
+  osc.type='square';osc.frequency.value=hz;
+  level.gain.setValueAtTime(.0001,t);
+  level.gain.exponentialRampToValueAtTime(Math.max(.0002,gain),t+.012);
+  level.gain.exponentialRampToValueAtTime(.0001,t+duration);
+  osc.connect(level);level.connect(this.groups.sfx!);
+  osc.start(t);osc.stop(t+duration+.02);
+  osc.onended=()=>{try{osc.disconnect();level.disconnect();}catch{/* already released */}};
  }
  get voiceCount(){return this.shots.size+(this.story?.voices??0);}
  /** Call from a user gesture. Loading failure never blocks movement or throws an unhandled rejection. */
@@ -177,7 +240,7 @@ export class CampusAudio {
  /** Lower music/ambient under a spoken NPC line without changing the user's saved settings. */
  setDialogueDuck(active:boolean){const next=active?.42:1;if(next===this.dialogueDuck)return;this.dialogueDuck=next;if(!this.context||!this.groups.music||!this.groups.ambient)return;const t=this.context.currentTime;
   for(const n of ['ambient','music']as const){const p=this.groups[n].gain,target=this.settings.muted?0:this.settings[n]*this.dialogueDuck;if(typeof p.cancelAndHoldAtTime==='function')p.cancelAndHoldAtTime(t);else{const current=p.value;p.cancelScheduledValues(t);p.setValueAtTime(current,t);}p.setTargetAtTime(target,t,.12);}}
- setActive(value:boolean,force=false){value=value&&!document.hidden&&!this.disposed;if(value===this.active&&!force)return;this.active=value;if(!this.context)return;if(value&&this.context.state==='suspended')void this.context.resume().then(()=>{this.resumeError='';},()=>{this.resumeError='The browser has not enabled sound yet. Click to retry.';});const t=this.context.currentTime;this.ambientGate?.gain.setTargetAtTime(value&&!this.story ? .48:0,t,.12);this.stepGate?.gain.setTargetAtTime(value?1:0,t,.006);if(!value){this.setDialogueDuck(false);this.stopShots('steps');this.stopShots('sfx',true);this.story?.pause();}else this.flushScore();}
+ setActive(value:boolean,force=false){value=value&&!document.hidden&&!this.disposed;if(value===this.active&&!force)return;this.active=value;if(!this.context)return;if(value&&this.context.state==='suspended')void this.context.resume().then(()=>{this.resumeError='';},()=>{this.resumeError='The browser has not enabled sound yet. Click to retry.';});const t=this.context.currentTime;this.ambientGate?.gain.setTargetAtTime(value&&!this.story ? .48:0,t,.12);this.stepGate?.gain.setTargetAtTime(value?1:0,t,.006);for(const loop of this.mixLoops.values())loop.gain.gain.setTargetAtTime(value?loop.level:0,t,.06);if(!value){this.setDialogueDuck(false);this.stopShots('steps');this.stopShots('sfx',true);this.story?.pause();}else this.flushScore();}
  private stopShots(group?:string,immediate=false){
   for(const [source,node]of this.shots)if(!group||node.group===group){
    if(immediate||this.context?.state!=='running'){this.releaseShot(source);continue;}
@@ -297,6 +360,6 @@ export class CampusAudio {
    counts:{...this.counts},failed:this.failed,failedFiles:[...this.failedFiles],loading:[...this.pending.keys()],loaded:this.buffers.size,total:Object.keys(this.urls).length,voiceCount:this.voiceCount,story:this.story?.diagnostics??null,
    buffers:[...this.buffers].map(([name,b])=>({name,duration:b.duration,channels:b.numberOfChannels,sampleRate:b.sampleRate,decodedBytes:b.length*b.numberOfChannels*4})),gains};
  }
- dispose(){if(this.disposed)return;this.disposed=true;this.dialogueDuck=1;document.removeEventListener('visibilitychange',this.visibility);this.stopPreviews();this.stopShots(undefined,true);this.story?.dispose();for(const {abort}of this.pending.values())abort.abort();try{this.ambient?.stop();}catch{}this.ambient?.disconnect();this.ambient=null;if(this.openingAmbienceNodes){for(const o of this.openingAmbienceNodes.osc){try{o.stop();}catch{}o.disconnect();}try{this.openingAmbienceNodes.noise?.stop();}catch{}this.openingAmbienceNodes.noise?.disconnect();this.openingAmbienceNodes.filter?.disconnect();this.openingAmbienceNodes=null;}this.openingAmbienceGain?.disconnect();this.openingAmbienceGain=null;this.capture?.stream.getTracks().forEach(t=>t.stop());this.capture?.disconnect();this.master?.disconnect();this.stepGate?.disconnect();this.ambientGate?.disconnect();Object.values(this.groups).forEach(g=>g.disconnect());this.buffers.clear();void this.context?.close();}
+ dispose(){if(this.disposed)return;this.disposed=true;this.dialogueDuck=1;document.removeEventListener('visibilitychange',this.visibility);this.stopPreviews();this.stopShots(undefined,true);for(const loop of this.mixLoops.values()){try{loop.source.stop();}catch{/* already ended */}try{loop.source.disconnect();loop.gain.disconnect();}catch{/* already released */}}this.mixLoops.clear();if(CampusAudio.live===this)CampusAudio.live=null;this.story?.dispose();for(const {abort}of this.pending.values())abort.abort();try{this.ambient?.stop();}catch{}this.ambient?.disconnect();this.ambient=null;if(this.openingAmbienceNodes){for(const o of this.openingAmbienceNodes.osc){try{o.stop();}catch{}o.disconnect();}try{this.openingAmbienceNodes.noise?.stop();}catch{}this.openingAmbienceNodes.noise?.disconnect();this.openingAmbienceNodes.filter?.disconnect();this.openingAmbienceNodes=null;}this.openingAmbienceGain?.disconnect();this.openingAmbienceGain=null;this.capture?.stream.getTracks().forEach(t=>t.stop());this.capture?.disconnect();this.master?.disconnect();this.stepGate?.disconnect();this.ambientGate?.disconnect();Object.values(this.groups).forEach(g=>g.disconnect());this.buffers.clear();void this.context?.close();}
 
 }

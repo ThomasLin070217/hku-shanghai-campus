@@ -10,8 +10,10 @@ import {B4_PHRASE,b4StepOf,connectMacBook,createKeyboardState,pressKeyboard,pull
 import {campaignChapterOf,stageIndex,type CampaignEvent,type CampaignStage} from './state';
 import type {Chapter,ChapterContext,Objective} from './types';
 
-/** Just inside the B04 entrance door, by the Chapter 1 handoff point. */
-export const B4_ENTRY:Chapter['entry']={point:[58,.02,18],radius:1.6,event:'enter_b4'};
+/** Just inside the B04 entrance door, by the Chapter 1 handoff point. The observed lounge's
+ * furniture front (z 19.47) leaves a 0.9 m strip inside the door; the entry sits in it, so the
+ * player crosses the threshold into the room rather than into a sofa. */
+export const B4_ENTRY:Chapter['entry']={point:[58,.02,19.9],radius:1.6,event:'enter_b4'};
 const EVENTS:CampaignEvent[]=['enter_b4','keyboard_solved','flip_solved','breaker_pulled','macbook_connected'];
 /** `b4_flip` has no station: it is the short automatic beat while the service wall lifts. */
 const STEP_STATION:Record<'keyboard'|'breaker'|'connect',B4StationId>={keyboard:'keyboard',breaker:'breaker',connect:'port'};
@@ -28,9 +30,9 @@ type Focus='keyboard'|null;
 type World={obstacles:Parameters<typeof setB4FlipPanel>[0]['obstacles'];meshes:T.Mesh[];setDoorOpen(name:string,open:boolean):void};
 
 /**
- * Chapter 1 · B4: the Keyboard Wall on the east wall, the aux power closet with its
- * service shutter on the north wall, and the supercomputer, on the campus model's
- * B04 ground floor. The room shell and entrance door are part of the opening world
+ * Chapter 1 · B4: the Keyboard Wall square-on to the entrance (the observed presentation
+ * lounge), the aux power closet with its service shutter behind it on the north wall, and
+ * the supercomputer, on the campus model's B04 ground floor. The room shell and entrance door are part of the opening world
  * (`src/opening/b4Shell.ts`); this chapter opens the door and adds the puzzle props,
  * room lights and highlights. Rules come from `b4Puzzle.ts`, placement and collision
  * from `b4Layout.ts`. Spelling I LOVE CDS boots CPU 01; the service wall then lifts by
@@ -49,7 +51,17 @@ export function createB4Chapter():Chapter{
  const rackMaterials:T.MeshStandardMaterial[]=[],rackBodies:T.MeshStandardMaterial[]=[],ceilingPanels:T.MeshStandardMaterial[]=[],capGlow=new Map<T.Group,T.MeshStandardMaterial>(),owned:T.Material[]=[];
  const outlines=new Map<B4StationId,T.LineSegments>();
  let leaves:T.Object3D[]=[];
- let lightLevel=0,shutterLift=0,leverPull=0,doorOpen=0,flash=0,beat=0,beatArmed=false,seenStage:CampaignStage|null=null,hum:HTMLAudioElement|null=null,humWanted=false,humRetry:(()=>void)|null=null;
+ let lightLevel=0,shutterLift=0,leverPull=0,doorOpen=0,flash=0,beat=0,beatArmed=false,seenStage:CampaignStage|null=null,humWanted=false;
+ /** The page's one mixer, loaded on demand so this module stays importable headless. */
+ type Mixer=typeof import('../gameplay/audio').CampusAudio;
+ let mixer:Mixer|null=null,mixerLoading=false;
+ const HUM_LOOP='b4-supercomputer-hum';
+ function liveMixer():Mixer|null{
+  if(mixer||mixerLoading||typeof window==='undefined')return mixer;
+  mixerLoading=true;
+  void import('../gameplay/audio').then(m=>{mixer=m.CampusAudio;},()=>{/* Audio is optional. */});
+  return null;
+ }
  let bed='';
  let raf=0,focus:Focus=null,lookYaw=0,lookPitch=0,baseYaw=0,basePitch=0;
  let savedHint:string|null=null,pulse=0;
@@ -70,19 +82,27 @@ export function createB4Chapter():Chapter{
 
  function build(c:ChapterContext){
   const g=new T.Group();tag(g,'B04_campaign_rooms');g.userData.dynamicGameplay=true;
-  // Keyboard Wall on the east wall: the observed panel and its timber backing, turned so the
-  // builder's +z face looks west into the room. add(), not attach(): the builder-local offsets
-  // place each part relative to the layout origin.
+  // Keyboard Wall square-on to the entrance: the observed panel and its timber backing, facing
+  // +z into the room. add(), not attach(): the builder-local offsets place each part relative
+  // to the layout origin.
   const kb=buildObservedFeatureRoom('keyboard'),kbRoot=new T.Group();tag(kbRoot,'B4_keyboard_wall');
   kbRoot.position.fromArray(B4_LAYOUT.keyboardOrigin);kbRoot.rotation.y=B4_LAYOUT.keyboardYaw;g.add(kbRoot);
+  // The builder's keycap pedestals extend ~0.5 m behind the panel; the presentation room hid
+  // them against its own back wall, but here the wall backs onto the service aisle, so the
+  // player at the breaker would see a field of keycap stems. Close the back with a slab in the
+  // surround's own material, in the builder's local frame (kbRoot is at the room origin).
+  const surround=(requirePart(kb,'Keyboard_timber_wall') as T.Mesh).material as T.MeshStandardMaterial;
   for(const name of ['Keyboard_timber_wall','Keyboard_wall']){const o=requirePart(kb,name);o.removeFromParent();kbRoot.add(o);}
+  const backWall=new T.Mesh(new T.BoxGeometry(8.70,3.02,.06),own(surround.clone()));
+  tag(backWall,'B4_keyboard_wall_backing');
+  backWall.position.set(.48,2.23,-4.27);backWall.castShadow=backWall.receiveShadow=true;kbRoot.add(backWall);
   caps=keyboardKeycaps(kbRoot);if(caps.length!==52)throw new Error(`Keyboard Wall has ${caps.length} caps, expected 52`);
   for(const cap of caps){
    if(cap.userData.phrase)phraseCaps.push(cap);if(cap.userData.enter)enterCap=cap;
    cap.traverse(o=>{if(o instanceof T.Mesh&&o.name.startsWith('Key_')&&!capGlow.has(cap)){const m=own((o.material as T.MeshStandardMaterial).clone());o.material=m;capGlow.set(cap,m);}});
   }
   // Aux power closet against the north wall. The HKU flip wall stands in the Building 5 lobby
-  // (`b5FlipWall.ts`), so B4 asks the observed-room builder for the closet part only: building
+  // (`b6FlipWall.ts`), so B4 asks the observed-room builder for the closet part only: building
   // the full room would allocate its 561 flip tiles and corridor shell for nothing.
   const fw=buildObservedFeatureRoom('flipWall',{parts:['closet']}),fwRoot=new T.Group();tag(fwRoot,'B4_service_wall');fwRoot.userData.authorKey='B4_flip_wall_and_closet';
   // What this builder call actually allocated, before the closet is lifted out of it. A discarded
@@ -151,7 +171,7 @@ export function createB4Chapter():Chapter{
   if(first&&reached('b4_connect'))lightLevel=1;
   syncPowered();
   // The supercomputer runs from the breaker on, also after a reload.
-  humWanted=reached('b4_connect');if(humWanted)playHum();
+  humWanted=reached('b4_connect');
  }
  function paintCaps(error=false){
   const litCaps=new Set<T.Group>();
@@ -196,17 +216,6 @@ export function createB4Chapter():Chapter{
   if(!r.ok){if(r.reason)ctx.notify(r.reason);return false;}
   ctx.notify('MacBook paired with the B4 supercomputer.');ctx.emit(r.event!);return true;
  }
- /** Asset URLs load on demand so this module stays importable headless. A reload has no user
-  * activation yet, so a refused play() retries on the next key or click. */
- function playHum(){
-  if(typeof Audio==='undefined'||typeof window==='undefined'||(hum&&!hum.paused))return;
-  void import('../gameplay/storyAudioAssets').then(({STORY_AUDIO_URLS})=>{
-   if(!ctx||!humWanted)return;hum??=new Audio(STORY_AUDIO_URLS['supercomputer_hum'].href);hum.loop=true;hum.volume=.3;
-   return hum.play().catch(()=>{if(humRetry)return;humRetry=()=>{clearRetry();if(humWanted)playHum();};window.addEventListener('pointerdown',humRetry,{once:true});window.addEventListener('keydown',humRetry,{once:true});});
-  }).catch(()=>{/* Audio is optional. */});
- }
- function clearRetry(){if(humRetry&&typeof window!=='undefined'){window.removeEventListener('pointerdown',humRetry);window.removeEventListener('keydown',humRetry);}humRetry=null;}
-
  /* ---------------- first-person focus ---------------- */
  function nearest(stage=ctx?.stage()):B4StationId|null{
   const s=step(stage),p=body();if(!ctx||!p||!s||s==='done'||s==='flip')return null;
@@ -320,10 +329,14 @@ export function createB4Chapter():Chapter{
   for(const [id,line] of outlines){line.visible=id===near;if(line.visible)(line.material as T.LineBasicMaterial).opacity=.55+.4*pulse;}
   if(lever){const m=lever.material as T.MeshStandardMaterial;if(near==='breaker'){m.emissive.setHex(GOLD);m.emissiveIntensity=.35+.45*pulse;}else{m.emissive.setHex(0);m.emissiveIntensity=0;}}
   const p=body();hideViewModel(!!(focus||(p&&inRoom(p.x,p.z))));
-  if(hum&&p){const r=B4_LAYOUT.lights.rack.p,d=Math.hypot(p.x-r[0],p.z-r[2]);hum.volume=.3*T.MathUtils.clamp(1-d/35,0,1);}
+  // The rack's room tone follows the player's distance through the page's one mixer, so the
+  // player's mute, effects volume and pause all apply; the private <audio> element it
+  // replaces honoured none of them (S-31). A missing mixer (headless) is simply silent.
+  if(humWanted&&p){const r=B4_LAYOUT.lights.rack.p,d=Math.hypot(p.x-r[0],p.z-r[2]);liveMixer()?.live?.loopCue(HUM_LOOP,'supercomputer_hum','sfx',.3*T.MathUtils.clamp(1-d/35,0,1));}
+  else liveMixer()?.live?.stopLoopCue(HUM_LOOP);
  }
  function detach(){
-  leaveFocus();clearRetry();
+  leaveFocus();liveMixer()?.live?.stopLoopCue(HUM_LOOP,.1);
   if(bed)ctx?.stopMusic?.();
   bed='';
   if(typeof window!=='undefined'){window.removeEventListener('keydown',onKey,true);window.removeEventListener('pointerdown',onDown);window.removeEventListener('pointerup',onUp);}
@@ -331,7 +344,6 @@ export function createB4Chapter():Chapter{
   setB4DoorLeaves(leaves,0);leaves=[];hideViewModel(false);
   removeLights();powered?.removeFromParent();powered=null;group?.removeFromParent();group?.traverse(o=>{if(o instanceof T.Mesh||o instanceof T.LineSegments)o.geometry.dispose();});
   for(const m of owned)m.dispose();owned.length=0;
-  try{hum?.pause();}catch{/* optional */}
   group=null;ctx=null;caps=[];phraseCaps=[];enterCap=null;capGlow.clear();rackMaterials.length=0;
   // The shell's materials are shared with the opening world: only drop the glow, never the colour,
   // so a second chapter instance detaching cannot blank a room the first one still owns.
@@ -357,7 +369,7 @@ export function createB4Chapter():Chapter{
  };
 
  return{
-  id:'b4',entry:B4_ENTRY,approach:[[58,25],[58,18]],
+  id:'b4',entry:B4_ENTRY,approach:[[58,25],[58,19.9]],
   attach(c){
    ctx=c;group=build(c);leaves=findB4DoorLeaves(c.root());
    // The entrance doors unlock when the campaign reaches B4 (the leaves slide in animate()).

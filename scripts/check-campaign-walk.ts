@@ -90,7 +90,7 @@ await leg('Building 5 -> Building 4 handoff',()=>{const n=walk(O.routeB4);assert
 /* ---------------- The campaign takes over at the handoff (relay offline) ---------------- */
 host=makeHost();host.start(device,'b4_enter');host.update(dt);
 await leg('handoff -> B04 door (enter_b4)',()=>{const c=CAMPAIGN_CHAPTERS.b4();const n=walk(c.approach);expectStage('b4_keyboard');return n;});
-await leg('B04 entry -> Keyboard Wall',()=>{const n=walk([[B4_STATIONS.keyboard.stand[0],B4_STATIONS.keyboard.stand[2]]]);
+await leg('B04 entry -> Keyboard Wall',()=>{const n=walk([[53.6,19.6],[53.6,12.2],[B4_STATIONS.keyboard.stand[0],B4_STATIONS.keyboard.stand[2]]]);
  assert.equal(b4().state().near,'keyboard','the Keyboard Wall is in reach');b4().type('I LOVE CDS');b4().enter();expectStage('b4_flip');return n;});
 await leg('Keyboard Wall -> service wall lifts (automatic)',()=>{
  // b4_flip is a short automatic beat: no station, no input, bounded wait for b4_breaker.
@@ -101,7 +101,7 @@ await leg('Keyboard Wall -> service wall lifts (automatic)',()=>{
   if(stage()==='b4_flip')assert.equal(b4().state().near,null,'no station is in reach while the wall lifts');}
  assert.equal(stage(),'b4_breaker','the service wall lifts by itself in under 2 s');
  return n;});
-await leg('service wall -> breaker (F)',()=>{const n=walk([[B4_STATIONS.breaker.stand[0],B4_STATIONS.breaker.stand[2]]]);
+await leg('service wall -> breaker (F)',()=>{const n=walk([[53.6,12.2],[53.6,9.0],[B4_STATIONS.breaker.stand[0],B4_STATIONS.breaker.stand[2]]]);
  assert.equal(host!.interact(),true,'F at the breaker is the campaign\'s');expectStage('b4_connect');return n;});
 await leg('breaker -> supercomputer port (F)',()=>{const n=walk([[B4_STATIONS.port.stand[0],B4_STATIONS.port.stand[2]]]);
  assert.equal(host!.interact(),true,'F at the port is the campaign\'s');expectStage('to_lawn');return n;});
@@ -116,7 +116,9 @@ await leg('supercomputer port -> outside the B04 door',()=>{
  // Walk back to the entry and out; the lights must stay on every frame the player is inside.
  const watch=()=>{if(inside()&&!roomLights())litOnWayOut=false;};
  host!.update=(d:number)=>{before(d);watch();};
- try{n=walk([...(['breaker','keyboard'] as const).map(id=>[B4_STATIONS[id].stand[0],B4_STATIONS[id].stand[2]]),[58,18],[58,25]]);}finally{host!.update=before;}
+ // Back out the way the player came: through the west aisle, along the strip inside the
+ // doors, then out. The lounge fills the room's centre, so there is no straight line out.
+ try{n=walk([[53.6,9.0],[53.6,19.6],[58,19.9],[58,25]]);}finally{host!.update=before;}
  assert.ok(!inside(),'the player is outside B04');return n;});
 await group('B4 room lights go out once the player has left B04',()=>{
  assert.ok(litOnWayOut,'the room was lit on every frame of the walk out');

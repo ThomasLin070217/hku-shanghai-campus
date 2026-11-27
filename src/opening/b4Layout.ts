@@ -4,21 +4,23 @@ import type {Obstacle} from '../exploration/navigation';
 
 /**
  * B04 (CDS-1) ground-floor lobby: one parameter object for the scenery and the
- * collision. Entering B04 at x 58 from the south, facing north, the right hand is
- * east: the Keyboard Wall stands on the **east** wall (facing west, the timber
- * tiers in front of it), and the aux power closet, the breaker, the MacBook port
- * and the supercomputer racks line the **north** wall. The HKU flip wall left this building on
- * 2026-11-27 and now stands on Building 6's ground-hall north wall
- * (`b6FlipWall.ts`), where the owner ruled it belongs. A side entrance is cut in the south
- * façade, west of the main door (Ruling G1).
+ * collision. Entering B04 at x 58 from the south, facing north, the Keyboard Wall
+ * stands square-on to the entrance on the room's own north wall, exactly as in the
+ * presentation build (`B4_LOUNGE` below): the observed keyboard lounge with its low
+ * timber plinth, sofa and keycap stools fills the room. Behind that wall the aux
+ * power closet, the breaker, the MacBook port and the supercomputer racks line the
+ * shell's north wall. The HKU flip wall left this building on 2026-11-27 and now
+ * stands on Building 6's ground-hall north wall (`b6FlipWall.ts`), where the
+ * owner ruled it belongs. A side entrance is cut in the south façade, west of the
+ * main door (Ruling G1).
  *
- * The static shell (floor, walls, ceiling, tiers, racks, lobby furniture, entrance
- * door) is built with the opening world (`b4Shell.ts`); the campaign chapter adds
- * the Keyboard Wall, the aux power closet and the service shutter from the
- * observed room builders at the origins below. Prop rects, the shutter slab and
- * the station points are derived from those origins plus the builders' local
- * extents; `scripts/check-campaign-b4.ts` compares them to the built meshes.
- * World metres; provisional 2030 scenery, not a surveyed interior.
+ * The static shell (floor, walls, ceiling, racks, entrance door, and the observed
+ * lounge's structure and furniture) is built with the opening world (`b4Shell.ts`);
+ * the campaign chapter adds the Keyboard Wall parts, the aux power closet and the
+ * service shutter from the observed room builders at the origins below. Prop rects,
+ * the shutter slab and the station points are derived from those origins plus the
+ * builders' local extents; `scripts/check-campaign-b4.ts` compares them to the built
+ * meshes. World metres; provisional 2030 scenery, not a surveyed interior.
  */
 type V3=[number,number,number];
 const R=OPENING.b4,F=R.floor,TOP=R.floor+R.clearHeight,WALL=.12;
@@ -49,8 +51,37 @@ export const B4_BUILDER={
  },
 } as const;
 
-/** The Keyboard Wall stands against the east wall: the builder's +z face looks west into the room. */
-const keyboardOrigin:V3=[65.94,F,13.12],keyboardYaw=-Math.PI/2;
+/**
+ * The observed CDS-1 keyboard lounge (`buildObservedFeatureRoom('keyboard')`), placed in
+ * world coordinates: its open south edge meets the B04 entrance, and the Keyboard Wall
+ * faces the doors square-on.
+ *
+ * Owner ruling 2026-11-27 (「CDSC的那个内部的布局还是完全不对的…presentation的时候用的那个
+ * 版本那个都是对的」): this is the presentation layout — the photographed room with its
+ * curved timber plinth and lounge — not the later east-wall rearrangement. The room is
+ * 10.8 m wide and 10.84 m deep, so it fits inside B04's 24 m lobby and leaves a 2.5 m
+ * service aisle behind the wall for the closet and the racks.
+ *
+ * The builder numbers are room-local: origin on the room's centre line, keyboard wall on
+ * the north wall, +z toward the entrance. `origin` maps them into the world; the 3 mm lift
+ * makes the room's own stone floor the visible surface over the shell's floor.
+ */
+export const B4_LOUNGE={
+ origin:[58,F,13.9] as V3,
+ width:10.8,depth:10.84,lift:.003,
+ /** The Keyboard Wall (timber surround + panel), measured from the builder's parts. */
+ keyboard:{box:{x0:54.13,x1:62.83,y0:F+.72,y1:F+3.74,z0:9.66,z1:10.24},
+  panel:{x0:54.575,x1:62.385,y0:F+1.565,y1:F+3.715,z0:9.661,z1:10.236},
+  faceZ:10.236},
+ /** The room's low curved timber plinth: one 0.24 m step in front of the wall. */
+ plinth:{x0:54.49,x1:63.39,z0:12.72,z1:17.85,top:F+.243},
+} as const;
+/** The lounge's plinth as the one step the B4 gates report. */
+export const B4_TIERS=[{name:'opening-b4-lounge-plinth',x0:B4_LOUNGE.plinth.x0,x1:B4_LOUNGE.plinth.x1,top:B4_LOUNGE.plinth.top}] as const;
+
+/** The Keyboard Wall stands on the lounge's north wall, facing the entrance (+z). Its
+ * builder parts carry room-local geometry, so the chapter mounts them at the room origin. */
+const keyboardOrigin:V3=B4_LOUNGE.origin,keyboardYaw=0;
 /** The aux power closet, breaker and port stand against the north wall, facing +z (south). */
 const closetOrigin:V3=[59.70,F,10.11];
 const at=(o:V3,b:{x0:number;x1:number;y0:number;y1:number;z0:number;z1:number}):B4Box=>({x0:o[0]+b.x0,x1:o[0]+b.x1,y0:o[1]+b.y0,y1:o[1]+b.y1,z0:o[2]+b.z0,z1:o[2]+b.z1});
@@ -75,47 +106,9 @@ const leverAt:V3=[closetOrigin[0]+FW.lever[0],closetOrigin[1]+FW.lever[1],closet
 const breakerBox=at(closetOrigin,FW.breakerPanel);
 const railBox=at(closetOrigin,FW.rail);
 
-/** Three solid timber tiers under the Keyboard Wall, front (west) to back (east). */
-export const B4_TIERS=[
- {name:'opening-b4-tier-1',x0:68.05,x1:68.57,top:.32},
- {name:'opening-b4-tier-2',x0:68.57,x1:69.09,top:.62},
- {name:'opening-b4-tier-3',x0:69.09,x1:69.60,top:.92},
-] as const;
-const tierZ:[number,number]=[9.70,17.50];
 
-/** Lobby seating group (photo 05-cds-zj-atrium): a round rug, a curved sofa with its gap
- * toward the north-west, two armchairs, a side stool and a low table. The shell draws the
- * scenery and the collision rects come from the same numbers. */
-export const B4_LOBBY={
- /** Circular rug under the seating group: decor, not collidable. */
- rug:{x:65.0,z:14.2,r:2.4},
- /** Curved sofa: seat modules on an arc, backs outward, the gap opening north-west.
-  * Angles are world x/z radians (0 = +x east, π/2 = +z south). */
- sofa:{cx:66.6,cz:17.2,radius:1.35,from:-20*Math.PI/180,to:160*Math.PI/180,modules:8,seatDepth:.62,backDepth:.26,seat:.42,back:.78},
- armchairs:[{x:61.8,z:15.6},{x:64.4,z:9.9}],
- armchairSize:.78,
- /** Side stool by the wall: decor, not collidable. */
- stool:{x:66.0,z:11.4,r:.21,h:.45},
- table:{x:63.8,z:14.6,r:.45,h:.42},
- /** Photograph dressing: a low tan bench in front of the sofa, white side tables,
-  * pale stools and white cylindrical planters. Solid furniture gets matching rects below. */
- bench:{x:66.7,z:15.95,w:1.90,d:.50,h:.46},
- sideTables:[{x:64.0,z:18.05,r:.25,h:.55},{x:68.35,z:18.30,r:.25,h:.55}],
- paleStools:[{x:63.55,z:17.15,r:.20,h:.45},{x:68.55,z:17.20,r:.20,h:.45}],
- plants:[{x:52.2,z:18.85,r:.22,h:1.05},{x:69.40,z:19.10,r:.22,h:1.05},{x:69.40,z:8.20,r:.22,h:1.05}],
-} as const;
-const L=B4_LOBBY;
-/** One axis-aligned box per sofa module (seat footprint plus back), derived from the arc. */
-export const B4_SOFA_RECTS:(readonly [number,number,number,number])[]=(()=>{
- const s=L.sofa,span=s.to-s.from,depth=s.seatDepth+s.backDepth,out:(readonly [number,number,number,number])[]=[];
- for(let i=0;i<s.modules;i++){
-  const t=s.from+span*(i+.5)/s.modules,width=2*s.radius*Math.sin(span/(2*s.modules))+.03;
-  const x=s.cx+s.radius*Math.cos(t),z=s.cz+s.radius*Math.sin(t);
-  const hx=width/2*Math.abs(Math.sin(t))+depth/2*Math.abs(Math.cos(t)),hz=width/2*Math.abs(Math.cos(t))+depth/2*Math.abs(Math.sin(t));
-  out.push([x-hx,x+hx,z-hz,z+hz]);
- }
- return out;
-})();
+/* The bespoke lobby (sofa, armchairs, tables, plants) was retired with the presentation
+ * restoration: the observed room brings its own furniture (B4_LOUNGE). */
 
 export const B4_LAYOUT={
  room:R,
@@ -123,8 +116,8 @@ export const B4_LAYOUT={
  keyboardOrigin,keyboardYaw,
  closetOrigin,
  keyboardBox,keyboardPanel,closetBox,
- tiers:B4_TIERS,tierZ,
- lobby:B4_LOBBY,sofaRects:B4_SOFA_RECTS,
+ tiers:B4_TIERS,
+ lounge:B4_LOUNGE,
  /** Closed service shutter over the aux power closet mouth: dynamic, lifts when CPU 01 boots.
   * (The HKU flip wall used to stand in B4; the shutter keeps that slab's plumbing.) */
  shutter:{name:'opening-b4-flip-panel',x0:56.30,x1:63.70,z0:8.14,z1:8.30,bottom:0,top:closetBox.y1},
@@ -155,9 +148,8 @@ export const B4_LAYOUT={
 } as const;
 
 const rect=(name:string,x0:number,x1:number,z0:number,z1:number,bottom:number,top:number,render?:B4Rect['render']):B4Rect=>({name,x0,x1,z0,z1,bottom,top,render});
-const arm=L.armchairSize/2;
 /** Every static collision box of the lobby. Rects with `render` are drawn by the shell;
- * the prop rects are drawn by the observed room builders the chapter places. */
+ * the lounge and keyboard-wall rects stand in front of the meshes `b4Shell.ts` mounts. */
 export const B4_OBSTACLES:B4Rect[]=[
  // The west wall is solid again: the core lift moved to Building 6 (owner ruling,
  // 2026-11-27). CDS-1's lobby has no lift doorway to show.
@@ -171,21 +163,25 @@ export const B4_OBSTACLES:B4Rect[]=[
  rect('opening-b4-wall-front-right',doorR,R.x1,R.z1-.13,R.z1-.01,0,TOP,'wall'),
  rect('opening-b4-wall-lintel',doorL,doorR,R.z1-.13,R.z1-.01,F+R.doorHeight,TOP,'wall'),
  rect('opening-b4-ceiling',R.x0,R.x1,R.z0,R.z1,TOP-.1,TOP+.08,'ceiling'),
- // The three timber tiers in front of the Keyboard Wall: solid steps, the east wall behind them.
- ...B4_TIERS.map(t=>rect(t.name,t.x0,t.x1,tierZ[0],tierZ[1],F,t.top,'tier')),
+ // The observed lounge's solids: the wall itself, its side walls and glazing, the low
+ // timber plinth and the furniture a player would walk into. The west aisle (x 52.78…54.49)
+ // stays open so the entrance path reaches the Keyboard Wall and the service aisle behind it.
+ rect('opening-b4-keyboard-wall',B4_LOUNGE.keyboard.box.x0,B4_LOUNGE.keyboard.box.x1,B4_LOUNGE.keyboard.box.z0,B4_LOUNGE.keyboard.box.z1,F,B4_LOUNGE.keyboard.box.y1),
+ rect('opening-b4-lounge-west-wall',52.60,52.78,9.79,14.09,F,F+3.70),
+ rect('opening-b4-lounge-east-wall',63.22,63.40,9.79,14.09,F,F+3.70),
+ rect('opening-b4-lounge-glazing',63.35,63.41,10.45,19.35,F,F+3.65),
+ rect('opening-b4-lounge-plinth',B4_LOUNGE.plinth.x0,B4_LOUNGE.plinth.x1,B4_LOUNGE.plinth.z0,B4_LOUNGE.plinth.z1,F,B4_LOUNGE.plinth.top),
+ rect('opening-b4-lounge-sofa',58.06,62.26,16.90,19.36,F,F+1.07),
+ rect('opening-b4-lounge-armchair-1',55.98,57.28,15.17,16.35,F,F+1.05),
+ rect('opening-b4-lounge-armchair-2',59.45,60.79,14.93,16.20,F,F+1.05),
+ rect('opening-b4-lounge-armchair-3',56.40,57.75,16.82,18.14,F,F+1.05),
+ rect('opening-b4-lounge-bench',60.17,62.13,18.60,19.16,F,F+.52),
+ rect('opening-b4-lounge-tables',56.13,62.92,14.23,19.47,F,F+.68),
  // Aux power closet: the rack contents and both cavity sides; the service shutter closes its mouth.
  rect('opening-b4-closet',closetBox.x0,closetBox.x1,Math.max(inner.z0,closetBox.z0),closetOrigin[2]+FW.closet.contentsFront,0,closetBox.y1),
  rect('opening-b4-closet-west',closetBox.x0,closetBox.x0+FW.closet.side,closetOrigin[2]+FW.closet.contentsFront,closetBox.z1,0,closetBox.y1),
  rect('opening-b4-closet-east',closetBox.x1-FW.closet.side,closetBox.x1,closetOrigin[2]+FW.closet.contentsFront,closetBox.z1,0,closetBox.y1),
  ...B4_LAYOUT.rackX.map(([x0,x1],i)=>rect('opening-b4-rack-'+(i+1),x0,x1,B4_LAYOUT.rackZ[0],B4_LAYOUT.rackZ[1],F,F+B4_LAYOUT.rackTop,'rack')),
- // Lobby furniture the player walks into: the sofa modules, the two armchairs, the low table,
- // the photographed front bench, side tables and planters.
- ...B4_SOFA_RECTS.map(([x0,x1,z0,z1],i)=>rect('opening-b4-sofa-'+(i+1),x0,x1,z0,z1,F,F+L.sofa.back)),
- ...L.armchairs.map((c,i)=>rect('opening-b4-armchair-'+(i+1),c.x-arm,c.x+arm,c.z-arm,c.z+arm,F,F+.86)),
- rect('opening-b4-table',L.table.x-L.table.r,L.table.x+L.table.r,L.table.z-L.table.r,L.table.z+L.table.r,F,F+L.table.h),
- rect('opening-b4-bench',L.bench.x-L.bench.w/2,L.bench.x+L.bench.w/2,L.bench.z-L.bench.d/2,L.bench.z+L.bench.d/2,F,F+L.bench.h),
- ...L.sideTables.map((t,i)=>rect('opening-b4-side-table-'+(i+1),t.x-t.r,t.x+t.r,t.z-t.r,t.z+t.r,F,F+t.h)),
- ...L.plants.map((p,i)=>rect('opening-b4-planter-'+(i+1),p.x-p.r,p.x+p.r,p.z-p.r,p.z+p.r,F,F+p.h)),
 ];
 
 export type B4StationId='keyboard'|'breaker'|'port';
@@ -194,13 +190,14 @@ export type B4StationId='keyboard'|'breaker'|'port';
 export interface B4Station{id:B4StationId;label:string;point:V3;box:B4Box;stand:V3}
 export const B4_STATIONS:Record<B4StationId,B4Station>={
  /** Lower third of the panel: the eye→point ray from the stand stays inside the 2.2 m reach. */
- keyboard:{id:'keyboard',label:'Keyboard Wall',point:[keyboardPanel.x0,2.10,13.60],box:{...keyboardPanel,x1:R.x1},stand:[67.55,F,13.60]},
- breaker:{id:'breaker',label:'Breaker lever',point:leverAt,box:breakerBox,stand:[59.20,F,9.50]},
- port:{id:'port',label:'Supercomputer port',point:[60.00,1.25,7.85],box:railBox,stand:[60.80,F,9.50]},
+ keyboard:{id:'keyboard',label:'Keyboard Wall',point:[(keyboardPanel.x0+keyboardPanel.x1)/2,F+2.08,keyboardPanel.z1],box:{...keyboardPanel},stand:[58,F,12.20]},
+ breaker:{id:'breaker',label:'Breaker lever',point:leverAt,box:breakerBox,stand:[59.20,F,9.00]},
+ port:{id:'port',label:'Supercomputer port',point:[60.00,1.25,7.85],box:railBox,stand:[60.80,F,9.00]},
 };
-/** What the keyboard focus view frames, and which way it looks: the east wall, square-on. */
+/** What the keyboard focus view frames, and which way it looks: the lounge's north wall,
+ * square-on to the entrance. */
 export const B4_FOCUS_FRAME:Record<'keyboard',{box:B4Box;facing:[number,number]}>={
- keyboard:{box:keyboardPanel,facing:[-1,0]},
+ keyboard:{box:keyboardPanel,facing:[0,1]},
 };
 /** Focus camera for a vertical panel: eye on the panel's centre line `d` metres out along
  * `facing` (default +z, the north-wall props), far enough back that the panel plus `margin`

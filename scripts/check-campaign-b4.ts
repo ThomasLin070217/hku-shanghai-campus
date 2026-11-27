@@ -5,7 +5,7 @@ import {createNavigation} from '../src/exploration/navigation';
 import {BUILDINGS,SITE} from '../src/model/campusParameters';
 import {OPENING as O} from '../src/opening/spatialLayout';
 import {B4_PHRASE,createKeyboardState,pressKeyboard,createFlipState,flipTiles,flipSolved,pullBreaker,connectMacBook,b4StepOf,sweepTiles,autoFinishTiles} from '../src/campaign/b4Puzzle';
-import {B4_LAYOUT,B4_LOBBY,B4_OBSTACLES,B4_STATIONS,B4_DOOR_OBSTACLE,B4_FOCUS_FRAME,setB4FlipPanel,partBounds} from '../src/opening/b4Layout';
+import {B4_LAYOUT,B4_LOUNGE,B4_OBSTACLES,B4_STATIONS,B4_DOOR_OBSTACLE,B4_FOCUS_FRAME,setB4FlipPanel,partBounds} from '../src/opening/b4Layout';
 import {buildB4Shell,B4_RACK_LED} from '../src/opening/b4Shell';
 import {buildObservedFeatureRoom,flipWallTiles} from '../src/model/observedFeatureRooms';
 import {B6_FLIP_COOLDOWN,B6_FLIP_MOUNT_NAME,B6_FLIP_PLAQUE_LINE_NAME,B6_FLIP_PLAQUE_NAME,B6_FLIP_TILES_DARK_NAME,B6_FLIP_TILES_LIGHT_NAME,B6_FLIP_TRIGGER,B6_FLIP_WALL_ORIGIN,createB6FlipWall} from '../src/opening/b6FlipWall';
@@ -78,15 +78,23 @@ const chapter=createB4Chapter();
 route('handoff -> B04 entry',[[O.handoff[0],O.handoff[2]],[chapter.entry.point[0],chapter.entry.point[2]]]);
 assert.ok(Math.abs(g.body.position.y-O.b4.floor)<.05,`entry stands on the B04 floor, y=${g.body.position.y}`);
 const order=['keyboard','breaker','port'] as const;
-// The keyboard stand is on the floor, in front of the lowest tier (no climb, no 0.1 m shift
-// needed). Assert it right after the entry→keyboard leg: at the end of the full loop the body
-// stands at the port, so the old placement silently tested the port stand instead.
+// The observed lounge fills the room, so the player walks *around* it: in past the door, west
+// along the 0.9 m strip in front of the furniture, north up the 1.7 m aisle between the room's
+// west wall and its plinth, then east in front of the Keyboard Wall. From the wall the service
+// aisle behind it is reached through the same west aisle, not through the wall.
+// The keyboard stand is on the floor in front of the plinth. Assert it right after the
+// entry→keyboard leg: at the end of the full loop the body stands at the port, so the old
+// placement silently tested the port stand instead.
 {
- const s=B4_STATIONS.keyboard;route('entry -> keyboard',[[s.stand[0],s.stand[2]]]);
+ const s=B4_STATIONS.keyboard;route('entry -> keyboard',[[53.6,19.6],[53.6,12.2],[s.stand[0],s.stand[2]]]);
  assert.ok(Math.abs(g.body.position.y-O.b4.floor)<.05,`the keyboard stand is on the B04 floor, y=${g.body.position.y}`);
 }
 let from='keyboard';
-for(const id of ['breaker','port'] as const){const s=B4_STATIONS[id];route(from+' -> '+id,[[s.stand[0],s.stand[2]]]);from=id;}
+for(const id of ['breaker','port'] as const){
+ const s=B4_STATIONS[id];
+ const legs=id==='breaker'?[[53.6,12.2],[53.6,9.0]]:[[59.2,9.0]];
+ route(from+' -> '+id,[...legs,[s.stand[0],s.stand[2]]]);from=id;
+}
 // The closed service shutter is solid; with it gone the closet mouth is open. Sample 0.10 m off
 // the shutter's room-side face at x 60: within the 0.28 m body radius of the shutter, but well
 // outside the radius of the closet rect (its mouth ends at z 7.93). The old samples at z 8.09/
@@ -213,14 +221,17 @@ cs={...cs,stage:'b4_keyboard'};step();
  const svc=site.root.getObjectByName('B4_service_wall');assert.ok(svc,'the B4 service wall group is in the world');
  assert.equal(svc!.userData.authorKey,'B4_flip_wall_and_closet','the service wall keeps its original author key');
  const near=(a:number,b:number,what:string)=>assert.ok(Math.abs(a-b)<=.05,`${what}: built ${a.toFixed(3)} vs layout ${b.toFixed(3)}`);
- // The Keyboard Wall is built from the observed panel, turned to face west: compare in world space.
- // The union (timber backing + panel) matches `keyboardBox`; the panel alone is what the player sees.
+ // The Keyboard Wall is built from the observed panel, square-on to the entrance: compare in
+ // world space. The union (timber backing + panel) matches `keyboardBox`; the panel alone is
+ // what the player sees.
  const kb=partBounds(props!,'Keyboard_timber_wall').union(partBounds(props!,'Keyboard_wall')),kbox=B4_LAYOUT.keyboardBox,kp=B4_LAYOUT.keyboardPanel;
  near(kb.min.x,kbox.x0,'keyboard x0');near(kb.max.y,kbox.y1,'keyboard top');near(kb.min.z,kbox.z0,'keyboard z0');near(kb.max.z,kbox.z1,'keyboard z1');
  const panel=partBounds(props!,'Keyboard_wall');
  near(panel.min.x,kp.x0,'panel x0');near(panel.max.y,kp.y1,'panel top');near(panel.min.z,kp.z0,'panel z0');near(panel.max.z,kp.z1,'panel z1');
- // The panel's back runs into the east wall (hidden); its front face is what the player sees.
- assert.ok(kb.max.x>=B4_LAYOUT.room.x1-.01-B4_LAYOUT.wall,`keyboard backing reaches into the east wall: built ${kb.max.x.toFixed(3)}`);
+ // Owner ruling 2026-11-27: the wall is the presentation room's north wall, facing the doors.
+ // It must span the door axis so the player walks in and meets it square-on.
+ assert.ok(kb.min.x<O.b4.door&&kb.max.x>O.b4.door,`the Keyboard Wall spans the door axis x ${O.b4.door} (built ${kb.min.x.toFixed(2)}..${kb.max.x.toFixed(2)})`);
+ assert.ok(kb.max.z<B4_LOUNGE.origin[2],`the Keyboard Wall stands north of the lounge centre, facing the entrance (face z ${kb.max.z.toFixed(2)})`);
  // The service shutter: the chapter's own slab covers the closet mouth.
  const sh=partBounds(props!,'opening-b4-service-shutter'),S=B4_LAYOUT.shutter;
  near(sh.min.x,S.x0,'shutter x0');near(sh.max.x,S.x1,'shutter x1');near(sh.min.z,S.z0,'shutter z0');near(sh.max.z,S.z1,'shutter z1');near(sh.max.y,S.top,'shutter top');
@@ -228,33 +239,43 @@ cs={...cs,stage:'b4_keyboard'};step();
  // ground hall (`b6FlipWall.ts`, measured by `check-flip-walls`). The B4 build must not carry
  // a second copy: two walls in two buildings is exactly the defect the ruling closed.
  assert.equal(site.root.getObjectByName('HKU_flip_wall'),undefined,'the B4 world must carry no flip wall (it moved to B6)');
- // The tiers: three timber steps from the layout rects, drawn by the shell. Each tier is a
- // riser plus a tread; the tread overlaps the riser by 2 mm and tops out 2 mm proud of the
- // collision top, so the two materials never share a plane (coplanar faces flicker).
- for(const t of B4_LAYOUT.tiers){const riser=partBounds(site.root,t.name),tread=partBounds(site.root,t.name+'_tread'),b=riser.clone().union(tread),r=B4_OBSTACLES.find(o=>o.name===t.name)!;
-  near(b.min.x,r.x0,t.name+' x0');near(b.max.x,r.x1,t.name+' x1');near(b.min.z,r.z0,t.name+' z0');near(b.max.z,r.z1,t.name+' z1');near(b.max.y,r.top,t.name+' top');
-  const proud=tread.max.y-r.top;
-  assert.ok(proud>=.001&&proud<=.005,`${t.name}: the tread top is 1–5 mm proud of the collision top (${(proud*1000).toFixed(1)} mm)`);
-  assert.ok(tread.max.y-riser.max.y>=.04,`${t.name}: the tread stacks clear of the riser (${(tread.max.y-riser.max.y).toFixed(3)} m)`);}
+ // The plinth: the observed lounge's one low curved step in front of the Keyboard Wall, built by
+ // the observed room builder. Its bounds must match the collision rect the player walks against.
+ const plinth=partBounds(site.root,'Keyboard_low_white_plinth'),P=B4_LOUNGE.plinth;
+ near(plinth.min.x,P.x0,'lounge plinth x0');near(plinth.max.x,P.x1,'lounge plinth x1');
+ near(plinth.min.z,P.z0,'lounge plinth z0');near(plinth.max.z,P.z1,'lounge plinth z1');near(plinth.max.y,P.top,'lounge plinth top');
+ assert.ok(P.top-B4_LAYOUT.room.floor<.30,`the plinth stays a low step (top ${(P.top-B4_LAYOUT.room.floor).toFixed(3)} m)`);
  const cl=partBounds(props!,'Aux_power_closet'),cr=B4_OBSTACLES.filter(r=>r.name.startsWith('opening-b4-closet'));
  near(cl.min.x,Math.min(...cr.map(r=>r.x0)),'closet x0');near(cl.max.x,Math.max(...cr.map(r=>r.x1)),'closet x1');near(cl.max.z,Math.max(...cr.map(r=>r.z1)),'closet z1');near(cl.max.y,Math.max(...cr.map(r=>r.top)),'closet top');
  const lever=partBounds(props!,'Aux_breaker_lever').getCenter(new T.Vector3()),bp=B4_STATIONS.breaker.point;
  near(lever.x,bp[0],'lever x');near(lever.y,bp[1],'lever y');near(lever.z,bp[2],'lever z');
  for(const [name,id] of [['Aux_breaker_panel','breaker'],['Aux_power_rail','port']] as const){const b=partBounds(props!,name),s=B4_STATIONS[id].box;
   near(b.min.x,s.x0,name+' x0');near(b.max.x,s.x1,name+' x1');near(b.min.y,s.y0,name+' y0');near(b.max.y,s.y1,name+' y1');near(b.max.z,s.z1,name+' z1');}
- const panelCentre=partBounds(props!,'Keyboard_wall').getCenter(new T.Vector3()),kpt=B4_STATIONS.keyboard.point;near(panelCentre.z,kpt[2],'keyboard point z');
+ const panelFace=partBounds(props!,'Keyboard_wall').max.z,kpt=B4_STATIONS.keyboard.point;near(panelFace,kpt[2],'keyboard point z');
  assert.throws(()=>partBounds(new T.Group(),'Keyboard_wall'),/missing/,'a missing builder part throws');
  console.log('PASS render vs nav: builder parts match the layout rects within 5 cm');
 }
-// The lobby scenery reads as specified, not just as boxes: the cream border is a ring over the
-// teal rug, the rack LEDs face the room, and the armchair backs sit on their seats.
+// The lounge is the observed presentation room, not the retired bespoke set: its own structure,
+// plinth and furniture are mounted in the shell, and the old lobby props are gone.
 {
- const ringMesh=site.root.getObjectByName('B4_lobby_rug_border') as T.Mesh|undefined;
- assert.ok(ringMesh,'the lobby rug border is in the shell');
- const ringGeom=ringMesh!.geometry as unknown as {type:string;parameters:{innerRadius:number;outerRadius:number}};
- assert.equal(ringGeom.type,'RingGeometry','the rug border is a ring, not a solid disc on top of the rug');
- assert.ok(Math.abs(ringGeom.parameters.innerRadius-(B4_LOBBY.rug.r-.22))<.001&&Math.abs(ringGeom.parameters.outerRadius-B4_LOBBY.rug.r)<.001,
-  `the rug border spans r-0.22…r (${ringGeom.parameters.innerRadius}…${ringGeom.parameters.outerRadius})`);
+ const loungeGroup=site.root.getObjectByName('B04_keyboard_lounge');assert.ok(loungeGroup,'the observed keyboard lounge is mounted in the shell');
+ for(const name of ['Lounge_structure','Curved_timber_seating_tiers','Lounge_furniture','Ceiling_cutaway'])
+  assert.ok(loungeGroup!.getObjectByName(name),`the lounge carries its ${name} section`);
+ // The shell must not draw a second timber surround: the chapter mounts the wall with the panel.
+ assert.equal(loungeGroup!.getObjectByName('Keyboard_timber_wall'),undefined,'the shell leaves the Keyboard Wall surround to the chapter (one copy only)');
+ for(const gone of ['B4_lobby_rug_border','B4_lobby_furniture','B4_lobby_sofa_base','B4_lobby_armchair_seat'])
+  assert.equal(site.root.getObjectByName(gone),undefined,`the retired bespoke lobby prop ${gone} is gone`);
+ // The photographed arc of seven sofa modules survives the merge as seven author traces, and
+ // their union stays inside the sofa's collision rect (with the modules' own 0.36 m depth).
+ const seatUnion=new T.Box3();let seatTraces=0;
+ site.root.traverse(o=>{if(o instanceof T.Mesh)for(const p of (o.userData.authorParts??[]) as {name:string;bounds:number[]}[])if(p.name==='Curved_seat_module'){seatTraces++;
+  seatUnion.union(new T.Box3(new T.Vector3().fromArray(p.bounds),new T.Vector3().fromArray(p.bounds,3)).applyMatrix4(o.matrixWorld));}});
+ assert.equal(seatTraces,7,`the observed sofa keeps its seven seat modules (${seatTraces})`);
+ const sofaRect=B4_OBSTACLES.find(o=>o.name==='opening-b4-lounge-sofa')!;
+ assert.ok(seatUnion.min.x>=sofaRect.x0-.05&&seatUnion.max.x<=sofaRect.x1+.05&&seatUnion.min.z>=sofaRect.z0-.05&&seatUnion.max.z<=sofaRect.z1+.05,
+  `the sofa modules stay inside their collision rect (modules ${seatUnion.min.x.toFixed(2)}..${seatUnion.max.x.toFixed(2)} × ${seatUnion.min.z.toFixed(2)}..${seatUnion.max.z.toFixed(2)}, rect ${sofaRect.x0}..${sofaRect.x1} × ${sofaRect.z0}..${sofaRect.z1})`);
+ const chair=partBounds(site.root,'Upholstered_armchair');
+ assert.ok(chair.max.y>B4_LAYOUT.room.floor+.5,`the observed armchairs are real seat height (top ${chair.max.y.toFixed(2)})`);
  const rackRect=B4_OBSTACLES.find(o=>o.render==='rack')!;
  const strip=partBounds(site.root,'B4_rack_status_strip');
  assert.ok(Math.abs(strip.min.z-(rackRect.z1+.001))<.0015&&strip.max.z<=rackRect.z1+.022,
@@ -269,24 +290,7 @@ cs={...cs,stage:'b4_keyboard'};step();
   for(const [p,f,face] of [[plinth.max.z,body.max.z,'south'],[plinth.min.x,body.min.x,'west'],[plinth.max.x,body.max.x,'east']] as const)
    assert.ok(Math.abs(p-f)>=.005,`the plinth ${face} face ${p.toFixed(3)} is coplanar with ${rack.name} (${f.toFixed(3)})`);
  }
- const seat=partBounds(site.root,'B4_lobby_armchair_seat'),back=partBounds(site.root,'B4_lobby_armchair_back');
- assert.ok(back.min.y<=seat.max.y+.001,`the armchair back is seated, not floating (back bottom ${back.min.y.toFixed(3)}, seat top ${seat.max.y.toFixed(3)})`);
- assert.ok(back.min.y>=seat.max.y-.03,`the armchair back is not buried in the seat (back bottom ${back.min.y.toFixed(3)}, seat top ${seat.max.y.toFixed(3)})`);
- // The AABB minimum is the buried rear-bottom corner and cannot see the wedge gap at the front.
- // Read the back's front-bottom edge from its own world matrix: the compacted scene merges the
- // seat and back into one mesh and loses the tilt, so build a fresh, uncompacted shell.
- const shell=buildB4Shell();shell.updateMatrixWorld(true);
- const armchairs:T.Group[]=[];shell.traverse(o=>{if(o instanceof T.Group&&/^B4_lobby_armchair_\d$/.test(o.name))armchairs.push(o);});
- assert.equal(armchairs.length,2,'the shell draws both armchairs');
- for(const arm of armchairs){
-  const backMesh=arm.getObjectByName('B4_lobby_armchair_back') as T.Mesh,seatMesh=arm.getObjectByName('B4_lobby_armchair_seat') as T.Mesh;
-  const size=(backMesh.geometry as T.BoxGeometry).parameters;
-  const front=Math.max(...[-1,1].map(sx=>new T.Vector3(sx*size.width/2,-size.height/2,size.depth/2).applyMatrix4(backMesh.matrixWorld).y));
-  const seatTop=new T.Box3().setFromObject(seatMesh).max.y;
-  assert.ok(front<=seatTop+.002,`${arm.name}: the back's front-bottom edge floats ${((front-seatTop)*1000).toFixed(1)} mm above the seat (front ${front.toFixed(4)}, seat top ${seatTop.toFixed(4)})`);
- }
- disposeAsset(shell);
- console.log('PASS lobby scenery: rug ring, room-facing rack LEDs, seated armchair backs, inset plinth');
+ console.log('PASS observed lounge: plinth, seven sofa modules, furniture inside its collision, room-facing rack LEDs, inset plinth');
 }
 // D5: B4 asks the observed-room builder for the closet part only, so the 561 flip tiles and the
 // corridor shell are never allocated; the same builder still yields the wall B5 mounts.
