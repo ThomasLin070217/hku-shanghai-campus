@@ -58,10 +58,16 @@ The owner's layout corrections, and the rest of the 2026-11-26 bug hunt: with
   player; **W-02** Skip/end of the prologue pauses the story bus under the start
   card; **W-03** phone assistant replies say “Tap MAC”, never “Press C”.
 
+### Changed
+- The generated audio import report is no longer copied into `dist/` (it stays
+  in `assets/` as provenance). The bundle is 30.99 MB, back under the 31 MB
+  payload floor; licences and the trigger manifest still ship.
+
 ### Verified
 `tsc --noEmit`; the full `check:opening` chain and the campaign, chapter-select,
-prologue, lift, B4-office, sports-door, flip-wall and mobile gates; and real
-browser replays of the B4 route, the phone assistant and the prologue skip.
+prologue, lift, B4-office, sports-door, flip-wall, mobile and fullscreen gates
+(57/57 at 390x844); `check:payload`; and real browser replays of the B4 route,
+the phone assistant and the prologue skip.
 
 ## [9.2.2] — 2026-11-26
 

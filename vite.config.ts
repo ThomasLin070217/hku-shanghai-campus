@@ -69,7 +69,10 @@ export default defineConfig(({mode})=>{
   plugins:[audioCompressionPlugin(),{name:'copy-delivery-references',closeBundle(){
    mkdirSync(resolve(out),{recursive:true});
    cpSync(resolve('THIRD-PARTY-NOTICES.md'),resolve(out,'THIRD-PARTY-NOTICES.md'));
-   for(const file of ['assets/audio/SOURCES.md','assets/audio/LICENSE.txt','assets/audio/kenney/License.txt','assets/audio/story/SOURCES.md','assets/audio/story/IMPORT.json','assets/audio/story/audio-triggers.json','assets/characters/kenney/LICENSE.txt','docs/ASSET-LICENSES-V8.md']){mkdirSync(resolve(out,file,'..'),{recursive:true});cpSync(resolve(file),resolve(out,file));}
+   // The generated import report (IMPORT.json) stays in `assets/` as provenance but is not
+   // shipped: it is a build-time accounting file, and copying it put the playable bundle 10 KB
+   // over the 31 MB payload floor. Licences and the trigger manifest still ship.
+   for(const file of ['assets/audio/SOURCES.md','assets/audio/LICENSE.txt','assets/audio/kenney/License.txt','assets/audio/story/SOURCES.md','assets/audio/story/audio-triggers.json','assets/characters/kenney/LICENSE.txt','docs/ASSET-LICENSES-V8.md']){mkdirSync(resolve(out,file,'..'),{recursive:true});cpSync(resolve(file),resolve(out,file));}
    mkdirSync(resolve(out,'licenses'),{recursive:true});cpSync(resolve('node_modules/three/LICENSE'),resolve(out,'licenses/three.txt'));
    if(mode==='playtest'){
     mkdirSync(resolve(out,'media'),{recursive:true});
