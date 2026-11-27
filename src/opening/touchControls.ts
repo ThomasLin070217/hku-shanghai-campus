@@ -30,6 +30,7 @@ const KEYS: Record<string, {code: string; key: string}> = {
   bag: {code: 'KeyE', key: 'e'},
   interact: {code: 'KeyF', key: 'f'},
   menu: {code: 'Escape', key: 'Escape'},
+  computer: {code: 'KeyC', key: 'c'},
 };
 
 /** The same keydown/keyup pair a keyboard produces, so every listener sees it. */
@@ -44,7 +45,13 @@ export function touchCopy(text: string): string {
   return text
     .replace(/Press F\b/g, 'Tap USE')
     .replace(/\bEsc\b/g, 'MENU')
-    .replace(/Arrows look/g, 'drag to look');
+    .replace(/Arrows look/g, 'drag to look')
+    // The MacBook key is the phone's MAC button. Without these, the phone is
+    // told to press C — a key it does not have — at the one beat that cannot
+    // be skipped (objective: "Open the MacBook").
+    .replace(/Press C\b/g, 'Tap MAC')
+    .replace(/\bC · /g, 'MAC · ')
+    .replace(/\bC to open\b/g, 'MAC to open');
 }
 
 export interface TouchControls {
@@ -77,6 +84,10 @@ export function createTouchControls(explorer: TouchExplorer): TouchControls | nu
     ['bag', 'BAG'],
     ['interact', 'USE'],
     ['menu', 'MENU'],
+    // The grid's last free cell (row 3, column 1). On desktop `C` opens the
+    // presentation MacBook; without this the phone player reaches "Open the
+    // MacBook" and has no control that sends the key.
+    ['computer', 'MAC'],
   ] as const) {
     const button = document.createElement('button');
     button.type = 'button';
@@ -227,7 +238,7 @@ export function createTouchControls(explorer: TouchExplorer): TouchControls | nu
     setRunning(!running);
     explorer.touchRun(running);
   });
-  for (const name of ['jump', 'bag', 'interact', 'menu'] as const) {
+  for (const name of ['jump', 'bag', 'interact', 'menu', 'computer'] as const) {
     onTap(buttons[name], () => {
       const key = KEYS[name]!;
       press(key.code, key.key);
@@ -283,6 +294,20 @@ export function createTouchControls(explorer: TouchExplorer): TouchControls | nu
       const before = element.textContent ?? '';
       const after = touchCopy(before);
       if (after !== before) element.textContent = after;
+    }
+    // The assistant's replies are markdown-rendered nodes, not one text element, so the
+    // selectors above cannot reach them: a phone asking the Harness where the MacBook is
+    // was told "Press C to open it" while its only control says MAC (W-03). Rewrite each
+    // text node in place; `touchCopy` is idempotent, so the observer's second pass is a
+    // no-op and cannot loop.
+    const bodies = document.querySelectorAll<HTMLElement>('.ai-message-body');
+    for (let index = 0; index < bodies.length; index++) {
+      const walker = document.createTreeWalker(bodies[index]!, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        const before = node.nodeValue ?? '';
+        const after = touchCopy(before);
+        if (after !== before) node.nodeValue = after;
+      }
     }
   }
   const copyObserver = new MutationObserver(rewriteCopy);

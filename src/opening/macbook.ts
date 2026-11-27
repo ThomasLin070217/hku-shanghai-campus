@@ -23,6 +23,9 @@ export interface MacOptions {
   logs?:MountedApp;
   robotics?:MountedApp;
   mission?:MountedApp&{title:string;location:string;mapLegend:string;terminal:()=>string[]};
+  /** Legend for the Maps window when the caller draws the dark opening map (green objective,
+   * gold player). The light plan's default names its own colours, so it stays untouched. */
+  mapLegend?:string;
   /** Plain-text lines for the Terminal window. Falls back to the mission shell. */
   terminal?:()=>string[];
   /** Lists Vibe Console / Robotics in Finder > Applications (review fixture). The opening story Mac mounts neither app. */
@@ -314,7 +317,7 @@ export function createMacBookExperience(options:MacOptions){
   const mapObjective=el('h2');
   const mapDetail=el('p');
   const mapStatus=el('p','mac-map-status');
-  mapSide.append(el('p','mac-eyebrow','CURRENT OBJECTIVE'),mapObjective,mapDetail,mapStatus,el('p','mac-muted',options.mission?.mapLegend??'North is up. Follow the orange objective marker.'));
+  mapSide.append(el('p','mac-eyebrow','CURRENT OBJECTIVE'),mapObjective,mapDetail,mapStatus,el('p','mac-muted',options.mission?.mapLegend??options.mapLegend??'North is up. Follow the orange objective marker.'));
   mapRoot.append(mapCanvas,mapSide);
 
   /* ------------------------------------------------------- Terminal. */

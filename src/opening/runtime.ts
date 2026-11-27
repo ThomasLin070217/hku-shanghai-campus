@@ -19,8 +19,6 @@ export interface OpeningRuntime{
  curtain_deployed:boolean;
  robot_chase_started:boolean;
  agent_chat_unlocked:boolean;
- go_to_building4_objective_unlocked:boolean;
- staff_task_received:boolean;
 }
 
 export function createOpeningRuntime():OpeningRuntime{
@@ -32,8 +30,6 @@ export function createOpeningRuntime():OpeningRuntime{
   curtain_deployed:false,
   robot_chase_started:false,
   agent_chat_unlocked:false,
-  go_to_building4_objective_unlocked:false,
-  staff_task_received:false,
  };
 }
 
@@ -45,7 +41,7 @@ export function validOpeningRuntime(raw:unknown):OpeningRuntime|null{
  const hearts=r.hearts,catches=r.catches;
  if(typeof hearts!=='number'||!Number.isInteger(hearts)||hearts<0||hearts>OPENING_MAX_HEARTS)return null;
  if(typeof catches!=='number'||!Number.isInteger(catches)||catches<0)return null;
- for(const key of ['curtain_deployed','robot_chase_started','agent_chat_unlocked','go_to_building4_objective_unlocked','staff_task_received'] as const){
+ for(const key of ['curtain_deployed','robot_chase_started','agent_chat_unlocked'] as const){
   if(typeof r[key]!=='boolean')return null;
  }
  return{
@@ -53,8 +49,6 @@ export function validOpeningRuntime(raw:unknown):OpeningRuntime|null{
   curtain_deployed:r.curtain_deployed as boolean,
   robot_chase_started:r.robot_chase_started as boolean,
   agent_chat_unlocked:r.agent_chat_unlocked as boolean,
-  go_to_building4_objective_unlocked:r.go_to_building4_objective_unlocked as boolean,
-  staff_task_received:r.staff_task_received as boolean,
  };
 }
 
@@ -79,11 +73,9 @@ export function syncRuntimeWithStory(runtime:OpeningRuntime,story:{stage:string;
  const alert=story.alert_read||story.stage==='to_b4'||story.stage==='complete';
  return{
   ...runtime,
-  staff_task_received:runtime.staff_task_received||(story.stage!=='crowd'&&story.stage!=='to_b5'),
   curtain_deployed:runtime.curtain_deployed||incident,
   // Chase is an observed encounter fact, not implied by a campus incident.
   robot_chase_started:runtime.robot_chase_started,
   agent_chat_unlocked:runtime.agent_chat_unlocked||alert,
-  go_to_building4_objective_unlocked:runtime.go_to_building4_objective_unlocked||alert,
  };
 }

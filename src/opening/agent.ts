@@ -130,7 +130,7 @@ function builtinReply(text:string,ctx:AgentContext):string{
  }
  if(/(laptop|macbook|电脑|电脑在哪|device)/.test(t)){
   return story.laptop_acquired
-   ?(zh?'MacBook 已经在你的背包里。按 C 打开它，红色警报确认后就能进入我这里。':'The MacBook is in your backpack. Press C to open it; after the red alert is confirmed, this chat is available.')
+   ?(zh?'MacBook 已经在你的背包里。按 C 打开它。':'The MacBook is in your backpack. Press C to open it.')
    :(zh?'MacBook 还在 6 号楼五层的校长办公室的演示桌上。取到它才能读取本地 Agent。':'The MacBook is still on the presentation desk in the principal\'s office on Building 6. Collect it to unlock the Local Agent.');
  }
  if(/(map|地图|route|怎么走|where|direction|build|楼)/.test(t)){

@@ -291,6 +291,9 @@ export function createOpeningUI(
     devices:device.units,
     sessionKey:()=> 'hku.macbook.chat.'+(device.instanceId()??'opening'),
     drawMap: (canvas, large) => actions.drawMap(canvas, large),
+    // The opening draws the dark map: the objective is the green dot and the player the
+    // gold arrow. The light plan's default legend names orange/blue and was live here (W-01).
+    mapLegend: 'North is up. The green dot is the objective; the gold arrow is you.',
     onClose: () => requestClose(),
     agent: localAgent,
     onAlert: () => voice?.onAlert?.(),
@@ -378,53 +381,6 @@ export function createOpeningUI(
     return shell;
   }
 
-  function tasksPage(view: OpeningView): HTMLElement {
-    const wrap = node('section', 'opening-tasks');
-    const objectiveBox = node('div', 'opening-objective-box');
-    objectiveBox.append(
-      node('p', 'opening-eyebrow', T.computer.objectiveLabel),
-      node('h3', 'opening-computer-objective', view.objective),
-      node('p', 'opening-computer-detail', view.detail),
-    );
-    wrap.append(objectiveBox);
-    if (view.story.campus_alert_triggered && view.story.alert_read) {
-      const emergency = node('div', 'opening-emergency');
-      emergency.append(
-        node('p', 'opening-emergency-title', T.computer.emergencyTitle),
-        node('p', 'opening-emergency-body', T.computer.emergencyBody),
-      );
-      wrap.append(emergency);
-    } else {
-      const info = node('div', 'opening-info');
-      info.append(node('p', 'opening-info-title', T.computer.normalTitle));
-      for (const line of T.computer.normalLines) info.append(node('p', 'opening-info-line', line));
-      wrap.append(info);
-    }
-    const statuses = [
-      view.story.invitation_read,
-      view.story.laptop_acquired,
-      view.story.alert_read,
-      view.story.stage === 'complete',
-    ];
-    const nextIndex = statuses.findIndex((done) => !done);
-    const list = node('ol', 'opening-steps');
-    T.computer.steps.forEach((step, index) => {
-      const done = statuses[index];
-      const next = !done && index === nextIndex;
-      const item = node('li', 'opening-step' + (done ? ' is-done' : next ? ' is-next' : ''));
-      const mark = node('span', 'opening-step-mark', done ? '✓' : String(index + 1));
-      mark.setAttribute('aria-hidden', 'true');
-      item.append(
-        mark,
-        node('span', 'opening-step-label', step.label),
-        node('span', 'opening-step-status', done ? T.computer.stepDone : next ? T.computer.stepNext : T.computer.stepPending),
-      );
-      list.append(item);
-    });
-    wrap.append(node('h4', 'opening-steps-title', T.computer.stepsTitle), list);
-    return wrap;
-  }
-
   function mapPage(): HTMLElement {
     const wrap = node('div', 'opening-map-page');
     const canvas = node('canvas', 'opening-bigmap');
@@ -465,7 +421,7 @@ export function createOpeningUI(
       : 'The perimeter closed in. Your run has failed, but the opening can be recovered from the last checkpoint without deleting the story.');
     const note = node('p', 'opening-caught-note', view.runtime.hearts > 0
       ? 'Your MacBook, invitation and story progress are kept.'
-      : 'Recover at the checkpoint to restore all 10 hearts; restarting returns to the shuttle.');
+      : 'Recover at the checkpoint to restore all 10 hearts; restarting returns to the plaza.');
     card.append(eye, eyebrow, title, hearts, lost, copy, note);
     shell.append(card);
     const region = node('div', 'opening-caught-actions');
@@ -494,9 +450,9 @@ export function createOpeningUI(
   function showCaughtRestart(region: HTMLElement): void {
     region.replaceChildren();
     const box = node('div', 'opening-caught-confirm');
-    box.append(node('p', '', 'Restart from the shuttle? The current opening save is backed up first.'));
+    box.append(node('p', '', 'Restart from the plaza? The current opening save is backed up first.'));
     const row = node('div', 'opening-caught-confirm-row');
-    const yes = makeButton('Restart from shuttle', 'danger', () => actions.action('restart'));
+    const yes = makeButton('Restart from plaza', 'danger', () => actions.action('restart'));
     const no = makeButton('Keep progress', 'secondary', () => {
       region.replaceChildren();
       const recover = makeButton('Recover at checkpoint', 'primary', () => {
@@ -930,7 +886,10 @@ export function createOpeningUI(
       const targetYaw = Math.atan2(-dx, -dz);
       let rel = targetYaw - view.yaw;
       rel = Math.atan2(Math.sin(rel), Math.cos(rel));
-      distanceArrow.style.transform = `rotate(${rel}rad)`;
+      // Game yaw is positive-LEFT (the controller turns the camera left as yaw rises),
+      // CSS `rotate()` is positive-CLOCKWISE: the arrow needs the negated angle, or a
+      // target on the right points the arrow left (R-06).
+      distanceArrow.style.transform = `rotate(${-rel}rad)`;
       setText(distanceText, `${dist < 10 ? dist.toFixed(1) : Math.round(dist)} m to objective`);
       distanceEl.hidden = false;
     } else {

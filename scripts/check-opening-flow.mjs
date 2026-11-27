@@ -20,7 +20,7 @@ for(let attempt=0;attempt<80&&!finished;attempt++){
   const send=(method,params={})=>new Promise(ok=>{const i=++id;pending.set(i,ok);ws.send(JSON.stringify({id:i,method,params}));});
   const ev=async e=>{const r=await send('Runtime.evaluate',{expression:e,returnByValue:true,awaitPromise:true});if(r.result?.exceptionDetails)throw Error(r.result.exceptionDetails.exception?.description??r.result.exceptionDetails.text);return r.result?.result?.value;};
   const shot=async name=>{await sleep(300);const s=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});fs.writeFileSync(OUT+'/'+name+'.png',Buffer.from(s.result.data,'base64'));};
-  const state=()=>ev("(()=>{const s=__CAMPUS.explorer.game.scenario.snapshot();return{stage:s.story.stage,events:s.story.events,invitation:s.story.invitation_read,laptop:s.story.laptop_acquired,alert:s.story.campus_alert_triggered,alertRead:s.story.alert_read,hearts:s.runtime.hearts,catches:s.runtime.catches,curtain:s.runtime.curtain_deployed,chase:s.runtime.robot_chase_started,agent:s.runtime.agent_chat_unlocked,b4:s.runtime.go_to_building4_objective_unlocked,modal:s.modal,position:__CAMPUS.explorer.game.body.position.toArray()};})()");
+  const state=()=>ev("(()=>{const s=__CAMPUS.explorer.game.scenario.snapshot();return{stage:s.story.stage,events:s.story.events,invitation:s.story.invitation_read,laptop:s.story.laptop_acquired,alert:s.story.campus_alert_triggered,alertRead:s.story.alert_read,hearts:s.runtime.hearts,catches:s.runtime.catches,curtain:s.runtime.curtain_deployed,chase:s.runtime.robot_chase_started,agent:s.runtime.agent_chat_unlocked,b4Objective:s.story.alert_read,modal:s.modal,position:__CAMPUS.explorer.game.body.position.toArray()};})()");
   const click=s=>ev(`(()=>{const n=document.querySelector(${JSON.stringify(s)});if(!n)return false;n.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));return true;})()`);
   await send('Page.enable');await send('Runtime.enable');await send('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceScaleFactor:1,mobile:false});
   await send('Page.navigate',{url:'http://127.0.0.1:5184/?intro=0'});await sleep(5200);
@@ -37,7 +37,7 @@ for(let attempt=0;attempt<80&&!finished;attempt++){
   await ev("__CAMPUS.explorer.inspectAt(58,0,-44,3.14159);__CAMPUS.explorer.update(1/60)");await shot('05-robots');
   await ev("__CAMPUS.openingDebug.reachB5();__CAMPUS.experience.update(1/60)");s=await mark('incident');if(s.stage!=='incident')throw Error('incident missing');await shot('06-empty-hall');
   await ev("__CAMPUS.openingDebug.openComputer('tasks')");await sleep(500);await mark('mac-alert');await shot('07-mac-alert');
-  await click('.opening-mac-alertprimary');await sleep(500);s=await mark('agent');if(!s.agent||!s.b4||s.stage!=='to_b4')throw Error('agent unlock missing');await shot('08-mac-agent');
+  await click('.opening-mac-alertprimary');await sleep(500);s=await mark('agent');if(!s.agent||!s.b4Objective||s.stage!=='to_b4')throw Error('agent unlock missing');await shot('08-mac-agent');
   await click('.opening-mac-dockitem[data-app="finder"]');await sleep(300);await shot('09-mac-finder');
   await click('.opening-mac-dockitem[data-app="map"]');await sleep(400);await shot('10-mac-map');
   await click('.opening-mac-dockitem[data-app="agent"]');await sleep(300);
