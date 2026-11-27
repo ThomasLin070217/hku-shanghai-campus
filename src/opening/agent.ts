@@ -77,14 +77,14 @@ function directions(ctx:AgentContext,zh:boolean):string{
    :'Leave Building 5, walk straight north through the gap in the planting bed, follow the east side of Building 4 around the building, then turn west to the handoff outside the main entrance.\n• Do not walk through a red scan cone head-on; step around the side or behind a column to break line of sight.\n• If the pursuit warning rises, break sight first, then continue.';
  }
  if(stage==='return_b5')return zh
-  ?'你带着 MacBook 在 4 号楼正门。原路坐电梯回到地面层，从侧门出去，沿中央步道向北回到 5 号楼一楼的晚宴厅。路上可能会听到异常低频声，别停下。'
-  :'You have the MacBook in Building 4. Take the lift back to the ground floor, leave by the side door and follow the central walk north to the Building 5 dinner hall. If you hear the low rumble, keep moving.';
+  ?'你带着 MacBook 在 6 号楼五层。原路坐电梯回到地面大厅，从大门出去，沿中央步道向北回到 5 号楼一楼的晚宴厅。路上可能会听到异常低频声，别停下。'
+  :'You have the MacBook on the fifth floor of Building 6. Take the lift back down to the ground hall, leave by the main doors and follow the central walk north to the Building 5 dinner hall. If you hear the low rumble, keep moving.';
  if(stage==='to_b6')return zh
-  ?'MacBook 在 4 号楼正门 5 层校长办公室的演示桌上。从 5 号楼一楼出来沿中央步道向南，绕到楼体南面的侧门；进楼后左手边呼叫电梯，上到 5 层，沿走廊走到尽头的办公室。'
-  :'The MacBook is on the presentation desk in the principal\'s office on Building 4, level 5. Leave Building 5, follow the central walk south, then round the building\'s south face to the side door. Inside, call the lift on your left, ride to level 5, and follow the corridor to the office at the end.';
+  ?'MacBook 在 6 号楼五层的校长办公室的演示桌上。从 5 号楼出来沿中央步道向南，走到正门；进楼后左手边就是电梯，上到 5 层，沿走廊走到尽头的办公室。'
+  :'The MacBook is on the presentation desk in the principal\'s office on level 5 of Building 6. Leave Building 5, follow the central walk south and enter Building 6 by its main doors; the lift is the first door on your left. Ride to level 5 and follow the corridor to the office at the end.';
  return zh
-  ?'现在先阅读请柬，然后从校园小巴下车，前往 5 号楼一楼的 High Table Dinner。'
-  :'Read the invitation first, then step off the shuttle and head to the Building 5 ground-floor High Table Dinner.';
+  ?'现在先阅读请柬，然后在广场人群中跟随人流，前往 5 号楼一楼的 High Table Dinner。'
+  :'Read the invitation first, then follow the crowd from the plaza to the Building 5 ground-floor High Table Dinner.';
 }
 
 function builtinReply(text:string,ctx:AgentContext):string{
@@ -131,7 +131,7 @@ function builtinReply(text:string,ctx:AgentContext):string{
  if(/(laptop|macbook|电脑|电脑在哪|device)/.test(t)){
   return story.laptop_acquired
    ?(zh?'MacBook 已经在你的背包里。按 C 打开它，红色警报确认后就能进入我这里。':'The MacBook is in your backpack. Press C to open it; after the red alert is confirmed, this chat is available.')
-   :(zh?'MacBook 还在 4 号楼正门 5 层校长办公室的演示桌上。取到它才能读取本地 Agent。':'The MacBook is still on the presentation desk in the principal\'s office on Building 4. Collect it to unlock the Local Agent.');
+   :(zh?'MacBook 还在 6 号楼五层的校长办公室的演示桌上。取到它才能读取本地 Agent。':'The MacBook is still on the presentation desk in the principal\'s office on Building 6. Collect it to unlock the Local Agent.');
  }
  if(/(map|地图|route|怎么走|where|direction|build|楼)/.test(t)){
   return (zh?'路线：':'Route: ')+directions(ctx,zh);

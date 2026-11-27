@@ -1,11 +1,11 @@
 import type{OpeningEvent,OpeningState}from'./contracts';
 import{createOpeningState,reduceOpening,validOpeningState}from'./state';
 import{OPENING as O}from'./spatialLayout';
-import type{CampaignStage}from'../campaign/state';
+import{campaignChapterOf,type CampaignStage}from'../campaign/state';
 import{B4_ENTRY}from'../campaign/b4Chapter';
 import{LAWN_APPROACH,LAWN_ENTRY}from'../campaign/lawnChapter';
 import{SPORTS_APPROACH,SPORTS_ENTRY}from'../campaign/sportsChapter';
-import{markLionDefeated,markPowerCut,sealWorld,type WorldThreat,type WorldThreatStorage}from'../gameplay/worldThreat';
+import{loadWorldThreat,markLionDefeated,markPowerCut,resetWorldThreat,sealWorld,type WorldThreat,type WorldThreatStorage}from'../gameplay/worldThreat';
 
 /**
  * Chapter-select checkpoints inside Chapter 1.
@@ -46,7 +46,9 @@ const CHECKPOINT_POSE:Record<OpeningCheckpoint,{position:readonly number[];yaw:n
  b5:{position:O.checkpoints.b5,yaw:0},
  b6:{position:O.checkpoints.b6,yaw:0},
  incident:{position:O.checkpoints.b5safe,yaw:0},
- b4:{position:O.checkpoints.b5safe,yaw:0},
+ // The b4 beat's objective is the B04 entrance (`O.handoff`), 79 m north of the pose
+ // inside B5: yaw 0 faced the far wall with the route behind the player (R-11).
+ b4:{position:O.checkpoints.b5safe,yaw:routeYaw(O.checkpoints.b5safe,[[O.handoff[0],O.handoff[2]]])},
  // Inside the B04 door (the b4 chapter's entry point), facing into the building.
  'b4-inside':{position:B4_ENTRY.point,yaw:0},
  // Outside the B04 entrance, where Chapter 1 hands over.
@@ -59,7 +61,7 @@ const CHECKPOINT_POSE:Record<OpeningCheckpoint,{position:readonly number[];yaw:n
 
 export const CHECKPOINT_LABELS:Record<OpeningCheckpoint,string>={
  b5:'B5 · High Table dinner',
- b6:'B4 · Fetch the MacBook',
+ b6:'B6 · Fetch the MacBook',
  incident:'The incident',
  b4:'B4 · Emergency control',
  'b4-inside':'B4 · The Keyboard Wall',
@@ -82,6 +84,23 @@ const CHECKPOINT_CAMPAIGN:Partial<Record<OpeningCheckpoint,{stage:CampaignStage;
 };
 export function checkpointCampaign(id:OpeningCheckpoint){
  const c=CHECKPOINT_CAMPAIGN[id];return c?{...c}:null;
+}
+
+/**
+ * The checkpoint a walking leg starts from, by stage: `to_lawn` starts where the `lawn`
+ * checkpoint boots and `to_sports` where `sports` boots (the inverse of
+ * `CHECKPOINT_CAMPAIGN`). Null for a chapter stage, which has an entry of its own.
+ *
+ * "Return to checkpoint" uses this: the host's `chapterEntry()` names the leg's
+ * *destination* (that is its contract), and moving the body there fired the arrival
+ * event on the next frame — the walk was skipped and the next chapter began (R-02).
+ */
+export function checkpointForStage(stage:CampaignStage):OpeningCheckpoint|null{
+ // Only a walking leg: every other stage belongs to a chapter (or the epilogue) and has
+ // its own entry, which "Return to checkpoint" must keep using.
+ if(campaignChapterOf(stage)!==null)return null;
+ for(const id of Object.keys(CHECKPOINT_CAMPAIGN) as OpeningCheckpoint[])if(CHECKPOINT_CAMPAIGN[id]?.stage===stage)return id;
+ return null;
 }
 
 export interface CheckpointThreat{
@@ -112,6 +131,11 @@ export function checkpointThreat(id:OpeningCheckpoint):CheckpointThreat|null{
 export function applyCheckpointThreat(id:OpeningCheckpoint,storage?:WorldThreatStorage|null):WorldThreat|null{
  const t=CHECKPOINT_THREAT[id];if(!t)return null;
  const now=Date.now();
+ // `sealWorld` deliberately refuses to re-seal a record that is not clear (a purged
+ // campus is terminal for a run). A checkpoint is an explicit new run, so a finished
+ // profile must still get its sealed campus and a barrier to lower (S-36): hand the
+ // record back to clear first, then apply the checkpoint's own facts.
+ if(loadWorldThreat(storage===undefined?{}:{storage:storage??null}).phase!=='clear')resetWorldThreat(storage);
  let threat=sealWorld(now,storage);
  if(t.lionDefeated)threat=markLionDefeated(now,storage);
  if(t.powerCut)threat=markPowerCut(now,storage);
@@ -119,9 +143,30 @@ export function applyCheckpointThreat(id:OpeningCheckpoint,storage?:WorldThreatS
 }
 
 /**
+ * The Chapter 1 checkpoints begin inside Chapter 1's own world: the campus is daylight
+ * and unsealed until the incident seals it. The persistent threat record belongs to a
+ * different run, so it must not follow the player in — a `sealed` record put the dinner
+ * walk under the night curtain, and a `purged` record (what the finished ending leaves)
+ * made the incident's `sealWorld()` a no-op, so its curtain/dark-sky beat never played
+ * (R-07). Hand a non-clear record back to clear before the story reads it; the story's
+ * own beats then seal it again when (and only when) they should. `sports`/`ending` keep
+ * the opposite direction through `applyCheckpointThreat` above (S-36).
+ *
+ * Returns the record written, or null when this checkpoint is not a Chapter 1 one (or
+ * the record was already clear).
+ */
+const CHAPTER_1_CHECKPOINTS:readonly OpeningCheckpoint[]=['b5','b6','incident','b4'];
+export function normaliseChapter1World(id:OpeningCheckpoint,storage?:WorldThreatStorage|null):WorldThreat|null{
+ if(!CHAPTER_1_CHECKPOINTS.includes(id))return null;
+ if(loadWorldThreat(storage===undefined?{}:{storage:storage??null}).phase==='clear')return null;
+ return resetWorldThreat(storage);
+}
+
+/**
  * Chapter-select ids read as a canonical checkpoint. The canonical list keeps the
- * historical `b6` key, but its pose now starts the errand at B4's side door; the
- * `b4-office` spellings resolve to it so old and future links share one run.
+ * historical `b6` key, but its pose now starts the errand on Building 6's south
+ * landing (owner ruling 2026-11-27: the lift is in the middle building); the `b4-office`
+ * spellings resolve to it so old and future links share one run.
  * `b4` stays a checkpoint of its own and is never an alias.
  */
 const CHECKPOINT_ALIASES:Readonly<Record<string,OpeningCheckpoint>>={'b4-office':'b6',b4_office:'b6'};

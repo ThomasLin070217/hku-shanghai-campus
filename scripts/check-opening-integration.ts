@@ -4,7 +4,7 @@ import * as T from 'three';
 import {CampusGame} from '../src/exploration/game';
 import {createNavigation} from '../src/exploration/navigation';
 import {BUILDINGS,SITE} from '../src/model/campusParameters';
-import {OPENING as O,OFFICE_LAYOUT} from '../src/opening/spatialLayout';
+import {OPENING as O,B6_HALL,B4_LIFT as L6} from '../src/opening/spatialLayout';
 import {findPath} from '../src/exploration/pathfind';
 import {EXPLORATION as C} from '../src/exploration/config';
 import {buildSite} from '../src/model/buildSite';
@@ -26,19 +26,22 @@ function route(name:string,start:readonly number[],points:readonly (readonly num
  results.push({name,seconds:total/120,end:g.body.position.toArray()});}
 route('Bus inside to exit',O.spawn,[[O.bus.doorX,O.bus.z-O.bus.width/2-.35],[O.busExit[0],O.busExit[2]]]);
 route('Building4 to Building5 then turn right',O.busExit,O.routeB5);
-route('Building5 to the retired B6 presentation desk',O.staff,O.routeB6);
+route('Building5 to the Building 6 lift',O.staff,O.routeB6);
 const [pickupX,pickupZ]=O.routeB6.at(-1)!;
 const pickup=[pickupX,O.b6.floor,pickupZ];
-const eye=new T.Vector3(pickupX,O.b6.floor+1.64,pickupZ);
-const toDesk=new T.Vector3(...O.presentationDesk).add(new T.Vector3(0,.1,0)).sub(eye);
-assert.ok(toDesk.length()<2.7,'The office aisle must put the presentation desk within arm\'s reach');
-const pickupRay=new T.Raycaster(eye,toDesk.clone().normalize(),.03,toDesk.length()-.15);
-assert.equal(pickupRay.intersectObjects(w.meshes,false).length,0,'The office furniture must leave a clear sightline to the desk');
-for(const {x,z} of [OFFICE_LAYOUT.presentationDesk,OFFICE_LAYOUT.credenza,OFFICE_LAYOUT.planter,...OFFICE_LAYOUT.workstations.flatMap(({desk,chair})=>[desk,chair])]){
- assert.ok(w.blocked(x,z,O.b6.floor+.003),`Office furniture should be solid at ${x}, ${z}`);
-}
+// The errand's ground leg ends at the lift the player turns left to, and the hall's own
+// furniture is solid: the canteen tables, the counter and the lift shaft.
+assert.ok(Math.hypot(pickupX-(L6.x1+.9),pickupZ-(L6.door.z0+L6.door.z1)/2)<1.6,
+ `the B6 route must end at the lift doorway (${pickupX},${pickupZ})`);
+for(const t of B6_HALL.tables)assert.ok(w.blocked(t.x,t.z,O.b6.floor+.003),`canteen table at ${t.x},${t.z} must be solid`);
+const c=B6_HALL.counter;
+assert.ok(w.blocked((c.x0+c.x1)/2,(c.z0+c.z1)/2,O.b6.floor+.003),'the canteen counter must be solid');
+assert.ok(w.blocked((L6.x0+L6.x1)/2,L6.z1+ .06,O.b6.floor+.003),'the lift shaft wall must be solid');
+
 route('Building6 back to Building5',pickup,[...O.routeB6].reverse());
-route('Building5 to the B4 side door (MacBook errand)',O.staff,O.routeErrand);
+// `routeErrand` is the same walk as `routeB6` (the MacBook errand lives in Building 6),
+// so walking it again would re-prove the leg above. Point the minimap contract at it instead.
+assert.equal(O.routeErrand,O.routeB6,'the errand marker route must be the B5 -> B6 walk');
 route('Building5 to Building4 handoff',O.staff,O.routeB4);
 // The AI navigation directive and the agent bridge use findPath over the same world.
 // Every Chapter 1 leg a human can walk must also be plannable; lengths are logged so a
@@ -47,8 +50,8 @@ const pickupPoint:[number,number,number]=[pickup[0],O.b6.floor,pickup[2]];
 const pathLegs:[string,[number,number,number],[number,number,number]][]=[
  ['spawn -> busExit',[...O.spawn] as [number,number,number],[...O.busExit] as [number,number,number]],
  ['busExit -> staff',[...O.busExit] as [number,number,number],[...O.staff] as [number,number,number]],
- ['staff -> B6 pickup',[...O.staff] as [number,number,number],pickupPoint],
- ['B6 pickup -> staff',pickupPoint,[...O.staff] as [number,number,number]],
+ ['staff -> B6 lift',[...O.staff] as [number,number,number],pickupPoint],
+ ['B6 lift -> staff',pickupPoint,[...O.staff] as [number,number,number]],
  ['staff -> handoff',[...O.staff] as [number,number,number],[...O.handoff] as [number,number,number]],
  ['B5 door -> handoff',[O.b5.door,0,-53.8], [...O.handoff] as [number,number,number]],
  ['b5safe -> handoff',[...O.checkpoints.b5safe] as [number,number,number],[...O.handoff] as [number,number,number]],

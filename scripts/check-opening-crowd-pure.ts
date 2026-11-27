@@ -117,8 +117,8 @@ assert.equal(crowd.support(62,-60,4),world.floorAt(62,-60,4),'floorAt agrees at 
 assert.equal(crowd.support(O.bus.x,O.bus.z,4),O.bus.floor,'the crowd stands on the shuttle floor (.54)');
 assert.equal(world.floorAt(O.bus.x,O.bus.z,4),O.bus.floor,'floorAt agrees on the shuttle floor');
 const landingX=(L.x1+LIFT_LANDING.lobbyX1)/2,landingZ=(L.z0+L.z1)/2;
-assert.equal(crowd.support(landingX,landingZ,20),LIFT_LANDING.floorTop,'the crowd stands on the 5F landing (18.90 m)');
-assert.equal(world.floorAt(landingX,landingZ,20),LIFT_LANDING.floorTop,'floorAt agrees on the 5F landing');
+assert.equal(crowd.support(landingX,landingZ,LIFT_LANDING.floorTop+.3),LIFT_LANDING.floorTop,'the crowd stands on the 5F landing ('+LIFT_LANDING.floorTop+' m)');
+assert.equal(world.floorAt(landingX,landingZ,LIFT_LANDING.floorTop+.3),LIFT_LANDING.floorTop,'floorAt agrees on the 5F landing');
 const floorY=O.b5.floor+.02;
 /* Collision is the same obstacle list: the crowd's `blocked` is the navigation's own, so the
  * dinner tables, the dais, the partition and the arch piers are all solid to it. The points come
@@ -140,4 +140,4 @@ assert.equal(crowd.blocked(table.x,table.z,floorY),true,'CONTROL: the centre of 
 assert.deepEqual(arrivals,crowdArrivals(52,crowd,dinnerTables(world),dinnerChairPlaces()),'deterministic through the crowd world');
 
 resetOffice();resetLift();
-console.log('PASS the crowd does not drive the story: the player in the CCTV trigger fires lobby_feed and 60 crowd queries at the same point fire nothing; player queries move a called lift '+byPlayer.moved.toFixed(3)+' m and crowd queries move it '+byCrowd.moved.toFixed(3)+' m; the crowd reads the known floors (hall .02, shuttle .54, 5F 18.90) and collides like the player, and all 52 arrivals are clear of the tables');
+console.log('PASS the crowd does not drive the story: the player in the CCTV trigger fires lobby_feed and 60 crowd queries at the same point fire nothing; player queries move a called lift '+byPlayer.moved.toFixed(3)+' m and crowd queries move it '+byCrowd.moved.toFixed(3)+' m; the crowd reads the known floors (hall, shuttle, 5F '+(LIFT_LANDING.floorTop)+') and collides like the player, and all 52 arrivals are clear of the tables');

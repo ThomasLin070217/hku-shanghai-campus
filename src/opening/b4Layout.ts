@@ -1,5 +1,5 @@
 import * as T from 'three';
-import {B4_LIFT,OPENING} from './spatialLayout';
+import {OPENING} from './spatialLayout';
 import type {Obstacle} from '../exploration/navigation';
 
 /**
@@ -7,10 +7,10 @@ import type {Obstacle} from '../exploration/navigation';
  * collision. Entering B04 at x 58 from the south, facing north, the right hand is
  * east: the Keyboard Wall stands on the **east** wall (facing west, the timber
  * tiers in front of it), and the aux power closet, the breaker, the MacBook port
- * and the supercomputer racks line the **north** wall. The HKU flip wall now stands on
- * B04's south façade (`b4FlipWall.ts`); the Building 5 lobby keeps its own ambient
- * wall (`b5FlipWall.ts`) until the route rewire retires it. A side entrance is cut in the
- * same façade, west of the main door (Ruling G1).
+ * and the supercomputer racks line the **north** wall. The HKU flip wall left this building on
+ * 2026-11-27 and now stands on Building 6's ground-hall north wall
+ * (`b6FlipWall.ts`), where the owner ruled it belongs. A side entrance is cut in the south
+ * façade, west of the main door (Ruling G1).
  *
  * The static shell (floor, walls, ceiling, tiers, racks, lobby furniture, entrance
  * door) is built with the opening world (`b4Shell.ts`); the campaign chapter adds
@@ -38,9 +38,8 @@ export const B4_BUILDER={
   panelBox:{x0:-3.425,x1:4.385,y0:1.565,y1:3.715,z0:-4.239,z1:-3.664},
  },
  /** The observed flip-wall room's aux power cabinet, in builder-local coordinates. The
-  * chapter builds only this part; the `HKU_flip_wall` part of the same builder is mounted
-  * separately on B4's façade (`b4FlipWall.ts`) and still stands in the B5 lobby
-  * (`b5FlipWall.ts`), so its extents are not repeated here.
+  * chapter builds only this part; the `HKU_flip_wall` part of the same builder hangs in
+  * Building 6's ground hall (`b6FlipWall.ts`), so its extents are not repeated here.
   * `contentsFront` is the front of the PSU modules inside the cavity. */
  flip:{
   closet:{x0:-3.42,x1:4.02,y0:.03,y1:3.951,z0:-2.985,z1:-1.91,contentsFront:-2.18,side:.1},
@@ -160,11 +159,9 @@ const arm=L.armchairSize/2;
 /** Every static collision box of the lobby. Rects with `render` are drawn by the shell;
  * the prop rects are drawn by the observed room builders the chapter places. */
 export const B4_OBSTACLES:B4Rect[]=[
- // The west wall carries the lift doorway (Task D: 2.00 × 2.30 m at z 11.40…13.40), so it is
- // authored in three pieces exactly like the façade: the two returns and the lintel above.
- rect('opening-b4-wall-west-south',R.x0+.01,R.x0+.01+WALL,R.z0,B4_LIFT.door.z0,0,TOP,'wall'),
- rect('opening-b4-wall-west-north',R.x0+.01,R.x0+.01+WALL,B4_LIFT.door.z1,R.z1,0,TOP,'wall'),
- rect('opening-b4-wall-west-lift-lintel',R.x0+.01,R.x0+.01+WALL,B4_LIFT.door.z0,B4_LIFT.door.z1,F+B4_LIFT.door.height,TOP,'wall'),
+ // The west wall is solid again: the core lift moved to Building 6 (owner ruling,
+ // 2026-11-27). CDS-1's lobby has no lift doorway to show.
+ rect('opening-b4-wall-west',R.x0+.01,R.x0+.01+WALL,R.z0,R.z1,0,TOP,'wall'),
  rect('opening-b4-wall-east',R.x1-.01-WALL,R.x1-.01,R.z0,R.z1,0,TOP,'wall'),
  rect('opening-b4-wall-back',R.x0,R.x1,R.z0+.01,inner.z0,0,TOP,'wall'),
  // The front wall is split around the side entrance; the lintel bridges it above 2.60 m.

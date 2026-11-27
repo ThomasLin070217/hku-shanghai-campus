@@ -7,9 +7,8 @@ import {OPENING as O} from '../src/opening/spatialLayout';
 import {B4_PHRASE,createKeyboardState,pressKeyboard,createFlipState,flipTiles,flipSolved,pullBreaker,connectMacBook,b4StepOf,sweepTiles,autoFinishTiles} from '../src/campaign/b4Puzzle';
 import {B4_LAYOUT,B4_LOBBY,B4_OBSTACLES,B4_STATIONS,B4_DOOR_OBSTACLE,B4_FOCUS_FRAME,setB4FlipPanel,partBounds} from '../src/opening/b4Layout';
 import {buildB4Shell,B4_RACK_LED} from '../src/opening/b4Shell';
-import {B4_FLIP_WALL} from '../src/opening/b4FlipWall';
 import {buildObservedFeatureRoom,flipWallTiles} from '../src/model/observedFeatureRooms';
-import {createB5FlipWall,B5_FLIP_WALL_ORIGIN,B5_FLIP_WALL_YAW,B5_FLIP_TRIGGER,B5_FLIP_COOLDOWN} from '../src/opening/b5FlipWall';
+import {B6_FLIP_COOLDOWN,B6_FLIP_MOUNT_NAME,B6_FLIP_PLAQUE_LINE_NAME,B6_FLIP_PLAQUE_NAME,B6_FLIP_TILES_DARK_NAME,B6_FLIP_TILES_LIGHT_NAME,B6_FLIP_TRIGGER,B6_FLIP_WALL_ORIGIN,createB6FlipWall} from '../src/opening/b6FlipWall';
 import {createCampaignState,reduceCampaign,type CampaignState} from '../src/campaign/state';
 import type {ChapterContext,Explorer} from '../src/campaign/types';
 import {createB4Chapter} from '../src/campaign/b4Chapter';
@@ -225,14 +224,10 @@ cs={...cs,stage:'b4_keyboard'};step();
  // The service shutter: the chapter's own slab covers the closet mouth.
  const sh=partBounds(props!,'opening-b4-service-shutter'),S=B4_LAYOUT.shutter;
  near(sh.min.x,S.x0,'shutter x0');near(sh.max.x,S.x1,'shutter x1');near(sh.min.z,S.z0,'shutter z0');near(sh.max.z,S.z1,'shutter z1');near(sh.max.y,S.top,'shutter top');
- // Ruling G1: the HKU flip wall returns to B4 as the façade's puzzle face, mounted by
- // `b4FlipWall.ts` in the shell; the B5 lobby keeps its ambient wall until the route rewire.
- // Assert the ruled mount, not mere presence.
- const b4Flip=site.root.getObjectByName('HKU_flip_wall');assert.ok(b4Flip,'Ruling G1: the HKU flip wall stands in B4');
- const fb=new T.Box3().setFromObject(b4Flip!),fbw=B4_FLIP_WALL;
- assert.ok(fb.min.x>=fbw.x0-.01&&fb.max.x<=fbw.x1+.01,`the B4 flip wall spans x ${fb.min.x.toFixed(3)}–${fb.max.x.toFixed(3)}, ruled ${fbw.x0}–${fbw.x1}`);
- assert.ok(fb.max.z<=B4_LAYOUT.room.z1+.001,`the B4 flip wall stays inside the façade (z ${fb.min.z.toFixed(3)}–${fb.max.z.toFixed(3)})`);
- assert.ok(fb.min.y>=B4_LAYOUT.room.floor+.05&&fb.max.y<=B4_LAYOUT.room.floor+4,`the B4 flip wall sits on the façade wall (y ${fb.min.y.toFixed(3)}–${fb.max.y.toFixed(3)})`);
+ // Owner ruling 2026-11-27: the HKU flip wall left CDS-1 and hangs in Building 6's
+ // ground hall (`b6FlipWall.ts`, measured by `check-flip-walls`). The B4 build must not carry
+ // a second copy: two walls in two buildings is exactly the defect the ruling closed.
+ assert.equal(site.root.getObjectByName('HKU_flip_wall'),undefined,'the B4 world must carry no flip wall (it moved to B6)');
  // The tiers: three timber steps from the layout rects, drawn by the shell. Each tier is a
  // riser plus a tread; the tread overlaps the riser by 2 mm and tops out 2 mm proud of the
  // collision top, so the two materials never share a plane (coplanar faces flicker).
@@ -302,31 +297,31 @@ cs={...cs,stage:'b4_keyboard'};step();
  assert.equal(closetOnly.getObjectByName('Corridor_structure'),undefined,'the closet-only build has no corridor shell');
  assert.equal(flipWallTiles(closetOnly).length,0,'the closet-only build allocates no flip tiles');
  const fullRoom=buildObservedFeatureRoom('flipWall');
- assert.ok(fullRoom.getObjectByName('HKU_flip_wall'),'the full build still has the HKU flip wall for B5');
+ assert.ok(fullRoom.getObjectByName('HKU_flip_wall'),'the full observed build still carries the flip wall (mounted in B6)');
  assert.equal(flipWallTiles(fullRoom).length,561,'the full build still has all 561 flip tiles');
  disposeAsset(closetOnly);disposeAsset(fullRoom);
  console.log('PASS flip-wall parts selector: closet only for B4, the full wall still available for B5');
 }
-// The moved B5 wall: the plaque ink stands proud of the lobby-facing face, and the 561 tiles
-// are two instanced meshes whose rest pose and diagonal ripple match the builder exactly.
+// The B6 wall: the plaque ink stands proud of the hall-facing face, and the 561 tiles are two
+// instanced meshes whose rest pose and diagonal ripple match the builder exactly.
 {
- const b5=createB5FlipWall();b5.root.updateMatrixWorld(true);
- const plaque=b5.root.getObjectByName('B5_flip_wall_plaque') as T.Mesh;
- assert.ok(plaque,'the B5 plaque is built');
- const ink=plaque.children.filter((c):c is T.Mesh=>c instanceof T.Mesh&&c.name==='B5_flip_wall_plaque_line');
+ const b6=createB6FlipWall();b6.root.updateMatrixWorld(true);
+ const plaque=b6.root.getObjectByName(B6_FLIP_PLAQUE_NAME) as T.Mesh;
+ assert.ok(plaque,'the B6 plaque is built');
+ const ink=plaque.children.filter((c):c is T.Mesh=>c instanceof T.Mesh&&c.name===B6_FLIP_PLAQUE_LINE_NAME);
  assert.equal(ink.length,3,'the plaque carries three ink lines');
- const east=plaque.position.x+.01;
+ const face=plaque.position.z+.01;
  for(const line of ink){
   const b=new T.Box3().setFromObject(line);
-  assert.ok(b.min.x>=east+.0005&&b.max.x<=east+.0055,`plaque ink is 0.5–5.5 mm proud of the plaque's east face (${((b.min.x-east)*1000).toFixed(1)}…${((b.max.x-east)*1000).toFixed(1)} mm)`);
+  assert.ok(b.min.z>=face+.0005&&b.max.z<=face+.0055,`plaque ink is 0.5-5.5 mm proud of the plaque's hall-facing face (${((b.min.z-face)*1000).toFixed(1)}...${((b.max.z-face)*1000).toFixed(1)} mm)`);
  }
  // F1 (1) Draw budget: 561 tiles cost two instanced draws, not 561 meshes with their own geometry.
- const meshes:T.Mesh[]=[];b5.root.traverse(o=>{if(o instanceof T.Mesh)meshes.push(o);});
+ const meshes:T.Mesh[]=[];b6.root.traverse(o=>{if(o instanceof T.Mesh)meshes.push(o);});
  const drawGroupsOf=(m:T.Mesh)=>Array.isArray(m.material)?Math.max(1,m.geometry.groups.length):1;
  const drawGroups=meshes.reduce((n,m)=>n+drawGroupsOf(m),0);
  const instanced=meshes.filter((m):m is T.InstancedMesh=>m instanceof T.InstancedMesh);
  const instancedCount=instanced.reduce((n,m)=>n+m.count,0);
- assert.ok(drawGroups<=60,`the B5 wall draws in <=60 draw groups (got ${drawGroups} from ${meshes.length} meshes)`);
+ assert.ok(drawGroups<=60,`the B6 wall draws in <=60 draw groups (got ${drawGroups} from ${meshes.length} meshes)`);
  assert.equal(instancedCount,561,`the instanced meshes carry exactly 561 tiles (got ${instancedCount} from ${instanced.map(m=>`${m.name}:${m.count}`).join(', ')})`);
  // F1 (2) Shadow pass: only the plaque casts a shadow; 4 cm tile shadows are invisible.
  for(const m of meshes)if(m!==plaque)assert.equal(m.castShadow,false,`${m.name||m.type} stays out of the shadow pass`);
@@ -335,8 +330,15 @@ cs={...cs,stage:'b4_keyboard'};step();
  const builder=buildObservedFeatureRoom('flipWall',{parts:['wall']});
  const builderWall=builder.getObjectByName('HKU_flip_wall');
  assert.ok(builderWall,'the builder still yields the wall');
+ // Place the builder comparison under the module's own mount node, not a second copy of its
+ // placement math (the mount now offsets z so the panel face lands on the declared plane).
+ const builtMount=b6.root.getObjectByName(B6_FLIP_MOUNT_NAME);
+ assert.ok(builtMount,'the B6 wall mounts its panel under the exported mount node');
  const builderMount=new T.Group();
- builderMount.position.fromArray(B5_FLIP_WALL_ORIGIN);builderMount.rotation.y=B5_FLIP_WALL_YAW;
+ builderMount.position.copy(builtMount!.position);builderMount.rotation.y=builtMount!.rotation.y;
+ // `createB6FlipWall` takes only the wall out of the observed room and zeroes its room offset;
+ // the comparison must strip the same offset, not reproduce the mount's placement math.
+ builderWall!.position.set(0,0,0);
  builderMount.add(builderWall!);builderMount.updateMatrixWorld(true);
  const builderTiles=new Map<string,T.Object3D>();
  builderMount.traverse(o=>{if(o instanceof T.Group&&/^FlipTile_r\d+c\d+$/.test(o.name))builderTiles.set(o.name,o);});
@@ -354,47 +356,45 @@ cs={...cs,stage:'b4_keyboard'};step();
   matched.add(match!);
   const a=worldMatrix.elements,b=builderTiles.get(match!)!.matrixWorld.elements;
   for(let k=0;k<16;k++)assert.ok(Math.abs(a[k]!-b[k]!)<=1e-6,`${match} rest matrix element ${k} is ${a[k]} not ${b[k]}`);
-  // Same face as the builder's: its material slots (so dark/light is not inverted) and the
-  // pixel UVs voxelizeMaterials wrote (src/voxel/materials.ts), so the texel scale is unchanged.
-  const face=builderTiles.get(match!)!.children.find((c):c is T.Mesh=>c instanceof T.Mesh&&c.name==='Flip_tile_face');
-  assert.ok(face,`${match} has its builder face`);
-  const want=[face!.material].flat().map(m=>m.name),got=[mesh.material].flat().map(m=>m.name);
+  const tileFace=builderTiles.get(match!)!.children.find((c):c is T.Mesh=>c instanceof T.Mesh&&c.name==='Flip_tile_face');
+  assert.ok(tileFace,`${match} has its builder face`);
+  const want=[tileFace!.material].flat().map(m=>m.name),got=[mesh.material].flat().map(m=>m.name);
   assert.deepEqual(got,want,`${match}: ${mesh.name} carries the builder face's material slots`);
-  const uvWant=face!.geometry.getAttribute('uv').array,uvGot=mesh.geometry.getAttribute('uv').array;
+  const uvWant=tileFace!.geometry.getAttribute('uv').array,uvGot=mesh.geometry.getAttribute('uv').array;
   assert.ok(uvGot.length===uvWant.length&&Array.from(uvGot).every((v,k)=>Math.abs(v-uvWant[k]!)<=1e-6),`${match}: the instanced tile keeps the builder face's pixel UVs`);
  }
  assert.equal(matched.size,561,'all 561 builder tiles have an instance (none lost or duplicated)');
  disposeAsset(builderMount);disposeAsset(builder);
  // F1 (4) The public update still runs the ripple, now writing instance matrices.
- const dark=instanced.find(m=>m.name==='B5_flip_tiles_dark'),light=instanced.find(m=>m.name==='B5_flip_tiles_light');
+ const dark=instanced.find(m=>m.name===B6_FLIP_TILES_DARK_NAME),light=instanced.find(m=>m.name===B6_FLIP_TILES_LIGHT_NAME);
  assert.ok(dark&&light,'both instanced tile meshes are mounted by name');
  const snapshot=()=>({dark:Float32Array.from(dark!.instanceMatrix.array),light:Float32Array.from(light!.instanceMatrix.array)});
  const same=(a:ReturnType<typeof snapshot>,b:ReturnType<typeof snapshot>)=>a.dark.length===b.dark.length&&a.dark.every((v,i)=>v===b.dark[i])&&a.light.every((v,i)=>v===b.light[i]);
- const far=new T.Vector3(B5_FLIP_WALL_ORIGIN[0],0,B5_FLIP_WALL_ORIGIN[2]-20);
- b5.update(1/60,far);
- assert.equal(b5.debug.state().phase,'idle','from far away the wall stays idle');
- const near=new T.Vector3(B5_FLIP_WALL_ORIGIN[0],0,B5_FLIP_WALL_ORIGIN[2]+B5_FLIP_TRIGGER-1);
+ const far=new T.Vector3(B6_FLIP_WALL_ORIGIN[0],B6_FLIP_WALL_ORIGIN[1],B6_FLIP_WALL_ORIGIN[2]-20);
+ b6.update(1/60,far);
+ assert.equal(b6.debug.state().phase,'idle','from far away the wall stays idle');
+ const near=new T.Vector3(B6_FLIP_WALL_ORIGIN[0],B6_FLIP_WALL_ORIGIN[1],B6_FLIP_WALL_ORIGIN[2]+B6_FLIP_TRIGGER-1);
  const rest=snapshot();
- b5.update(0,near);
- assert.equal(b5.debug.state().phase,'open','the trigger opens the ripple even on a frozen frame');
+ b6.update(0,near);
+ assert.equal(b6.debug.state().phase,'open','the trigger opens the ripple even on a frozen frame');
  assert.ok(same(rest,snapshot()),'a dt=0 call never writes an instance matrix');
- for(let i=0;i<180;i++)b5.update(1/60,near);
+ for(let i=0;i<180;i++)b6.update(1/60,near);
  const midRipple=snapshot();
- b5.update(0,near);
+ b6.update(0,near);
  assert.ok(same(midRipple,snapshot()),'a dt=0 call mid-ripple never writes an instance matrix');
- const held=b5.debug.state();
+ const held=b6.debug.state();
  assert.deepEqual({phase:held.phase,turned:held.turned,total:held.total},{phase:'open',turned:561,total:561},'during the hold every one of the 561 tiles has turned');
  assert.ok(!same(rest,snapshot()),'the instance matrices move while the tiles are turned');
- for(let i=0;i<300;i++)b5.update(1/60,near);
- const closed=b5.debug.state();
+ for(let i=0;i<300;i++)b6.update(1/60,near);
+ const closed=b6.debug.state();
  assert.deepEqual({phase:closed.phase,turned:closed.turned,total:closed.total},{phase:'idle',turned:0,total:561},'after the hold and close the ripple is home and idle');
  assert.ok(same(rest,snapshot()),'the instance matrices return exactly to the rest pose');
- b5.update(1/60,far);b5.update(1/60,near);
- assert.equal(b5.debug.state().phase,'idle',`a second approach inside the ${B5_FLIP_COOLDOWN} s cooldown does not restart the ripple`);
- assert.ok(b5.debug.state().cooldown>0&&b5.debug.state().cooldown<=B5_FLIP_COOLDOWN,`the cooldown is still running (${b5.debug.state().cooldown})`);
+ b6.update(1/60,far);b6.update(1/60,near);
+ assert.equal(b6.debug.state().phase,'idle',`a second approach inside the ${B6_FLIP_COOLDOWN} s cooldown does not restart the ripple`);
+ assert.ok(b6.debug.state().cooldown>0&&b6.debug.state().cooldown<=B6_FLIP_COOLDOWN,`the cooldown is still running (${b6.debug.state().cooldown})`);
  assert.ok(same(rest,snapshot()),'a cooled-down approach writes nothing');
- b5.dispose();
- console.log(`PASS B5 flip wall: plaque ink proud of the east face, ${meshes.length} meshes / ${drawGroups} draw groups, ${instancedCount} instances`);
+ b6.dispose();
+ console.log(`PASS B6 flip wall: plaque ink proud of the hall face, ${meshes.length} meshes / ${drawGroups} draw groups, ${instancedCount} instances`);
 }
 // Room lights stay inside the room, and only while the chapter runs.
 const lights=()=>{const out:T.PointLight[]=[];site.root.traverse(o=>{if(o instanceof T.PointLight&&hitPath(o).includes('B04_campaign_rooms'))out.push(o);});return out;};

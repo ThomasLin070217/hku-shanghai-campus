@@ -18,7 +18,7 @@ export const ASSISTANT = {
 /** Fixed facts the character is allowed to state without reading game state. */
 export const CAMPUS_FACTS = [
   'The opening begins at a High Table Dinner on the ground floor of Building 5.',
-  "The presentation MacBook is on the desk in the principal's office on level 5 of Building 4.",
+  "The presentation MacBook is on the desk in the principal's office on level 5 of Building 6.",
   'A sealed dark curtain has cut the campus perimeter and all outside traffic.',
   'Emergency control is through the main entrance of Building 4.',
   'Eight compromised security robots patrol or chase; red scan cones confirm a target.',

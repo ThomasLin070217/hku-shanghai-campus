@@ -18,30 +18,21 @@
     ]
   },
   {
-    "name": "Building5 to the retired B6 presentation desk",
-    "seconds": 50.18333333333333,
+    "name": "Building5 to the Building 6 lift",
+    "seconds": 49.06666666666667,
     "end": [
-      7.230646153877813,
+      2.3025420506144654,
       5.1,
-      -57.01969098424661
+      -56.83681214685705
     ]
   },
   {
     "name": "Building6 back to Building5",
-    "seconds": 50.175,
+    "seconds": 49.05,
     "end": [
-      63.92091664618144,
+      63.920916649649484,
       0.02,
-      -61.005708916888324
-    ]
-  },
-  {
-    "name": "Building5 to the B4 side door (MacBook errand)",
-    "seconds": 68.46666666666667,
-    "end": [
-      47.78028687440726,
-      0.02,
-      20.050397834750193
+      -61.0057089167139
     ]
   },
   {
@@ -76,21 +67,21 @@
     ]
   },
   {
-    "name": "findPath staff -> B6 pickup",
-    "length": 71.419,
+    "name": "findPath staff -> B6 lift",
+    "length": 75.375,
     "points": 7,
-    "visited": 2565,
+    "visited": 2401,
     "end": [
-      7.3,
+      2.3,
       5.1,
-      -57
+      -56.9
     ]
   },
   {
-    "name": "findPath B6 pickup -> staff",
-    "length": 106.06,
+    "name": "findPath B6 lift -> staff",
+    "length": 105.317,
     "points": 8,
-    "visited": 1027,
+    "visited": 1103,
     "end": [
       64,
       0.02,

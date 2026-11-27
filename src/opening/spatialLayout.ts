@@ -5,7 +5,14 @@
  * body runs along +X, its passenger door faces north onto the entrance forecourt.
  * That is why `width` is the road-width across Z and `length` runs along X.
  */
-export const OPENING_WORLD_REVISION='opening-2030-v8-lift';
+export const OPENING_WORLD_REVISION='opening-2030-v9-b6-lift';
+/**
+ * The MacBook errand as the minimap draws it (owner ruling 2026-11-27: the errand lives in
+ * Building 6, the middle building, and the lift is the first left inside). One array
+ * serves both the B5 → B6 walk (`routeB6`) and the errand's own marker route
+ * (`routeErrand`), so the two can never drift apart as they did when the errand moved house.
+ */
+const ROUTE_B6: [number,number][]=[[64,-61],[58,-61.5],[58,-48],[24,-48],[18,-48],[18,-26],[4,-26],[4,-52.2],[4,-55.0],[2.3,-55.0],[2.3,-56.9]];
 export const OPENING={
  bus:{
   x:64.4,z:30.9,
@@ -28,7 +35,12 @@ export const OPENING={
   /** The doorway cut contains the whole revolving-door drum (x 56.75–59.25, z 20.28–22.83, cap 3.94 m);
    * the room shell's sliding door replaces it. */
   doorDepth:2.45},
- b6:{id:'B06',x0:1,x1:10,z0:-62,door:4,doorWidth:2.4,floor:5.1,z1:-52.625,clearHeight:2.65,doorHeight:2.6},
+ /** B06 entrance hall (owner ruling, 2026-11-27): the auditorium's south doors at x=4 open
+  * onto the grand-stair landing (5.1 m); turning left inside reaches the core lift, turning
+  * right reaches the canteen. The 5F principal's office sits above the canteen side, reached
+  * by that lift. The floor is the campus model's entrance landing, not the plaza: the grand
+  * stair tops out at 5.1 m, so a hall at plaza level would sit under the model's landing. */
+ b6:{id:'B06',x0:-4,x1:15.6,z0:-62,door:4,doorWidth:2.4,floor:5.1,z1:-52.925,clearHeight:4.4,doorHeight:3.2},
  staff:[64,.02,-61] as [number,number,number],
  /** The retired Building 6 presentation-desk anchor: scenery only. The interactive
   * MacBook lives in the B4 5F principal's office (`B4_OFFICE.laptop`). */
@@ -44,9 +56,8 @@ export const OPENING={
  checkpoints:{
   bus:[66.6,.54,30.6] as [number,number,number],
   b5:[58,0,-52] as [number,number,number],
-  /** The MacBook errand starts at B4's side-door threshold, not in Building 6:
-   * Task E moved the office to B4 5F and this checkpoint has to move with it. */
-  b6:[47.75,.02,20] as [number,number,number],
+  /** The MacBook errand starts at Building 6's front entrance landing, outside the doors. */
+  b6:[4,5.1,-52.1] as [number,number,number],
   b5safe:[58,0,-53.8] as [number,number,number],
   handoff:[58,.08,25] as [number,number,number],
  },
@@ -74,11 +85,10 @@ export const OPENING={
   [[56,0,32.9],[50,0,32.9],[50,0,30.6]],
  ] as [number,number,number][][],
  routeB5:[[63.4,27.8],[52,27.8],[52,33.5],[24,33.5],[24,-48],[58,-48],[58,-61.5],[64,-61]],
- routeB6:[[64,-61],[58,-61.5],[58,-48],[24,-48],[18,-48],[18,-26],[4,-26],[4,-52.2],[4,-58],[7.3,-57]],
- /** B5 → B4 side door: the MacBook errand as the minimap draws it. The first legs are
-  * `routeB5` reversed, then the forecourt jog east of the entrance planter (x 32–48) and
-  * through the 1.3 m gap between that planter and the façade to the side door. */
- routeErrand:[[64,-61],[58,-61.5],[58,-48],[24,-48],[24,33.5],[52,33.5],[52,27.8],[49.7,24.5],[49.7,21.3],[48.3,21.0],[47.75,20]],
+ /** B5 → Building 6 entrance, then the left turn to the lift (owner ruling 2026-11-27).
+  * The same array is the errand's minimap route: the MacBook lives in this building now. */
+ routeB6:ROUTE_B6,
+ routeErrand:ROUTE_B6,
  routeB4:[[64,-61],[58,-61.5],[58,-26],[90,-26],[90,33.5],[58,33.5],[58,25]],
 } as const;
 
@@ -86,31 +96,36 @@ export const OPENING={
  * constants module stays free of a cycle back into the room layout. */
 const B4_WALL=.12;
 /**
- * B04 core lift (Task D, 2026-11-24). A car in a shaft cut into the west wall — the
- * wall at `x = 46.13` is an interior partition of the band-tower mass, not a façade,
- * which is where a core lift belongs.
+ * Building 6 core lift (owner ruling, 2026-11-27: the lift is in the middle building,
+ * not in CDS-1). The shaft stands in the entrance hall's left half; its east doors face
+ * the entry axis, so "enter, turn left" is the lift. The car rises four floors to the 5F
+ * plate — the principal's office is a 3 m landing, a 6 m corridor and the office door
+ * east of the shaft.
  *
- * The car interior is the brief's 2.20 m (x) × 2.60 m (z) with 2.60 m clear; its east
- * face is the lobby's west interior plane. The door is a 2.00 × 2.30 m opening in that
- * wall at z 11.40…13.40. The car floor rests on the lobby floor and rises to the fifth
- * floor: `floor + 4 × 4.72`, because B04 is 14 floors over 66.15 m.
+ * Kept under the `B4_LIFT` name: every consumer (lift.ts, the office module, the shell
+ * and the gates) imports it by that name. The coordinates, not the name, are the layout.
  */
 export const B4_LIFT={
- /** Interior faces of the car. `x1` is the lobby's west interior plane. */
- x0:OPENING.b4.x0+.01+B4_WALL-2.20,
- x1:OPENING.b4.x0+.01+B4_WALL,
- z0:11.10,z1:13.70,
+ /** Interior faces of the car. `x1` is the hall's lift-door plane. */
+ x0:-0.80,
+ x1:1.40,
+ z0:-58.20,z1:-55.60,
  clearHeight:2.60,
- /** Door in the west wall: 2.00 m clear, 2.30 m high, measured from the car floor. */
- door:{z0:11.40,z1:13.40,height:2.30},
+ /** Door in the east wall: 1.20 m clear, 2.30 m high, measured from the car floor.
+  * The width is bounded by the sliding leaves, not chosen freely: each leaf is half the
+  * doorway and slides half its width outward, so a 2.00 m doorway would leave a leaf
+  * hanging 0.70 m out of the car's south wall into the hall. At 1.20 m both open leaves
+  * stay inside the car's 2.60 m east wall with 0.10 m to spare. */
+ door:{z0:-57.50,z1:-56.30,height:2.30},
  /** Car shell thickness shared with the room wall. */
  wall:B4_WALL,
- /** Car floor at the ground lobby, and the 5F landing four 4.72 m storeys above it. */
- ground:OPENING.b4.floor,
- floorToFloor:4.72,
- landing:OPENING.b4.floor+4*4.72,
+ /** Car floor at the entrance hall, and the 5F landing four floors above it
+  * (the auditorium rises 23.95 m over six floors, so 3.99 m each). */
+ ground:OPENING.b6.floor,
+ floorToFloor:3.99,
+ landing:OPENING.b6.floor+4*3.99,
  /** Accel–cruise–decel travel and the door timing. */
- travelSeconds:6.0,
+ travelSeconds:5.0,
  doorSeconds:.8,
  /** How long the doors wait for a passenger before the car leaves. */
  dwellSeconds:1.4,
@@ -120,16 +135,25 @@ export const B4_LIFT={
  officeDoor:{width:1.0,height:2.20},
 } as const;
 
-/** Building 6 office dimensions shared by scenery and collision. */
-export const OFFICE_LAYOUT={
- interior:{x0:OPENING.b6.x0+.06,x1:OPENING.b6.x1-.06,z0:OPENING.b6.z0+.17,z1:OPENING.b6.z1-.24,ceiling:2.59},
- presentationDesk:{x:OPENING.presentationDesk[0],z:OPENING.presentationDesk[2],w:1.90,d:.84,h:OPENING.presentationDesk[1]-OPENING.b6.floor},
- credenza:{x:4.5,z:-61.45,w:5,d:.55,h:.90},
- planter:{x:1.9,z:-60.6,w:.44,d:.44,h:.44},
- workstations:[
-  {id:'west',facing:1,desk:{x:2.05,z:-57.8,w:.78,d:1.8,h:.76},chair:{x:2.98,z:-57.8,w:.56,d:.56,h:.95}},
-  {id:'east',facing:-1,desk:{x:8.98,z:-60.25,w:.78,d:1.8,h:.76},chair:{x:8.05,z:-60.25,w:.56,d:.56,h:.95}},
- ],
+/**
+ * Building 6 ground hall (owner ruling, 2026-11-27). Entered from the south face; the
+ * core lift stands west of the entry axis, the canteen east of it behind a partition.
+ * The HKU flip wall hangs on the north wall, facing the doors.
+ */
+export const B6_HALL={
+ interior:{x0:OPENING.b6.x0,x1:OPENING.b6.x1,z0:OPENING.b6.z0,z1:OPENING.b6.z1,ceiling:OPENING.b6.clearHeight},
+ /** Canteen partition with a 3.4 m opening; the room is east of the entry axis. */
+ canteen:{partitionX:10.40,openingZ0:-58.60,openingZ1:-55.20},
+ tables:[
+  {x:12.15,z:-58.90,w:1.05,d:3.20,top:.76},
+  {x:14.25,z:-58.90,w:1.05,d:3.20,top:.76},
+ ] as const,
+ counter:{x0:10.70,x1:15.30,z0:-53.78,z1:-53.14,h:.95},
+ /** The observed HKU flip wall, centred on the hall's north wall and facing south.
+  * `z` is the wall plane the panel backs onto; `depth` is how far it stands proud. */
+ flipWall:{x:3.10,z:OPENING.b6.z0,yaw:0,width:7.374,depth:.11},
+ /** The lift's shaft walls, built inside the hall (the tower mass is hollow here). */
+ shaft:{wall:.12},
 } as const;
 
 /** IMG_4380: observed arrangement, estimated metres. Lobby on the left, hall on the right.

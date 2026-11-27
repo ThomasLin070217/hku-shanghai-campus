@@ -20,16 +20,17 @@ import {STORY_AUDIO_URLS} from '../src/gameplay/storyAudioAssets';
  *   2. the E.8 dressing exists in the built shell and has no collision;
  *   3. both shaft openings are sealed by a guard whenever the car is on the other floor, and
  *      open when it is there (A.3.1);
- *   4. a ground call is a real 6.000 s accel–cruise–decel descent, sampled at fixed fractions
- *      (E.5, E-F4);
- *   5. the errand route — side door, monitor, ground call, car, 5F call, corridor, office door,
- *      desk — is walkable at every 5 cm sample once the doors it needs are open, and the closed
- *      office door really blocks the room until its leaf has swung clear (E.6);
+ *   4. a ground call is a real accel–cruise–decel descent over `L.travelSeconds`, sampled at
+ *      fixed fractions (E.5, E-F4);
+ *   5. the errand route — Building 6's entrance, the monitor across the west aisle, the
+ *      ground call, the car, the 5F call, the corridor, the office door, the desk — is walkable
+ *      at every 5 cm sample once the doors it needs are open, and the closed office door really
+ *      blocks the room until its leaf has swung clear (E.6);
  *   6. the three beats are dark until the errand arms them and then fire in route order, all of
  *      them before the door opens, and latch (E-F3);
  *   7. the call lamps report lit-while-called / dark-on-arrival (E-F10), every cue the office
  *      plays exists in the audio manifest, and the stairs claim is proved structurally (E-F7);
- *   8. the lift descends in the same 6.000 s shape it rises, never opens its doors while moving,
+ *   8. the lift descends in the same shape it rises, never opens its doors while moving,
  *      carries the rider's floor, dispatches an empty car, and `resetLift` parks it at the
  *      landing with the clock bootstrapped (E.0, E-F5, E-F6).
  *
@@ -48,19 +49,21 @@ const near = (a: number, b: number, eps: number) => Math.abs(a - b) <= eps;
 type P = {x: number; z: number};
 type Rect = {x0: number; x1: number; z0: number; z1: number};
 const SAMPLE = .05;
-const CZ = (L.z0 + L.z1) / 2;                 // 12.40, the car's and the doorway's centre line
-const CX = (L.x0 + L.x1) / 2;                 // 45.03, the car's centre
-const FLOOR = LIFT_LANDING.floorTop;          // 18.90
-const GROUND = L.ground;                      // 0.02
-const DOOR_PLANE = L.x1 - L.wall / 2;         // the lobby/lift threshold's plane
+const CZ = (L.z0 + L.z1) / 2;                 // -56.90, the car's and the doorway's centre line
+const CX = (L.x0 + L.x1) / 2;                 // 0.30, the car's centre
+const FLOOR = LIFT_LANDING.floorTop;          // 21.06
+const GROUND = L.ground;                      // 5.10, the auditorium's entrance landing
+const DOOR_PLANE = L.x1 - L.wall / 2;         // the hall/lift threshold's plane
 
 /* ------------------------------------------------------------------ */
 /* 1. Geometry, read from its source                                   */
 /* ------------------------------------------------------------------ */
 
+/** The room the stairs scan covers (CDS-1's ground floor). The lift is no longer here. */
 const R = B4_LAYOUT.room;
-const SD = B4_LAYOUT.sideDoor;
-const sdMid = (SD.x0 + SD.x1) / 2;
+/** The hall the errand actually crosses (owner ruling 2026-11-27: the middle building). */
+const HALL = OPENING.b6;
+const HALL_RECT: Rect = {x0: HALL.x0, x1: HALL.x1, z0: HALL.z0, z1: HALL.z1};
 const cctvMid = {
  x: (B4_OFFICE.cctvTrigger.x0 + B4_OFFICE.cctvTrigger.x1) / 2,
  z: (B4_OFFICE.cctvTrigger.z0 + B4_OFFICE.cctvTrigger.z1) / 2,
@@ -75,7 +78,7 @@ const corridorRect: Rect = {
 
 const geometry = {
  room: {x0: R.x0, x1: R.x1, z0: R.z0, z1: R.z1, floor: r4(R.floor), clearHeight: R.clearHeight},
- sideDoor: {x0: SD.x0, x1: SD.x1, z: r4(SD.z)},
+ hall: {x0: HALL.x0, x1: HALL.x1, z0: HALL.z0, z1: HALL.z1, floor: r4(HALL.floor), clearHeight: HALL.clearHeight},
  car: {x0: L.x0, x1: L.x1, z0: L.z0, z1: L.z1, ground: r4(GROUND), landing: r4(L.landing)},
  doorway: {...L.door},
  landing: {...LIFT_LANDING},
@@ -94,33 +97,40 @@ check(R.floor === OPENING.b4.floor, 'geometry:room-floor', `the room's floor ${R
 check(near(L.landing - L.ground, LIFT_TRAVEL_DISTANCE, 1e-9), 'geometry:travel',
  `the landing stands ${r4(L.landing - L.ground)} m above the ground, ${r4(LIFT_TRAVEL_DISTANCE)} m of travel`);
 
-// The monitor hangs on the west wall between the side door and the lift doorway, facing the
-// player walking in — that is what makes beat 1 a first *look* rather than a proximity ping.
-// It is angled on a bracket, so "on the wall" is a reach, not a single x: the frame's north
-// edge swings `.48·sin(tilt)` off the wall and must clear it while its south edge stays on it.
+// The monitor hangs on the hall's west wall, in the aisle beside the lift shaft, facing the
+// player walking the west side — that is what makes beat 1 a first *look* rather than a
+// proximity ping. It is angled on a bracket, so "on the wall" is a reach, not a single x:
+// the frame's north edge swings `.48·sin(tilt)` off the wall and must clear it while staying
+// within a bracket's reach of it.
 const cctvReach = .035 * Math.cos(B4_OFFICE.cctv.tilt) + (B4_OFFICE.cctv.w + .06) / 2 * Math.abs(Math.sin(B4_OFFICE.cctv.tilt));
-check(B4_OFFICE.cctv.x - cctvReach >= L.x1, 'geometry:cctv-clear-of-wall',
- `the monitor's north edge must stand clear of the west wall at x ${L.x1}, reach ${r4(B4_OFFICE.cctv.x - cctvReach)}`);
-check(B4_OFFICE.cctv.x - cctvReach <= L.x1 + .06, 'geometry:cctv-on-wall',
- `the monitor must hang on the wall, not float off it: gap ${r4(B4_OFFICE.cctv.x - cctvReach - L.x1)} m`);
-check(B4_OFFICE.cctv.z > L.door.z1 && B4_OFFICE.cctv.z < SD.z, 'geometry:cctv-between',
- `the monitor at z ${B4_OFFICE.cctv.z} must lie between the lift doorway (z ≤ ${L.door.z1}) and the side door (z ${r4(SD.z)})`);
+check(B4_OFFICE.cctv.x - cctvReach >= HALL.x0, 'geometry:cctv-clear-of-wall',
+ `the monitor's north edge must stand clear of the west wall at x ${HALL.x0}, reach ${r4(B4_OFFICE.cctv.x - cctvReach)}`);
+check(B4_OFFICE.cctv.x - cctvReach <= HALL.x0 + .10, 'geometry:cctv-on-wall',
+ `the monitor must hang on the wall, not float off it: gap ${r4(B4_OFFICE.cctv.x - cctvReach - HALL.x0)} m`);
+check(B4_OFFICE.cctv.z >= L.z0 && B4_OFFICE.cctv.z <= L.z1, 'geometry:cctv-beside-shaft',
+ `the monitor at z ${B4_OFFICE.cctv.z} must hang on the west aisle beside the shaft (${L.z0}…${L.z1})`);
+check(near(B4_OFFICE.cctv.y, GROUND + 1.92, 1e-9), 'geometry:cctv-eye-height',
+ `the monitor must hang 1.92 m above the hall floor ${GROUND}, read y ${B4_OFFICE.cctv.y}`);
 check(B4_OFFICE.cctvTrigger.x0 <= B4_OFFICE.cctv.x + .10, 'geometry:cctv-trigger-mouth',
  `the trigger must start at the screen's wall, read x0 ${B4_OFFICE.cctvTrigger.x0}`);
 check(span(B4_OFFICE.cctv.z, B4_OFFICE.cctvTrigger), 'geometry:cctv-trigger-span',
  `the monitor at z ${B4_OFFICE.cctv.z} must stand inside its own trigger z ${B4_OFFICE.cctvTrigger.z0}…${B4_OFFICE.cctvTrigger.z1}`);
-check(inside(cctvMid.x, cctvMid.z, R), 'geometry:cctv-inside-room',
- `the trigger centre (${r4(cctvMid.x)}, ${r4(cctvMid.z)}) must be inside the B4 room`);
+check(inside(cctvMid.x, cctvMid.z, HALL_RECT), 'geometry:cctv-inside-room',
+ `the trigger centre (${r4(cctvMid.x)}, ${r4(cctvMid.z)}) must be inside the hall`);
 
-// The ground call plate: on the wall, just south of the doorway, within a step of it.
-check(near(B4_OFFICE.callGround.x, L.x1 + .02, 1e-9), 'geometry:call-ground-wall',
- `the ground call plate must hang on the lift wall at x ${L.x1}, read ${B4_OFFICE.callGround.x}`);
-check(B4_OFFICE.callGround.z > L.door.z1 && B4_OFFICE.callGround.z < L.door.z1 + .60, 'geometry:call-ground-place',
- `the ground call plate at z ${B4_OFFICE.callGround.z} must be within 0.60 m of the doorway's south jamb ${L.door.z1}`);
-check(inside(B4_OFFICE.callGround.x, B4_OFFICE.callGround.z, R), 'geometry:call-ground-inside-room',
- 'the ground call plate must be inside the B4 room');
-check(inside(B4_OFFICE.callGround.x + .35, B4_OFFICE.callGround.z, R), 'geometry:call-ground-stand',
- 'the spot 0.35 m in front of the ground call plate must be inside the B4 room');
+// The ground call plate: on the hall-facing face of the shaft's east wall, on the pier south
+// of the doorway (the doorway itself spans L.door.z0…z1 and has no wall to hang on), within a
+// step of the doors and at hand height above the hall floor.
+check(near(B4_OFFICE.callGround.x, L.x1 + L.wall + .02, 1e-9), 'geometry:call-ground-wall',
+ `the ground call plate must hang on the shaft's hall-facing face at x ${L.x1 + L.wall}, read ${B4_OFFICE.callGround.x}`);
+check(B4_OFFICE.callGround.z > L.door.z1 && B4_OFFICE.callGround.z < L.z1, 'geometry:call-ground-place',
+ `the ground call plate at z ${B4_OFFICE.callGround.z} must sit on the pier south of the doorway (${L.door.z1}…${L.z1})`);
+check(near(B4_OFFICE.callGround.y, GROUND + 1.15, 1e-9), 'geometry:call-ground-height',
+ `the ground call plate must hang at hand height above the hall floor ${GROUND}, read y ${B4_OFFICE.callGround.y}`);
+check(inside(B4_OFFICE.callGround.x, B4_OFFICE.callGround.z, HALL_RECT), 'geometry:call-ground-inside-room',
+ 'the ground call plate must be inside the hall');
+check(inside(B4_OFFICE.callGround.x + .35, B4_OFFICE.callGround.z, HALL_RECT), 'geometry:call-ground-stand',
+ 'the spot 0.35 m in front of the ground call plate must be inside the hall');
 
 // The 5F call point: in the corridor, reachable from the lobby and from the office.
 check(liftLandingContains(B4_OFFICE.call5f.x, B4_OFFICE.call5f.z), 'geometry:call-5f-inside',
@@ -159,7 +169,7 @@ check(Math.hypot(B4_OFFICE.laptopStand.x - B4_OFFICE.laptop.x, B4_OFFICE.laptopS
 // **ground lobby's** ceiling, and 1 cm west of the lobby's west face so it never overlaps a
 // floor plate. Not to the shaft's top: the car's own 5F doorway is at this same plane, so a
 // taller guard would seal the way out of the lift whenever the car is parked upstairs.
-const GROUND_CEIL = R.floor + R.clearHeight;   // 4.32, the B04 lobby's ceiling
+const GROUND_CEIL = HALL.floor + HALL.clearHeight;   // 9.50, the B6 hall's ceiling
 check(near(B4_OFFICE.groundGuard.x1, L.x1, 1e-9) && near(B4_OFFICE.groundGuard.x0, L.x1 - .05, 1e-9),
  'geometry:ground-guard-plane', `the ground guard must sit in the doorway plane x ${L.x1}, read ${B4_OFFICE.groundGuard.x0}…${B4_OFFICE.groundGuard.x1}`);
 check(near(B4_OFFICE.groundGuard.z0, L.door.z0, 1e-9) && near(B4_OFFICE.groundGuard.z1, L.door.z1, 1e-9),
@@ -239,14 +249,14 @@ resetLift();
 resetOffice();
 settle();
 check(near(guardBox()?.top ?? -1, GROUND_CEIL, 1e-9) && near(guardBox()?.bottom ?? -1, GROUND, 1e-9),
- 'guard:up-solid', `with the car at the landing the ground guard must be solid to the lobby ceiling ${GROUND_CEIL}, read ${JSON.stringify(guardBox())}`);
+ 'guard:up-solid', `with the car at the landing the ground guard must be solid to the hall ceiling ${GROUND_CEIL}, read ${JSON.stringify(guardBox())}`);
 check(nav.blocked(DOOR_PLANE, CZ, GROUND), 'guard:up-blocks',
- 'with the car at the landing the lobby doorway must be solid — behind it is an 18.9 m shaft');
-check(!nav.blocked(47.0, CZ, GROUND), 'guard:up-lobby-walkable',
- 'the lobby itself must stay walkable with the car up');
+ 'with the car at the landing the hall doorway must be solid — behind it is a 15.96 m shaft');
+check(!nav.blocked(L.x1 + 3.0, CZ, GROUND), 'guard:up-hall-walkable',
+ 'the hall itself must stay walkable with the car up');
 
 /* ------------------------------------------------------------------ */
-/* 5. E.5 + E-F4 — a ground call is a real 6.000 s descent, sampled    */
+/* 5. E.5 + E-F4 — a ground call is a real timed descent, sampled      */
 /* ------------------------------------------------------------------ */
 
 const descent = (() => {
@@ -273,7 +283,8 @@ check(near(descent.seconds, L.travelSeconds, 1 / 120 + 1e-9), 'descent:duration'
 check(near(LIFT.y, GROUND, .05), 'descent:floor', `the car must come down within 0.05 m of ${GROUND}, read ${LIFT.y}`);
 check(descent.doorsWhileMoving === 0, 'descent:doors-shut', `the doors opened ${descent.doorsWhileMoving} times while the car was moving`);
 check(descent.call === null, 'descent:call-cleared', `arrival must clear the landing call, read ${JSON.stringify(descent.call)}`);
-check(descent.ys.length >= 700, 'descent:samples', `the descent must be sampled step by step, read ${descent.ys.length} samples`);
+check(descent.ys.length >= Math.round(L.travelSeconds * 120) - 60, 'descent:samples',
+ `the descent must be sampled step by step, read ${descent.ys.length} samples for a ${L.travelSeconds} s ride`);
 check(descent.ys.every((y, i) => i === 0 || y < descent.ys[i - 1]), 'descent:monotonic',
  'every step of the descent must be strictly below the one before it — a snap to the floor would not be');
 /**
@@ -284,7 +295,11 @@ check(descent.ys.every((y, i) => i === 0 || y < descent.ys[i - 1]), 'descent:mon
 const profile = (() => {
  const ys = descent.ys;
  const drop = (a: number, b: number) => r4(ys[a] - ys[b]);
- const start = drop(0, 30), mid = drop(345, 375), end = drop(ys.length - 31, ys.length - 1);
+ // The cruise window is centred on the ride's halfway sample, derived from the sample count:
+ // a fixed index tuned to one travel time silently measured the wrong part of the ride when
+ // the lift moved to a different shaft with a different height.
+ const half = Math.floor((ys.length - 1) / 2);
+ const start = drop(0, 30), mid = drop(half - 15, half + 15), end = drop(ys.length - 31, ys.length - 1);
  return {start, mid, end, ratioStart: +(start / mid).toFixed(4), ratioEnd: +(end / mid).toFixed(4)};
 })();
 check(profile.start > 0 && profile.mid > 0 && profile.end > 0, 'descent:profile-moves',
@@ -316,30 +331,35 @@ check(!nav.blocked(DOOR_PLANE, CZ, GROUND), 'guard:down-passes',
 /* 6. The route                                                        */
 /* ------------------------------------------------------------------ */
 
+/**
+ * The ground leg, in Building 6: in through the auditorium's south doors, left across
+ * the entry hall, down the west aisle past the monitor, back around the shaft's south face and
+ * through the lift doorway. Every waypoint derives from the hall and shaft constants, so a
+ * future retarget moves the walk with the geometry instead of leaving a stale path behind.
+ */
 const groundRoute: P[] = [
- {x: sdMid, z: SD.z - .35},                                      // through the side door
- {x: sdMid, z: 18.0},                                            // into the lobby
- {x: 47.35, z: B4_OFFICE.cctv.z},                                // the first clear look at the monitor
- {x: 46.9, z: 14.9},                                             // turn west, toward the lift
- {x: B4_OFFICE.callGround.x + .35, z: B4_OFFICE.callGround.z},   // the call button
- {x: 46.50, z: 12.90},                                           // step north, into the doorway line
- {x: 45.60, z: CZ},                                              // through it
- {x: CX, z: CZ},                                                 // inside the car
+ {x: HALL.door, z: HALL.z1 + .30},                                      // on the entrance threshold
+ {x: HALL.door, z: HALL.z1 - 1.10},                                     // inside the hall
+ {x: L.x0 - 1.55, z: L.z1 + .10},                                       // left, into the west aisle
+ {x: B4_OFFICE.cctv.x + .95, z: B4_OFFICE.cctv.z},                      // the first clear look at the monitor
+ {x: L.x0 - .70, z: L.z1 + .35},                                        // back south around the shaft
+ {x: L.x1 + .90, z: L.z1 + 1.30},                                       // east along the shaft's south face
+ {x: B4_OFFICE.callGround.x + .35, z: B4_OFFICE.callGround.z},          // the call button
+ {x: L.x1 + .55, z: CZ},                                                // into the doorway line
+ {x: CX, z: CZ},                                                        // inside the car
 ];
 const fifthRoute: P[] = [
- {x: CX, z: CZ},                                                 // out of the car
- {x: 47.6, z: 12.6},                                             // the 5F lobby
- {x: B4_OFFICE.call5f.x, z: B4_OFFICE.call5f.z},                 // the 5F call point
- {x: 49.8, z: CZ},                                               // into the corridor
- {x: corridorMid.x, z: CZ},                                      // the corridor beat
- {x: 54.7, z: CZ},                                               // the office door
- {x: 55.6, z: CZ},                                               // through it
- {x: 56.8, z: CZ},                                               // inside the office
- {x: 57.1, z: 14.0},                                             // around the chair
- {x: B4_OFFICE.laptopStand.x, z: B4_OFFICE.laptopStand.z},       // at the desk
+ {x: CX, z: CZ},                                                     // out of the car
+ {x: LIFT_LANDING.lobbyX1 - .80, z: CZ},                             // the 5F lobby
+ {x: B4_OFFICE.call5f.x, z: B4_OFFICE.call5f.z},                     // the 5F call point
+ {x: corridorMid.x, z: CZ},                                          // the corridor beat
+ {x: B4_OFFICE.door.x0 - .55, z: CZ},                                // outside the office door
+ {x: B4_OFFICE.door.x1 + .55, z: CZ},                                // through it
+ {x: B4_OFFICE.interior.x1 - 2.6, z: B4_OFFICE.laptopStand.z + .15}, // past the chair, clear of the desk
+ {x: B4_OFFICE.laptopStand.x, z: B4_OFFICE.laptopStand.z},           // at the desk
 ];
 /** The leg that crosses the office doorway: blocked while the leaf is shut (or still moving). */
-const doorLeg: P[] = [{x: 54.7, z: CZ}, {x: 56.8, z: CZ}];
+const doorLeg: P[] = [{x: B4_OFFICE.door.x0 - .55, z: CZ}, {x: B4_OFFICE.door.x1 + .55, z: CZ}];
 
 /** Every 5 cm point along a waypoint list. */
 function samples(route: P[]): P[] {
@@ -494,8 +514,11 @@ resetOffice();
 check(officeDebug().armed && !officeDebug().doorOpen, 'offer:state-restored',
  'the offer checks must leave the office armed, shut and beat-clear for the beats section');
 
-// Beat 1: the first look at the monitor on the way in.
-const lookAt = groundSamples.findIndex(q => Math.hypot(q.x - 47.35, q.z - B4_OFFICE.cctv.z) < .06);
+// Beat 1: the first look at the monitor on the way in. "In view" is the trigger volume the
+// office itself tests, not a hand-placed point: the walk must enter the same volume the game
+// arms, or the gate proves a different beat from the one a player gets.
+const lookAt = groundSamples.findIndex(q => inside(q.x, q.z, B4_OFFICE.cctvTrigger));
+check(lookAt >= 0, 'beats:walk-past-monitor', 'the ground walk must pass through the monitor\'s trigger volume');
 for (const p of (lookAt >= 0 ? groundSamples.slice(0, lookAt + 1) : groundSamples)) tickOffice(p.x, p.z, GROUND);
 const afterLook = officeDebug();
 check(afterLook.beats.lobby_feed !== null, 'beats:one-fires', 'walking up to the monitor must start the feed');
@@ -780,8 +803,8 @@ settle();
 /* 11. E-F10 — the call lamps                                          */
 /* ------------------------------------------------------------------ */
 
-// A neutral sync point: inside B04, far from every trigger volume.
-const NEUTRAL: P = {x: 47.0, z: R.z0 + .5};
+// A neutral sync point: inside the B6 hall, east of the shaft and far from every trigger volume.
+const NEUTRAL: P = {x: HALL.x0 + 8.0, z: CZ};
 tickOffice(NEUTRAL.x, NEUTRAL.z, GROUND);
 check(officeDebug().lamps.ground === .25 && officeDebug().lamps.top === .25, 'lamps:dark-at-rest',
  `with no call pending both plates must be dark, read ${JSON.stringify(officeDebug().lamps)}`);
@@ -808,7 +831,7 @@ settle();
 const stairReport = (() => {
  type Surface = {top: number; at: {x: number; z: number} | null};
  /** Every surface `support()` can see over the room, queried above the room's clear height. */
- let b4HighestSurface: Surface = {top: GROUND, at: null};
+ let b4HighestSurface: Surface = {top: R.floor, at: null};
  const ceiling = R.floor + R.clearHeight + .24;                  // 4.56: above every room surface
  for (let x = R.x0 + .5; x <= R.x1 - .5; x += .5) {
   for (let z = R.z0 + .5; z <= R.z1 - .5; z += .5) {
@@ -870,13 +893,13 @@ check(missingCues.length === 0, 'cues:manifest',
 function trigger(name: string, what: string, x: number, z: number, floor: 'ground' | 'lift' | 'fifth', reach: number) {
  const pr = floor === 'fifth' ? project(fifthRoute, {x, z}) : floor === 'ground' ? project(groundRoute, {x, z}) : {s: groundWalk + LIFT_TRAVEL_DISTANCE / 2, off: 0};
  const routeS = pr.s + (floor === 'fifth' ? RIDE_OFFSET : 0);
- check(pr.off <= reach, `triggers:${name}-on-route`,
+ check(pr.off <= reach + 1e-6, `triggers:${name}-on-route`,
   `${what} must lie within ${reach} m of the walked route, ${r4(pr.off)} m off it`);
  return {name, what, floor, x: r4(x), z: r4(z), reach, offRoute: r4(pr.off), routeS: r4(routeS)};
 }
 
 const triggers = [
- trigger('lobby_feed', 'CCTV monitor', cctvMid.x, cctvMid.z, 'ground', .26),
+ trigger('lobby_feed', 'CCTV monitor', (groundSamples[lookAt] ?? cctvMid).x, (groundSamples[lookAt] ?? cctvMid).z, 'ground', 0),
  trigger('ground_call', 'lift call plate', B4_OFFICE.callGround.x, B4_OFFICE.callGround.z, 'ground', B4_OFFICE.callGround.radius),
  trigger('feed_dies', 'car doors closing', CX, CZ, 'lift', 0),
  trigger('call_5f', '5F call plate', B4_OFFICE.call5f.x, B4_OFFICE.call5f.z, 'fifth', .26),

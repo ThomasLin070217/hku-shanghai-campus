@@ -1,4 +1,4 @@
-"""Browser check: the MacBook errand, side door to the 5F principal's office (Task E).
+"""Browser check: the MacBook errand, Building 6 ground hall to the 5F principal's office.
 
 Needs a dev or review server (the `window.__CAMPUS` hooks) and Python Playwright:
 
@@ -7,10 +7,10 @@ Needs a dev or review server (the `window.__CAMPUS` hooks) and Python Playwright
 
 Three pages, each one a separate fresh boot:
 
-  * `?checkpoint=b6` — the **designed** run: side door → monitor (a 4.0 s look at the live
-    feed) → call plate → wait for the car → ride → corridor → office door → desk, then the
-    **return** run: desk → car → ride down → ground lobby. The screenshots come from this
-    page: the side-door approach, the monitor close-up, and the 5F corridor with the trolley.
+  * `?checkpoint=b6` — the **designed** run: the hall's south doors → monitor (a 4.0 s look
+    at the live feed) → call plate → wait for the car → ride → corridor → office door → desk,
+    then the **return** run: desk → car → ride down → hall. The screenshots come from this
+    page: the monitor approach, the close-up, and the 5F corridor with the trolley.
   * `?checkpoint=b6` — the **beeline**: the same errand with the monitor detour and the look
     removed. Reported, never padded.
   * `?checkpoint=b5` — before the errand is accepted: the beats must stay dark even with the
@@ -34,14 +34,14 @@ gates: a tolerance taken from the build's own error cannot fail for that build.
 Three clocks are printed, each with its legs separated into walking / lift / interaction and
 summed against the total:
 
-  * `beeline`  — side door → desk, optimal.
+  * `beeline`  — south doors → desk, optimal.
   * `designed` — the same with the monitor pause.
   * `return`   — desk → ground lobby, riding down.
 
 The play clock is `window.__sim`, the seconds the gate's fixed-step bursts actually stepped
 at 1/120 s, paced so one game second is one second on this machine. `wall` is printed beside
 it. Every step belongs to a labelled leg, so the legs sum to the total by construction. The
-30–45 s budget is applied to the **designed** clock. The 4.0 s look is the gate's playback of
+30–45 s budget is applied to the **designed** clock (the call wait included). The 4.0 s look is the gate's playback of
 a deliberate pause, not a game gate: nothing in the game holds the player.
 
 Screenshots go to SHOTS (default `.superpowers/sdd/2026-11-24-phase1/`) at 1280×800 and
@@ -56,14 +56,26 @@ from playwright.sync_api import sync_playwright
 ORIGIN = os.environ.get('CAMPUS_URL', 'http://127.0.0.1:5288/')
 CHROME = os.environ.get('CHROME_PATH')
 SHOTS = os.environ.get('SHOTS', '.superpowers/sdd/2026-11-24-phase1/')
-ARGS = ['--use-gl=angle', '--use-angle=swiftshader', '--enable-webgl', '--enable-unsafe-swiftshader']
+# SwiftShader renders this campus at well under a frame a second; when the host is also
+# carrying other work (load ≳ 20) the first frame blocks the page's main thread long
+# enough that even a 180 s boot wait expires, and no assertion in this file ever runs.
+# ANGLE's Metal backend uses the machine's GPU and boots the same scene in seconds. Set
+# CAMPUS_GL=swiftshader to force the old software path on a GPU-less host.
+_GL = os.environ.get('CAMPUS_GL', 'metal')
+ARGS = (['--use-gl=angle', '--use-angle=swiftshader', '--enable-webgl', '--enable-unsafe-swiftshader']
+        if _GL == 'swiftshader' else
+        ['--headless=new', '--use-angle=metal', '--enable-unsafe-swiftshader', '--no-sandbox'])
 BUDGET = (30.0, 45.0)
 WATCH_SECONDS = 4.0
 
 # E.10: the pinned evidence poses. Stored here and in the report so every shot is reproducible.
-APPROACH = (47.72, 17.35)                    # the side-door walk, passing the monitor
-SCREEN_FACE = (46.4065, 1.92, 16.0163)       # the lobby monitor's screen centre
-TROLLEY_AIM = (52.35, 19.45, 12.30)          # the trolley mid-corridor, from the office-door end
+# B6 hall: floor 5.10, west wall x0 −4; the monitor hangs at x −3.70, z −56.00, eye 1.92 above
+# the hall floor (B4_OFFICE.cctv), tilted −0.42 toward the hall.
+APPROACH = (-2.20, -56.00)                   # the walk past the monitor, square-on from the aisle
+SCREEN_FACE = (-3.658, 7.02, -55.981)        # the monitor's screen centre (anchor + screen offset)
+# The trolley sits mid-corridor at x (4.4+10.4)/2 − 1.0 = 6.40, z −56.90 (B4_OFFICE.dressing),
+# aimed from the corridor's office-door end.
+TROLLEY_AIM = (6.40, 21.61, -56.90)
 
 # E.10: every bound below is a *requirement*, stated in the requirement's own units. The
 # measured value is printed beside it as evidence about this build, and never defines the
@@ -110,9 +122,11 @@ HELPERS = r"""
  */
 window.__errand = {
   /** Put the body down at a known spot: the setup for the timed walk, not part of it. */
-  place(x, z) {
+  place(x, z, floor) {
     const g = window.__CAMPUS.explorer.game, w = window.__CAMPUS.explorer.world;
-    const y = w.support(x, z, 2) ?? 0;
+    // The probe sits just above the caller's floor, never at a fixed height: the hall is at
+    // 5.10 m and the B5 hall at 0.02 m, so a low probe under the hall drops the player through it.
+    const y = w.support(x, z, (floor ?? g.body.position.y - .2) + .3) ?? 0;
     g.body.position.set(x, y, z); g.body.velocity.set(0, 0, 0); g.body.grounded = true;
   },
   begin() { window.__t0 = performance.now(); window.__sim = 0; window.__beats = {}; window.__track = []; },
@@ -696,10 +710,14 @@ def boot(browser, checkpoint, expect_armed=None):
     }""")
     if checkpoint == 'b6':
         sx, sy, sz = spawn['p']
-        if ((sx - 47.75) ** 2 + (sz - 20.0) ** 2) ** 0.5 > 1.5:
-            errors.append('checkpoint b6 spawned at %.2f,%.2f,%.2f, not the B4 side door' % (sx, sy, sz))
-        if 1 <= sx <= 10 and -62 <= sz <= -52.625:
-            errors.append('checkpoint b6 spawned inside the retired B6 room (%.2f,%.2f)' % (sx, sz))
+        # The errand starts at Building 6's south landing, outside the hall doors (spatialLayout
+        # `checkpoints.b6`). The old CDS-1 side-door pose is the defect this line guards.
+        if abs(sx - 4.0) > 1.5 or abs(sz - (-52.1)) > 1.5:
+            errors.append('checkpoint b6 spawned at %.2f,%.2f,%.2f, not Building 6 south landing' % (sx, sy, sz))
+        if 46 <= sx <= 70 and 7 <= sz <= 20.5:
+            errors.append('checkpoint b6 spawned inside CDS-1, the retired errand site (%.2f,%.2f)' % (sx, sz))
+        if abs(sy - 5.1) > .2:
+            errors.append('checkpoint b6 spawned at y %.2f, not the hall floor 5.10' % sy)
         print('  b6 spawn', spawn, flush=True)
     armed = None
     if expect_armed is True:
@@ -712,7 +730,7 @@ def boot(browser, checkpoint, expect_armed=None):
     href = page.evaluate('() => location.href')
     navs = []                              # only navigations after boot count as a reload
     page.on('framenavigated', lambda f: navs.append(f.url) if f == page.main_frame else None)
-    page.evaluate('() => window.__errand.place(47.75, 20.0)')
+    page.evaluate('() => window.__errand.place(4.0, -52.2, 5.1)')
     page.evaluate('() => window.__errand.begin()')
     return context, page, errors, href, navs, armed
 
@@ -731,32 +749,34 @@ def route_legs(page, c, monitor_stop, hooks=None):
     hooks = hooks or {}
     out = {}
     if monitor_stop:
-        out['monitor'] = leg(page, c, 'walking', 'side door → monitor', G + '([[47.75, 18.0], [47.35, 16.0]])')
+        out['monitor'] = leg(page, c, 'walking', 'south doors → monitor',
+                             G + '([[4.00, -54.03], [-2.35, -55.50], [-2.75, -56.00]])')
         out['watch'] = leg(page, c, 'interaction', 'watch the feed (%.1f s)' % WATCH_SECONDS,
                            G + '([], {hold: %s, maxSim: 6})' % WATCH_SECONDS)
         if 'monitor' in hooks:
             hooks['monitor'](out)
+        # Back out of the west aisle, around the shaft's south face, to the call plate.
         out['call'] = leg(page, c, 'walking', 'monitor → call plate',
-                          G + '([[46.9, 14.9], [46.50, 13.75], [46.50, 12.90]])')
+                          G + '([[-1.50, -55.25], [2.30, -54.30], [1.89, -55.95]])')
     else:
-        out['call'] = leg(page, c, 'walking', 'side door → call plate',
-                          G + '([[47.4, 16.4], [46.9, 14.9], [46.50, 13.75], [46.50, 12.90]])')
-    out['wait'] = leg(page, c, 'lift', 'ground call answered', G + '([], {untilCar: 0.02, maxSim: 20})')
-    out['board'] = leg(page, c, 'walking', 'doorway → car', G + '([[45.60, 12.40], [45.03, 12.40]])')
-    out['ride'] = leg(page, c, 'lift', 'ride to 5F', G + '([], {untilY: 18.90, maxSim: 30, track: true})')
+        out['call'] = leg(page, c, 'walking', 'south doors → call plate',
+                          G + '([[4.00, -54.03], [2.60, -55.00], [1.89, -55.95]])')
+    out['wait'] = leg(page, c, 'lift', 'ground call answered', G + '([], {untilCar: 5.10, maxSim: 20})')
+    out['board'] = leg(page, c, 'walking', 'doorway → car', G + '([[1.95, -56.90], [0.30, -56.90]])')
+    out['ride'] = leg(page, c, 'lift', 'ride to 5F', G + '([], {untilY: 21.06, maxSim: 30, track: true})')
     out['doors'] = leg(page, c, 'lift', 'doors open at 5F', G + '([], {hold: 1.0, maxSim: 3})')
     out['corridor'] = leg(page, c, 'walking', '5F lobby → office door',
-                          G + '([[47.6, 12.6], [49.58, 12.90], [49.8, 12.40], [52.13, 12.40], [54.70, 12.40]])')
+                          G + '([[3.60, -56.90], [9.85, -56.90]])')
     if 'corridor' in hooks:
         hooks['corridor'](out)
     out['aimDoor'] = leg(page, c, 'interaction', 'aim at the office door',
-                         'window.__errand.aim(54.78, 20.05, 12.40)')
+                         'window.__errand.aim(10.48, 22.21, -56.90)')
     page.keyboard.press('f')
     out['swing'] = leg(page, c, 'interaction', 'the leaf swings', G + '([], {hold: 1.05, maxSim: 3})')
     out['desk'] = leg(page, c, 'walking', 'door → around the chair → desk',
-                      G + '([[55.60, 12.40], [56.80, 12.40], [57.10, 14.00], [58.70, 13.85]])')
+                      G + '([[10.95, -56.90], [12.92, -55.30], [13.97, -55.45]])')
     out['aimLaptop'] = leg(page, c, 'interaction', 'aim at the MacBook',
-                           'window.__errand.aim(58.70, 19.68, 12.40)')
+                           'window.__errand.aim(13.97, 21.84, -56.90)')
     page.keyboard.press('f')
     page.wait_for_timeout(400)
     return out
@@ -794,7 +814,7 @@ def main():
             face = SCREEN_FACE
             # E.10: the approach pose — the side-door walk, passing the monitor. The projection
             # is measured here from the real camera and the real screen quad, before the close-up.
-            page.evaluate(f'() => window.__errand.place({APPROACH[0]}, {APPROACH[1]})')
+            page.evaluate(f'() => window.__errand.place({APPROACH[0]}, {APPROACH[1]}, 5.1)')
             page.evaluate(f'() => window.__errand.look({face[0]}, {face[1]}, {face[2]})')
             settle(page, face)
             check('the feed is live at the approach pose',
@@ -812,7 +832,7 @@ def main():
                 '390x844': APPROACH + face,
             })
             # The close-up: at arm's length for 1280, a step back so the whole panel fits 390.
-            page.evaluate('() => window.__errand.place(47.14, 16.34)')
+            page.evaluate('() => window.__errand.place(-2.62, -55.98, 5.1)')
             page.evaluate(f'() => window.__errand.look({face[0]}, {face[1]}, {face[2]})')
             settle(page, face)
             check('the feed is live in the monitor close-up',
@@ -820,10 +840,10 @@ def main():
                   {'feed': page.evaluate(f'() => {D}.office().feed'),
                    'beats': page.evaluate(f'() => {D}.office().beats')})
             shot(page, 'task-E-fix2-monitor', vantages={
-                '1280x800': (47.14, 16.34) + face,
-                '390x844': (47.78, 16.63) + face,
+                '1280x800': (-2.62, -55.98) + face,
+                '390x844': (-2.15, -55.98) + face,
             })
-            page.evaluate('() => window.__errand.place(47.35, 16.00)')
+            page.evaluate('() => window.__errand.place(-2.75, -56.00, 5.1)')
 
         def on_corridor(out):
             """In the corridor, before the office door: beat 3, the order, the trolley shot."""
@@ -849,13 +869,13 @@ def main():
         r = route_legs(page, designed, monitor_stop=True, hooks={'monitor': on_monitor, 'corridor': on_corridor})
 
         check('the player waited at the call plate and the car came down',
-              r['wait']['office']['lift']['doors'] > .99 and abs(r['wait']['office']['lift']['y'] - 0.02) <= .005,
+              r['wait']['office']['lift']['doors'] > .99 and abs(r['wait']['office']['lift']['y'] - 5.10) <= .005,
               r['wait']['office']['lift'])
         check('the wait was a real descent, not a teleport',
-              r['wait']['sim'] >= 8.5, r['wait'])
-        check('walked into the car', r['board']['arrived'] == r['board']['legs'] and abs(r['board']['pos'][1] - 0.02) < 0.2,
+              r['wait']['sim'] >= 7.9, r['wait'])
+        check('walked into the car', r['board']['arrived'] == r['board']['legs'] and abs(r['board']['pos'][1] - 5.10) < 0.2,
               r['board'])
-        check('the car carried the player to the 5F landing', abs(r['ride']['pos'][1] - 18.90) <= 0.05, r['ride'])
+        check('the car carried the player to the 5F landing', abs(r['ride']['pos'][1] - 21.06) <= 0.05, r['ride'])
         check('beat 2: the feed dies when the doors close',
               r['ride']['office']['beats']['feed_dies'] is not None, r['ride']['office'])
         check('the monitor shows static after beat 2', r['ride']['office']['feed'] == 'dead', r['ride']['office'])
@@ -879,31 +899,30 @@ def main():
         ret = clock()
         page.evaluate('() => { window.__track = []; }')
         ret['walk'] = leg(page, ret, 'walking', 'desk → car',
-                          G + '([[57.10, 14.00], [56.80, 12.40], [55.60, 12.40], [54.7, 12.4], [52.0, 12.4],'
-                              ' [49.8, 12.4], [49.58, 12.9], [47.6, 12.6], [45.03, 12.40]])')
+                          G + '([[12.92, -55.30], [10.95, -56.90], [9.85, -56.90], [3.60, -56.90], [0.30, -56.90]])')
         ret['ride'] = leg(page, ret, 'lift', 'ride down to the ground',
-                          G + '([], {untilCar: 0.02, maxSim: 30, track: true})')
-        ret['out'] = leg(page, ret, 'walking', 'car → ground lobby',
-                         G + '([[45.60, 12.40], [46.50, 12.60], [47.60, 12.40]])')
+                          G + '([], {untilCar: 5.10, maxSim: 30, track: true})')
+        ret['out'] = leg(page, ret, 'walking', 'car → hall',
+                         G + '([[1.95, -56.90], [3.00, -56.90]])')
         track = page.evaluate('() => window.__track')
         ret_totals = totals(ret)
         check('the return walk reached the car', ret['walk']['arrived'] == ret['walk']['legs'], ret['walk'])
         check('the player rode the car down to the ground',
-              abs(ret['ride']['pos'][1] - 0.02) <= 0.05, {'ride': ret['ride'], 'lift': ret['ride']['office']['lift']})
+              abs(ret['ride']['pos'][1] - 5.10) <= 0.05, {'ride': ret['ride'], 'lift': ret['ride']['office']['lift']})
         check('the car floor carried the player on the way down (mid-ride samples)',
               len(track) >= 12 and all(abs(s['body'] - s['car']) <= 0.30 for s in track)
               and any(s['car'] > 6 for s in track), {'n': len(track), 'first': track[:3], 'last': track[-3:]})
-        check('the player walked out into the ground lobby',
-              ret['out']['arrived'] == ret['out']['legs'] and abs(ret['out']['pos'][1] - 0.02) <= 0.05,
+        check('the player walked out into the hall',
+              ret['out']['arrived'] == ret['out']['legs'] and abs(ret['out']['pos'][1] - 5.10) <= 0.05,
               {'out': ret['out'], 'lift': ret['out']['office']['lift']})
         lift_out = page.evaluate(f'() => {D}.office().lift')
         check('the ground doorway is open with the car there',
               abs(ret['out']['pos'][1] - lift_out['ground']) <= .05
-              and ret['out']['pos'][0] > 46.5
+              and ret['out']['pos'][0] > 1.9
               and lift_out['doors'] > .99 and abs(lift_out['y'] - lift_out['ground']) <= .005,
               {'out': ret['out']['pos'], 'lift': lift_out,
-               'why': 'the walk crossed the x 46.13 doorway plane from inside the car, at ground level, '
-                      'with the car stopped and its doors open'})
+               'why': 'the walk crossed the shaft\'s x 1.52 doorway plane from inside the car, at the '
+                      'hall floor, with the car stopped and its doors open'})
 
         # ---------------------------------------------------------------- one document, one URL
         check('the page never navigated or reloaded',
@@ -923,7 +942,7 @@ def main():
         beeline_wall = beeline_totals['wall']
         check('beeline: walked to the call plate', b['call']['arrived'] == b['call']['legs'], b['call'])
         check('beeline: reached the car', b['board']['arrived'] == b['board']['legs'], b['board'])
-        check('beeline: reached the 5F landing', abs(b['ride']['pos'][1] - 18.90) <= 0.05, b['ride'])
+        check('beeline: reached the 5F landing', abs(b['ride']['pos'][1] - 21.06) <= 0.05, b['ride'])
         check('beeline: reached the desk', b['desk']['arrived'] == b['desk']['legs'], b['desk'])
         bend = bpage.evaluate(f'() => {D}.state()')
         check('beeline: took the MacBook', bend['story']['laptop_acquired'] is True, bend['story'])
@@ -948,12 +967,12 @@ def main():
         check('b5: the office door is not offered before the errand',
               u['aimDoor']['target'] != 'opening-office-door' and dark['doorOpen'] is False,
               {'aim': u['aimDoor'], 'doorOpen': dark['doorOpen']})
-        upage.evaluate('() => window.__errand.place(63.2, -59.8)')
+        upage.evaluate('() => window.__errand.place(63.2, -59.8, 0.02)')
         u_staff = upage.evaluate('() => window.__errand.aim(64, 1.32, -61)')
         check('b5: the unarmed story still offers the staff item',
               u_staff['target'] == 'opening-staff', u_staff)
         check('b5: the player really did stand at the monitor and walk the corridor',
-              u['corridor']['arrived'] == u['corridor']['legs'] and abs(u['ride']['pos'][1] - 18.90) <= 0.05, u)
+              u['corridor']['arrived'] == u['corridor']['legs'] and abs(u['ride']['pos'][1] - 21.06) <= 0.05, u)
         check('b5: no page errors', not uerrors, uerrors[:4])
         ucontext.close()
 

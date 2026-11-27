@@ -3,7 +3,6 @@ import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
 import {campusFont} from '../model/fonts';
 import {B4_DOOR_LEAVES,B4_LAYOUT,B4_LOBBY,B4_OBSTACLES} from './b4Layout';
-import {B4_FLIP_WALL,createB4FlipWall} from './b4FlipWall';
 import {B4_LIFT as L} from './spatialLayout';
 import {attachLiftVisual,LIFT_LANDING,liftLandingBoxes} from './lift';
 import {B4_OFFICE,FEED_CANVAS,b4OfficeBoxes,attachOfficeVisual} from './b4Office';
@@ -230,14 +229,17 @@ function buildLobbyDevices(m:OfficeMats){
  box(root,'B4_call_plate_5f',.11,.16,.02,f.x,f.y,LIFT_LANDING.corridorZ1-.012,m.callPlate);
  const lamp5f=box(root,'B4_call_lamp_5f',.055,.055,.012,f.x,f.y,LIFT_LANDING.corridorZ1-.020,std('B4 call lamp 5f',0xffb347,0xffa02e,.25));
  // The stairs sign, placed where the lift is the only way up (B04 has no stair of its own).
+ // Both it and the plate derive from the ground call's own pose: the shaft stands inside the
+ // B6 hall now, so the hall-facing wall plane and the hall floor are the call plate's, not
+ // zeros borrowed from the old B04 lobby.
  const glyphs=new TextGeometry('5F BY LIFT',{font:campusFont,size:.09,depth:.004,curveSegments:1});
  glyphs.computeBoundingBox();
  const bb=glyphs.boundingBox!;
  glyphs.translate(-(bb.min.x+bb.max.x)/2,-(bb.min.y+bb.max.y)/2,0);
  const sign=new T.Mesh(glyphs,m.officeText);
- sign.name='B4_lift_sign_text';sign.position.set(L.x1+.019,2.02,L.door.z1+.55);sign.rotation.y=Math.PI/2;
+ sign.name='B4_lift_sign_text';sign.position.set(g.x+.019,g.y+.87,g.z);sign.rotation.y=Math.PI/2;
  sign.userData={...SOURCE,authorKey:'B4_lift_sign_text'};root.add(sign);
- box(root,'B4_lift_sign_plate',.02,.20,.78,L.x1+.006,2.02,L.door.z1+.55,m.officePlate);
+ box(root,'B4_lift_sign_plate',.02,.20,.78,g.x+.006,g.y+.87,g.z,m.officePlate);
  attachOfficeVisual({
   screen:feed?{canvas:feed.canvas,texture:feed.texture}:undefined,
   callGround:{material:lampGround.material as T.MeshStandardMaterial},
@@ -486,7 +488,8 @@ export function buildB4Shell(){
  const exitLettering=new T.Mesh(exitGeometry,mats.white);exitLettering.name='B4_exit_sign_lettering';
  exitLettering.position.set(B4_LAYOUT.sideDoor.x0+(B4_LAYOUT.sideDoor.x1-B4_LAYOUT.sideDoor.x0)/2,F+2.82,B4_LAYOUT.sideDoor.z-.067);exitLettering.userData={...SOURCE};shell.add(exitLettering);
  // Double-height glazed panel in the remaining south-wall bay, with tan mullions.
- const windowX=(B4_FLIP_WALL.x1+R.x1-.13)/2,windowW=R.x1-.13-B4_FLIP_WALL.x1-.16;
+ // The bay east of the retired flip-wall mount (the wall itself moved to Building 6).
+ const windowX=(67.37+R.x1-.13)/2,windowW=R.x1-.13-67.37-.16;
  box(shell,'B4_double_height_glazing',windowW,4.05,.018,windowX,F+2.025,R.z1-.15,mats.windowGlass);
  for(const dx of [-windowW/2,0,windowW/2])box(shell,'B4_tan_window_mullion',.065,4.10,.055,windowX+dx,F+2.05,R.z1-.17,mats.bench);
  for(const y of [1.65,3.35])box(shell,'B4_tan_window_transom',windowW,.06,.055,windowX,F+y,R.z1-.17,mats.bench);
@@ -546,8 +549,6 @@ export function buildB4Shell(){
   for(const side of [-1,1])box(gates,'B4_gate_flap_stile',.03,.95,.03,mid+lane+side*(clear/2-.015),F+.51,gateZ+.35,mats.frame);
   box(gates,'B4_gate_flap_head',clear,.03,.03,mid+lane,F+.955,gateZ+.35,mats.frame);
  }
- // The ruled flip wall on the façade's interior face, east of the main door.
- root.add(createB4FlipWall().root);
  // The core lift and the fifth floor it opens onto. The car is the one part of the shell
  // that moves: `lift.ts` owns the pose and rewrites these transforms from the same tick
  // that moves the car's collision.

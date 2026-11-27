@@ -7,7 +7,7 @@ import type {Outcome} from '../gameplay/survey';
 import type {OpeningModal,OpeningSave,OpeningState,OpeningEvent,OpeningView,OpeningCinema} from './contracts';
 import {createOpeningState,reduceOpening} from './state';
 import {OPENING_SAVE_KEY,captureOpeningSave,parseOpeningSave} from './persistence';
-import {checkpointState,checkpointPose,checkpointCampaign,openingCheckpoint,routeYaw,CHECKPOINT_LABELS,type OpeningCheckpoint} from './checkpoint';
+import {applyCheckpointThreat,checkpointState,checkpointPose,checkpointCampaign,normaliseChapter1World,openingCheckpoint,routeYaw,CHECKPOINT_LABELS,type OpeningCheckpoint} from './checkpoint';
 import {LAWN_APPROACH} from '../campaign/lawnChapter';
 import {createOpeningRuntime,damageOpeningHearts,healOpeningHearts,syncRuntimeWithStory,OPENING_RESPAWN_GRACE_SECONDS,OPENING_MAX_HEARTS,type OpeningRuntime} from './runtime';
 import {loadWorldThreat,sealWorld,resetWorldThreat,tryPurgeWorld,markLionDefeated,markPowerCut,markLocalModelCleared,cloneWorldThreat,type WorldThreat} from '../gameplay/worldThreat';
@@ -21,7 +21,7 @@ import {createHallRouter,crowdArrivals,dinnerTables,crowdWorld} from './crowdArr
 import {getGraphicsQuality} from '../viewer/graphicsQuality';
 import {createOpeningFleet} from './robots';
 import {createOpeningNPCs} from './npcs';
-import {createB5FlipWall} from './b5FlipWall';
+import {createB6FlipWall} from './b6FlipWall';
 import {createOpeningUI} from './ui';
 import {drawOpeningMap} from './map';
 import type {CampaignHost} from '../campaign/host';
@@ -38,7 +38,7 @@ type ComputerPage='map'|'tasks'|'agent';
 const objectives:Record<OpeningState['stage'],[string,string]>={
  crowd:['Join the crowd on the plaza','The light show has just ended. Walk with the students.'],
  to_b5:['Walk to the High Table Dinner · Building 5','Building 5 · Ground floor. Follow the crowd; turn right after entering.'],
- to_b6:['Collect the presentation MacBook · Building 4 · 5F principal\'s office.','Take the B4 side door; the lift is the only way up. The office is at the end of the 5F corridor.'],
+ to_b6:['Collect the presentation MacBook · Building 6 · 5F principal\'s office.','Enter Building 6; the lift is the first left inside. The office is at the end of the 5F corridor.'],
  return_b5:['Return the MacBook','Bring the presentation laptop back to the coordinator in Building 5.'],
  incident:['Open the MacBook','The dining hall is empty. Press C to open the local agent.'],
  to_b4:['Reach emergency control','Go to the main entrance of Building 4. Avoid the security robots.'],
@@ -67,6 +67,8 @@ export function createOpeningExperience(
  const refreshThreat=createThreatRefresh(1);
  let saveMessage='Progress saves on this device.',saveTick=0,announcePending=false,protectedSave=false,ownsSave=false,storageOkay=true,lastSave=0,stamp='',disposed=false,failed=false,scanClock=0,wasPaused=true;
  let incidentClock=0,disturbancePlayed=false,incidentQueued=false,heartbeatClock=0,chaseCueClock=0,respawnGrace=0,compatBeforePanel=false;
+ /** True when Settings was opened from the pause card: closing it must return to the card (S-03). */
+ let settingsFromPause=false;
  /** Distance walked since the last spawn; the phone buzzes after a few steps. */
  let walked=0,lastWalkX=0,lastWalkZ=0;
  /** A restored save at `complete`: the completion dialog is decided on the next frame, once the campaign host has loaded. */
@@ -190,7 +192,7 @@ export function createOpeningExperience(
  }
  updateCrowd(0);
  // The HKU flip wall in the Building 5 lobby: ambient scenery, no campaign state, no key.
- const flipWall=createB5FlipWall();scene.add(flipWall.root);const audio=new CampusAudio(settings);audio.enableStory();const voice=createStaffVoice(audio);
+ const flipWall=createB6FlipWall();scene.add(flipWall.root);const audio=new CampusAudio(settings);audio.enableStory();const voice=createStaffVoice(audio);
  // Task E's beats play through the game's own mixer; the office module never owns an AudioContext.
  setOfficeCue((name,position)=>audio.story?.cue(name,position?new T.Vector3(position[0],position[1],position[2]):undefined));
  const notifyBase=notify;notify=(message)=>{audio.story?.ui('notify');notifyBase(message);};
@@ -245,17 +247,18 @@ export function createOpeningExperience(
   if(staffTalkDone)return;
   staffTalkDone=true;runtime={...runtime,staff_task_received:true};
   if(!transition('accept_errand'))return;
-  showTitle('OBJECTIVE UPDATED','BUILDING 4 · PRINCIPAL\'S OFFICE',1.25);
+  showTitle('OBJECTIVE UPDATED','Building 6 · PRINCIPAL\'S OFFICE',1.25);
   // Let the objective banner clear before the acceptance line so its subtitle is not covered.
   window.setTimeout(()=>{if(!disposed&&story.stage==='to_b6'&&!failed&&!g.panel)playAcceptanceVoices();},1300);
-  notify('MacBook: Building 4 · 5F principal\'s office.');
+  notify('MacBook: Building 6 · 5F principal\'s office.');
  }
 
  function applySettings(){explorer.setSensitivity(settings.sensitivity);explorer.setComfort(settings.fov,settings.bob);audio.apply(settings);}
  function pose(position:readonly number[],yaw=0){g.body.position.fromArray([...position]);g.body.velocity.set(0,0,0);g.body.grounded=true;g.yaw=yaw;g.pitch=0;walked=0;lastWalkX=position[0];lastWalkZ=position[2];}
  function safePose(){
   if(story.stage==='crowd'||story.stage==='to_b5')pose(O.handoff,0);
-  // Both errand stages live at B4 now: the side door is the way in and the way out.
+  // Both errand stages live at Building 6 now: its entrance landing outside the
+  // doors is the way in and the way out (owner ruling 2026-11-27).
   else if(story.stage==='to_b6')pose(O.checkpoints.b6,0);
   else if(story.stage==='return_b5')pose(O.checkpoints.b6,0);
   else if(story.stage==='complete')pose(O.handoff,0);
@@ -272,10 +275,11 @@ export function createOpeningExperience(
   close();
  }
  function validPose(s:OpeningSave){const [x,y,z]=s.position,w=explorer.world,h=w.support(x,z,y+.24);return s.worldRevision===OPENING_WORLD_REVISION&&h!==null&&Math.abs(h-y)<.3&&!w.blocked(x,z,h+.003)&&[[.18,0],[-.18,0],[0,.18],[0,-.18]].every(([dx,dz])=>{const n=w.support(x+dx,z+dz,h);return n!==null&&Math.abs(n-h)<.3;});}
- /** A save written before the errand moved to B4 can put the player inside Building 6
-  * with the MacBook 90 m away in the B4 5F office. Such a pose carries the current world
-  * revision, so `validPose` alone would keep it; the errand stages belong at B4's side door. */
- function staleErrandPose(s:OpeningSave){const [x,,z]=s.position;return (story.stage==='to_b6'||story.stage==='return_b5')&&x>=O.b6.x0-1&&x<=O.b6.x1+1&&z>=O.b6.z0-1&&z<=O.b6.z1+1;}
+ /** A save written before the errand moved to Building 6 can put the player inside
+  * CDS-1 — including its former 5F office — with the MacBook now 80 m away in the middle
+  * building. Such a pose carries the current world revision, so `validPose` alone would keep
+  * it; the errand stages belong at Building 6's entrance landing. */
+ function staleErrandPose(s:OpeningSave){const [x,,z]=s.position;return (story.stage==='to_b6'||story.stage==='return_b5')&&x>=O.b4.x0-1&&x<=O.b4.x1+1&&z>=O.b4.z0-1&&z<=O.b4.z1+1;}
  function restore(s:OpeningSave){
   explorer.pause('opening_load');story=structuredClone(s.story);
   // A shuttle-era save that already carried the invitation is the same beat as
@@ -287,7 +291,12 @@ export function createOpeningExperience(
   worldThreat=loadWorldThreat();
   if(worldThreat.phase==='sealed')runtime={...runtime,curtain_deployed:true};
   else if(worldThreat.phase==='purged')runtime={...runtime,curtain_deployed:false};
-  g.inventory.slots.splice(0,36,...s.slots.map(i=>i?{...i}:null));g.inventory.selectedHotbar=s.selectedHotbar;g.inventory.revision++;g.view=s.view;modal=null;g.closePanel();failed=runtime.hearts<=0;respawnGrace=OPENING_RESPAWN_GRACE_SECONDS;staffTalkStarted=false;staffTalkDone=false;staffTalkClock=0;staffTalkLine=0;staffVoiceStarted=false;acceptVoicePlayed=false;acceptVoiceBusy=false;repeatVoiceBusy=false;npcs.reset();fleet.reset();resetCrowd(story.stage);
+  g.inventory.slots.splice(0,36,...s.slots.map(i=>i?{...i}:null));g.inventory.selectedHotbar=s.selectedHotbar;g.inventory.revision++;g.view=s.view;modal=null;g.closePanel();failed=runtime.hearts<=0;respawnGrace=OPENING_RESPAWN_GRACE_SECONDS;
+  // The coordinator's briefing belongs to the errand stage that triggered it. A later
+  // stage only exists because the player already heard it, so a reload must not re-arm
+  // the subtitle line and the "talk to the coordinator" objective (S-06) — the same
+  // derivation `startAtCheckpoint` makes.
+  staffTalkStarted=false;staffTalkDone=story.stage!=='crowd'&&story.stage!=='to_b5';staffTalkClock=0;staffTalkLine=0;staffVoiceStarted=false;acceptVoicePlayed=false;acceptVoiceBusy=false;repeatVoiceBusy=false;npcs.reset();fleet.reset();resetCrowd(story.stage);
   if(validPose(s)&&!staleErrandPose(s)&&story.stage!=='incident'&&story.stage!=='to_b4')pose(s.position,s.yaw);else safePose();
   g.pitch=s.pitch;applySettings();
   if(failed)open('caught');
@@ -335,12 +344,20 @@ export function createOpeningExperience(
   open('complete');
  }
  function transition(event:OpeningEvent){const next=reduceOpening(story,event);if(next===story)return false;story=next;persist(true);return true;}
- function open(next:OpeningModal){if(failed&&next!=='caught')return;voice.stop();compatBeforePanel=explorer.state.compat;if(modal!==next)modalSerial++;modal=next;explorer.openPanel(next==='settings'?'settings':'computer',next==='computer');audio.setActive(false);audio.stopOpeningCues();audio.stopPreviews();if(next==='computer')audio.story?.cue('macbook_open',undefined,true);else if(next==='invitation')audio.story?.cue('mus_invitation',undefined,true);else if(next==='staff'&&story.stage==='to_b5')startStaffIntro(true);}
+ function open(next:OpeningModal){
+  if(failed&&next!=='caught')return;
+  // Settings is a pause-card surface: its copy promises "Closing this screen returns you
+  // to the pause menu". The same dialog also opens from the authoring page's Help button
+  // mid-play, and that path must keep handing play back. Remember which one this was (S-03).
+  settingsFromPause=next==='settings'&&g.paused&&!g.panel&&!g.inventoryOpen;
+  voice.stop();compatBeforePanel=explorer.state.compat;if(modal!==next)modalSerial++;modal=next;explorer.openPanel(next==='settings'?'settings':'computer',next==='computer');audio.setActive(false);audio.stopOpeningCues();audio.stopPreviews();if(next==='computer')audio.story?.cue('macbook_open',undefined,true);else if(next==='invitation')audio.story?.cue('mus_invitation',undefined,true);else if(next==='staff'&&story.stage==='to_b5')startStaffIntro(true);}
  function close(){if(modal==='caught')return;const was=modal;voice.stop();audio.stopPreviews();if(modal==='computer')audio.story?.cue('macbook_close',undefined,true);modal=null;explorer.closePanel();persist(true);
   // A story panel should hand control straight back to the player. The same click
   // that closed it is still a user gesture, so pointer lock can be requested here.
-  if(was!=='complete'){if(compatBeforePanel)explorer.enterCompat();else explorer.enter();}
-  compatBeforePanel=false;
+  // Settings opened from the pause card is the exception: it returns to that card,
+  // which is what the dialog says it does (S-03).
+  if(was!=='complete'&&!(was==='settings'&&settingsFromPause)){if(compatBeforePanel)explorer.enterCompat();else explorer.enter();}
+  compatBeforePanel=false;settingsFromPause=false;
  }
  function outcome(ok:boolean,code:string,message:string):Outcome{return{ok,code,message};}
  function target(){
@@ -452,6 +469,20 @@ export function createOpeningExperience(
   announceSave();
   if(runtime.curtain_deployed){atmo()?.startIncident();audio.openingAmbience('dark');}
  }
+ /**
+  * The pause card's "Return to checkpoint": the body goes back to the pose this run
+  * booted at, with the story, backpack and hearts untouched (the button's promise). The
+  * opening's `safePose()` respawns by *story stage* instead, and `to_b5` maps to the B5
+  * handoff 77 m past the B5 dinner checkpoint (R-01). A campaign checkpoint settles on
+  * the walkable floor there, exactly as its own boot does; the fleet and the respawn
+  * grace are the ones every respawn gets, so a reset during the incident does not land
+  * inside a chase.
+  */
+ function respawnAtCheckpoint(id:OpeningCheckpoint){
+  const at=checkpointPose(id),[px,py,pz]=at.position,floor=checkpointCampaign(id)?explorer.world.support(px,pz,py+.6):null;
+  pose(floor===null?at.position:[px,floor,pz],at.yaw);
+  fleet.reset();respawnGrace=OPENING_RESPAWN_GRACE_SECONDS;
+ }
  function restart(){
   try{const raw=localStorage.getItem(OPENING_SAVE_KEY);if(raw)localStorage.setItem(OPENING_SAVE_KEY+'.backup.'+Date.now(),raw);localStorage.setItem(writerKey,writerToken);protectedSave=false;ownsSave=true;}catch{notify('Could not back up the save. Restart cancelled.');return;}
   getCampaign?.()?.reset();
@@ -534,9 +565,9 @@ export function createOpeningExperience(
   if(story.stage==='return_b5'&&story.laptop_acquired){
    incidentClock+=dt;
    if(!runtime.curtain_deployed&&!disturbancePlayed&&incidentClock>1.1){disturbancePlayed=true;audio.openingCue('disturbance');notify('A low mechanical vibration rolls across the campus.');}
-   // "Outside" now means outside B4: the pickup is on 5F, so the seal waits for the exit
-   // instead of firing on the first frame (z > O.b6's old face was always true at B4).
-   const outside=g.body.position.z>O.b4.z1+1.5||incidentClock>4.2;
+   // "Outside" now means outside Building 6: the pickup is on its 5F, so the seal
+   // waits for the exit down the entrance stair instead of firing on the office floor.
+   const outside=g.body.position.z>O.b6.z1+1.5||incidentClock>4.2;
    if(!runtime.curtain_deployed&&outside)beginIncident();
   }
   if(story.stage==='return_b5'&&g.body.position.distanceTo(new T.Vector3(...O.returnPoint))<3.3){
@@ -560,10 +591,32 @@ export function createOpeningExperience(
   }
  }
  g.scenario={interact,computer,tick,snapshot:()=>({story:structuredClone(story),runtime:structuredClone(runtime),worldThreat:cloneWorldThreat(worldThreat),modal,busReady:true,respawnGraceSeconds:respawnGrace,robotState,warning:robotWarning,goal:objectiveFor(),handoff:story.stage==='complete'?'opening.building4_reached':null,target:target()?.id??null}),spawn:()=>{safePose();fleet.reset();}};
+ const params=new URLSearchParams(location.search);
+ // "Start" on a chapter menu asks to start that chapter, not to resume whatever save
+ // this tab holds. A fresh boot backs the old run up and writes a new Chapter 1 through
+ // the same `restart()` the in-game Restart button uses (S-09). The flag is one-shot:
+ // it is stripped from the URL so an ordinary reload continues the new run.
+ const fresh=params.get('fresh')==='1';
  let loadedAt=0;let raw:string|null=null;
- try{raw=localStorage.getItem(OPENING_SAVE_KEY);const saved=raw?parseOpeningSave(JSON.parse(raw)):null;if(saved){restore(saved);loadedAt=saved.savedAt;saveMessage='Opening checkpoint restored.';}else{g.inventory.slots.fill(null);g.inventory.revision++;safePose();if(raw){protectedSave=true;saveMessage='Unrecognized save protected. Restart to back it up.';}}}catch{g.inventory.slots.fill(null);g.inventory.revision++;safePose();protectedSave=!!raw;storageOkay=false;saveMessage='Save unavailable. A new session is ready.';}
- const requestedCheckpoint=openingCheckpoint(new URLSearchParams(location.search).get('checkpoint'));
+ if(fresh){
+  restart();
+  // Even when the backup write failed (no storage), this page is a new run, never the
+  // save it replaced.
+  g.inventory.slots.fill(null);g.inventory.revision++;safePose();
+  try{params.delete('fresh');const query=params.toString();history.replaceState(null,'',location.pathname+(query?'?'+query:'')+location.hash);}catch{/* the URL is cosmetic */}
+ }else try{raw=localStorage.getItem(OPENING_SAVE_KEY);const saved=raw?parseOpeningSave(JSON.parse(raw)):null;if(saved){restore(saved);loadedAt=saved.savedAt;saveMessage='Opening checkpoint restored.';}else{g.inventory.slots.fill(null);g.inventory.revision++;safePose();if(raw){protectedSave=true;saveMessage='Unrecognized save protected. Restart to back it up.';}}}catch{g.inventory.slots.fill(null);g.inventory.revision++;safePose();protectedSave=!!raw;storageOkay=false;saveMessage='Save unavailable. A new session is ready.';}
+ const requestedCheckpoint=openingCheckpoint(params.get('checkpoint'));
  if(requestedCheckpoint)startAtCheckpoint(requestedCheckpoint);
+ // A Chapter 1 checkpoint begins in Chapter 1's own daylight world: a sealed/purged
+ // record from an earlier campaign must not leak in (`R-07`). This runs before the world
+ // is read below, and before `applyCheckpointThreat`, so the two directions never fight.
+ if(requestedCheckpoint)normaliseChapter1World(requestedCheckpoint);
+ // A checkpoint that carries endgame facts re-seals the record here, before the opening
+ // world reads it. `main.ts` applies the same facts when the campaign host starts, which
+ // is too late for this boot frame — and on a finished profile the cached purged record
+ // is final, so the checkpoint would otherwise begin with the barrier already down (S-36).
+ // The campaign's own `applyCheckpointThreat` is idempotent.
+ if(requestedCheckpoint)applyCheckpointThreat(requestedCheckpoint);
  applySettings();worldThreat=loadWorldThreat();if(requestedCheckpoint){if(runtime.curtain_deployed){atmo()?.startIncident();audio.openingAmbience('dark');}}else if(worldThreat.phase==='sealed'){runtime={...runtime,curtain_deployed:true};atmo()?.restoreSealed();audio.openingAmbience('dark');}else if(worldThreat.phase==='purged'){runtime={...runtime,curtain_deployed:false};audio.openingAmbience('day');}
  // F: the campaign chapter first, then Chapter 1's targets, otherwise the notice (one handler, one owner).
  const humanInteract=()=>{routeInteract({campaign,reopenHandoff:()=>{if(story.stage!=='complete'||failed||modal||!getCampaign?.())return false;open('complete');return true;},opening:()=>g.interact(),notify});},humanComputer=()=>{const r=g.computer('tasks');if(!r.ok)notify(r.message);};explorer.interactions.add(humanInteract);explorer.computers.add(humanComputer);
@@ -620,7 +673,12 @@ export function createOpeningExperience(
     open('invitation');
    }
   }
-  const alert=story.campus_alert_triggered||runtime.curtain_deployed;
+  // The sky follows the live world record, not the opening's latched alert flag. The
+  // ending purges the campus but cannot clear `campus_alert_triggered` (the flag is
+  // written into the opening save), so the latched value kept the dark ambience bed,
+  // the patrol score and the incident scenery running after the barrier came down (S-33).
+  const freed=worldThreat.phase==='purged';
+  const alert=!freed&&(story.campus_alert_triggered||runtime.curtain_deployed);
   const hunting=fleetHunts(),fleetShown=(story.stage!=='complete'||!!campaign())&&!prologueActive;
   fleet.root.visible=active&&fleetShown;
   // The cast owns its own visibility now: during the incident it walks out through the B5
@@ -654,7 +712,11 @@ export function createOpeningExperience(
   // silences it, and the opening cues still stop below.
   const audioPaused=(g.paused&&g.pauseReason!=='prologue')||!active;
   audio.update(explorer.student.gait,audioPaused,surface,g.body.position,explorer.camera.position,g.yaw);
-  audio.story?.update({stage:story.stage,dark:prologueActive?false:alert,chasing:prologueActive?false:r.chasing,music:prologueActive?'mus_prologue':openingScore(story.stage,alert,r.chasing),player:g.body.position,dt,
+  // A purged campus is the epilogue, and the opening's stage mapping no longer owns its
+  // score: it would hand the story bus the patrol loop (dark) or the Chapter 1 walk cue,
+  // under the finale. No cue hands the bed back to the bus's own `complete` fallback
+  // (`hope`), which the credits then crossfade out; the finale stays a one-shot (S-33).
+  audio.story?.update({stage:story.stage,dark:prologueActive?false:alert,chasing:prologueActive?false:r.chasing,music:prologueActive?'mus_prologue':freed?undefined:openingScore(story.stage,alert,r.chasing),player:g.body.position,dt,
    robots:active&&alert&&hunting?fleet.units.map((unit,index)=>({id:'opening-robot-'+index,state:unit.state,position:unit.position})):[]});
   const item=target();
   const campaignGoal=campaign()?.objective()??null;
@@ -662,7 +724,10 @@ export function createOpeningExperience(
   // player can see from the spawn, and pointing the arrow and the readout at the staff put
   // an 86 m objective next to a 10 m crowd (playtest, 2026-11-24). `map.ts` reads the same
   // `O.crowdStart` anchor, so the minimap and the HUD agree.
-  const goal:readonly number[]|null=campaignGoal?campaignGoal.target:story.stage==='crowd'?O.crowdStart:story.stage==='to_b6'?[B4_OFFICE.laptop.x,B4_OFFICE.laptop.y,B4_OFFICE.laptop.z]:story.stage==='return_b5'?O.returnPoint:story.stage==='to_b4'||story.stage==='complete'?O.handoff:O.staff;
+  // The incident's objective is an inventory action (open the MacBook), so it has no
+  // place to point at. The old fallthrough aimed the arrow and the minimap at the
+  // coordinator, who is not on that beat at all (S-07). `map.ts` makes the same call.
+  const goal:readonly number[]|null=campaignGoal?campaignGoal.target:story.stage==='crowd'?O.crowdStart:story.stage==='to_b6'?[B4_OFFICE.laptop.x,B4_OFFICE.laptop.y,B4_OFFICE.laptop.z]:story.stage==='return_b5'?O.returnPoint:story.stage==='to_b4'||story.stage==='complete'?O.handoff:story.stage==='incident'?null:O.staff;
   const prompt=active&&!g.paused?(item?'F · '+item.label:story.laptop_acquired&&story.stage!=='complete'?'C · Open the MacBook':''):'';
   const sound=audio.diagnostics;
   let cinema:OpeningCinema;
@@ -685,7 +750,7 @@ export function createOpeningExperience(
   const enter=document.getElementById('enter-game');if(enter)enter.textContent=story.elapsedSeconds>0?'Continue':'Start opening';
   const status=document.getElementById('session-save');if(status)status.textContent=saveMessage;
  }
- return{update,hearts,announceSave,relocate(){fleet.dispose();fleet=createOpeningFleet(explorer.world);scene.add(fleet.root);updateCrowd(0);safePose();},openComputer(page:ComputerPage='tasks'){const r=computer(page);if(!r.ok)notify(r.message);},openSettings(){open('settings');},
+ return{update,hearts,announceSave,respawnAtCheckpoint,relocate(){fleet.dispose();fleet=createOpeningFleet(explorer.world);scene.add(fleet.root);updateCrowd(0);safePose();},openComputer(page:ComputerPage='tasks'){const r=computer(page);if(!r.ok)notify(r.message);},openSettings(){open('settings');},
   // The pause card's inline settings (owner, 2026-11-25) write through the same
   // path as the settings dialog, so the card and the dialog can never disagree.
   setSetting(key:keyof Settings,value:number|boolean){if(key==='muted'||key==='bob')settings[key]=Boolean(value);else settings[key]=Number(value);applySettings();persist(true);},persist,audio,debug:{office(){return officeDebug();},crowd(){return{places:crowdPlaces,students:crowdDirector.students.map(s=>({x:s.x,y:s.y,z:s.z,done:s.done,scale:s.scale}))};},openInvitation(){open('invitation');},readInvitation(){if(story.stage==='crowd'&&!story.invitation_read){transition('read_invitation');transition('exit_bus');if(modal==='invitation')close();}},openStaff(){open('staff');},acceptErrand(){if(story.stage==='to_b5'){runtime={...runtime,staff_task_received:true};if(transition('accept_errand')){if(modal==='staff')close();playAcceptanceVoices();}}},takeLaptop(){return collectLaptop();},setBusReady(){/* the shuttle is scenery: no door state to set */},exitBus(){if(story.stage==='crowd'&&story.invitation_read)transition('exit_bus');},triggerIncident(){beginIncident();},reachB5(){if(story.stage==='return_b5'){transition('return_b5');runtime={...runtime,curtain_deployed:true};atmo()?.startIncident();audio.openingAmbience('dark');}},readAlert(){action('read_alert');},openComputer(page:ComputerPage='tasks'){return computer(page);},arriveB4(){if(story.stage==='to_b4'){transition('reach_b4');handOff();}},catchNow(){catchPlayer();},recover(){recoverFromCatch(true);},setHearts(n:number){runtime={...runtime,hearts:Math.max(0,Math.min(OPENING_MAX_HEARTS,Math.round(n)))};},state(){return{story:structuredClone(story),runtime:structuredClone(runtime),worldThreat:cloneWorldThreat(worldThreat),modal,staffTalkStarted,staffTalkDone,staffTalkLine,staffVoiceStarted,acceptVoicePlayed,repeatVoiceBusy};},worldThreat(){return cloneWorldThreat(worldThreat);},sealWorld(){return beginIncident();},markLionDefeated(){worldThreat=markLionDefeated();return cloneWorldThreat(worldThreat);},markPowerCut(){worldThreat=markPowerCut();return cloneWorldThreat(worldThreat);},markLocalModelCleared(){worldThreat=markLocalModelCleared();return cloneWorldThreat(worldThreat);},purgeWorld(){const result=tryPurgeWorld();worldThreat=result.threat;if(result.purged){runtime={...runtime,curtain_deployed:false};atmo()?.release();audio.openingAmbience('day');}return result.purged;},resetWorld(){worldThreat=resetWorldThreat();runtime={...runtime,curtain_deployed:false};atmo()?.reset();return cloneWorldThreat(worldThreat);},tickAtmosphere(seconds:number){const sealed=worldThreat.phase==='sealed';for(let i=0;i<Math.max(0,Math.round(seconds*60));i++)atmo()?.update(1/60,{incident:sealed,curtain:sealed,paused:false});}},get settings(){return settings;},get saveStatus(){return{message:saveMessage,storageOkay,ownsSave};},get story(){return story;},get runtime(){return runtime;},dispose(){persist(true);disposed=true;events.abort();explorer.interactions.delete(humanInteract);explorer.computers.delete(humanComputer);g.scenario=null;fleet.dispose();npcs.dispose();crowd.dispose();flipWall.dispose();ui.dispose();voice.dispose();audio.dispose();}};

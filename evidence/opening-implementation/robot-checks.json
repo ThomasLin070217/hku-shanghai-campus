@@ -9,7 +9,8 @@
     "searchSpeed": 1.2,
     "range": 9,
     "halfAngle": 0.6108652381980153,
-    "confirm": 0.7,
+    "confirm": 0.35,
+    "chaseMemory": 4,
     "capture": 0.65,
     "captureRise": 0.9,
     "eyeHeight": 1.05,
@@ -22,7 +23,7 @@
     "stall": 1.2,
     "replan": 0.35,
     "maxReplans": 3,
-    "searchSeconds": 3,
+    "searchSeconds": 7,
     "turnRate": 4.2,
     "captureGrace": 0.25,
     "patrolDwell": 1.2,
@@ -53,7 +54,7 @@
     "interceptMax": 1.2,
     "searchPointSeconds": 1.1,
     "searchSpread": 2.2,
-    "searchTravelCap": 4,
+    "searchTravelCap": 8,
     "guardAlert": 0.6,
     "guardDwell": 2.4,
     "guardRadius": 3.5
@@ -100,9 +101,9 @@
       "detail": {
         "transitions": [
           "0.02s patrol->scanning",
-          "0.25s scanning->chase"
+          "0.15s scanning->chase"
         ],
-        "gapToPlayer": 4.12
+        "gapToPlayer": 4.98
       }
     },
     {
@@ -135,16 +136,16 @@
       "passed": true,
       "detail": {
         "transitions": [
-          "0.02s chase->search",
-          "4.00s search->patrol"
+          "2.82s chase->search",
+          "5.22s search->patrol"
         ],
         "lastSeen": [
           58,
           0,
           -48
         ],
-        "searchSeconds": 3.02,
-        "distanceToHiddenLiveTarget": 14.1,
+        "searchSeconds": 7.02,
+        "distanceToHiddenLiveTarget": 14.12,
         "searchHeadPitch": -0.12
       }
     },
@@ -152,7 +153,7 @@
       "name": "capture requires physical reach and the encounter holds afterwards",
       "passed": true,
       "detail": {
-        "caughtAtSecond": 3.3,
+        "caughtAtSecond": 3.5833333333333335,
         "gapAtCapture": 0.61
       }
     },
@@ -160,10 +161,10 @@
       "name": "height rule blocks capture even while standing on the target",
       "passed": true,
       "detail": {
-        "minHorizontalGap": 0.48,
+        "minHorizontalGap": 0.5,
         "states": {
-          "scanning": 41,
-          "chase": 1459
+          "scanning": 20,
+          "chase": 1480
         }
       }
     },
@@ -171,8 +172,8 @@
       "name": "reset restores the initial patrol and the encounter can happen again",
       "passed": true,
       "detail": {
-        "firstCaughtAt": 3.3,
-        "secondCaughtAt": 3.3
+        "firstCaughtAt": 3.5833333333333335,
+        "secondCaughtAt": 3.5833333333333335
       }
     },
     {
@@ -308,7 +309,7 @@
         "frozenResult": {
           "caught": false,
           "state": "chase",
-          "warning": 0.8625555555555587
+          "warning": 0.8340833333333333
         },
         "state": "chase",
         "resumedState": "chase"
@@ -322,9 +323,9 @@
         "drawCalls": 18,
         "triangles": 942,
         "shadowCasters": 10,
-        "heightMeters": 1.68,
+        "heightMeters": 1.7,
         "footprint": [
-          0.73,
+          0.36,
           0.61
         ],
         "standingFeetLift": 0,
@@ -379,7 +380,8 @@
         "searchSpeed": 1.2,
         "range": 9,
         "halfAngle": 0.6108652381980153,
-        "confirm": 0.7,
+        "confirm": 0.35,
+        "chaseMemory": 4,
         "capture": 0.65,
         "captureRise": 0.9,
         "eyeHeight": 1.05,
@@ -392,7 +394,7 @@
         "stall": 1.2,
         "replan": 0.35,
         "maxReplans": 3,
-        "searchSeconds": 3,
+        "searchSeconds": 7,
         "turnRate": 4.2,
         "captureGrace": 0.25,
         "patrolDwell": 1.2,
@@ -423,7 +425,7 @@
         "interceptMax": 1.2,
         "searchPointSeconds": 1.1,
         "searchSpread": 2.2,
-        "searchTravelCap": 4,
+        "searchTravelCap": 8,
         "guardAlert": 0.6,
         "guardDwell": 2.4,
         "guardRadius": 3.5,
@@ -507,15 +509,15 @@
             -48
           ],
           [
-            54.29,
-            -47.8
+            54.23,
+            -48
           ],
           [
-            53.91,
-            -49.97
+            54.23,
+            -50.2
           ]
         ],
-        "predictionMeters": 1.13
+        "predictionMeters": 1.17
       }
     },
     {
@@ -561,8 +563,8 @@
       "name": "a chase opens with a double-pulse notice without pausing, then a solid beacon; still legs settle into the standing pose",
       "passed": true,
       "detail": {
-        "chaseAt": 0.7,
-        "caughtAt": 3.3,
+        "chaseAt": 0.35,
+        "caughtAt": 3.58,
         "noticePulses": 2,
         "noticeTravel": 0.65,
         "solidIntensity": 2.2,
@@ -586,14 +588,14 @@
       "passed": true,
       "detail": {
         "chaseTicks": [
-          42,
-          42
+          21,
+          21
         ],
         "captureTicks": [
-          231,
-          272
+          126,
+          170
         ],
-        "closestPair": 0.69
+        "closestPair": 0.62
       }
     }
   ],

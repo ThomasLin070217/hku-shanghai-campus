@@ -38,7 +38,7 @@ export interface LiftBox{name:string;x0:number;x1:number;z0:number;z1:number;bot
 /** Accel and decel each take a quarter of the travel time; the middle half is cruise. */
 const ACCEL=.25;
 const TRAVEL=L.travelSeconds;
-/** The car floor rests on the lobby floor when it is down, so the ride is 18.88 m, not the 18.90 m landing. */
+/** The car floor rests on the hall floor when it is down, so the ride is 15.96 m, the full hall-to-landing rise. */
 export const LIFT_TRAVEL_DISTANCE=L.landing-L.ground;
 
 /** Height above the ground floor after `seconds` of the accel–cruise–decel ride. */

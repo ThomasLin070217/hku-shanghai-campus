@@ -5,12 +5,13 @@ import {glassMaterial} from '../model/glazing';
 import {compact} from '../model/buildCampus';
 import {emblemMaterial} from '../model/heraldry';
 import shield from '../model/hall-crest.json';
-import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H,OFFICE_LAYOUT as B6} from './spatialLayout';
+import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H,B6_HALL,B4_LIFT as L6} from './spatialLayout';
 
 /**
  * Thomas opening scenery: the campus shuttle, the Building 5 ground-floor dinner
- * area and the Building 6 presentation room. Route/cavity bounds and dinner
- * layout share src/opening/spatialLayout.ts; decorative offsets remain estimated.
+ * area and the Building 6 ground hall (lift left of the doors, canteen right). Route/cavity
+ * bounds and both interiors share src/opening/spatialLayout.ts; decorative offsets remain
+ * estimated.
  *
  * Sizes are technical estimates for provisional 2030 scenery, not surveyed interiors.
  * Construction must stay DOM-free so the same module builds in the browser, in the
@@ -434,122 +435,129 @@ function buildDinner(root:T.Group){
 }
 
 /* ------------------------------------------------------------------ */
-/* Building 6 presentation room                                        */
+/* Building 6 ground hall                                              */
 /* ------------------------------------------------------------------ */
 
-function buildOffice(root:T.Group){
- const room=O.b6;
- const group=tag(new T.Group(),'opening-b6-office','Opening_b6_office');
- group.userData.noVoxelTile=true; // ditto: the office is a close-up room
+/**
+ * The hall behind Building 6's front doors (owner ruling, 2026-11-27): enter, turn left
+ * for the core lift, turn right for the canteen. The HKU flip wall hangs on the north
+ * wall (`b6FlipWall.ts` mounts the observed panel and ticks it).
+ *
+ * The shell is drawn against the collision faces `navigation.ts` carves: walls sit in the
+ * solid margin, their inner faces on the walkable plane, so no mesh pokes into the room.
+ */
+function buildB6Hall(root:T.Group){
+ const hall=O.b6,W=B6_HALL;
+ const group=tag(new T.Group(),'opening-b6-hall','Opening_b6_hall');
+ group.userData.noVoxelTile=true; // a close-up room, like the shuttle and the dinner hall
  root.add(group);
- const floorTop=room.floor;
+ const F=hall.floor,CEIL=F+hall.clearHeight,WALL=.12,front=hall.z1-.2;
+ const doorL=hall.door-hall.doorWidth/2,doorR=hall.door+hall.doorWidth/2;
  const materials={
-  floor:std('Opening_b6_floor',0xcbd3ce),
-  wall:std('Opening_b6_ivory_wall',0xe0dbcd),
-  ceiling:std('Opening_b6_ivory_ceiling',0xe8e5da),
-  trim:std('Opening_b6_wall_trim',0x78867b),
-  desk:std('Opening_b6_oak',0xad8356),
-  frame:std('Opening_b6_frame',0x414c4c),
-  case:std('Opening_b6_cabinet',0x6b7f73),
-  seat:std('Opening_b6_chair_fabric',0x356b66),
-  screen:std('Opening_b6_monitor_glass',0x304751,0x253c49,.18),
-  pot:std('Opening_b6_terracotta',0x93634f),
-  leaf:std('Opening_b6_leaf',0x4e7f4a),
-  lamp:std('Opening_b6_ivory_ceiling_lamp',0xfff1cd,0xffe3a8,.75),
-  paper:std('Opening_b6_paper',0xf3f1e8),
-  folder:std('Opening_b6_folder',0xb59257),
+  floor:std('Opening_b6_floor',0xc3c9c1),
+  wall:std('Opening_b6_ivory_wall',0xdfd9ca),
+  ceiling:std('Opening_b6_ceiling',0xe8e4d8),
+  trim:std('Opening_b6_trim',0x707e73),
+  steel:std('Opening_b6_steel',0x5b6668),
+  shaft:std('Opening_b6_shaft_stone',0x3d4a49),
+  wood:std('Opening_b6_canteen_wood',0xa8784f),
+  counter:std('Opening_b6_counter_stone',0xd9d3c5),
+  seat:std('Opening_b6_bench',0x8d6c46),
+  lamp:std('Opening_b6_lamp',0xfff1cd,0xffe3a8,.8),
+  sign:std('Opening_b6_sign_green',0x1d5c46,0x0d2f24,.35),
+  ink:std('Opening_b6_sign_ink',0xf1ead6),
+  mat:std('Opening_b6_door_mat',0x2d3436),
  };
- const w=room.x1-room.x0,d=room.z1-room.z0;
- box(group,'opening-b6-floor',w,.18,d,(room.x0+room.x1)/2,floorTop-.09,(room.z0+room.z1)/2,materials.floor);
-
- const {x0,x1,z0,z1,ceiling}=B6.interior;
- const cx=(x0+x1)/2,cz=(z0+z1)/2;
- const finishes=tag(new T.Group(),'opening-b6-finishes','Opening_b6_finishes');
- group.add(finishes);
- const finish=(key:string,w:number,h:number,d:number,x:number,y:number,z:number,material:T.Material)=>
-  box(finishes,'opening-b6-'+key,w,h,d,x,floorTop+y,z,material);
- finish('ceiling',x1-x0,.06,z1-z0,cx,ceiling+.03,cz,materials.ceiling);
- finish('wall-north',x1-x0,ceiling,.04,cx,ceiling/2,z0-.02,materials.wall);
- finish('baseboard-north',x1-x0,.11,.025,cx,.055,z0+.0125,materials.trim);
- for(const [side,x,sign] of [['west',x0,-1],['east',x1,1]] as const){
-  finish('wall-'+side,.04,ceiling,z1-z0,x+sign*.02,ceiling/2,cz,materials.wall);
-  finish('baseboard-'+side,.025,.11,z1-z0,x-sign*.0125,.055,cz,materials.trim);
- }
- box(group,'opening-b6-ceiling-light',3.8,.06,.38,cx,floorTop+ceiling-.031,-58.9,materials.lamp);
- finish('ceiling-light-front',3.8,.06,.38,cx,ceiling-.031,-55.6,materials.lamp);
- compact(finishes);
- const roomLight=new T.PointLight(0xffe9c0,42,12,2);
- roomLight.position.set(5.4,floorTop+ceiling-.25,-58.6);
- group.add(roomLight);
-
- const cabinet=B6.credenza,plant=B6.planter,presentation=B6.presentationDesk;
- box(group,'opening-b6-credenza',cabinet.w,cabinet.h,cabinet.d,cabinet.x,floorTop+cabinet.h/2,cabinet.z,materials.case);
- box(group,'opening-b6-planter',plant.w,plant.h,plant.d,plant.x,floorTop+plant.h/2,plant.z,materials.pot);
- box(group,'opening-b6-desk',presentation.w,.09,presentation.d,presentation.x,O.presentationDesk[1]-.045,presentation.z,materials.desk);
- for(const dx of [-.82,.82])for(const dz of [-.32,.32])box(group,'opening-b6-desk-leg-'+dx+'-'+dz,.09,presentation.h-.09,.09,presentation.x+dx,floorTop+(presentation.h-.09)/2,presentation.z+dz,materials.frame);
- box(group,'opening-b6-desk-sheet',.21,.012,.30,presentation.x-.62,O.presentationDesk[1]+.006,presentation.z+.12,materials.paper);
-
- const supplies=tag(new T.Group(),'opening-b6-office-supplies','Opening_b6_office_supplies');
- group.add(supplies);
- const prop=(key:string,w:number,h:number,d:number,x:number,y:number,z:number,material:T.Material)=>
-  box(supplies,'opening-b6-'+key,w,h,d,x,floorTop+y,z,material);
- for(const [i,x] of [2.65,3.88,5.12,6.35].entries()){
-  prop('cabinet-door-'+i,1.20,.77,.025,x,.46,cabinet.z+.28,materials.trim);
-  prop('cabinet-pull-'+i,.20,.03,.036,x,.72,cabinet.z+.307,materials.frame);
- }
- prop('cabinet-top',cabinet.w,.045,cabinet.d,cabinet.x,cabinet.h+.0225,cabinet.z,materials.desk);
- prop('printer',.63,.25,.42,5.9,1.07,cabinet.z,materials.paper);
- prop('printer-output',.46,.055,.015,5.9,1.07,cabinet.z+.214,materials.frame);
- prop('printer-tray',.42,.026,.15,5.9,.974,cabinet.z+.27,materials.frame);
- prop('printer-paper',.28,.012,.15,5.9,.994,cabinet.z+.245,materials.paper);
- for(const [i,material] of [materials.seat,materials.folder,materials.case,materials.frame].entries()){
-  prop('binder-'+i,.105,.32,.26,3.06+i*.115,1.105,cabinet.z,material);
-  prop('binder-label-'+i,.063,.078,.008,3.06+i*.115,1.15,cabinet.z+.131,materials.paper);
- }
- prop('noticeboard-frame',2.35,.96,.05,4.45,1.79,z0+.025,materials.desk);
- prop('noticeboard-cork',2.25,.86,.020,4.45,1.79,z0+.055,materials.folder);
- for(const [i,x,y,material] of [[0,3.72,1.85,materials.paper],[1,4.14,1.72,materials.paper],[2,4.64,1.91,materials.paper],[3,5.18,1.78,materials.seat]] as const){
-  prop('noticeboard-sheet-'+i,.24,.32,.005,x,y,z0+.0675,material);
-  for(const dy of [-.06,.01,.08])prop('noticeboard-line-'+i+'-'+dy,.15,.012,.003,x,y+dy,z0+.071,i===3?materials.paper:materials.trim);
- }
- prop('plant-stem',.06,.53,.06,plant.x,.64,plant.z,materials.desk);
- prop('plant-leaves-low',.40,.18,.38,plant.x,.68,plant.z,materials.leaf);
- prop('plant-leaves-mid',.31,.21,.32,plant.x+.045,.85,plant.z,materials.leaf);
- prop('plant-leaves-top',.21,.20,.22,plant.x-.025,1.01,plant.z,materials.leaf);
- prop('presentation-notebook',.24,.032,.30,presentation.x+.63,presentation.h+.016,presentation.z+.10,materials.seat);
- compact(supplies);
-
- const workstations=tag(new T.Group(),'opening-b6-workstations','Opening_b6_workstations');
- group.add(workstations);
- for(const {id,facing,desk,chair} of B6.workstations){
-  const part=(key:string,w:number,h:number,d:number,x:number,y:number,z:number,material:T.Material)=>
-   box(workstations,'opening-b6-'+id+'-'+key,w,h,d,x,floorTop+y,z,material);
-  part('desk',desk.w,.065,desk.d,desk.x,desk.h-.0325,desk.z,materials.desk);
-  for(const dx of [-.30,.30])for(const dz of [-.79,.79]){
-   part('desk-leg-'+dx+'-'+dz,.055,desk.h-.065,.055,desk.x+dx,(desk.h-.065)/2,desk.z+dz,materials.frame);
+ // Floor: the tile face sits at the hall floor, the body inside the slab below it.
+ box(group,'opening-b6-floor',hall.x1-hall.x0,.18,hall.z1-hall.z0,(hall.x0+hall.x1)/2,F-.09,(hall.z0+hall.z1)/2,materials.floor);
+ // Ceiling: four slabs around the shaft's travel opening, exactly the collision boxes.
+ const s0=L6.x0-W.shaft.wall,s1=L6.x1+W.shaft.wall,t0=L6.z0-W.shaft.wall,t1=L6.z1+W.shaft.wall;
+ for(const [key,x0,x1,z0,z1] of [
+  ['west',hall.x0,s0,hall.z0,front],
+  ['east',s1,hall.x1,hall.z0,front],
+  ['north',s0,s1,hall.z0,t0],
+  ['south',s0,s1,t1,front],
+ ] as const)box(group,'opening-b6-ceiling-'+key,x1-x0,.16,z1-z0,(x0+x1)/2,CEIL+.08,(z0+z1)/2,materials.ceiling);
+ // Walls in the solid margin; each inner face lands on the walkable plane.
+ box(group,'opening-b6-wall-west',WALL,hall.clearHeight,hall.z1-hall.z0,hall.x0-WALL/2,F+hall.clearHeight/2,(hall.z0+hall.z1)/2,materials.wall);
+ box(group,'opening-b6-wall-east',WALL,hall.clearHeight,hall.z1-hall.z0,hall.x1+WALL/2,F+hall.clearHeight/2,(hall.z0+hall.z1)/2,materials.wall);
+ box(group,'opening-b6-wall-north',hall.x1-hall.x0,WALL,hall.z1-hall.z0,(hall.x0+hall.x1)/2,F+hall.clearHeight/2,hall.z0-WALL/2,materials.wall);
+ // The front wall is split around the entrance, with the lintel above it.
+ box(group,'opening-b6-wall-front-west',doorL-hall.x0,hall.clearHeight,WALL,(hall.x0+doorL)/2,F+hall.clearHeight/2,front-WALL/2,materials.wall);
+ box(group,'opening-b6-wall-front-east',hall.x1-doorR,hall.clearHeight,WALL,(doorR+hall.x1)/2,F+hall.clearHeight/2,front-WALL/2,materials.wall);
+ box(group,'opening-b6-wall-front-lintel',hall.doorWidth,hall.clearHeight-hall.doorHeight,WALL,hall.door,F+(hall.doorHeight+hall.clearHeight)/2,front-WALL/2,materials.wall);
+ // Entrance frame and a dark mat where the plaza meets the floor.
+ for(const x of [doorL-.05,doorR+.05])box(group,'opening-b6-door-post',.10,hall.doorHeight,.16,x,F+hall.doorHeight/2,front-.02,materials.trim);
+ box(group,'opening-b6-door-head',hall.doorWidth+.30,.10,.16,hall.door,F+hall.doorHeight+.05,front-.02,materials.trim);
+ box(group,'opening-b6-door-mat',hall.doorWidth-.30,.02,1.10,hall.door,F+.011,front-.75,materials.mat);
+ // Baseboards, so the walls read as finished and not as raw cut planes.
+ box(group,'opening-b6-base-north',hall.x1-hall.x0,.12,.03,(hall.x0+hall.x1)/2,F+.06,hall.z0+.015,materials.trim);
+ for(const [key,x] of [['west',hall.x0+.015],['east',hall.x1-.015]] as const)
+  box(group,'opening-b6-base-'+key,.03,.12,hall.z1-hall.z0,x,F+.06,(hall.z0+hall.z1)/2,materials.trim);
+ // The lift shaft: the static frame the car slides in, with the doorway on its east face.
+ box(group,'opening-b6-shaft-west-face',W.shaft.wall,hall.clearHeight,t1-t0,L6.x0-W.shaft.wall/2,F+hall.clearHeight/2,(t0+t1)/2,materials.shaft);
+ box(group,'opening-b6-shaft-north-face',L6.x1-L6.x0,hall.clearHeight,W.shaft.wall,(L6.x0+L6.x1)/2,F+hall.clearHeight/2,L6.z0-W.shaft.wall/2,materials.shaft);
+ box(group,'opening-b6-shaft-south-face',L6.x1-L6.x0,hall.clearHeight,W.shaft.wall,(L6.x0+L6.x1)/2,F+hall.clearHeight/2,L6.z1+W.shaft.wall/2,materials.shaft);
+ box(group,'opening-b6-shaft-east-north',W.shaft.wall,hall.clearHeight,L6.door.z0-L6.z0,L6.x1+W.shaft.wall/2,F+hall.clearHeight/2,(L6.z0+L6.door.z0)/2,materials.shaft);
+ box(group,'opening-b6-shaft-east-south',W.shaft.wall,hall.clearHeight,L6.z1-L6.door.z1,L6.x1+W.shaft.wall/2,F+hall.clearHeight/2,(L6.door.z1+L6.z1)/2,materials.shaft);
+ box(group,'opening-b6-shaft-lintel-face',W.shaft.wall,hall.clearHeight-L6.door.height,L6.door.z1-L6.door.z0,L6.x1+W.shaft.wall/2,F+(L6.door.height+hall.clearHeight)/2,(L6.door.z0+L6.door.z1)/2,materials.shaft);
+ for(const z of [L6.door.z0-.04,L6.door.z1+.04])
+  box(group,'opening-b6-lift-post',.10,L6.door.height,.08,L6.x1+W.shaft.wall+.03,F+L6.door.height/2,z,materials.trim);
+ box(group,'opening-b6-lift-head',.10,.08,L6.door.z1-L6.door.z0+.16,L6.x1+W.shaft.wall+.03,F+L6.door.height+.04,(L6.door.z0+L6.door.z1)/2,materials.trim);
+ // A lit LIFT plate above the doorway, on the face the player turns toward.
+ box(group,'opening-b6-lift-plate',.02,.24,.84,L6.x1+W.shaft.wall+.005,F+2.62,(L6.door.z0+L6.door.z1)/2,materials.sign);
+ const liftText=new TextGeometry('LIFT',{font:campusFont,size:.13,depth:.004,curveSegments:1});
+ liftText.computeBoundingBox();const lb=liftText.boundingBox!;
+ liftText.translate(-(lb.min.x+lb.max.x)/2,-(lb.min.y+lb.max.y)/2,0);
+ const liftLabel=new T.Mesh(liftText,materials.ink);
+ liftLabel.name='opening-b6-lift-label';liftLabel.position.set(L6.x1+W.shaft.wall+.017,F+2.62,(L6.door.z0+L6.door.z1)/2);liftLabel.rotation.y=Math.PI/2;
+ liftLabel.userData={sourceFile:SOURCE_FILE,source:SOURCE,confidence:CONFIDENCE,authorKey:'opening-b6-lift-label'};
+ group.add(liftLabel);
+ // Canteen: partition with a 3.4 m opening, two long tables, benches and the counter.
+ const c=W.canteen,part=W.shaft.wall;
+ box(group,'opening-b6-canteen-north',part,hall.clearHeight,c.openingZ0-hall.z0,c.partitionX+part/2,F+hall.clearHeight/2,(hall.z0+c.openingZ0)/2,materials.wall);
+ box(group,'opening-b6-canteen-south',part,hall.clearHeight,front-c.openingZ1,c.partitionX+part/2,F+hall.clearHeight/2,(c.openingZ1+front)/2,materials.wall);
+ box(group,'opening-b6-canteen-header',part,hall.clearHeight-2.6,c.openingZ1-c.openingZ0,c.partitionX+part/2,F+(2.6+hall.clearHeight)/2,(c.openingZ0+c.openingZ1)/2,materials.wall);
+ box(group,'opening-b6-canteen-trim',.04,.10,c.openingZ1-c.openingZ0,c.partitionX-.01,F+2.60,(c.openingZ0+c.openingZ1)/2,materials.trim);
+ // CANTEEN plate above the opening, facing the entry hall.
+ box(group,'opening-b6-canteen-plate',.02,.24,.94,c.partitionX-.012,F+2.86,(c.openingZ0+c.openingZ1)/2,materials.sign);
+ const eatText=new TextGeometry('CANTEEN',{font:campusFont,size:.105,depth:.004,curveSegments:1});
+ eatText.computeBoundingBox();const eb=eatText.boundingBox!;
+ eatText.translate(-(eb.min.x+eb.max.x)/2,-(eb.min.y+eb.max.y)/2,0);
+ const eatLabel=new T.Mesh(eatText,materials.ink);
+ eatLabel.name='opening-b6-canteen-label';eatLabel.position.set(c.partitionX-.025,F+2.86,(c.openingZ0+c.openingZ1)/2);eatLabel.rotation.y=-Math.PI/2;
+ eatLabel.userData={sourceFile:SOURCE_FILE,source:SOURCE,confidence:CONFIDENCE,authorKey:'opening-b6-canteen-label'};
+ group.add(eatLabel);
+ for(const [i,t] of W.tables.entries()){
+  box(group,'opening-b6-table-top-'+i,t.w,.06,t.d,t.x,t.top-.03,t.z,materials.wood);
+  for(const dx of [-t.w/2+.08,t.w/2-.08])for(const dz of [-t.d/2+.10,t.d/2-.10])
+   box(group,'opening-b6-table-leg-'+i+'-'+dx.toFixed(2)+'-'+dz.toFixed(2),.06,t.top-.06,.06,t.x+dx,F+(t.top-.06)/2,t.z+dz,materials.steel);
+  for(const side of [-1,1]){
+   const bx=t.x+side*(t.w/2+.34);
+   box(group,'opening-b6-bench-'+i+'-'+side,.34,.05,t.d-.30,bx,F+.44,t.z,materials.seat);
+   for(const dz of [-t.d/2+.32,t.d/2-.32])box(group,'opening-b6-bench-leg-'+i+'-'+side+'-'+dz.toFixed(2),.05,.42,.05,bx,F+.21,t.z+dz,materials.steel);
   }
-  const monitorX=desk.x-facing*.19,monitorY=desk.h+.30;
-  part('monitor',.055,.35,.53,monitorX,monitorY,desk.z,materials.frame);
-  part('monitor-screen',.008,.294,.47,monitorX+facing*.028,monitorY,desk.z,materials.screen);
-  part('monitor-post',.045,.14,.05,monitorX,desk.h+.072,desk.z,materials.frame);
-  part('monitor-base',.19,.025,.23,monitorX,desk.h+.0125,desk.z,materials.frame);
-  part('keyboard',.14,.027,.42,desk.x+facing*.16,desk.h+.0135,desk.z,materials.frame);
-  part('mouse',.096,.042,.064,desk.x+facing*.15,desk.h+.021,desk.z+.32,materials.frame);
-  part('paper-tray',.32,.048,.27,desk.x,desk.h+.024,desk.z-.56,materials.seat);
-  part('paper-stack',.29,.022,.21,desk.x,desk.h+.058,desk.z-.57,materials.paper);
-  part('chair-seat',chair.w,.09,chair.d,chair.x,.46,chair.z,materials.seat);
-  part('chair-back',.08,.46,chair.d,chair.x+facing*(chair.w/2-.04),chair.h-.23,chair.z,materials.seat);
-  part('chair-post',.08,.39,.08,chair.x,.22,chair.z,materials.frame);
-  part('chair-base-x',chair.w,.045,.065,chair.x,.025,chair.z,materials.frame);
-  part('chair-base-z',.065,.045,chair.d,chair.x,.025,chair.z,materials.frame);
  }
- compact(workstations);
-
- // No MacBook prop here: the interactive one is in the B4 5F principal's office
- // (`b4Shell.ts`). A visible, unpickable decoy in Building 6 sent players F-pressing
- // an empty desk while the errand was 90 m away.
-
- return{group,roomLight,materials};
+ const counter=W.counter;
+ box(group,'opening-b6-counter-body',counter.x1-counter.x0,counter.h-.05,counter.z1-counter.z0,(counter.x0+counter.x1)/2,F+(counter.h-.05)/2,(counter.z0+counter.z1)/2,materials.counter);
+ box(group,'opening-b6-counter-top',counter.x1-counter.x0+.06,.05,counter.z1-counter.z0+.06,(counter.x0+counter.x1)/2,counter.h-.025,(counter.z0+counter.z1)/2,materials.wood);
+ box(group,'opening-b6-counter-machine',.46,.34,.34,counter.x0+.42,counter.h+.17,(counter.z0+counter.z1)/2,materials.steel);
+ box(group,'opening-b6-counter-tray',.52,.03,.34,counter.x1-.40,counter.h+.015,(counter.z0+counter.z1)/2,materials.trim);
+ // Pendants over the tables: the canteen reads as a room even from the door.
+ for(const t of W.tables){
+  box(group,'opening-b6-pendant-cord',.03,CEIL-2.55,.03,t.x,CEIL-(CEIL-2.55)/2,t.z,materials.trim);
+  box(group,'opening-b6-pendant-shade',.46,.10,.46,t.x,2.50,t.z,materials.lamp);
+ }
+ // Recessed strips down the entry hall, plus the canteen and lift-side pools of light.
+ for(const z of [-55.2,-58.8])box(group,'opening-b6-ceiling-strip',4.6,.03,.16,3.0,CEIL-.015,z,materials.lamp);
+ const roomLights=[
+  new T.PointLight(0xfff1d8,34,16,2),
+  new T.PointLight(0xffe6c0,22,12,2),
+ ];
+ roomLights[0].position.set(3.2,F+CEIL-.3,-56.4);
+ roomLights[1].position.set(13.0,F+CEIL-.3,-56.6);
+ for(const light of roomLights)group.add(light);
+ return{group,roomLights,materials};
 }
 
 /* ------------------------------------------------------------------ */
@@ -560,7 +568,7 @@ export function createOpeningWorld(){
  const root=tag(new T.Group(),'opening-world','Opening_world');
  const bus=buildBus(root,busMaterials());
  const dinner=buildDinner(root);
- const office=buildOffice(root);
+ const hall=buildB6Hall(root);
 
  let doorT=0;         // 0 closed, 1 fully open
  let incident=false;
@@ -583,7 +591,7 @@ export function createOpeningWorld(){
   for(const item of dinner.dropped)item.node.position.copy(next?item.fallen:item.upright);
   for(const strip of incidentStrips)strip.material.emissiveIntensity=next?strip.incident:strip.normal;
   dinner.roomLights.forEach((light,index)=>{light.color.setHex(next?0xff5a45:index===0?0xc7b8ff:0x91beff);light.intensity=next?7:30;});
-  office.roomLight.color.setHex(next?0xff5a45:0xffe9c0);office.roomLight.intensity=next?6:42;
+  for(const [index,light] of hall.roomLights.entries()){light.color.setHex(next?0xff5a45:index===0?0xfff1d8:0xffe6c0);light.intensity=next?5:index===0?34:22;}
  }
  function update(state:{incident:boolean;laptopAcquired:boolean;doorOpen:boolean;invitationRead?:boolean},dt:number){
   // dt may be zero (paused frame): animation must not advance, state must not reset.

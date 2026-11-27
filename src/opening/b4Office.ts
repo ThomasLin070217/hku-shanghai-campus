@@ -31,7 +31,7 @@ const HAIR = 1e-6;
 const doorX0 = LIFT_LANDING.corridorX1;                 // 55.13, the corridor's end wall
 const doorX1 = doorX0 + WALL;                           // 55.25
 const zMid = (L.z0 + L.z1) / 2;                         // 12.40, the doorway centre
-const floorTop = LIFT_LANDING.floorTop;                 // 18.90
+const floorTop = LIFT_LANDING.floorTop;                 // 21.06
 const ceilBottom = LIFT_LANDING.ceilBottom;             // 21.50
 
 /** The office interior: 5.0 m deep behind the door, 6.0 m across, the landing's clear height. */
@@ -59,17 +59,21 @@ export const B4_OFFICE = {
   */
  laptopStand: {x: laptop.x, z: desk.z1 + .55},
  /**
-  * Wall-mounted CCTV on the lobby's west wall, between the side door and the lift door.
-  * It hangs on a bracket angled toward the lift, and a .48 m half-width swung .42 rad stands
-  * `.48·sin(.42) ≈ .20 m` off the wall at its north edge — so the centre has to stand that far
-  * out too, or the north third of the screen (and its frame) sinks inside the wall and the
-  * feed reads as a panel that has been sawn off.
+  * Wall-mounted CCTV on the B6 hall's west wall, beside the lift: walking the west aisle
+  * puts the screen in view before the lift doors. It faces +x, so the mesh's own orientation
+  * is unchanged. The .24 m stand-off keeps the swung frame clear of the wall (same geometry
+  * as the old B04 mount), and `y` is measured from the hall floor, not from zero: the hall
+  * stands on the auditorium's 5.1 m entrance landing.
   */
- cctv: {x: L.x1 + .24, z: 16.00, y: 1.92, w: .90, h: .54, tilt: -.42},
+ cctv: {x: OPENING.b6.x0 + .06 + .24, z: -56.00, y: L.ground + 1.92, w: .90, h: .54, tilt: -.42},
  /** The volume in front of the screen that fires beat 1. */
- cctvTrigger: {x0: L.x1 + .07, x1: L.x1 + 2.2, z0: 14.3, z1: 17.7},
- /** Ground call button, south of the lift doorway. */
- callGround: {x: L.x1 + .02, z: L.door.z1 + .35, y: 1.15, radius: .70},
+ cctvTrigger: {x0: OPENING.b6.x0 + .07, x1: OPENING.b6.x0 + 2.2, z0: -57.60, z1: -54.40},
+ /**
+  * Ground call button on the hall-facing face of the shaft's east wall, south of the doors.
+  * The shaft now stands free inside the B6 hall, so the face is `x1 + wall`, not `x1`; the
+  * plate sits on the 0.30 m pier south of the doorway.
+  */
+ callGround: {x: L.x1 + L.wall + .02, z: (L.door.z1 + L.z1) / 2, y: L.ground + 1.15, radius: .70},
  /** 5F call point: on the corridor's south wall, a step past the lobby mouth, so the car can
   * be called back down from the office side as well as from the car. */
  call5f: {x: LIFT_LANDING.lobbyX1 + .45, z: LIFT_LANDING.corridorZ1 - .40, y: L.landing + 1.15, radius: .95},
@@ -77,7 +81,7 @@ export const B4_OFFICE = {
  corridorTrigger: {x0: LIFT_LANDING.lobbyX1 + .2, x1: LIFT_LANDING.corridorX1 - .2, z0: LIFT_LANDING.corridorZ0 + .1, z1: LIFT_LANDING.corridorZ1 - .1},
  /**
   * The shaft's 5F landing guard. Task D leaves the doorway open when the car is elsewhere; at
-  * the 5F plate that is an 18.9 m drop, so a leaf closes it whenever the car is away. It sits
+  * the 5F plate that is a 15.96 m drop, so a leaf closes it whenever the car is away. It sits
   * 1 cm west of the plate edge so it never overlaps the landing footprint.
   */
  shaftGuard: {x0: L.x1 - .05, x1: L.x1, z0: L.z0, z1: L.z1},
@@ -89,14 +93,14 @@ export const B4_OFFICE = {
   * the way out of the lift whenever the car is parked upstairs — the normal state. The ground
   * room's ceiling is the highest a ground-floor player can be, so sealing to it seals the hole.
   */
- groundGuard: {x0: L.x1 - .05, x1: L.x1, z0: L.door.z0, z1: L.door.z1, bottom: L.ground, top: OPENING.b4.floor + OPENING.b4.clearHeight},
+ groundGuard: {x0: L.x1 - .05, x1: L.x1, z0: L.door.z0, z1: L.door.z1, bottom: L.ground, top: OPENING.b6.floor + OPENING.b6.clearHeight},
  /**
   * E.8's secondary dressing. Scenery only: no collision, no trigger, nothing that stops the
   * player. The trolley is the one object in the beat that says people left in a hurry.
   */
  dressing: {
   /** The building's own evacuation notice, on the corridor's north wall, facing the walker. */
-  evacSign: {x: 51.70, y: floorTop + 1.55, z: LIFT_LANDING.corridorZ0 + .012},
+  evacSign: {x: (LIFT_LANDING.lobbyX1 + LIFT_LANDING.corridorX1) / 2 + 1.2, y: floorTop + 1.55, z: LIFT_LANDING.corridorZ0 + .012},
   /**
    * A trolley left where someone stopped pushing it: across the middle of the 1.8 m corridor,
    * angled as if abandoned. E.11: in the ground lobby it was a dark shape against a wall that
@@ -104,9 +108,9 @@ export const B4_OFFICE = {
    * people left in a hurry. Scenery only — no collision, so the player passes through it
    * rather than being stopped by dressing, and it stands clear of both corridor walls.
    */
-  trolley: {x: 52.35, y: floorTop, z: 12.30, yaw: 1.15},
+  trolley: {x: (LIFT_LANDING.lobbyX1 + LIFT_LANDING.corridorX1) / 2 - 1.0, y: floorTop, z: zMid, yaw: 1.15},
   /** One corridor ceiling panel that is not quite dead, near the corridor mouth. */
-  flickerPanel: {x: 50.55, y: ceilBottom - .02, z: (LIFT_LANDING.corridorZ0 + LIFT_LANDING.corridorZ1) / 2},
+  flickerPanel: {x: LIFT_LANDING.lobbyX1 + 1.0, y: ceilBottom - .02, z: (LIFT_LANDING.corridorZ0 + LIFT_LANDING.corridorZ1) / 2},
  },
 } as const;
 
@@ -400,7 +404,7 @@ function syncDoorObstacle(): void {
 function syncShaftGuard(): void {
  const o = doorObstacles?.guard;
  if (!o) return;
- // The car is at 5F: the doorway is a doorway. Anywhere else it is an 18.9 m drop.
+ // The car is at 5F: the doorway is a doorway. Anywhere else it is a 15.96 m drop.
  const carAtTop = Math.abs(LIFT.y - floorTop) <= .30;
  o.bottom = floorTop;
  o.top = carAtTop ? floorTop : ceilBottom;
@@ -408,7 +412,7 @@ function syncShaftGuard(): void {
 
 /**
  * A.3.1: the ground side of the same hole. The car's door leaves travel with the car, so with
- * the car parked at the landing the lobby doorway has an 18.9 m shaft behind it. Mirror of
+ * the car parked at the landing the lobby doorway has a 15.96 m shaft behind it. Mirror of
  * `syncShaftGuard`, one floor down: solid to the ground lobby's ceiling unless the car is here.
  */
 function syncGroundGuard(): void {

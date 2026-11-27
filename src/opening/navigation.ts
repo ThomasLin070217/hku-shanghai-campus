@@ -1,9 +1,9 @@
 import * as T from 'three';
-import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H,OFFICE_LAYOUT as B6,dinnerHallPoint} from './spatialLayout';
+import {OPENING as O,DINNER_LAYOUT as D,DINNER_HEAD as H,B6_HALL,dinnerHallPoint,B4_LIFT as L6} from './spatialLayout';
 import type {Obstacle} from '../exploration/navigation';
 import {B4_LAYOUT,B4_OBSTACLES} from './b4Layout';
-import {LIFT,LIFT_LANDING,liftLandingBoxes,liftLandingContains,liftShaftSplit,liftSupport,mountLift,tickLift} from './lift';
-import {b4OfficeBoxes,installOffice,officeFloorContains,tickOffice} from './b4Office';
+import {LIFT,LIFT_LANDING,liftLandingBoxes,liftLandingContains,liftSupport,mountLift,tickLift} from './lift';
+import {B4_OFFICE,b4OfficeBoxes,installOffice,officeFloorContains,tickOffice} from './b4Office';
 
 /** Door clearance is shared by the scenery, collision and the step transition. */
 export function openingBusDoorSpan(){
@@ -13,18 +13,15 @@ export function openingBusDoorSpan(){
 
 export function openingObstacles(obstacles:Obstacle[]){
  const box=(name:string,x0:number,x1:number,z0:number,z1:number,bottom:number,top:number):Obstacle=>({name,x:(x0+x1)/2,z:(z0+z1)/2,w:x1-x0,d:z1-z0,bottom,top,angle:0});
+ let b6Top=0;
  for(const r of [O.b4,O.b5,O.b6]){
   // B04 is a band tower: its rooms open the +z wing box instead of a closed exterior.
   const index=obstacles.findIndex(o=>o.name===r.id+'/closed-exterior'||(r.id===O.b4.id&&o.name===r.id+'/wing'&&o.z-o.d/2<r.z1&&o.z+o.d/2>r.z0));if(index<0)continue;
   const old=obstacles[index],x0=old.x-old.w/2,x1=old.x+old.w/2,z0=old.z-old.d/2,z1=old.z+old.d/2,l=r.door-r.doorWidth/2,h=r.door+r.doorWidth/2;
-  const inside=r.id===O.b6.id?B6.interior:r;
-  // The B04 west mass carries the lift shaft: hollow it from the lobby floor to the top of
-  // the 5F car, or the car and its passengers would rise through solid tower.
-  const left=r.id===O.b4.id
-   ?liftShaftSplit(r.id+'/opening-left',{x0,x1:inside.x0,z0,z1,bottom:0,top:old.top}).map(p=>box(p.name,p.x0,p.x1,p.z0,p.z1,p.bottom,p.top))
-   :[box(r.id+'/opening-left',x0,inside.x0,z0,z1,0,old.top)];
+  if(r.id===O.b6.id)b6Top=old.top;
+  const inside=r;
   const carved=[
-   ...left,
+   box(r.id+'/opening-left',x0,inside.x0,z0,z1,0,old.top),
    box(r.id+'/opening-right',inside.x1,x1,z0,z1,0,old.top),
    box(r.id+'/opening-back',inside.x0,inside.x1,z0,inside.z0,0,old.top),
   ];
@@ -71,17 +68,58 @@ export function openingObstacles(obstacles:Obstacle[]){
  for(const z of H.chairRows)for(const offset of H.chairOffsets){
   furniture('opening-b5-head-chair',{...H.chair,x:H.table.x+offset,z},deck);
  }
- const officeFloor=O.b6.floor,{interior}=B6;
- obstacles.push(box('opening-b6-ceiling',interior.x0,interior.x1,interior.z0,interior.z1,officeFloor+interior.ceiling,officeFloor+O.b6.clearHeight));
- const officeFurniture=(name:string,{x,z,w,d,h}:{x:number;z:number;w:number;d:number;h:number})=>{
-  obstacles.push(box('opening-b6-'+name,x-w/2,x+w/2,z-d/2,z+d/2,officeFloor,officeFloor+h));
- };
- officeFurniture('desk',B6.presentationDesk);
- officeFurniture('credenza',B6.credenza);
- officeFurniture('planter',B6.planter);
- for(const {id,desk,chair} of B6.workstations){
-  officeFurniture(id+'-desk',desk);
-  officeFurniture(id+'-chair',chair);
+ // ------------------------------------------------------------------
+ // Building 6 ground hall (owner ruling, 2026-11-27). The tower is hollow at ground
+ // level; above the hall ceiling it is solid again except the lift shaft and the 5F
+ // landing/office the lift opens onto.
+ // ------------------------------------------------------------------
+ if(b6Top>0){
+  const hall=O.b6,W=B6_HALL,F=hall.floor;
+  const s0=L6.x0-W.shaft.wall,s1=L6.x1+W.shaft.wall;
+  const t0=L6.z0-W.shaft.wall,t1=L6.z1+W.shaft.wall;
+  const front=hall.z1-.2;                       // interior face of the façade wall
+  const ceilBottom=F+hall.clearHeight,ceilTop=ceilBottom+.16;
+  const fiveTop=LIFT_LANDING.ceilBottom+L6.wall; // top of the office ceiling
+  const oz0=B4_OFFICE.interior.z0-B4_OFFICE.wall,oz1=B4_OFFICE.interior.z1+B4_OFFICE.wall;
+  // The shaft shell the car slides in. The car carries its own walls and leaves, so the
+  // hall only needs the static frame around the doorway.
+  obstacles.push(
+   box('opening-b6-shaft-west',s0,L6.x0,t0,t1,F,ceilBottom),
+   box('opening-b6-shaft-north',L6.x0,L6.x1,t0,L6.z0,F,ceilBottom),
+   box('opening-b6-shaft-south',L6.x0,L6.x1,L6.z1,t1,F,ceilBottom),
+   box('opening-b6-shaft-east-north',L6.x1,s1,L6.z0,L6.door.z0,F,ceilBottom),
+   box('opening-b6-shaft-east-south',L6.x1,s1,L6.door.z1,L6.z1,F,ceilBottom),
+   box('opening-b6-shaft-lintel',L6.x1,s1,L6.door.z0,L6.door.z1,F+L6.door.height,ceilBottom),
+  );
+  // The hall ceiling, four slabs around the shaft's travel opening.
+  obstacles.push(
+   box('opening-b6-ceiling-west',hall.x0,s0,hall.z0,front,ceilBottom,ceilTop),
+   box('opening-b6-ceiling-east',s1,hall.x1,hall.z0,front,ceilBottom,ceilTop),
+   box('opening-b6-ceiling-north',s0,s1,hall.z0,t0,ceilBottom,ceilTop),
+   box('opening-b6-ceiling-south',s0,s1,t1,front,ceilBottom,ceilTop),
+  );
+  // Above the ceiling: solid tower, minus the shaft column and the 5F void. The two
+  // openings share one z band, so three strips and a cap enclose them.
+  obstacles.push(
+   box('opening-b6-above-west',hall.x0,s0,hall.z0,front,ceilTop,b6Top),
+   box('opening-b6-above-north',s0,hall.x1,hall.z0,oz0,ceilTop,b6Top),
+   box('opening-b6-above-south',s0,hall.x1,oz1,front,ceilTop,b6Top),
+   box('opening-b6-above-cap',s0,hall.x1,oz0,oz1,fiveTop,b6Top),
+  );
+  // Canteen: partition east of the entry axis with a 3.4 m opening, two tables and the
+  // counter along the front wall.
+  const c=W.canteen,part=W.shaft.wall;
+  obstacles.push(
+   box('opening-b6-canteen-north',c.partitionX,c.partitionX+part,hall.z0,c.openingZ0,F,ceilBottom),
+   box('opening-b6-canteen-south',c.partitionX,c.partitionX+part,c.openingZ1,front,F,ceilBottom),
+   box('opening-b6-canteen-header',c.partitionX,c.partitionX+part,c.openingZ0,c.openingZ1,F+2.6,ceilBottom),
+  );
+  for(const [i,t] of W.tables.entries())
+   obstacles.push(box('opening-b6-table-'+i,t.x-t.w/2,t.x+t.w/2,t.z-t.d/2,t.z+t.d/2,F,F+t.top));
+  obstacles.push(box('opening-b6-counter',W.counter.x0,W.counter.x1,W.counter.z0,W.counter.z1,F,F+W.counter.h));
+  // The flip wall stands 14 cm proud of the north wall; its tiles are solid to the touch.
+  const fw=W.flipWall,half=fw.width/2;
+  obstacles.push(box('opening-b6-flip-wall',fw.x-half,fw.x+half,fw.z,fw.z+fw.depth,F+.13,F+3.90));
  }
  const {x0,x1,z0,z1,lo,hi}=openingBusDoorSpan();
  obstacles.push(
@@ -133,6 +171,9 @@ export function openingFloor(x:number,z:number,y:number,base:number|null){
  if(liftLandingContains(x,z)&&LIFT_LANDING.floorTop<=y+.242)h=Math.max(h??-Infinity,LIFT_LANDING.floorTop);
  if(officeFloorContains(x,z)&&LIFT_LANDING.floorTop<=y+.242)h=Math.max(h??-Infinity,LIFT_LANDING.floorTop);
  const r=O.b6;if(x>=r.x0&&x<=r.x1&&z>=r.z0&&z<=r.z1&&r.floor<=y+.242)h=Math.max(h??-Infinity,r.floor);
+ // The threshold: the campus landing ends 0.22 m short of the façade, so bridge the
+ // doorway strip rather than leaving a 5 m hole a player falls through on the way in.
+ if(Math.abs(x-r.door)<=r.doorWidth/2&&z>r.z1&&z<=r.z1+.45&&r.floor<=y+.242)h=Math.max(h??-Infinity,r.floor);
  const b=O.bus,x0=b.x-b.length/2,x1=b.x+b.length/2,z0=b.z-b.width/2,z1=b.z+b.width/2;
  if(x>=x0&&x<=x1&&z>=z0&&z<=z1&&b.floor<=y+.242)h=Math.max(h??-Infinity,b.floor);
  const lo=b.doorX-b.doorWidth/2,hi=b.doorX+b.doorWidth/2;

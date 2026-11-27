@@ -102,13 +102,14 @@ group('3. The door leaf opens, and only when time passes');
  ok('the door leaf animates only with time and never blocks the exit');
 }
 
-group('4. The retired B6 room carries no MacBook decoy');
+group('4. The B6 entrance hall carries no MacBook decoy');
 {
- // The interactive MacBook lives in the B4 5F principal's office (`b4Shell.ts`). A visible,
+ // The interactive MacBook lives in the 5F principal's office (`b4Shell.ts`). A visible,
  // unpickable prop here is what players pressed F at while the errand was 90 m away.
- assert.equal(world.root.getObjectByName('Opening_b6_macbook'),undefined,'the B6 room must not render a MacBook');
- assert.ok(world.root.getObjectByName('opening-b6-desk'),'the presentation desk stays as scenery');
- ok('the B6 room renders the desk without a MacBook');
+ assert.equal(world.root.getObjectByName('Opening_b6_macbook'),undefined,'the B6 hall must not render a MacBook');
+ assert.ok(world.root.getObjectByName('Opening_b6_hall'),'the Building 6 entrance hall is built');
+ assert.ok(world.root.getObjectByName('opening-b6-table-top-0'),'the canteen tables are built');
+ ok('the B6 hall renders its furniture without a MacBook');
 }
 
 group('5. The dinner area switches between the tidy and the abandoned state');
@@ -163,7 +164,7 @@ group('6. The furniture leaves the walking routes open');
    const insideB5=x>=O.b5.x0&&x<=O.b5.x1&&z>=O.b5.z0&&z<=O.b5.z1;
    const insideB6=x>=O.b6.x0&&x<=O.b6.x1&&z>=O.b6.z0&&z<=O.b6.z1;
    if(!insideB5&&!insideB6)continue;
-   for(const name of ['opening-b5-table-0','opening-b5-table-1','opening-b5-table-2','opening-b5-table-3','opening-b5-counter','opening-b5-partition','opening-b6-desk','opening-b6-credenza']){
+   for(const name of ['opening-b5-table-0','opening-b5-table-1','opening-b5-table-2','opening-b5-table-3','opening-b5-counter','opening-b5-partition','opening-b6-table-top-0','opening-b6-table-top-1','opening-b6-counter-body']){
     const mesh=world.root.getObjectByName(name);
     if(!mesh)continue;
     const box=new T.Box3().setFromObject(mesh);
@@ -172,13 +173,15 @@ group('6. The furniture leaves the walking routes open');
   }
  }
  assert.deepEqual(blocked,[],'furniture must not stand on a walking route: '+blocked.join('; '));
- // The presentation desk keeps a free standing spot in front of it: the desk must not
- // swallow its own anchor even though the MacBook that stood on it now lives in B4.
- const desk=new T.Box3().setFromObject(world.root.getObjectByName('opening-b6-desk')!);
- const anchor=new T.Vector3(O.presentationDesk[0],O.presentationDesk[1],O.presentationDesk[2]);
- const stand=new T.Vector3(O.presentationDesk[0],O.b6.floor,O.presentationDesk[2]+1.2);
- assert.ok(!desk.containsPoint(stand),'the desk must leave a standing spot in front of it');
- assert.ok(stand.distanceTo(anchor)<2.7,'the standing spot must be within arm\'s reach of the desk');
+ // The canteen leaves the entry aisle and the lift approach clear: the route's last
+ // waypoint must not fall inside a table or the counter.
+ const [endX,endZ]=O.routeB6.at(-1)!;
+ for(const name of ['opening-b6-table-top-0','opening-b6-table-top-1','opening-b6-counter-body']){
+  const mesh=world.root.getObjectByName(name);
+  if(!mesh)continue;
+  const box=new T.Box3().setFromObject(mesh);
+  assert.ok(!box.containsPoint(new T.Vector3(endX,O.b6.floor,endZ)),`the hall route anchor must stay clear of ${name}`);
+ }
  // The staff must stand in the dinner area, not inside a table.
  const staffBox=new T.Box3().setFromObject(world.root.getObjectByName('Opening_b5_dinner')!);
  assert.ok(staffBox.containsPoint(new T.Vector3(...O.staff)),'the staff position must be inside the dinner area');
@@ -188,7 +191,7 @@ group('6. The furniture leaves the walking routes open');
  }
  // No prop may poke through the room walls or the building shell.
  const outside:string[]=[];
- for(const name of ['opening-b5-table-0','opening-b5-table-1','opening-b5-table-2','opening-b5-table-3','opening-b5-planter-0','opening-b5-planter-1','opening-b5-planter-2','opening-b5-planter-3','opening-b5-counter','opening-b5-partition','opening-b6-desk','opening-b6-credenza','opening-b6-planter']){
+ for(const name of ['opening-b5-table-0','opening-b5-table-1','opening-b5-table-2','opening-b5-table-3','opening-b5-planter-0','opening-b5-planter-1','opening-b5-planter-2','opening-b5-planter-3','opening-b5-counter','opening-b5-partition','opening-b6-table-top-0','opening-b6-table-top-1','opening-b6-counter-body']){
   const mesh=world.root.getObjectByName(name);
   if(!mesh)continue;
   const box=new T.Box3().setFromObject(mesh);
