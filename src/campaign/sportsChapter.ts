@@ -52,14 +52,11 @@ export function createSportsChapter():Chapter{
   if(bed===(name??''))return;bed=name??'';
   if(name)ctx?.music?.(name,{loop:true});else ctx?.stopMusic?.();
  }
- /** The crowd cheer is optional and must never block the rescue. */
+ /** The crowd cheer is optional and must never block the rescue. It goes through the page's
+  * one mixer, so the player's mute, effects volume and pause apply (S-31). */
  function playCheer(){
-  if(typeof Audio==='undefined'||typeof window==='undefined')return;
-  void import('../gameplay/storyAudioAssets').then(({STORY_AUDIO_URLS})=>{
-   const audio=new Audio(STORY_AUDIO_URLS['sfx_crowd_cheer'].href);
-   audio.volume=.45;
-   return audio.play().catch(()=>{});
-  }).catch(()=>{/* Audio is optional. */});
+  if(typeof window==='undefined')return;
+  void import('../gameplay/audio').then(({CampusAudio})=>{CampusAudio.live?.playSfx('sfx_crowd_cheer','sfx',.45);},()=>{/* Audio is optional. */});
  }
  function openDoor():{sudoku:boolean;password:boolean;open:boolean}{
   if(!doorRuntime)return{sudoku:false,password:false,open:false};

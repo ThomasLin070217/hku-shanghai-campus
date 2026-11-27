@@ -351,6 +351,10 @@ export function createPrologue(options: PrologueOptions): Prologue {
   }
 
   function skip(): void {
+    // Skipping the gate is the same decision as entering it: record that the prologue
+    // was seen, or the gate returns on every reload (S-08). `?intro=1` and Replay intro
+    // still force a replay past this flag.
+    try { sessionStorage.setItem(STORAGE_KEY, '1'); } catch {}
     stop();
   }
 

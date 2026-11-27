@@ -30,7 +30,9 @@ export function bindBackupRelay(id:string|undefined,onReady:()=>void){
   hint.textContent='Recovery procedure: start backup power, isolate the external network, then restore local control.';
   reply.setAttribute('role','status');reply.textContent='0 / '+procedure.correctOrder.length;
   const commands=document.createElement('div');let index=0;
-  for(const key of [...procedure.options].reverse()){
+  // Reading order must match the printed procedure above: the container is a plain
+  // `flex-direction: row`, so the old `reverse()` laid the answer out backwards (S-35).
+  for(const key of procedure.options){
     const button=document.createElement('button');button.type='button';button.className='opening-button opening-button--secondary';button.textContent=labels[key]??key;
     button.onclick=()=>{
       if(key!==procedure.correctOrder[index]){reply.textContent='Interlock active. Next step: '+labels[procedure.correctOrder[index]]+'.';return;}

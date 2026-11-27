@@ -141,12 +141,11 @@ export function createSportsDoor(options:{root:()=>T.Object3D;game:()=>CampusGam
   if(code.length>=pass.length){code=[];}
   code.push(key);renderCode();
  }
- // A short pair of beeps keeps the lock readable without a new asset.
- let audioCtx:AudioContext|null=null;
+ // A short beep keeps the lock readable without a new asset. It goes through the page's one
+ // mixer, so the player's effects volume and mute apply; the private AudioContext it
+ // replaces played straight to the destination and ignored both (S-31).
  function audio(ok:boolean){
-  try{audioCtx??=new AudioContext();const ctx=audioCtx,now=ctx.currentTime;
-   [ok?660:300].forEach((hz,i)=>{const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='square';osc.frequency.value=hz;gain.gain.setValueAtTime(.0001,now+i*.09);gain.gain.exponentialRampToValueAtTime(.05,now+i*.09+.01);gain.gain.exponentialRampToValueAtTime(.0001,now+i*.09+.12);osc.connect(gain).connect(ctx.destination);osc.start(now+i*.09);osc.stop(now+i*.09+.13);});
-  }catch{}
+  CampusAudio.live?.beep(ok?660:300);
  }
  grid.addEventListener('input',event=>{
   const input=event.target as HTMLInputElement;if(!(input instanceof HTMLInputElement))return;

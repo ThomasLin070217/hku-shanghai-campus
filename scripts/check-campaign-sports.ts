@@ -438,11 +438,17 @@ group('(p) a reload at done goes straight to the credits, no replay (M1)',()=>{
 group('(o) Play again clears progress and starts the game, not the checkpoint (I2)',()=>{
  const {storage,data}=memoryStorage({[CAMPAIGN_SAVE_KEY]:'{}',[OPENING_SAVE_KEY]:'{}',[WORLD_THREAT_KEY]:SEALED_WITH_POWER});
  let target='';
- playAgain(storage,{assign:url=>{target=url;}});
+ playAgain(storage,{assign:url=>{target=url;}},'?experience=opening&checkpoint=ending&shell=1&intro=0&quality=low');
  assert.ok(target,'Play again navigates once, on the player\'s click');
  const url=new URL(target,'http://127.0.0.1:5258/?experience=opening&checkpoint=ending');
  assert.equal(url.searchParams.get('experience'),'opening');
  assert.equal(url.searchParams.has('checkpoint'),false,`no checkpoint parameter in ${url.search}`);
+ // R-08: the caller's boot parameters survive, like the chapter menus' links (D-01). A
+ // dropped `shell=1` booted the review build with the authoring chrome over the game.
+ assert.equal(url.searchParams.get('shell'),'1',`Play again keeps shell=1 in ${url.search}`);
+ assert.equal(url.searchParams.get('quality'),'low',`Play again keeps the caller's quality in ${url.search}`);
+ assert.equal(url.searchParams.get('intro'),'0',`Play again keeps the caller's intro choice in ${url.search}`);
+ assert.equal(url.searchParams.get('fresh'),'1',`Play again asks for a new run in ${url.search}`);
  assert.equal(data.has(CAMPAIGN_SAVE_KEY)||data.has(OPENING_SAVE_KEY),false,'progress is cleared first');
  assert.equal(loadWorldThreat({storage}).phase,'clear','the world threat is reset first');
 });

@@ -8,8 +8,10 @@ export function drawOpeningMap(canvas:HTMLCanvasElement,g:CampusGame,story:Openi
   const t=campaign.target;drawCampusMap(canvas,g,{route:campaign.route??[],target:t?{x:t[0],z:t[2]}:null,theme:'dark'},large);return;
  }
  const route=story.stage==='to_b6'?O.routeErrand:story.stage==='return_b5'?[...O.routeErrand].reverse():story.stage==='to_b4'||story.stage==='complete'?O.routeB4:O.routeB5;
- const target=story.stage==='crowd'?O.crowdStart:story.stage==='to_b6'?O.checkpoints.b6:story.stage==='to_b4'||story.stage==='complete'?O.handoff:O.staff;
- drawCampusMap(canvas,g,{route,target:{x:target[0],z:target[2]},theme:'dark'},large);
+ // The incident's objective is an inventory action (open the MacBook), so it has no
+ // place to point at; the old fallthrough aimed the map at the coordinator (S-07).
+ const target=story.stage==='incident'?null:story.stage==='crowd'?O.crowdStart:story.stage==='to_b6'?O.checkpoints.b6:story.stage==='to_b4'||story.stage==='complete'?O.handoff:O.staff;
+ drawCampusMap(canvas,g,{route,target:target?{x:target[0],z:target[2]}:null,theme:'dark'},large);
 }
 interface CampusMapOverlay {
  route:readonly (readonly number[])[];

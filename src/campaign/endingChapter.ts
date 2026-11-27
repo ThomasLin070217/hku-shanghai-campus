@@ -89,12 +89,25 @@ export function clearAllProgress(storage:ProgressStorage&WorldThreatStorage):str
  return removed;
 }
 
-/** The story's first page: no `checkpoint` parameter, so a chapter-menu entry does not loop back to itself. */
-export const PLAY_AGAIN_URL='?experience=opening';
+/**
+ * The story's first page for a new run. The caller's boot parameters are kept — `shell=1`
+ * (a review build only shows the player shell with it), `intro`, `quality`, `tools` — the
+ * same rule as the chapter menus (D-01); dropping them booted the authoring chrome over the
+ * game. The checkpoint the credits were reached at is dropped (it would reboot the
+ * epilogue), and `fresh=1` makes the page a new run even when this click could not clear
+ * the save.
+ */
+export function playAgainUrl(search=''):string{
+ const params=new URLSearchParams(search);
+ params.set('experience','opening');
+ params.delete('checkpoint');
+ params.set('fresh','1');
+ return `?${params.toString()}`;
+}
 /** Play again: clear every local save, then start the game from the beginning (an explicit player click). */
-export function playAgain(storage:ProgressStorage&WorldThreatStorage,nav:{assign(url:string):void}){
+export function playAgain(storage:ProgressStorage&WorldThreatStorage,nav:{assign(url:string):void},search=typeof location==='undefined'?'':location.search){
  try{clearAllProgress(storage);}catch(error){console.error('ending: Play again could not clear the local progress; the new run may resume it',error);}
- nav.assign(PLAY_AGAIN_URL);
+ nav.assign(playAgainUrl(search));
 }
 
 const STYLE_ID='ending-styles';
@@ -201,6 +214,10 @@ export function createEndingChapter():Chapter{
    // The four-tower light show is the middle beat: it starts with the dome lift and
    // finishes before the credits, while the Mac overlay is already fading away.
    finale?.start();
+   // The release hands the score to the finale: clear any chapter bed still on the story
+   // bus first, so the sealed campus's tension loop does not play under the victory cue.
+   // The opening's stage bed follows the purge written above, so it retires on its own (S-33).
+   try{ctx?.stopMusic?.();}catch(error){console.error('ending: could not hand the score to the finale',error);}
    try{ctx?.music?.('mus_finale',{loop:false});}catch(error){console.error('ending: could not start the finale cue',error);}
   }
   if(!lines)return;
