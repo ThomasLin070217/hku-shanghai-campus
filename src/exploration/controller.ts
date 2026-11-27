@@ -13,6 +13,10 @@ import {CampusGame} from './game';
 import type {BuildingSpec,SiteParameters} from '../model/campusParameters';
 export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:BuildingSpec[],site:SiteParameters,opening=false){
  let world=createNavigation(specs,site,opening),game=new CampusGame(world,specs,site),enabled=false,accumulator=0,turn=0,compat=false,dragging=false,lastX=0,lastY=0;
+ /** The mode the pause menu was opened from, so Esc puts the same one back (D-02). */
+ let wasCompat=false;
+ /** An Esc-driven lock request is in flight; a refusal falls back to drag controls. */
+ let escapeResumePending=false;
  const events=new AbortController(),interactions=new Set<()=>void>(),computers=new Set<()=>void>();let disposed=false;
  /** Story mode pins the camera (e.g. first person); null keeps the V toggle. */
  let viewLock:'first'|'third'|null=null;
@@ -39,25 +43,44 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  function openInventory(){if(!enabled||game.panel)return;clear();compat=false;game.openInventory();if(locked())document.exitPointerLock();}
  function closeInventory(){clear();game.closeInventory();}
  const inventoryUI=createInventoryUI(()=>game,openInventory,closeInventory,opening);
- function pause(reason:string){clear();compat=false;game.pause(reason);if(locked())document.exitPointerLock();}
+ function pause(reason:string){wasCompat=compat;clear();compat=false;game.pause(reason);if(locked())document.exitPointerLock();}
  listenWindow('blur',()=>pause('window_blur'));
  listenDocument('visibilitychange',()=>{if(document.hidden)pause('page_hidden');});
  listenDocument('focusin',e=>{if(editable(e.target))clear();});
- listenDocument('pointerlockchange',()=>{clear();if(locked()&&!game.panel&&!game.inventoryOpen){game.takeover('human_pointer_lock');game.paused=false;}else if(locked()){document.exitPointerLock();}else if(!game.armed)game.pause('pointer_unlock');});
+ // `pause()`, not `game.pause()`: the wrapper records the mode the menu was opened
+  // from (D-02), and this browser-driven pause would otherwise leave `wasCompat`
+  // stale, so a later Esc would resume in drag mode over a pointer-locked run.
+  listenDocument('pointerlockchange',()=>{escapeResumePending=false;clear();if(locked()&&!game.panel&&!game.inventoryOpen){game.takeover('human_pointer_lock');game.paused=false;}else if(locked()){document.exitPointerLock();}else if(!game.armed)pause('pointer_unlock');});
  // A lock request fails asynchronously, and its error can land long after the player has
  // already resumed through drag controls (one Continue click issues two requests: the
  // button's enter() and the campaign's resume()). Drag mode is an explicit choice, so a
  // stale failure must not pause the game again — measured 2026-11-26 on the epilogue.
- listenDocument('pointerlockerror',()=>{if(compat)return;pause('pointer_lock_failed');document.dispatchEvent(new CustomEvent('game-notice',{detail:opening?'Pointer lock unavailable. Use drag mode to continue.':'此浏览器无法锁定鼠标。请用 Chrome 打开，或选择拖动兼容模式。'}));});
+ listenDocument('pointerlockerror',()=>{if(compat)return;pause('pointer_lock_failed');document.dispatchEvent(new CustomEvent('game-notice',{detail:opening?'Pointer lock unavailable. Use drag mode to continue.':'此浏览器无法锁定鼠标。请用 Chrome 打开，或选择拖动兼容模式。'}));
+  // Esc is a "close the menu" command: when the browser refuses the lock it asked
+  // for, close the menu in drag mode rather than leaving the card up (D-02).
+  settleEscapeResume();
+ });
  listenWindow('keydown',e=>{
   if(!enabled||e.defaultPrevented||e.isComposing||e.metaKey||e.ctrlKey||e.altKey||game.panel)return;
-  if(e.code===KEYS.inventory&&!e.repeat&&!((e.target as HTMLElement)?.matches('input,textarea,select'))){e.preventDefault();game.inventoryOpen?closeInventory():openInventory();return;}
+  // The touch layer dispatches its synthetic key events on `window`, whose
+  // target is not an Element; a bare `?.` guards the target, not the method,
+  // and `.matches` threw on every BAG tap (measured 2026-11-26: five taps,
+  // five TypeErrors, bag never opened). `instanceof` guards the method too.
+  if(e.code===KEYS.inventory&&!e.repeat&&!(e.target instanceof HTMLElement&&e.target.matches('input,textarea,select'))){e.preventDefault();game.inventoryOpen?closeInventory():openInventory();return;}
   if(game.inventoryOpen){if(e.code===KEYS.pause){e.preventDefault();closeInventory();}return;}
+  // Esc closes the pause menu it opened: in drag mode below, and from the pointer-lock
+  // exit the browser performed. A dialog above the card (the MacBook, Settings, the
+  // backpack) keeps its own Escape, which those surfaces stop before it reaches here.
+  if(e.code===KEYS.pause&&game.paused&&!(e.target instanceof HTMLElement&&e.target.closest('dialog'))){e.preventDefault();resumeFromPause();return;}
   if(editable(e.target))return;
+  // The pause menu is up: every game key is inert. C and the hotbar digits used to run
+  // before this guard and acted behind the open card (D-09).
+  if(game.paused)return;
   if(e.code===KEYS.computer&&!e.repeat){e.preventDefault();for(const fn of computers)fn();return;}
   if(/^Digit[1-9]$/.test(e.code)){e.preventDefault();game.takeover('human_hotbar');game.selectHotbar(Number(e.code.slice(-1))-1);if(!controlled())game.paused=true;return;}
   if((e.code===KEYS.zoomIn||e.code===KEYS.zoomOut)&&controlled()){distance=T.MathUtils.clamp(distance+(e.code===KEYS.zoomIn?-0.5:0.5),C.minDistance,C.maxDistance);return;}
-  const movement=[KEYS.forward,KEYS.back,KEYS.left,KEYS.right,KEYS.sprint,KEYS.jump].includes(e.code as never),viewKey=e.code===KEYS.view&&!viewLock;
+  // Both physical Shift keys sprint; the binding table stores one code per action (D-08).
+  const movement=[KEYS.forward,KEYS.back,KEYS.left,KEYS.right,KEYS.sprint,'ShiftRight',KEYS.jump].includes(e.code as never),viewKey=e.code===KEYS.view&&!viewLock;
   if((game.owner||game.armed)&&(movement||e.code===KEYS.interact||viewKey)){game.takeover('human_movement');clear();if(!controlled())game.pause('human_movement');}
   if(e.code===KEYS.pause&&compat){pause('escape');return;}
   if(!controlled()||game.paused)return;
@@ -73,6 +96,21 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
  /** Drag-to-look entry, shared by the compat button and the touch path. */
  function enterCompat(){if(game.inventoryOpen||game.panel)return;game.takeover('human_compat');compat=true;game.paused=false;clear();canvas.focus();}
  function enter(){if(!enabled||game.inventoryOpen||game.panel)return;if(touchPreferred()){enterCompat();return;}compat=false;canvas.focus();void canvas.requestPointerLock()?.catch(()=>pause('pointer_lock_failed'));}
+ /** Esc closing the pause menu: restore the mode the menu was opened from (D-02). */
+ function resumeFromPause(){
+  if(game.inventoryOpen||game.panel)return;
+  if(touchPreferred()||compat||wasCompat){enterCompat();return;}
+  compat=false;canvas.focus();escapeResumePending=true;
+  // The same request the card's primary button makes, but a refusal must not leave
+  // the menu up: the pending flag lets the error path fall back to drag controls.
+  void canvas.requestPointerLock()?.catch(()=>settleEscapeResume());
+ }
+ /** An Esc resume the browser refused becomes drag mode, not another pause. */
+ function settleEscapeResume(){
+  if(!escapeResumePending)return;
+  escapeResumePending=false;
+  if(game.paused&&!game.panel&&!game.inventoryOpen)enterCompat();
+ }
  /** Analog stick input in [-1, 1] per axis; a moved stick claims control only while the game is running, never from pause. */
  function touchMove(forward:number,right:number){
   if(!enabled||game.paused||game.inventoryOpen||game.panel)return;
@@ -99,7 +137,7 @@ export function createExplorer(canvas:HTMLCanvasElement,scene:T.Scene,specs:Buil
   }camera.updateMatrixWorld();
  }
  function update(dt:number){inventoryUI.refresh();if(viewLock)game.view=viewLock;if(!enabled)return;const held=game.inventory.equipped?.itemId??null;student.equip(held);firstPerson.equip(held);dt=Math.min(dt,.1);const before=game.body.position.clone();
-  game.human={forward:Number(keys.has(KEYS.forward))-Number(keys.has(KEYS.back))+touchForward,right:Number(keys.has(KEYS.right))-Number(keys.has(KEYS.left))+touchRight,sprint:keys.has(KEYS.sprint)||touchSprint};
+  game.human={forward:Number(keys.has(KEYS.forward))-Number(keys.has(KEYS.back))+touchForward,right:Number(keys.has(KEYS.right))-Number(keys.has(KEYS.left))+touchRight,sprint:keys.has(KEYS.sprint)||keys.has('ShiftRight')||touchSprint};
   if(!game.paused){
    // A jump pressed a moment before landing is re-armed on the first grounded step.
    if(jumpBuffer>0){

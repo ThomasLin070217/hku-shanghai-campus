@@ -21,8 +21,8 @@ This gate drives that card like a player, at 1280x800 and at 390x844:
   fullscreen  the card's Full screen button is there wherever the API is
   phone       the same open-and-go chapter flow through the touch pipeline
   epilogue    on ?checkpoint=ending a real Escape raises the card above the
-              ending overlay: Continue and Return to checkpoint take real
-              clicks, the refusal toast paints above it, and the clock advances
+              ending overlay: Continue takes a real click, and "Return to
+              checkpoint" is not offered there (R-09) — the stage cannot move
   errors      no page errors
 
 Needs a review build served over HTTP:
@@ -175,6 +175,8 @@ def run_desktop(page):
         replayInChapters: !!chapters && chapters.contains(document.getElementById('replay-intro')),
         checkpointInChapters: !!chapters && chapters.contains(document.getElementById('pause-checkpoint')),
         checkpointText: (document.getElementById('pause-checkpoint') || {}).textContent,
+        checkpointDisabled: !!(document.getElementById('pause-checkpoint') || {}).disabled,
+        checkpointHidden: !!(document.getElementById('pause-checkpoint') || {}).hidden,
         groups: [...document.querySelectorAll('.pause-chapter-group')].map((n) => n.textContent),
         title: document.getElementById('pause-chapters-title')
           ? document.getElementById('pause-chapters-title').textContent : null,
@@ -182,8 +184,12 @@ def run_desktop(page):
     }""")
     check('card: the Chapter section is on the card', inside['chaptersInCard'] and inside['title'] == 'Chapter', inside)
     check('card: Replay intro sits inside the Chapter section', inside['replayInChapters'], inside)
-    check('card: Return to checkpoint sits inside the Chapter section',
-          inside['checkpointInChapters'] and (inside['checkpointText'] or '').strip() == 'Return to checkpoint', inside)
+    # R-10: this is a brand-new run with no save, so there is no checkpoint to return to.
+    # The button stays in the Chapter section but is disabled and says so, instead of
+    # teleporting the player to the spawn under the promise of a restored checkpoint.
+    check('card: the checkpoint button sits inside the Chapter section, disabled until a checkpoint exists (R-10)',
+          inside['checkpointInChapters'] and inside['checkpointDisabled'] is True
+          and not inside['checkpointHidden'] and (inside['checkpointText'] or '').strip() == 'No checkpoint yet', inside)
     check('card: the Settings section is on the card and not hidden',
           inside['settingsInCard'] and inside['settingsHidden'] is False, inside)
 
@@ -491,16 +497,32 @@ def run_epilogue(browser):
         page.keyboard.press('Escape')
         again = until(page, """() => { const p = document.getElementById('pause-panel');
           return !!p && !p.hidden && getComputedStyle(p).display !== 'none'; }""", timeout=60)
+        # R-09: the epilogue has no checkpoint pose (the ending chapter's entry is a
+        # radius-0 placeholder at the campus origin), so the card must not offer the
+        # button at all. It used to be clickable and only refused after the click.
+        offered = page.evaluate("""() => {
+          const b = document.getElementById('pause-checkpoint');
+          if (!b) return {found: false};
+          const box = b.getBoundingClientRect();
+          return {found: true, hidden: b.hidden, disabled: b.disabled,
+                  painted: getComputedStyle(b).display !== 'none' && box.width > 0 && box.height > 0};
+        }""")
         checkpoint = hit(page, '#pause-checkpoint') if again else {'reachable': False}
-        check('epilogue: Return to checkpoint is reachable on the epilogue card',
-              again and checkpoint.get('reachable') is True, {'again': again, 'hit': checkpoint})
-        if checkpoint.get('found'):
-            page.mouse.click(checkpoint['x'], checkpoint['y'])
+        check('epilogue: Return to checkpoint is not offered on the epilogue card (R-09)',
+              again and offered.get('found') is True and offered.get('painted') is False
+              and checkpoint.get('reachable') is False,
+              {'again': again, 'offered': offered, 'hit': checkpoint})
+        stage = page.evaluate('() => window.__CAMPUS.campaign.state().stage')
+        check('epilogue: the stage does not move', stage == 'ending', {'stage': stage})
+        # The hidden button is unreachable by pointer (above), but the handler's refusal is
+        # still the safety net if anything else calls it. Raise that toast directly so the
+        # paint-order check below (toast above the ending overlay) stays covered.
+        page.evaluate("() => { const b = document.getElementById('pause-checkpoint'); if (b) b.click(); }")
         toasted = until(page, """() => { const t = document.getElementById('toast');
           return !!t && t.classList.contains('show') && (t.textContent || '').includes('no checkpoint'); }""",
                         timeout=30)
         stage = page.evaluate('() => window.__CAMPUS.campaign.state().stage')
-        check('epilogue: the refusal is spoken and the stage does not move',
+        check('epilogue: the refusal still speaks if the handler is reached, and the stage does not move',
               toasted and stage == 'ending', {'toast': toasted, 'stage': stage})
         # The toast is pointer-events:none by design, so hit-testing skips it even
         # when it paints on top. Re-enable pointer events for one hit test (paint

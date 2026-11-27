@@ -67,6 +67,23 @@ body.game-shell.exploring[data-ai-control="human"] #control-badge {
   outline-offset: 2px;
 }
 
+/* D-12: on a mouse the pointer is locked while the game runs, so this link is
+   painted where the cursor cannot go: it looks clickable and is not (the
+   chapter menu's own header says the same, `src/opening/chapterMenu.ts:4-8`).
+   CSS cannot see pointer lock, so the chip is made non-interactive for a fine
+   pointer instead of being hidden: `check:pause-menu` asserts the link is on
+   screen while playing ("overlay: playing hides the card and shows the
+   floating controls again"), so `display:none` would fail that gate, and a
+   touch player has no pointer lock — the chip keeps working there. It stays
+   in the tab order, so a keyboard player can still follow it; the chapter
+   list in the pause card is the pointer route. */
+@media (hover: hover) and (pointer: fine) {
+  body.game-shell.exploring .shell-chapters {
+    pointer-events: none;
+    cursor: default;
+  }
+}
+
 /* One quiet Esc affordance, below the pause overlay so the menu covers it. */
 body.game-shell .shell-hint {
   position: absolute;

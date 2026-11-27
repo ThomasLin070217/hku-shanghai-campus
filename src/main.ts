@@ -1,6 +1,7 @@
 import {createOpeningExperience} from './opening/experience';
 import {createPrologue} from './opening/prologue';
-import {openingCheckpoint,checkpointCampaign,CHECKPOINT_LABELS,applyCheckpointThreat} from './opening/checkpoint';
+import {openingCheckpoint,checkpointCampaign,checkpointForStage,CHECKPOINT_LABELS,applyCheckpointThreat,type OpeningCheckpoint} from './opening/checkpoint';
+import {OPENING_SAVE_KEY} from './opening/persistence';
 import {createChapterList} from './opening/chapterMenu';
 import {DEFAULT_SETTINGS} from './gameplay/save';
 import {createCampaignHost,type CampaignHost} from './campaign/host';
@@ -46,6 +47,25 @@ import {TOUCH_MAX_PIXEL_RATIO,touchDevice} from './viewer/graphicsQuality';
 import {createTouchControls} from './opening/touchControls';
 import {createFullscreenControl,fullscreenLabel} from './opening/fullscreen';
 import {exportGLB,reloadGLB,download} from './viewer/export';
+// --------------------------------------------------------- boot parameters (R-12).
+// `?checkpoint=bus` predates the plaza opening: the bus is parked scenery now, so the value
+// names the crowd start, not a checkpoint. An old bookmark must start Chapter 1 at the plaza
+// rather than silently resume whatever save this tab holds. Any other unknown value is
+// reported below instead of ignored; `OPENING_CHECKPOINTS` stays the honest list.
+const bootQuery=new URLSearchParams(location.search);
+let unknownCheckpoint:string|null=null;
+{
+ const raw=bootQuery.get('checkpoint');
+ if(openingMode&&raw&&openingCheckpoint(raw)===null){
+  if(raw==='bus'){
+   bootQuery.delete('checkpoint');bootQuery.set('fresh','1');
+   try{history.replaceState(null,'',location.pathname+'?'+bootQuery.toString()+location.hash);}catch{/* the URL is cosmetic */}
+  }else unknownCheckpoint=raw;
+ }
+}
+// The opening's checkpoints only exist on the opening page: the sports-hall and survey
+// pages keep their own reset paths.
+const bootCheckpoint=openingMode?openingCheckpoint(bootQuery.get('checkpoint')):null;
 let specs=cloneBuildings(),site={...SITE},asset=buildSite(specs,site,openingMode),imported:T.Object3D|null=null,selected='B04';
 const app=document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML=`<header class="header"><a class="brand" href="./"><span class="brand-mark">H<span>K</span>U</span><span class="brand-copy">SHANGHAI<span>Campus Survey · 09</span></span></a><div class="header-right"><a href="./characters.html" target="_blank">Character index ↗</a><button id="night-toggle">Night / Day</button><a href="./interiors.html" target="_blank">Interior record ↗</a><button id="lounge-toggle">Building 5 · 4F</button><button id="mode-toggle" class="mode-toggle">Model view &amp; export</button><button id="walk-photo" class="walk-photo">Save view ↓</button><span class="status-dot"></span><span>Campus</span> <span class="header-divider">/</span><span>张江基地</span> <a href="./evidence/nov14-video/index.html" target="_blank">Review archive ↗</a></div></header>
@@ -56,7 +76,7 @@ app.innerHTML=`<header class="header"><a class="brand" href="./"><span class="br
 <div class="section-title spacing">Scene layers</div>${[['environment','Ground, roads and planting'],['circulation','Walkways, grand steps and sunken space'],['sports','North sports facilities'],['labels','Building numbers']].map(([id,name])=>`<label class="toggle-row"><span>${name}</span><input id="${id}" type="checkbox" checked><i></i></label>`).join('')}
 <div class="evidence-note"><span class="small-label">Evidence boundary</span><p><b>Overall layout and visible form cross-checked</b><br>Horizontal dimensions are checked against satellite measurements; heights, hidden faces and connection nodes remain estimates.</p><button id="evidence-open">See confirmed and provisional items ↗</button></div>
 <div class="export-section"><div class="section-title">Export asset</div><select id="export-scope" aria-label="Export scope"><option value="all">Whole campus</option><option value="selected">Selected building · local origin</option></select><label class="check-row"><input id="include-env" type="checkbox" checked>Whole-campus export includes the currently visible environment</label><button id="export-glb" class="primary">Export GLB ↓</button><div class="secondary-row"><button id="export-png">Save PNG ↓</button><button id="load-glb">Reload GLB ↑</button></div><button id="return-model" class="return-model">Restore editable campus ↺</button><input type="file" id="file-glb" accept=".glb" hidden><label class="check-row"><input id="transparent" type="checkbox">Transparent PNG · hide ground and planting</label></div><footer class="sidebar-footer">CAMPUS 002 <span>OPEN SOURCE / v9.0</span></footer></aside>
-<section class="stage" aria-label="Campus 3D preview"><div id="viewport"></div><div id="labels-layer"></div><div class="stage-top"><span id="mode-label">Orthographic · Campus overview</span><button id="reset">↺ Reset overview</button></div><div class="stage-bottom"><span>Drag to rotate · scroll to zoom · right-drag to pan</span><span id="stats"></span></div><div class="model-tag"><span>07</span><div>ZHANGJIANG<small>HKU Shanghai campus · normal state</small></div></div><div id="toast" role="status"></div><div id="crosshair">+</div><div id="control-badge"><span id="control-state">Player · Paused</span><button id="takeover">Take control</button></div><div id="pause-panel"><div class="pause-card"><div class="eyebrow">HKU SHANGHAI / VOXEL CAMPUS</div><h2>Campus Survey</h2><p>Visit three landmarks, collect campus records, then sync the archive with the MacBook. Any order, about 3–5 minutes.</p><button id="enter-game" class="primary">Enter exploration</button><button id="enter-compat" hidden>Drag controls</button><div class="key-guide">${CONTROL_GUIDE(openingMode)}</div><section class="pause-group pause-chapters" aria-labelledby="pause-chapters-title"><h3 class="pause-group-title" id="pause-chapters-title">Chapter</h3><button id="replay-intro" type="button">Replay intro</button><button id="pause-checkpoint" class="pause-checkpoint" type="button">Return to checkpoint</button><details class="pause-chapter-select"><summary>Chapter select</summary><div data-pause-chapters></div></details></section><section class="pause-group pause-settings" id="pause-settings" aria-labelledby="pause-settings-title"><h3 class="pause-group-title" id="pause-settings-title">Settings</h3><label class="pause-setting">Music volume<output id="pause-music-out"></output><input id="pause-music" data-setting="music" type="range" min="0" max="1" step="0.05"></label><label class="pause-setting">Ambient volume<output id="pause-ambient-out"></output><input id="pause-ambient" data-setting="ambient" type="range" min="0" max="1" step="0.05"></label><label class="pause-setting">Mouse sensitivity<output id="pause-sensitivity-out"></output><input id="pause-sensitivity" data-setting="sensitivity" type="range" min="0.0004" max="0.006" step="0.0001"></label><button id="pause-fullscreen" type="button">Full screen</button><button id="experience-settings">Settings &amp; save</button></section><p id="session-save" class="tiny"></p><p id="build-version" class="tiny"></p><button id="new-game">Restart game…</button><button id="enable-ai">Enable AI control</button><p class="tiny" id="bridge-status">Local control service: not connected</p></div></div></section></main>
+<section class="stage" aria-label="Campus 3D preview"><div id="viewport"></div><div id="labels-layer"></div><div class="stage-top"><span id="mode-label">Orthographic · Campus overview</span><button id="reset">↺ Reset overview</button></div><div class="stage-bottom"><span>Drag to rotate · scroll to zoom · right-drag to pan</span><span id="stats"></span></div><div class="model-tag"><span>07</span><div>ZHANGJIANG<small>HKU Shanghai campus · normal state</small></div></div><div id="toast" role="status"></div><div id="crosshair">+</div><div id="control-badge"><span id="control-state">Player · Paused</span><button id="takeover">Take control</button></div><div id="pause-panel" role="dialog" aria-modal="true" aria-labelledby="pause-title"><div class="pause-card"><div class="eyebrow">HKU SHANGHAI / VOXEL CAMPUS</div><h2 id="pause-title">Campus Survey</h2><p>Visit three landmarks, collect campus records, then sync the archive with the MacBook. Any order, about 3–5 minutes.</p><button id="enter-game" class="primary">Enter exploration</button><button id="enter-compat" hidden>Drag controls</button><div class="key-guide">${CONTROL_GUIDE(openingMode)}</div><section class="pause-group pause-chapters" aria-labelledby="pause-chapters-title"><h3 class="pause-group-title" id="pause-chapters-title">Chapter</h3><button id="replay-intro" type="button">Replay intro</button><button id="pause-checkpoint" class="pause-checkpoint" type="button">Return to checkpoint</button><details class="pause-chapter-select"><summary>Chapter select</summary><div data-pause-chapters></div></details></section><section class="pause-group pause-settings" id="pause-settings" aria-labelledby="pause-settings-title"><h3 class="pause-group-title" id="pause-settings-title">Settings</h3><label class="pause-setting">Music volume<output id="pause-music-out" for="pause-music"></output><input id="pause-music" data-setting="music" type="range" min="0" max="1" step="0.05" aria-label="Music volume"></label><label class="pause-setting">Ambient volume<output id="pause-ambient-out" for="pause-ambient"></output><input id="pause-ambient" data-setting="ambient" type="range" min="0" max="1" step="0.05" aria-label="Ambient volume"></label><label class="pause-setting">Mouse sensitivity<output id="pause-sensitivity-out" for="pause-sensitivity"></output><input id="pause-sensitivity" data-setting="sensitivity" type="range" min="0.0004" max="0.006" step="0.0001" aria-label="Mouse sensitivity"></label><button id="pause-fullscreen" type="button">Full screen</button><button id="experience-settings">Settings &amp; save</button></section><p id="session-save" class="tiny"></p><p id="build-version" class="tiny"></p><button id="new-game">Restart game…</button><button id="enable-ai">Enable AI control</button><p class="tiny" id="bridge-status">Local control service: not connected</p></div></div></section></main>
 <dialog id="evidence-dialog"><button class="close-dialog" aria-label="Close">×</button><div class="eyebrow">REFERENCE → CAMPUS</div><h2>A traceable campus reconstruction</h2><div class="evidence-images"><figure><img loading="lazy" src="./references/architect/A04.jpg" alt="Design team aerial photo, four towers and the low north block"><figcaption>C01 / Design team aerial photo</figcaption></figure><figure><img loading="lazy" src="./references/campus/phase2-07.jpg" alt="Campus photo, 2026 south lawn and the HKU sign"><figcaption>C02 / Campus south lawn, 2026</figcaption></figure></div><p><b>Confirmed:</b> seven building groups, two tower facade types, the central auditorium and grand steps, the sunken plaza, the elevated walkway and the existing sports facility types.</p><p><b>Reasonable inference:</b> tower row alignment, walkway connections and the layout of the north sports zone.</p><p><b>Provisional:</b> building heights, unmeasured depths, floor counts, roof equipment, hidden faces, walkway node elevations and exact sports-field boundaries. Planning drawings were not treated as as-built drawings.</p><p><b>Measured 2026-11-14:</b> the CDS-1 roof is about 60×45 m; the north east and west buildings are about 116 m apart centre to centre, each row shifted out by 6 m. Imagery date unknown; see the error notes.</p><a href="./references/scale-calibration/index.html" target="_blank">See satellite measurements and before/after comparison ↗</a><p><a href="./references/glass/index.html" target="_blank">See glass, frame and backing corrections ↗</a></p><p>Covers the Fangchun Road main campus and the adjacent sports strip. The Shengxia Road off-campus flats, the Hong Kong home campus and other Shanghai sites are outside this plot; the 2035 storyline is not included yet.</p><a href="./references/campus-index.html" target="_blank">Open sources, reference index and per-building evidence ↗</a></dialog>`;
 const host=document.querySelector<HTMLElement>('#viewport')!;const touch=touchDevice();const viewer=createSiteViewer(host,()=>true,touch?TOUCH_MAX_PIXEL_RATIO:undefined);viewer.scene.add(asset.root);
 const lounge=buildLounge();lounge.visible=false;viewer.scene.add(lounge);const glassEnvironment=createGlassEnvironment(viewer.renderer,viewer.scene);const lighting=createNightLighting(viewer.scene,glassEnvironment.refresh,viewer.lights);let loungeView=false;const loungeDayExposure=viewer.renderer.toneMappingExposure;
@@ -77,10 +97,18 @@ if(crowd)viewer.scene.add(crowd.root);
 let door:ReturnType<typeof createSportsDoor>|null=null;
 const interactWithDoor=()=>door?.interact()??false;
 let campaign:CampaignHost|undefined;
+/** What the pause card's checkpoint button can do here: the epilogue has no pose to return
+ * to (R-09), a run with no save has no checkpoint yet (R-10), everything else can reset. */
+function checkpointReadiness():'ready'|'epilogue'|'none'{
+ if(campaign?.active)return campaign.chapter()==='ending'?'epilogue':'ready';
+ if(bootCheckpoint)return 'ready';
+ try{return localStorage.getItem(OPENING_SAVE_KEY)!==null?'ready':'none';}catch{return 'none';}
+}
 const experience=openingMode
  ?createOpeningExperience(viewer.scene,explorer,notify,()=>asset.openingWorld,()=>loungeView?undefined:atmosphere,()=>campaign)
  :sportsMode?createSportsRescueExperience(explorer,interactWithDoor)
  :createExperience(viewer.scene,explorer,notify,{beforeInteract:interactWithDoor});
+if(unknownCheckpoint)notify(`Unknown checkpoint “${unknownCheckpoint}” — the run continues from the saved state.`);
 // -------------------------------------------------------------- pause card.
 // Chapter select and Replay intro live in the pause card (owner, 2026-11-25):
 // the floating Chapters link is covered by the pause overlay while paused
@@ -94,10 +122,21 @@ let syncPauseCard=()=>{};
  const section=document.getElementById('pause-settings');
  const sliders=Array.from(document.querySelectorAll<HTMLInputElement>('#pause-settings input[data-setting]'));
  const format=(key:string,value:number)=>key==='sensitivity'?(value/DEFAULT_SETTINGS.sensitivity).toFixed(2)+'×':Math.round(value*100)+'%';
- const output=(key:string,value:number)=>{const node=document.getElementById(`pause-${key}-out`);if(node)node.textContent=format(key,value);};
+ // The `<output>` carries the value for sighted players; `aria-valuetext` carries it for
+ // screen readers. Without it the wrapping label made the accessible name
+ // "Music volume20%" and changed on every slider move (D-10).
+ const output=(key:string,value:number)=>{const text=format(key,value),node=document.getElementById(`pause-${key}-out`),input=document.getElementById(`pause-${key}`);if(node)node.textContent=text;if(input)input.setAttribute('aria-valuetext',text);};
  syncPauseCard=()=>{
   const values=host.settings;if(values)for(const input of sliders){const key=input.dataset.setting!;const value=Number(values[key]);if(Number.isFinite(value)&&input.value!==String(value))input.value=String(value);output(key,Number(input.value));}
-  const checkpoint=document.getElementById('pause-checkpoint');if(checkpoint)checkpoint.textContent=el('reset').textContent.replace(/^[↺\s]+/,'');
+  const checkpoint=document.getElementById('pause-checkpoint') as HTMLButtonElement|null;
+  if(checkpoint){
+   // Only offer a return that exists: the epilogue has no checkpoint pose (R-09) and a
+   // brand-new run has nothing to return to yet (R-10). Other pages keep their own label.
+   const readiness=openingMode?checkpointReadiness():'ready';
+   checkpoint.hidden=readiness==='epilogue';
+   checkpoint.disabled=readiness==='none';
+   checkpoint.textContent=readiness==='none'?'No checkpoint yet':el('reset').textContent.replace(/^[↺\s]+/,'');
+  }
  };
  if(section&&!host.setSetting)section.hidden=true;
  for(const input of sliders)input.addEventListener('input',()=>{const key=input.dataset.setting!,value=Number(input.value);host.setSetting?.(key,value);output(key,value);});
@@ -155,7 +194,16 @@ if(!openingMode){
  });
  viewer.beforeRender.add(dt=>door?.update(dt));
 }
-function loadAssetTextures(root:T.Object3D){void prepareModelTextures(root).catch(()=>notify('Sign photos could not load. Re-apply parameters to retry; export will load them again.'));}
+function loadAssetTextures(root:T.Object3D){
+ // The sign photos are decorative, and this message is authoring copy ("Re-apply
+ // parameters", "export"). A player's page must boot without an error toast for a
+ // texture the player cannot act on — on a loaded machine the decode can also time
+ // out on a perfectly normal boot (D-06). The authoring page keeps the message.
+ void prepareModelTextures(root).catch(error=>{
+  if(document.body.classList.contains('game-shell')){console.warn('[campus] sign photos could not load',error);return;}
+  notify('Sign photos could not load. Re-apply parameters to retry; export will load them again.');
+ });
+}
 loadAssetTextures(asset.root);
 const graphicsControls=['export-png','walk-photo','enter-game','enter-compat','enable-ai'];
 viewer.renderer.domElement.addEventListener('webglcontextlost',()=>{graphicsControls.forEach(id=>(el(id) as HTMLButtonElement).disabled=true);experience.persist(true);explorer.pause('graphics_context_lost');experience.audio.setActive(false);experience.audio.stopPreviews();notify('The graphics context was lost and the game is paused. Continue once it recovers.');});
@@ -201,21 +249,40 @@ function mode(walk:boolean){
  if(loungeView){loungeView=false;sync();lighting.set(nightRequested,imported||asset.root);}
  if(walk&&imported){viewer.scene.remove(imported);disposeAsset(imported);imported=null;asset.root.visible=true;}
  if(walk)lighting.set(nightRequested,asset.root);
- exploring=walk;viewer.renderer.domElement.setAttribute('aria-label',walk?(openingMode?'Campus exploration: ':'Campus outdoor exploration: ')+CONTROL_GUIDE(openingMode)+' · '+keyLabel(KEYS.pause)+(openingMode?' pause':' pause'):'Campus model view: drag to rotate, scroll to zoom, right-drag to pan');document.body.classList.toggle('exploring',walk);viewer.controls.enabled=!walk;viewer.setActiveCamera(walk?explorer.camera:viewer.camera);
+ exploring=walk;viewer.renderer.domElement.setAttribute('aria-label',walk?(openingMode?'Campus exploration: ':'Campus outdoor exploration: ')+CONTROL_GUIDE(openingMode)+' · '+keyLabel(KEYS.pause)+(openingMode?' pause':' pause'):'Campus model view: drag to rotate, scroll to zoom, right-drag to pan');
+ // The landmark contains the game, not a preview, once play starts (D-07).
+ stageEl.setAttribute('aria-label',walk?(openingMode?'Campus exploration':'Campus outdoor exploration'):'Campus 3D preview');
+ document.body.classList.toggle('exploring',walk);viewer.controls.enabled=!walk;viewer.setActiveCamera(walk?explorer.camera:viewer.camera);
  if(walk){for(const id of ['environment','circulation','sports'])(el(id) as HTMLInputElement).checked=true;(el('isolate') as HTMLInputElement).checked=false;sync();el('labels-layer').style.display='none';el('mode-label').textContent=openingMode?'Building 4 · Shanghai Campus':sportsMode?'Sports Hall · East door':'CDS-1 · Outdoor exploration';el('reset').textContent=openingMode?'Return to checkpoint':sportsMode?'↺ Return to east door':'↺ Return to safe spot';document.querySelector('.stage-bottom>span')!.textContent=CONTROL_GUIDE(openingMode);}
  else{sync();setView('iso');el('reset').textContent='↺ Reset overview';document.querySelector('.stage-bottom>span')!.textContent='Drag to rotate · scroll to zoom · right-drag to pan';}
  explorer.setEnabled(walk);stats();el('mode-toggle').textContent=openingMode?(walk?'Campus model tools':'Return to opening'):(walk?'Model view &amp; export':'Return to outdoor exploration');
 }
-el('mode-toggle').onclick=()=>mode(!exploring);el('reset').onclick=()=>{if(exploring){
+el('mode-toggle').onclick=()=>mode(!exploring);
+/** Moves the body through the opening's own checkpoint spawn path (floor settle for a
+ * campaign checkpoint, fleet reset, respawn grace); story, backpack and hearts are untouched. */
+function respawnAt(id:OpeningCheckpoint){(experience as unknown as {respawnAtCheckpoint?:(id:OpeningCheckpoint)=>void}).respawnAtCheckpoint?.(id);}
+el('reset').onclick=()=>{if(exploring){
   // In a campaign chapter the button returns you to the start of the chapter you are in.
   // The explorer's default spawn is the B5 handoff, which left a player at the sports hall
   // 176 m from it with the objective unchanged (found in the 2026-11-26 shakedown).
-  const entry=campaign?.chapterEntry?.();
-  // The epilogue has no checkpoint: its stage maps to the ending chapter, whose entry is a
-  // radius-0 placeholder at the campus origin. Moving the body then would drag the 58 m
-  // camera crane's subject out from under it, so the button says so and stays put.
-  if(!entry&&campaign?.active){notify('The epilogue has no checkpoint — let it play out.');viewer.renderer.domElement.focus();return;}
-  if(entry){const game=explorer.game;game.body.position.set(entry[0],entry[1]>0?entry[1]:.02,entry[2]);game.body.velocity.set(0,0,0);}
+  const stage=campaign?.stage?.()??null;
+  // A walking leg is not a chapter. `chapterEntry()` names the leg's DESTINATION (that is
+  // its contract), and moving the body there fired the arrival event on the next frame:
+  // the 84 m lawn walk was skipped and the guardian fight started (R-02). A leg returns to
+  // the pose its own checkpoint boots at, which is where the leg starts.
+  const leg=campaign?.active&&stage!==null?checkpointForStage(stage):null;
+  const entry=leg?null:campaign?.chapterEntry?.();
+  // The epilogue has no checkpoint: `chapterEntry()` is null there (the ending chapter's
+  // entry is a radius-0 placeholder at the campus origin, so the host does not offer it).
+  // The card hides the button; this branch is the handler's refusal if anything else
+  // reaches the reset (R-09).
+  if(!entry&&campaign?.active&&!leg){notify('The epilogue has no checkpoint — let it play out.');viewer.renderer.domElement.focus();return;}
+  // A run booted from a checkpoint returns to that checkpoint's own pose instead of the
+  // opening's per-stage spawn: `safePose()` maps `to_b5` to the B5 handoff, 77 m past the
+  // B5 dinner checkpoint (R-01).
+  if(leg)respawnAt(leg);
+  else if(entry){const game=explorer.game;game.body.position.set(entry[0],entry[1]>0?entry[1]:.02,entry[2]);game.body.velocity.set(0,0,0);}
+  else if(bootCheckpoint)respawnAt(bootCheckpoint);
   else if(sportsMode)experience.relocate();else explorer.reset();experience.persist(true);notify(openingMode?'Checkpoint restored. Your progress and backpack are preserved.':sportsMode?'Returned to the Sports Hall east door. Door progress is preserved.':'Returned to the safe spot. Tasks and backpack are preserved.');viewer.renderer.domElement.focus();}else{(el('isolate') as HTMLInputElement).checked=false;sync();setView('iso');}};
 el('walk-photo').onclick=()=>download(viewer.capture(false,asset.environment),'HKU-outdoor-exploration.png');
 let nightRequested=false;
@@ -244,12 +311,63 @@ el('takeover').onclick=()=>{void fullscreen.autoEnter();explorer.takeover();};
 el('enable-ai').onclick=()=>{if(agentBridge){agentBridge.claim();explorer.enableAI();}};
 
 document.addEventListener('game-notice',e=>{notify((e as CustomEvent).detail);el('enter-compat').hidden=false;});
+// The drag-controls offer belongs to the state "pointer lock is unavailable". A lock
+// that succeeds withdraws it again, instead of revealing it for the rest of the
+// session after one failure (D-11).
+document.addEventListener('pointerlockchange',()=>{if(document.pointerLockElement)el('enter-compat').hidden=true;});
 el('enter-compat').onclick=()=>{void fullscreen.autoEnter();explorer.enterCompat();};
-viewer.callbacks.add(()=>{const g=explorer.game;const pauseHidden=!exploring||!g.paused||g.inventoryOpen||!!g.panel;setHidden(el('pause-panel'),pauseHidden);if(pauseHidden!==pauseWasHidden){pauseWasHidden=pauseHidden;if(!pauseHidden){syncPauseCard();
+
+// ------------------------------------------------------- pause-card focus (D-03/D-04).
+// The card is a dialog: focus moves to its primary button on open, returns where it
+// came from on close, and Tab cycles inside it. The canvas behind the overlay is
+// removed from the tab order while the card is up, so the first Tab can never land
+// on the world behind the menu.
+let pauseReturnFocus:HTMLElement|null=null;
+function enterPauseCard(){
+ // The prologue gate and any native dialog own the screen above the card.
+ if(document.body.classList.contains('prologue-active')||document.querySelector('dialog[open]'))return;
+ const panel=el('pause-panel'),active=document.activeElement;
+ if(active instanceof HTMLElement&&panel.contains(active))return;
+ pauseReturnFocus=active instanceof HTMLElement&&active!==document.body?active:null;
+ document.getElementById('enter-game')?.focus({preventScroll:true});
+}
+function leavePauseCard(){
+ const panel=el('pause-panel'),active=document.activeElement,inside=active instanceof HTMLElement&&panel.contains(active);
+ // Another surface (the backpack, the MacBook, a story dialog) took focus: keep it.
+ if(!inside&&active!==document.body)return;
+ const target=pauseReturnFocus;pauseReturnFocus=null;
+ if(target&&target.isConnected&&target.getClientRects().length>0)target.focus({preventScroll:true});
+ else viewer.renderer.domElement.focus({preventScroll:true});
+}
+function trapPauseCardFocus(e:KeyboardEvent){
+ if(e.key!=='Tab'||e.defaultPrevented)return;
+ const panel=el('pause-panel');
+ if(panel.hidden||document.body.classList.contains('prologue-active'))return;
+ if(document.querySelector('dialog[open]'))return;
+ const card=panel.querySelector<HTMLElement>('.pause-card');if(!card)return;
+ const items=Array.from(card.querySelectorAll<HTMLElement>('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])')).filter(node=>node.getClientRects().length>0);
+ if(!items.length)return;
+ const first=items[0],last=items[items.length-1],active=document.activeElement,inside=active instanceof HTMLElement&&card.contains(active);
+ if(e.shiftKey&&(!inside||active===first)){e.preventDefault();last.focus({preventScroll:true});}
+ else if(!e.shiftKey&&(!inside||active===last)){e.preventDefault();first.focus({preventScroll:true});}
+}
+document.addEventListener('keydown',trapPauseCardFocus);
+// A paused boot shows the card even when the renderer is too loaded to produce a frame
+// for a while (the bug hunt measured under 1 fps), so the first focus cannot wait for
+// the render callback. The prologue/dialog guard keeps the gate's own screen in charge.
+if(exploring&&explorer.game.paused)enterPauseCard();
+viewer.callbacks.add(()=>{const g=explorer.game;const pauseHidden=!exploring||!g.paused||g.inventoryOpen||!!g.panel;setHidden(el('pause-panel'),pauseHidden);
+ // "Esc · menu" is only true while the menu is closed; the overlay is translucent and
+ // used to leave the hint legible under it (D-02).
+ const shellHint=document.querySelector<HTMLElement>('.shell-hint');if(shellHint){const hideHint=!pauseHidden;if(shellHint.hidden!==hideHint)shellHint.hidden=hideHint;}
+ if(pauseHidden!==pauseWasHidden){pauseWasHidden=pauseHidden;
+  // The canvas is only reachable in play, never behind the pause dialog.
+  const canvas=viewer.renderer.domElement;canvas.tabIndex=pauseHidden?0:-1;
+  if(pauseHidden)leavePauseCard();else{syncPauseCard();
   // Reaching a slider scrolls the card; that offset used to survive the close,
   // so the next MENU opened with the heading and Continue already above the
   // screen edge (measured on a 390×844 phone: scrollTop 166 of 166).
-  const card=document.querySelector<HTMLElement>('.pause-card');if(card)card.scrollTop=0;}}setHidden(el('crosshair'),!exploring||g.paused||g.view!=='first');setHidden(el('control-badge'),!exploring);const state=g.owner?'active':g.armed?'armed':'human';if(document.body.dataset.aiControl!==state)document.body.dataset.aiControl=state;setText(el('control-state'),openingMode?`${g.owner?'AI controlling':g.armed?'AI ready':'Player'} · ${g.paused?'Paused':g.view==='first'?'First person':'Third person'}`:`${g.owner?'AI controlling':g.armed?'AI ready':'Player'} · ${g.paused?'Paused':g.view==='first'?'First person':'Third person'}`);});
+  const card=document.querySelector<HTMLElement>('.pause-card');if(card)card.scrollTop=0;enterPauseCard();}}setHidden(el('crosshair'),!exploring||g.paused||g.view!=='first');setHidden(el('control-badge'),!exploring);const state=g.owner?'active':g.armed?'armed':'human';if(document.body.dataset.aiControl!==state)document.body.dataset.aiControl=state;setText(el('control-state'),openingMode?`${g.owner?'AI controlling':g.armed?'AI ready':'Player'} · ${g.paused?'Paused':g.view==='first'?'First person':'Third person'}`:`${g.owner?'AI controlling':g.armed?'AI ready':'Player'} · ${g.paused?'Paused':g.view==='first'?'First person':'Third person'}`);});
 
 const toolsMenu=document.createElement('details');toolsMenu.id='campus-tools';toolsMenu.innerHTML='<summary>Campus tools</summary><div class="tools-content"></div>';document.querySelector('.header-right')!.append(toolsMenu);
 for(const node of Array.from(document.querySelectorAll('.header-right > a,.header-right > button:not(#night-toggle)')))toolsMenu.querySelector('.tools-content')!.append(node);
@@ -277,10 +395,10 @@ if(!import.meta.env.DEV&&import.meta.env.MODE!=='review'){document.querySelector
 
 if(openingMode){
  document.title='HKU: Barrier 2030 · Chapter 1 · High Table';document.body.classList.add('opening-mode');
- const copy:Record<string,string>={'mode-label':'Building 4 · Shanghai Campus','reset':'Return to checkpoint','mode-toggle':'Campus model tools','takeover':'Take control','night-toggle':'Night / Day','experience-settings':'Settings & save','new-game':'Restart opening…','enable-ai':'Enable AI control','bridge-status':'Local control service','enter-compat':'Drag controls','scene-index-toggle':'Scene index'};
+ const copy:Record<string,string>={'mode-label':'Building 4 · Shanghai Campus','reset':'Return to checkpoint','mode-toggle':'Campus model tools','takeover':'Take control','night-toggle':'Night / Day','experience-settings':'Settings & save','new-game':'Restart in Settings…','enable-ai':'Enable AI control','bridge-status':'Local control service','enter-compat':'Drag controls','scene-index-toggle':'Scene index'};
  for(const [id,text]of Object.entries(copy)){const node=document.getElementById(id);if(node)node.textContent=text;}
  const checkpointStart=openingCheckpoint(new URLSearchParams(location.search).get('checkpoint'));
- const pause=document.querySelector('.pause-card');if(pause){const eyebrow=pause.querySelector('.eyebrow');if(eyebrow)eyebrow.textContent='A CDS CAMPUS STORY';pause.querySelector('h2')!.textContent='HKU: Barrier 2030';pause.querySelector('p')!.textContent=checkpointStart?`Checkpoint: ${CHECKPOINT_LABELS[checkpointStart]}. Continue from here.`:'You are a Student Ambassador on your way to the High Table Dinner. Begin on the campus shuttle.';pause.querySelector('.key-guide')!.textContent='WASD move · Shift run · Space jump · F interact · E backpack · C MacBook';pause.querySelector('.desktop-note')!.textContent=touch?'Touch · left stick walks · drag to look · buttons act, MENU pauses':'Keyboard and mouse · Continue to look around and move';pause.querySelector('.pause-options summary')!.textContent='Restart / AI control';}
+ const pause=document.querySelector('.pause-card');if(pause){const eyebrow=pause.querySelector('.eyebrow');if(eyebrow)eyebrow.textContent='A CDS CAMPUS STORY';pause.querySelector('h2')!.textContent='HKU: Barrier 2030';pause.querySelector('p')!.textContent=checkpointStart?`Checkpoint: ${CHECKPOINT_LABELS[checkpointStart]}. Continue from here.`:'You are a Student Ambassador on your way to the High Table Dinner. Begin in the plaza crowd after the light show.';pause.querySelector('.key-guide')!.textContent='WASD move · Shift run · Space jump · F interact · E backpack · C MacBook';pause.querySelector('.desktop-note')!.textContent=touch?'Touch · left stick walks · drag to look · buttons act, MENU pauses':'Keyboard and mouse · Continue to look around and move';pause.querySelector('.pause-options summary')!.textContent='Restart / AI control';}
  const help=document.querySelector('.header-right > button:not(#scene-index-toggle):not(#night-toggle)');if(help)help.textContent='Help';
  toolsMenu.querySelector('summary')!.textContent='Campus tools';advanced.querySelector('summary')!.textContent=localAiControls?'Restart / AI control':'Restart';
  document.querySelector('.brand-copy > span')!.textContent='HKU: Barrier 2030';
