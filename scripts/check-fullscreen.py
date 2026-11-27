@@ -205,8 +205,11 @@ def run_portrait(page):
     }""")
     s = state(page)
     check('portrait: a coarse touch device mounts the gamepad', s['touchMode'] and s['touchRoot'], s)
-    check('portrait: the gamepad has stick, run, jump, bag, use and menu',
-          s['buttons'] == ['run', 'jump', 'bag', 'interact', 'menu'], s['buttons'])
+    # `computer` is the MacBook key (`C`): without it a phone reached the
+    # "Open the MacBook" objective with no control that could satisfy it
+    # (bug hunt T-01, 2026-11-26).
+    check('portrait: the gamepad has stick, run, jump, bag, use, menu and mac',
+          s['buttons'] == ['run', 'jump', 'bag', 'interact', 'menu', 'computer'], s['buttons'])
     check('portrait: a touch device without the API shows no dead button, and reports the hint',
           s['fullscreenApi'] is not None, s)
     check('portrait: the keyboard-only hints are hidden on a phone',

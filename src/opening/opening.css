@@ -2651,6 +2651,21 @@ body.opening-mode .opening-modal-root {
   outline-offset: 3px;
 }
 
+/* T-13: measured 2026-11-26 at 360x640 — the compact skin above left Close at
+   61.1 x 27 px and all ten settings actions (nine .opening-button rows plus
+   Done) at 42 px tall, under the touch floor the pause card meets through
+   style.css:128. A coarse pointer gets 44 px; the box grows, the padding, type
+   scale and colours do not change. */
+@media (pointer: coarse) {
+  .opening-dialog--settings .opening-dialog-close,
+  .opening-dialog--settings .opening-button {
+    min-height: 44px;
+  }
+  .opening-dialog--settings .opening-dialog-close {
+    min-width: 44px;
+  }
+}
+
 /* ------------------------------------------------- Text inside dialogs. */
 :is(.opening-dialog--staff, .opening-dialog--settings, .opening-dialog--computer, .opening-dialog--complete) :is(
   .opening-copy,
