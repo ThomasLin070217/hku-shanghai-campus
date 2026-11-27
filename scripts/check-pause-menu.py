@@ -15,7 +15,7 @@ This gate drives that card like a player, at 1280x800 and at 390x844:
               paused and back while playing
   chapters    the list is collapsed by default, then opens to one chapter start
               and eight checkpoints
-  navigation  a real click on "B4 · Fetch the MacBook" loads checkpoint=b6
+  navigation  a real click on "B6 · Fetch the MacBook" loads checkpoint=b6
   settings    each slider writes experience.settings, prints its value, and the
               full settings dialog shows the same value afterwards
   fullscreen  the card's Full screen button is there wherever the API is
@@ -32,6 +32,7 @@ Needs a review build served over HTTP:
 `?shell=1` is required: the review build keeps the authoring chrome otherwise.
 """
 import os
+from urllib.parse import parse_qs, urlparse
 
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from playwright.sync_api import sync_playwright
@@ -67,6 +68,12 @@ def shot(page, label, name):
         print('  shot', SHOTS + f'{label}-{name}.png', flush=True)
     except Exception as error:  # Evidence, not an assertion.
         print('  shot failed', name, type(error).__name__, flush=True)
+
+
+def has_run(page):
+    """Whether this tab holds an opening save: the exact condition the chapter link's
+    confirm reads (`OPENING_SAVE_KEY` in src/opening/persistence.ts)."""
+    return page.evaluate("() => { try { return localStorage.getItem('hku.opening.v1') !== null; } catch { return false; } }")
 
 
 def until(page, js, timeout=60):
@@ -245,8 +252,19 @@ def run_desktop(page):
     check('chapters: opening the select lists every checkpoint, and they are clickable',
           opened['open'] is True and opened['ids'] == CHECKPOINT_IDS and 'b6' in opened_reachable,
           {'details': opened, 'reachable': opened_reachable})
-    check('chapters: the chapter start points at the opening, not a checkpoint',
-          len(opened['start']) == 1 and opened['start'][0]['href'] == '?experience=opening', opened['start'])
+    # S-09 / D-01: the start link is a new run, not a checkpoint, and it keeps the
+    # caller's boot parameters (shell=1, intro=0) instead of dropping them. The old
+    # assertion pinned the pre-S-09 hand-built href and would reject the fix.
+    start = opened['start'][0] if len(opened['start']) == 1 else {}
+    start_params = parse_qs(urlparse(start.get('href', '')).query)
+    check('chapters: the chapter start is a fresh opening run, not a checkpoint, keeping boot parameters',
+          len(opened['start']) == 1
+          and start_params.get('experience') == ['opening']
+          and 'checkpoint' not in start_params
+          and start_params.get('fresh') == ['1']
+          and start_params.get('shell') == ['1']
+          and start_params.get('intro') == ['0'],
+          opened['start'])
     check('chapters: the list is grouped by chapter',
           len(opened['groups']) == 4 and opened['groups'][0].startswith('Chapter 1'), opened['groups'])
     shot(page, '1280x800', '01-chapters-open')
@@ -351,7 +369,7 @@ def run_desktop(page):
     check('desktop: no page errors so far', not errors, errors[:4])
 
     # ---- Last, because it replaces the document: a real click on a chapter row
-    #      navigates, the thing the floating link could never do. "B4 · Fetch the
+    #      navigates, the thing the floating link could never do. "B6 · Fetch the
     #      MacBook" is checkpoint b6.
     #
     #      `wait_for_url` matches at navigation START, while the old document is
@@ -364,13 +382,20 @@ def run_desktop(page):
         page.click('.pause-chapter-select > summary')
         page.wait_for_timeout(200)
     navigated = False
+    # S-37: with a run in this tab, a chapter link first asks "Leave this run and start
+    # ...?" through a native confirm. Playwright dismisses dialogs unless told otherwise,
+    # which cancelled the navigation. The player accepts, so the gate accepts too.
+    prompted = []
+    wanted = has_run(page)
+    page.once('dialog', lambda dialog: (prompted.append(dialog.message), dialog.accept()))
     try:
         with page.expect_navigation(wait_until='load', timeout=240000):
             page.click('a.pause-chapter-link[data-checkpoint="b6"]')
         navigated = 'checkpoint=b6' in page.url
+        check('navigation: replacing a run asks first (S-37)', bool(prompted) == wanted, {'wanted': wanted, 'prompted': prompted})
     except PlaywrightTimeoutError:
         navigated = False
-    check('navigation: clicking "B4 · Fetch the MacBook" loads checkpoint=b6', navigated, page.url)
+    check('navigation: clicking "B6 · Fetch the MacBook" loads checkpoint=b6', navigated, page.url)
     if navigated:
         booted = until(page, '() => !!(window.__CAMPUS && window.__CAMPUS.ready)', timeout=240)
         landed = page.evaluate("""() => ({
@@ -379,7 +404,7 @@ def run_desktop(page):
           paused: window.__CAMPUS.explorer.game.paused,
         })""") if booted else {}
         check('navigation: the checkpoint build boots and names the checkpoint',
-              booted and landed.get('copy', '').startswith('Checkpoint: B4'), {'booted': booted, **landed})
+              booted and landed.get('copy', '').startswith('Checkpoint: B6'), {'booted': booted, **landed})
         check('navigation: a checkpoint hides Replay intro, which cannot play there',
               booted and landed.get('replayHidden') is True, {'booted': booted, **landed})
     check('desktop: no page errors', not errors, errors[:4])
@@ -428,13 +453,18 @@ def run_phone(browser):
     # document loads, so the readiness wait below cannot be answered by the old
     # page and pass without the checkpoint ever booting.
     loaded = False
+    # Same S-37 confirm as desktop: the tap opens it and the player accepts.
+    phone_prompted = []
+    phone_wanted = has_run(page)
+    page.once('dialog', lambda dialog: (phone_prompted.append(dialog.message), dialog.accept()))
     try:
         with page.expect_navigation(wait_until='load', timeout=240000):
             tapped = tap(page, 'a.pause-chapter-link[data-checkpoint="b6"]')
         loaded = bool(tapped) and 'checkpoint=b6' in page.url
+        check('phone: replacing a run asks first (S-37)', bool(phone_prompted) == phone_wanted, {'wanted': phone_wanted, 'prompted': phone_prompted})
     except PlaywrightTimeoutError:
         loaded = False
-    check('phone: tapping "B4 · Fetch the MacBook" navigates', loaded, page.url)
+    check('phone: tapping "B6 · Fetch the MacBook" navigates', loaded, page.url)
     check('phone: the checkpoint page loads', loaded and until(
         page, '() => window.__CAMPUS && window.__CAMPUS.ready && document.getElementById("pause-panel") && !document.getElementById("pause-panel").hidden',
         timeout=240), page.url)
